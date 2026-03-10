@@ -1,0 +1,28 @@
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import authRoutes from "./routes/authRoutes.js";
+import providerRoutes from "./routes/providerRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
+
+const app = express();
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+app.use(cookieParser());
+
+app.get("/", (req, res) => {
+  res.json({ message: "OnTrip API running" });
+});
+
+app.use("/api/auth", authRoutes);
+app.use("/api/providers", providerRoutes);
+app.use("/api/reviews", reviewRoutes);
+
+export default app;
