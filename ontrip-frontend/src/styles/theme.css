@@ -1,0 +1,29 @@
+:root {
+  /* Your palette */
+  --p1: #b1e3fa;
+  --p2: #4ec9f5;
+  --p3: #00b8f1;
+  --p4: #e1fff8;
+
+  /* New: warm accent like sun/sand (fits your illustration) */
+  --sun: #ffcc80;
+  --sand: #ffd36d;
+
+  --bg: #f4fbff;
+  --card: rgba(255, 255, 255, 0.78);
+  --cardSolid: #ffffff;
+  --text: #0b1b2a;
+  --muted: rgba(11, 27, 42, 0.64);
+
+  --border: rgba(0, 0, 0, 0.08);
+  --shadow: 0 14px 40px rgba(0, 0, 0, 0.10);
+
+  --radius: 18px;
+  --radius2: 26px;
+
+  --navH: 68px;
+
+  /* Fonts */
+  --font-ui: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  --font-brand: "Playfair Display", ui-serif, Georgia, "Times New Roman", serif;
+}
