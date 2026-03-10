@@ -1,0 +1,40 @@
+.explore { padding-bottom: 10px; }
+
+.pageHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: -0.4px;
+}
+
+.pageSub {
+  margin: 6px 0 0 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.filters {
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+  min-width: 320px;
+}
+
+.gridPlaces {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 980px) {
+  .pageHead { flex-direction: column; }
+  .filters { width: 100%; min-width: 0; }
+  .gridPlaces { grid-template-columns: 1fr; }
+}
