@@ -1,0 +1,134 @@
+/* ==========================
+   NAVBAR FIXED TOP
+========================== */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+
+  height: var(--navH);
+
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.navbarInner {
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  padding: 0 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ==========================
+   LEFT
+========================== */
+
+.navbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.menuBtn {
+  font-size: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(11, 27, 42, 0.75);
+}
+
+.menuBtn:hover {
+  color: var(--p3);
+}
+
+.brandText {
+  font-family: var(--font-brand);
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+
+  text-decoration: none;
+  color: var(--text);
+}
+
+/* ==========================
+   CENTER LINKS
+========================== */
+
+.navbarCenter {
+  display: flex;
+  gap: 28px;
+}
+
+.navItem {
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+
+  color: rgba(11, 27, 42, 0.7);
+  transition: color 0.2s ease;
+}
+
+.navItem:hover {
+  color: var(--p3);
+}
+
+.navItem.active {
+  color: var(--p3);
+}
+
+/* ==========================
+   RIGHT BUTTONS
+========================== */
+
+.navbarRight {
+  display: flex;
+  gap: 22px;
+}
+
+.navTextBtn {
+  background: none;
+  border: none;
+  padding: 0;
+
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+
+  color: rgba(11, 27, 42, 0.7);
+  transition: color 0.2s ease;
+}
+
+.navTextBtn:hover {
+  color: var(--p3);
+}
+
+/* make signup same style as login */
+.navTextBtn.signup {
+  font-weight: 600;
+  color: rgba(11, 27, 42, 0.7);
+}
+
+.navTextBtn.signup:hover {
+  color: var(--p3);
+}
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media (max-width: 900px) {
+  .navbarCenter {
+    display: none;
+  }
+}
