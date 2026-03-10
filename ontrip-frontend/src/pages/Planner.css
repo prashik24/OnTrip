@@ -1,0 +1,86 @@
+.planner { padding-bottom: 10px; }
+
+.formCard, .planCard {
+  padding: 14px;
+  border-radius: var(--radius2);
+}
+
+.sectionTitle {
+  font-weight: 950;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.label {
+  display: block;
+  font-weight: 900;
+  margin: 10px 0 6px;
+  color: rgba(11, 27, 42, 0.8);
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.planBtn {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.empty {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(177, 227, 250, 0.25);
+  border: 1px solid rgba(177, 227, 250, 0.45);
+  color: rgba(11, 27, 42, 0.72);
+  font-weight: 700;
+}
+
+.planTitle {
+  font-weight: 950;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.planBlock {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(225, 255, 248, 0.6);
+}
+
+.blockTitle {
+  font-weight: 950;
+  margin-bottom: 8px;
+}
+
+.list {
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(11, 27, 42, 0.78);
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.mutedBox {
+  color: rgba(11, 27, 42, 0.75);
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.note {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(0, 184, 241, 0.12);
+  border: 1px solid rgba(0, 184, 241, 0.2);
+  font-weight: 800;
+  color: rgba(11, 27, 42, 0.8);
+}
+
+@media (max-width: 900px) {
+  .row2 { grid-template-columns: 1fr; }
+}
