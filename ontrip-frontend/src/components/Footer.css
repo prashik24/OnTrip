@@ -1,0 +1,274 @@
+/* ===============================
+   FOOTER BASE (FULL-BLEED FIX)
+================================ */
+.otFooter {
+  margin-top: 24px;
+
+  /* ✅ Full screen width even inside sidebar/main layout */
+  width: 100vw;
+  margin-left: calc(55% - 56vw);
+
+  /* prevent horizontal scroll */
+  overflow-x: hidden;
+}
+
+/* ===============================
+   TOP FOOTER AREA (FULL WIDTH)
+================================ */
+.otFooterTop {
+  width: 100%;
+  padding: 36px 0;
+  background: linear-gradient(
+    135deg,
+    rgba(177, 227, 250, 0.65),
+    rgba(225, 255, 248, 0.85)
+  );
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* ===============================
+   BOTTOM BAR (NO WHITE)
+================================ */
+.otFooterBottom {
+  width: 100%;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  padding: 16px 0;
+}
+
+/* ===============================
+   INNER CONTENT CONTAINER
+================================ */
+.otFooterContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 18px;
+}
+
+/* Top layout grid */
+.otFooterTop .otFooterContainer {
+  display: grid;
+  grid-template-columns: 1.2fr 1.6fr 1.2fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ===============================
+   BRAND
+================================ */
+.otBrandName {
+  font-family: var(--font-brand);
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  color: rgba(11, 27, 42, 0.95);
+}
+
+.otBrandTagline {
+  margin-top: 10px;
+  color: rgba(11, 27, 42, 0.72);
+  font-weight: 650;
+  line-height: 1.6;
+  font-size: 14px;
+  max-width: 380px;
+}
+
+/* ===============================
+   SOCIAL ICONS
+================================ */
+.otSocial {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.otIconBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  transition: transform 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+}
+
+.otIconBtn:hover {
+  transform: translateY(-2px) scale(1.04);
+  filter: brightness(1.05);
+}
+
+.otIconBtn svg {
+  width: 20px;
+  height: 20px;
+  fill: #ffffff;
+}
+
+/* Instagram */
+.otSocial .otIconBtn:nth-child(1) {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+}
+
+/* X / Twitter */
+.otSocial .otIconBtn:nth-child(2) {
+  background: #000000;
+}
+
+/* YouTube */
+.otSocial .otIconBtn:nth-child(3) {
+  background: #ff0000;
+}
+
+/* LinkedIn */
+.otSocial .otIconBtn:nth-child(4) {
+  background: #0a66c2;
+}
+
+/* ===============================
+   FOOTER COLUMNS
+================================ */
+.otCols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.otColTitle {
+  font-weight: 900;
+  margin-bottom: 12px;
+  color: rgba(11, 27, 42, 0.9);
+}
+
+.otCol a {
+  display: block;
+  text-decoration: none;
+  color: rgba(11, 27, 42, 0.72);
+  font-weight: 650;
+  padding: 6px 0;
+  transition: color 0.15s ease;
+}
+
+.otCol a:hover {
+  color: rgba(0, 184, 241, 1);
+}
+
+/* ===============================
+   NEWSLETTER BOX
+================================ */
+.otNewsletter {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.otNewsText {
+  color: rgba(11, 27, 42, 0.72);
+  font-weight: 650;
+  line-height: 1.5;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.otNewsForm {
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  gap: 12px;
+}
+
+.otNewsInput {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 12px;
+  font-weight: 650;
+}
+
+.otNewsInput:focus {
+  outline: none;
+  border-color: rgba(0, 184, 241, 0.6);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+}
+
+.otNewsBtn {
+  border: none;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #04202d;
+  border-radius: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.otSmallNote {
+  margin-top: 10px;
+  font-size: 12px;
+  color: rgba(11, 27, 42, 0.55);
+}
+
+/* ===============================
+   BOTTOM BAR CONTENT
+================================ */
+.otFooterBottom .otFooterContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.otCopyright {
+  color: #ffffff;
+  font-weight: 650;
+  font-size: 13px;
+}
+
+.otBottomLinks {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.otBottomLinks a {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 650;
+  font-size: 13px;
+}
+
+.otBottomLinks a:hover {
+  text-decoration: underline;
+}
+
+.dot {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 980px) {
+  .otFooterTop .otFooterContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .otCols {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .otNewsForm {
+    grid-template-columns: 1fr;
+  }
+
+  .otFooterBottom .otFooterContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  .otCols {
+    grid-template-columns: 1fr;
+  }
+}
