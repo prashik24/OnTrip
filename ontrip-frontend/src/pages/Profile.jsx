@@ -23,24 +23,24 @@ export default function Profile() {
       try {
         const data = await apiFetch("/api/auth/me");
         setUser(data.user);
-
         setForm({
           name: data.user?.name || "",
           phone: data.user?.phone || "",
           city: data.user?.city || "",
           bio: data.user?.bio || "",
         });
-
         saveUserOnly(data.user);
         window.dispatchEvent(new Event("ontrip-auth-changed"));
-      } catch {}
+      } catch {
+        // ignore
+      }
     }
 
     loadMe();
   }, []);
 
   function update(key, value) {
-    setForm((s) => ({ ...s, [key]: value }));
+    setForm((prev) => ({ ...prev, [key]: value }));
   }
 
   async function saveProfile(e) {
@@ -57,14 +57,14 @@ export default function Profile() {
 
       setUser(data.user);
       saveUserOnly(data.user);
+      window.dispatchEvent(new Event("ontrip-auth-changed"));
       setEditing(false);
-
       setMsg({
-        text: "Profile updated successfully",
+        text: data.message || "Profile updated successfully",
         type: "success",
       });
     } catch (err) {
-      setMsg({ text: err.message, type: "error" });
+      setMsg({ text: err.message || "Something went wrong", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -76,6 +76,7 @@ export default function Profile() {
 
     try {
       setUploading(true);
+      setMsg({ text: "", type: "" });
 
       const formData = new FormData();
       formData.append("image", file);
@@ -87,8 +88,13 @@ export default function Profile() {
 
       setUser(data.user);
       saveUserOnly(data.user);
+      window.dispatchEvent(new Event("ontrip-auth-changed"));
+      setMsg({
+        text: data.message || "Profile image uploaded successfully",
+        type: "success",
+      });
     } catch (err) {
-      setMsg({ text: err.message, type: "error" });
+      setMsg({ text: err.message || "Upload failed", type: "error" });
     } finally {
       setUploading(false);
     }
@@ -96,137 +102,173 @@ export default function Profile() {
 
   function logout() {
     clearAuth();
+    window.dispatchEvent(new Event("ontrip-auth-changed"));
     navigate("/login");
   }
 
-  const avatar = user?.avatar?.trim();
+  const avatarSrc = user?.avatar?.trim();
   const initial = user?.name?.charAt(0)?.toUpperCase() || "U";
 
   return (
     <div className="container profilePage">
-      <div className="profileWrapper">
-
+      <div className="profileCard">
         <div className="profileHeader">
-
-          <div className="avatarSection">
-            {avatar ? (
-              <img src={avatar} alt="user" className="avatar" />
+          <div className="profileAvatarArea">
+            {avatarSrc ? (
+              <img
+                src={avatarSrc}
+                alt={user?.name || "User"}
+                className="profileAvatar"
+              />
             ) : (
-              <div className="avatar avatarFallback">{initial}</div>
+              <div className="profileAvatar profileAvatarFallback">
+                {initial}
+              </div>
             )}
 
             {editing && (
-              <label className="changePhoto">
-                <input type="file" hidden accept="image/*" onChange={handleImageUpload}/>
-                {uploading ? "Uploading..." : "Change photo"}
+              <label className="changePhotoText">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  hidden
+                />
+                {uploading ? "Uploading..." : "Change Photo"}
               </label>
             )}
           </div>
 
-          <div className="profileInfo">
-            <h1>{user?.name || "Traveler"}</h1>
-            <p className="email">{user?.email}</p>
-
-            <div className="meta">
-              <span>{user?.phone || "No phone"}</span>
-              <span>{user?.city || "No city"}</span>
+          <div className="profileMain">
+            <div className="profileTop">
+              <div>
+                <h1 className="profileName">{user?.name || "Traveler"}</h1>
+                <p className="profileEmail">{user?.email || "No email added"}</p>
+              </div>
             </div>
           </div>
 
           <div className="profileActions">
             <button
-              className="btn primary"
-              onClick={() => setEditing((s) => !s)}
+              type="button"
+              className="profileBtn primaryBtn"
+              onClick={() => {
+                setEditing((prev) => !prev);
+                setMsg({ text: "", type: "" });
+              }}
             >
               {editing ? "Cancel" : "Edit Profile"}
             </button>
 
-            <button className="btn outline" onClick={logout}>
+            <button
+              type="button"
+              className="profileBtn lightBtn"
+              onClick={logout}
+            >
               Logout
             </button>
           </div>
         </div>
 
         {msg.text && (
-          <div className={`message ${msg.type}`}>
+          <div className={`profileMessage ${msg.type}`}>
             {msg.text}
           </div>
         )}
 
         {!editing ? (
           <div className="profileContent">
-
-            <div className="section">
-              <h3>About</h3>
-              <p>{user?.bio || "No bio added yet."}</p>
+            <div className="profileSection">
+              <h2 className="sectionTitle">Bio</h2>
+              <p className="aboutText">
+                {user?.bio?.trim() || "No bio added yet."}
+              </p>
             </div>
 
-            <div className="section">
-              <h3>Details</h3>
+            <div className="profileSection">
+              <h2 className="sectionTitle">Personal Information</h2>
 
-              <div className="row">
-                <span>Name</span>
-                <strong>{user?.name}</strong>
+              <div className="infoGrid">
+                <div className="infoItem">
+                  <span className="infoLabel">Full Name</span>
+                  <span className="infoValue">{user?.name || "Not added"}</span>
+                </div>
+
+                <div className="infoItem">
+                  <span className="infoLabel">Email</span>
+                  <span className="infoValue">{user?.email || "Not added"}</span>
+                </div>
+
+                <div className="infoItem">
+                  <span className="infoLabel">Phone</span>
+                  <span className="infoValue">{user?.phone || "Not added"}</span>
+                </div>
+
+                <div className="infoItem">
+                  <span className="infoLabel">City</span>
+                  <span className="infoValue">{user?.city || "Not added"}</span>
+                </div>
               </div>
-
-              <div className="row">
-                <span>Email</span>
-                <strong>{user?.email}</strong>
-              </div>
-
-              <div className="row">
-                <span>Phone</span>
-                <strong>{user?.phone || "-"}</strong>
-              </div>
-
-              <div className="row">
-                <span>City</span>
-                <strong>{user?.city || "-"}</strong>
-              </div>
-
             </div>
           </div>
         ) : (
-          <form className="editForm" onSubmit={saveProfile}>
+          <form className="profileForm" onSubmit={saveProfile}>
+            <h2 className="sectionTitle">Edit Profile</h2>
 
-            <label>Full Name</label>
-            <input
-              value={form.name}
-              onChange={(e) => update("name", e.target.value)}
-            />
+            <div className="formGroup">
+              <label className="label">Full Name</label>
+              <input
+                className="input"
+                value={form.name}
+                onChange={(e) => update("name", e.target.value)}
+                placeholder="Enter your full name"
+              />
+            </div>
 
-            <div className="grid2">
-              <div>
-                <label>Phone</label>
+            <div className="profileFormGrid">
+              <div className="formGroup">
+                <label className="label">Phone</label>
                 <input
+                  className="input"
                   value={form.phone}
                   onChange={(e) => update("phone", e.target.value)}
+                  placeholder="Enter phone number"
                 />
               </div>
 
-              <div>
-                <label>City</label>
+              <div className="formGroup">
+                <label className="label">City</label>
                 <input
+                  className="input"
                   value={form.city}
                   onChange={(e) => update("city", e.target.value)}
+                  placeholder="Enter your city"
                 />
               </div>
             </div>
 
-            <label>Bio</label>
-            <textarea
-              rows="5"
-              value={form.bio}
-              onChange={(e) => update("bio", e.target.value)}
-            />
+            <div className="formGroup">
+              <label className="label">Bio</label>
+              <textarea
+                className="textarea"
+                rows={5}
+                value={form.bio}
+                onChange={(e) => update("bio", e.target.value)}
+                placeholder="Write something about yourself"
+              />
+            </div>
 
-            <button className="btn primary">
-              {loading ? "Saving..." : "Save Changes"}
-            </button>
-
+            <div className="formActions">
+              <button
+                className="profileBtn primaryBtn"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
           </form>
         )}
-
       </div>
     </div>
   );
