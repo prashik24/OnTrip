@@ -3,11 +3,11 @@ const API_URL = import.meta.env.VITE_API_URL;
 export async function apiFetch(path, options = {}) {
   const token = localStorage.getItem("ontrip_token");
 
+  const isFormData = options.body instanceof FormData;
+
   const res = await fetch(`${API_URL}${path}`, {
     headers: {
-      ...(options.body instanceof FormData
-        ? {}
-        : { "Content-Type": "application/json" }),
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
@@ -26,15 +26,18 @@ export async function apiFetch(path, options = {}) {
 export function saveAuth(data) {
   localStorage.setItem("ontrip_token", data.token);
   localStorage.setItem("ontrip_user", JSON.stringify(data.user));
+  window.dispatchEvent(new Event("ontrip-auth-changed"));
 }
 
 export function saveUserOnly(user) {
   localStorage.setItem("ontrip_user", JSON.stringify(user));
+  window.dispatchEvent(new Event("ontrip-auth-changed"));
 }
 
 export function clearAuth() {
   localStorage.removeItem("ontrip_token");
   localStorage.removeItem("ontrip_user");
+  window.dispatchEvent(new Event("ontrip-auth-changed"));
 }
 
 export function getUser() {
