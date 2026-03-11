@@ -1,149 +1,379 @@
-.providersPage,
-.providerRegisterPage {
-  padding-bottom: 20px;
-}
-
-.providersGrid {
+.providersPlatformPage {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 14px;
+  gap: 18px;
+  padding-bottom: 24px;
 }
 
-.providerCard {
-  padding: 16px;
-  border-radius: var(--radius2);
-  display: grid;
-  gap: 12px;
+.providersHero,
+.providerFormCard,
+.providerSearchCard,
+.providerDetailCard {
+  padding: 20px;
+  border-radius: 28px;
 }
 
-.providerTop {
+.providersHero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.providersHeroTitle {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.1;
+  font-weight: 950;
+  color: var(--text);
+}
+
+.providersHeroSub {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.providersHeroActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.providerNotice {
+  padding: 12px 14px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.providerNotice.success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #047857;
+}
+
+.providerNotice.error {
+  background: rgba(255, 98, 98, 0.09);
+  border: 1px solid rgba(255, 98, 98, 0.22);
+  color: #b42318;
+}
+
+.providerSectionHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 
-.providerType {
-  font-weight: 950;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(177, 227, 250, 0.28);
-  border: 1px solid rgba(177, 227, 250, 0.45);
-}
-
-.providerRating {
+.providerSectionTitle {
+  margin: 0;
+  font-size: 22px;
   font-weight: 900;
-  color: rgba(11, 27, 42, 0.72);
+  color: var(--text);
 }
 
-.providerName {
-  font-weight: 950;
+.providerSectionSub {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.providerFormHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.providerFormGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.providerFieldFull {
+  grid-column: 1 / -1;
+}
+
+.providerChecks {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.providerCheckItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: rgba(11, 27, 42, 0.78);
+}
+
+.vehicleTypeGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.vehicleTypeBtn {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.vehicleTypeBtn.active {
+  background: rgba(0, 184, 241, 0.12);
+  border-color: rgba(0, 184, 241, 0.25);
+}
+
+.providerFieldHint {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.providerFormActions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.providerOwnedSection {
+  display: grid;
+  gap: 14px;
+}
+
+.providerSearchGrid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr auto;
+  gap: 12px;
+}
+
+.providerCardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.providerCard {
+  overflow: hidden;
+  border-radius: 28px;
+}
+
+.providerCardMedia {
+  height: 220px;
+  background: rgba(177, 227, 250, 0.2);
+}
+
+.providerCardMedia img,
+.providerImageItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.providerCardMediaEmpty {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  color: rgba(11, 27, 42, 0.5);
+}
+
+.providerCardBody {
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.providerCardTop {
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.providerCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.providerCardTitle {
   font-size: 20px;
+  font-weight: 950;
+  color: var(--text);
   line-height: 1.2;
 }
 
-.providerDesc {
-  color: rgba(11, 27, 42, 0.75);
-  line-height: 1.6;
+.providerCardMeta {
+  margin-top: 6px;
+  color: var(--muted);
   font-weight: 650;
 }
 
-.providerMeta {
+.providerRatingBox {
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.providerRatingBox span {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.providerPriceText {
+  font-weight: 900;
+  color: rgba(11, 27, 42, 0.86);
+}
+
+.providerCardDesc,
+.providerDetailDesc {
+  color: rgba(11, 27, 42, 0.74);
+  line-height: 1.65;
+  font-weight: 600;
+}
+
+.providerCardActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.providerTagRow {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.providerIncludes {
-  padding: 12px;
+.providerTag {
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(0, 184, 241, 0.1);
+  border: 1px solid rgba(0, 184, 241, 0.18);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.providerImageGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.providerImageItem {
+  position: relative;
+  overflow: hidden;
   border-radius: 18px;
-  background: rgba(225, 255, 248, 0.68);
+  min-height: 140px;
+  background: rgba(177, 227, 250, 0.16);
+}
+
+.removeImageBtn {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.providerReviewSection {
+  margin-top: 20px;
+  display: grid;
+  gap: 14px;
+}
+
+.providerReviewForm {
+  display: grid;
+  gap: 10px;
+}
+
+.providerInlineNote {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(177, 227, 250, 0.2);
+  border: 1px solid rgba(177, 227, 250, 0.35);
+  color: rgba(11, 27, 42, 0.74);
+  font-weight: 700;
+}
+
+.providerReviewList {
+  display: grid;
+  gap: 12px;
+}
+
+.providerReviewItem {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.76);
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.miniTitle {
-  font-weight: 900;
-  margin-bottom: 8px;
-}
-
-.providerActions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.reviewWrap {
-  margin-top: 18px;
-  padding: 16px;
-  border-radius: var(--radius2);
-}
-
-.reviewForm {
-  display: grid;
-  gap: 10px;
-}
-
-.reviewList {
-  margin-top: 16px;
-  display: grid;
-  gap: 10px;
-}
-
-.reviewCard {
-  padding: 14px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid rgba(0, 0, 0, 0.07);
-}
-
-.reviewHead {
+.providerReviewTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 
-.reviewUser {
+.providerReviewer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 900;
 }
 
-.reviewStars {
-  color: rgba(11, 27, 42, 0.72);
-  font-weight: 800;
-}
-
-.reviewText {
-  margin-top: 8px;
-  line-height: 1.5;
-  color: rgba(11, 27, 42, 0.78);
-}
-
-.providerRegisterCard {
-  padding: 16px;
-  border-radius: var(--radius2);
-}
-
-.providerTabs {
-  margin-bottom: 14px;
-}
-
-.providerForm {
+.providerReviewer img,
+.providerReviewerFallback {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  object-fit: cover;
   display: grid;
-  gap: 6px;
+  place-items: center;
 }
 
-.providerCheck {
-  margin-top: 10px;
+.providerReviewerFallback {
+  background: linear-gradient(135deg, var(--p2), var(--p3));
+  color: white;
 }
 
-.providerSubmitBtn {
-  margin-top: 14px;
-  width: 100%;
+.providerReviewRating {
+  font-weight: 900;
+}
+
+.providerReviewText {
+  margin-top: 8px;
+  color: rgba(11, 27, 42, 0.74);
+  line-height: 1.6;
+  font-weight: 600;
 }
 
 @media (max-width: 980px) {
-  .providersGrid {
+  .providersHero,
+  .providerFormHead {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .providerFormGrid,
+  .providerSearchGrid,
+  .providerCardGrid,
+  .providerImageGrid {
     grid-template-columns: 1fr;
   }
 }
