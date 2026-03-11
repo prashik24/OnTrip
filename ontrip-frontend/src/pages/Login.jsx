@@ -14,7 +14,7 @@ export default function Login() {
     password: "",
     otp: "",
   });
-  const [msg, setMsg] = useState("");
+  const [msg, setMsg] = useState({ text: "", type: "" });
   const [loading, setLoading] = useState(false);
 
   function update(key, value) {
@@ -28,16 +28,19 @@ export default function Login() {
       client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
       callback: async (response) => {
         try {
+          setMsg({ text: "", type: "" });
+
           const data = await apiFetch("/api/auth/google", {
             method: "POST",
             body: JSON.stringify({
               credential: response.credential,
             }),
           });
+
           saveAuth(data);
           navigate("/profile");
         } catch (err) {
-          setMsg(err.message);
+          setMsg({ text: err.message, type: "error" });
         }
       },
     });
@@ -55,9 +58,10 @@ export default function Login() {
 
   async function handlePasswordLogin(e) {
     e.preventDefault();
+
     try {
       setLoading(true);
-      setMsg("");
+      setMsg({ text: "", type: "" });
 
       const data = await apiFetch("/api/auth/login", {
         method: "POST",
@@ -70,7 +74,7 @@ export default function Login() {
       saveAuth(data);
       navigate("/profile");
     } catch (err) {
-      setMsg(err.message);
+      setMsg({ text: err.message, type: "error" });
     } finally {
       setLoading(false);
     }
@@ -79,16 +83,16 @@ export default function Login() {
   async function sendOtp() {
     try {
       setLoading(true);
-      setMsg("");
+      setMsg({ text: "", type: "" });
 
       const data = await apiFetch("/api/auth/send-login-otp", {
         method: "POST",
         body: JSON.stringify({ email: form.email }),
       });
 
-      setMsg(data.message);
+      setMsg({ text: data.message, type: "success" });
     } catch (err) {
-      setMsg(err.message);
+      setMsg({ text: err.message, type: "error" });
     } finally {
       setLoading(false);
     }
@@ -96,9 +100,10 @@ export default function Login() {
 
   async function verifyOtpLogin(e) {
     e.preventDefault();
+
     try {
       setLoading(true);
-      setMsg("");
+      setMsg({ text: "", type: "" });
 
       const data = await apiFetch("/api/auth/verify-login-otp", {
         method: "POST",
@@ -109,9 +114,10 @@ export default function Login() {
       });
 
       saveAuth(data);
+      window.dispatchEvent(new Event("ontrip-auth-changed"));
       navigate("/profile");
     } catch (err) {
-      setMsg(err.message);
+      setMsg({ text: err.message, type: "error" });
     } finally {
       setLoading(false);
     }
@@ -129,23 +135,23 @@ export default function Login() {
             </p>
           </div>
 
-          <div ref={googleBtnRef} style={{ marginTop: 10 }} />
+          <div className="googleWrap" ref={googleBtnRef} />
 
           <div className="authDivider">
             <span>or</span>
           </div>
 
-          <div className="tabs" style={{ marginBottom: 14 }}>
+          <div className="authTabs">
             <button
               type="button"
-              className={mode === "password" ? "tab active" : "tab"}
+              className={mode === "password" ? "authTab active" : "authTab"}
               onClick={() => setMode("password")}
             >
               Password
             </button>
             <button
               type="button"
-              className={mode === "otp" ? "tab active" : "tab"}
+              className={mode === "otp" ? "authTab active" : "authTab"}
               onClick={() => setMode("otp")}
             >
               Email OTP
@@ -224,9 +230,9 @@ export default function Login() {
             </form>
           )}
 
-          {msg && (
-            <div className="authBottom" style={{ marginTop: 10 }}>
-              {msg}
+          {msg.text && (
+            <div className={`authMessage ${msg.type === "success" ? "success" : "error"}`}>
+              {msg.text}
             </div>
           )}
 
