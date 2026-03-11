@@ -15,7 +15,7 @@ export default function Signup() {
     otp: "",
   });
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState("");
+  const [msg, setMsg] = useState({ text: "", type: "" });
 
   function update(key, value) {
     setForm((s) => ({ ...s, [key]: value }));
@@ -23,9 +23,10 @@ export default function Signup() {
 
   async function handleRegister(e) {
     e.preventDefault();
+
     try {
       setLoading(true);
-      setMsg("");
+      setMsg({ text: "", type: "" });
 
       const data = await apiFetch("/api/auth/register", {
         method: "POST",
@@ -36,10 +37,10 @@ export default function Signup() {
         }),
       });
 
-      setMsg(data.message);
+      setMsg({ text: data.message, type: "success" });
       setStep("otp");
     } catch (err) {
-      setMsg(err.message);
+      setMsg({ text: err.message, type: "error" });
     } finally {
       setLoading(false);
     }
@@ -47,9 +48,10 @@ export default function Signup() {
 
   async function handleVerifyOtp(e) {
     e.preventDefault();
+
     try {
       setLoading(true);
-      setMsg("");
+      setMsg({ text: "", type: "" });
 
       const data = await apiFetch("/api/auth/verify-register-otp", {
         method: "POST",
@@ -60,10 +62,10 @@ export default function Signup() {
       });
 
       saveAuth(data);
-      setMsg("Account created successfully");
+      window.dispatchEvent(new Event("ontrip-auth-changed"));
       navigate("/profile");
     } catch (err) {
-      setMsg(err.message);
+      setMsg({ text: err.message, type: "error" });
     } finally {
       setLoading(false);
     }
@@ -108,7 +110,7 @@ export default function Signup() {
                 <input
                   className="authInput"
                   type={showPass ? "text" : "password"}
-                  placeholder="Create a strong password"
+                  placeholder="Create password"
                   value={form.password}
                   onChange={(e) => update("password", e.target.value)}
                   required
@@ -133,7 +135,7 @@ export default function Signup() {
             </form>
           ) : (
             <form className="authForm" onSubmit={handleVerifyOtp}>
-              <label className="authLabel">Enter OTP sent to email</label>
+              <label className="authLabel">Enter OTP sent to your email</label>
               <input
                 className="authInput"
                 type="text"
@@ -149,9 +151,9 @@ export default function Signup() {
             </form>
           )}
 
-          {msg && (
-            <div className="authBottom" style={{ marginTop: 10 }}>
-              {msg}
+          {msg.text && (
+            <div className={`authMessage ${msg.type === "success" ? "success" : "error"}`}>
+              {msg.text}
             </div>
           )}
 
