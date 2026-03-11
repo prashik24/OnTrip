@@ -1,8 +1,34 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
+import { clearAuth, getUser } from "../lib/api";
+import { useEffect, useState } from "react";
 
 export default function Navbar({ onToggleSidebar }) {
   const navigate = useNavigate();
+  const [user, setUser] = useState(getUser());
+
+  useEffect(() => {
+    function syncUser() {
+      setUser(getUser());
+    }
+
+    window.addEventListener("storage", syncUser);
+    window.addEventListener("ontrip-auth-changed", syncUser);
+
+    return () => {
+      window.removeEventListener("storage", syncUser);
+      window.removeEventListener("ontrip-auth-changed", syncUser);
+    };
+  }, []);
+
+  function logout() {
+    clearAuth();
+    window.dispatchEvent(new Event("ontrip-auth-changed"));
+    navigate("/login");
+  }
+
+  const avatarSrc = user?.avatar?.trim();
+  const userInitial = user?.name?.trim()?.charAt(0)?.toUpperCase() || "U";
 
   return (
     <header className="navbar">
@@ -43,26 +69,42 @@ export default function Navbar({ onToggleSidebar }) {
         </nav>
 
         <div className="navbarRight">
-          <button
-            className="navTextBtn"
-            onClick={() => navigate("/provider-register")}
-          >
-            Register Service
-          </button>
+          {user ? (
+            <>
+              <button
+                className="navProfile"
+                onClick={() => navigate("/profile")}
+                type="button"
+              >
+                {avatarSrc ? (
+                  <img className="navAvatarImg" src={avatarSrc} alt={user.name} />
+                ) : (
+                  <span className="navAvatarFallback">{userInitial}</span>
+                )}
+                <span className="navProfileName">{user.name}</span>
+              </button>
 
-          <button
-            className="navTextBtn"
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </button>
+              <button className="navTextBtn" onClick={logout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="navTextBtn"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </button>
 
-          <button
-            className="navTextBtn signup"
-            onClick={() => navigate("/signup")}
-          >
-            Sign up
-          </button>
+              <button
+                className="navTextBtn signup"
+                onClick={() => navigate("/signup")}
+              >
+                Sign up
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>
