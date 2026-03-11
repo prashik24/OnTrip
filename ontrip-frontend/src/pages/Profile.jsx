@@ -9,16 +9,17 @@ export default function Profile() {
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [msg, setMsg] = useState({ text: "", type: "" });
 
   const [form, setForm] = useState({
     name: "",
     phone: "",
     city: "",
-    bio: ""
+    bio: "",
   });
 
   useEffect(() => {
-    async function loadUser() {
+    async function loadMe() {
       try {
         const data = await apiFetch("/api/auth/me");
         setUser(data.user);
@@ -27,18 +28,19 @@ export default function Profile() {
           name: data.user?.name || "",
           phone: data.user?.phone || "",
           city: data.user?.city || "",
-          bio: data.user?.bio || ""
+          bio: data.user?.bio || "",
         });
 
         saveUserOnly(data.user);
+        window.dispatchEvent(new Event("ontrip-auth-changed"));
       } catch {}
     }
 
-    loadUser();
+    loadMe();
   }, []);
 
   function update(key, value) {
-    setForm(prev => ({ ...prev, [key]: value }));
+    setForm((s) => ({ ...s, [key]: value }));
   }
 
   async function saveProfile(e) {
@@ -46,17 +48,23 @@ export default function Profile() {
 
     try {
       setLoading(true);
+      setMsg({ text: "", type: "" });
 
       const data = await apiFetch("/api/auth/me", {
         method: "PUT",
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       });
 
       setUser(data.user);
       saveUserOnly(data.user);
       setEditing(false);
+
+      setMsg({
+        text: "Profile updated successfully",
+        type: "success",
+      });
     } catch (err) {
-      alert(err.message);
+      setMsg({ text: err.message, type: "error" });
     } finally {
       setLoading(false);
     }
@@ -74,13 +82,13 @@ export default function Profile() {
 
       const data = await apiFetch("/api/auth/upload-profile-image", {
         method: "POST",
-        body: formData
+        body: formData,
       });
 
       setUser(data.user);
       saveUserOnly(data.user);
     } catch (err) {
-      alert(err.message);
+      setMsg({ text: err.message, type: "error" });
     } finally {
       setUploading(false);
     }
@@ -91,107 +99,129 @@ export default function Profile() {
     navigate("/login");
   }
 
-  const avatarSrc = user?.avatar?.trim();
+  const avatar = user?.avatar?.trim();
   const initial = user?.name?.charAt(0)?.toUpperCase() || "U";
 
   return (
     <div className="container profilePage">
       <div className="profileWrapper">
 
-        {/* PROFILE HEADER */}
-
         <div className="profileHeader">
 
-          <div className="profileAvatar">
-            {avatarSrc ? (
-              <img src={avatarSrc} alt="profile"/>
+          <div className="avatarSection">
+            {avatar ? (
+              <img src={avatar} alt="user" className="avatar" />
             ) : (
-              <div className="avatarFallback">{initial}</div>
+              <div className="avatar avatarFallback">{initial}</div>
             )}
 
             {editing && (
               <label className="changePhoto">
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                />
-                {uploading ? "Uploading..." : "Change"}
+                <input type="file" hidden accept="image/*" onChange={handleImageUpload}/>
+                {uploading ? "Uploading..." : "Change photo"}
               </label>
             )}
           </div>
 
           <div className="profileInfo">
             <h1>{user?.name || "Traveler"}</h1>
-
             <p className="email">{user?.email}</p>
 
             <div className="meta">
-              {user?.city && <span>{user.city}</span>}
-              {user?.phone && <span>{user.phone}</span>}
+              <span>{user?.phone || "No phone"}</span>
+              <span>{user?.city || "No city"}</span>
             </div>
           </div>
 
           <div className="profileActions">
             <button
-              className="btn"
-              onClick={() => setEditing(s => !s)}
+              className="btn primary"
+              onClick={() => setEditing((s) => !s)}
             >
-              {editing ? "Cancel" : "Edit"}
+              {editing ? "Cancel" : "Edit Profile"}
             </button>
 
-            <button
-              className="btn ghost"
-              onClick={logout}
-            >
+            <button className="btn outline" onClick={logout}>
               Logout
             </button>
           </div>
-
         </div>
 
-        {/* ABOUT */}
+        {msg.text && (
+          <div className={`message ${msg.type}`}>
+            {msg.text}
+          </div>
+        )}
 
         {!editing ? (
           <div className="profileContent">
 
-            <div className="about">
-              <h2>About</h2>
+            <div className="section">
+              <h3>About</h3>
               <p>{user?.bio || "No bio added yet."}</p>
             </div>
 
+            <div className="section">
+              <h3>Details</h3>
+
+              <div className="row">
+                <span>Name</span>
+                <strong>{user?.name}</strong>
+              </div>
+
+              <div className="row">
+                <span>Email</span>
+                <strong>{user?.email}</strong>
+              </div>
+
+              <div className="row">
+                <span>Phone</span>
+                <strong>{user?.phone || "-"}</strong>
+              </div>
+
+              <div className="row">
+                <span>City</span>
+                <strong>{user?.city || "-"}</strong>
+              </div>
+
+            </div>
           </div>
         ) : (
-          <form className="profileForm" onSubmit={saveProfile}>
+          <form className="editForm" onSubmit={saveProfile}>
 
             <label>Full Name</label>
             <input
               value={form.name}
-              onChange={e => update("name", e.target.value)}
+              onChange={(e) => update("name", e.target.value)}
             />
 
-            <label>Phone</label>
-            <input
-              value={form.phone}
-              onChange={e => update("phone", e.target.value)}
-            />
+            <div className="grid2">
+              <div>
+                <label>Phone</label>
+                <input
+                  value={form.phone}
+                  onChange={(e) => update("phone", e.target.value)}
+                />
+              </div>
 
-            <label>City</label>
-            <input
-              value={form.city}
-              onChange={e => update("city", e.target.value)}
-            />
+              <div>
+                <label>City</label>
+                <input
+                  value={form.city}
+                  onChange={(e) => update("city", e.target.value)}
+                />
+              </div>
+            </div>
 
-            <label>About</label>
+            <label>Bio</label>
             <textarea
-              rows={4}
+              rows="5"
               value={form.bio}
-              onChange={e => update("bio", e.target.value)}
+              onChange={(e) => update("bio", e.target.value)}
             />
 
-            <button className="btn primary" disabled={loading}>
-              {loading ? "Saving..." : "Save"}
+            <button className="btn primary">
+              {loading ? "Saving..." : "Save Changes"}
             </button>
 
           </form>
