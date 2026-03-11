@@ -38,7 +38,6 @@ export default function Navbar({ onToggleSidebar }) {
             className="menuBtn"
             onClick={onToggleSidebar}
             aria-label="Open menu"
-            type="button"
           >
             ☰
           </button>
@@ -73,29 +72,25 @@ export default function Navbar({ onToggleSidebar }) {
           {user ? (
             <>
               <button
-                className="navProfileCard"
-                onClick={() => navigate("/profile")}
+                className="navUserLink"
                 type="button"
+                onClick={() => navigate("/profile")}
+                aria-label="Open profile"
               >
-                <div className="navProfileAvatarWrap">
-                  {avatarSrc ? (
-                    <img
-                      className="navAvatarImg"
-                      src={avatarSrc}
-                      alt={user.name}
-                    />
-                  ) : (
-                    <span className="navAvatarFallback">{userInitial}</span>
-                  )}
-                </div>
+                {avatarSrc ? (
+                  <img
+                    className="navAvatarImg"
+                    src={avatarSrc}
+                    alt={user.name}
+                  />
+                ) : (
+                  <span className="navAvatarFallback">{userInitial}</span>
+                )}
 
-                <div className="navProfileText">
-                  <span className="navProfileLabel">Signed in as</span>
-                  <span className="navProfileName">{user.name}</span>
-                </div>
+                <span className="navUserName">{user.name}</span>
               </button>
 
-              <button className="navLogoutBtn" onClick={logout} type="button">
+              <button className="navTextBtn" onClick={logout}>
                 Logout
               </button>
             </>
@@ -104,15 +99,13 @@ export default function Navbar({ onToggleSidebar }) {
               <button
                 className="navTextBtn"
                 onClick={() => navigate("/login")}
-                type="button"
               >
                 Login
               </button>
 
               <button
-                className="navSignupBtn"
+                className="navTextBtn signup"
                 onClick={() => navigate("/signup")}
-                type="button"
               >
                 Sign up
               </button>
