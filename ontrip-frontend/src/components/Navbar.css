@@ -6,7 +6,7 @@
   z-index: 100;
   height: var(--navH);
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
@@ -18,6 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 14px;
 }
 
 .navbarLeft {
@@ -27,37 +28,46 @@
 }
 
 .menuBtn {
-  font-size: 22px;
-  background: none;
-  border: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   cursor: pointer;
-  color: rgba(11, 27, 42, 0.75);
+  font-size: 20px;
+  color: rgba(11, 27, 42, 0.76);
+  display: grid;
+  place-items: center;
+  transition: all 0.18s ease;
 }
 
 .menuBtn:hover {
   color: var(--p3);
+  border-color: rgba(0, 184, 241, 0.18);
+  background: rgba(0, 184, 241, 0.06);
 }
 
 .brandText {
   font-family: var(--font-brand);
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 900;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.2px;
   text-decoration: none;
   color: var(--text);
 }
 
 .navbarCenter {
   display: flex;
-  gap: 28px;
+  align-items: center;
+  gap: 26px;
 }
 
 .navItem {
   text-decoration: none;
-  font-weight: 600;
   font-size: 15px;
-  color: rgba(11, 27, 42, 0.7);
-  transition: color 0.2s ease;
+  font-weight: 700;
+  color: rgba(11, 27, 42, 0.68);
+  transition: color 0.18s ease;
 }
 
 .navItem:hover,
@@ -68,43 +78,66 @@
 .navbarRight {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .navTextBtn {
-  background: none;
   border: none;
+  background: none;
   padding: 0;
   font-size: 15px;
   font-weight: 700;
+  color: rgba(11, 27, 42, 0.72);
   cursor: pointer;
-  color: rgba(11, 27, 42, 0.7);
-  transition: color 0.2s ease;
+  transition: color 0.18s ease;
 }
 
 .navTextBtn:hover {
   color: var(--p3);
 }
 
-.navTextBtn.signup {
-  color: var(--p3);
+.navSignupBtn {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 184, 241, 0.28);
+  background: linear-gradient(135deg, rgba(78, 201, 245, 1), rgba(0, 184, 241, 1));
+  color: #07202d;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
 }
 
-.navProfile {
+.navProfileCard {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  min-height: 48px;
+  padding: 6px 12px 6px 6px;
   border-radius: 999px;
-  padding: 6px 10px 6px 6px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.navProfileCard:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 184, 241, 0.18);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.navProfileAvatarWrap {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
 }
 
 .navAvatarImg,
 .navAvatarFallback {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
   object-fit: cover;
   display: grid;
@@ -113,26 +146,76 @@
 
 .navAvatarFallback {
   background: linear-gradient(135deg, var(--p2), var(--p3));
-  color: #fff;
+  color: #ffffff;
   font-weight: 900;
   font-size: 14px;
 }
 
+.navProfileText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.05;
+}
+
+.navProfileLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(11, 27, 42, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .navProfileName {
-  font-weight: 800;
-  color: rgba(11, 27, 42, 0.85);
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 900;
+  color: rgba(11, 27, 42, 0.88);
   max-width: 110px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-@media (max-width: 900px) {
+.navLogoutBtn {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  color: rgba(11, 27, 42, 0.76);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.navLogoutBtn:hover {
+  color: #c0392b;
+  border-color: rgba(192, 57, 43, 0.18);
+  background: rgba(255, 94, 87, 0.04);
+}
+
+@media (max-width: 980px) {
   .navbarCenter {
     display: none;
   }
 
-  .navProfileName {
+  .navProfileText {
     display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .navLogoutBtn {
+    display: none;
+  }
+
+  .navbarInner {
+    padding: 0 14px;
+  }
+
+  .brandText {
+    font-size: 24px;
   }
 }
