@@ -1,11 +1,12 @@
 .profilePage {
-  padding-bottom: 22px;
+  padding-bottom: 24px;
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
-.profileTop {
-  padding: 20px;
+/* Top hero */
+.profileHero {
+  padding: 22px;
   border-radius: var(--radius2);
   display: flex;
   align-items: center;
@@ -13,149 +14,95 @@
   gap: 18px;
 }
 
-.profileTopLeft {
+.profileHeroLeft {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
+  min-width: 0;
 }
 
-.profileMainAvatar {
-  width: 82px;
-  height: 82px;
-  border-radius: 24px;
+.profileHeroAvatar,
+.profileEditAvatar {
+  width: 92px;
+  height: 92px;
+  border-radius: 28px;
   object-fit: cover;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: var(--shadow);
   flex-shrink: 0;
 }
 
-.profileAvatarFallback {
+.profileHeroFallback {
   display: grid;
   place-items: center;
-  font-size: 26px;
-  font-weight: 900;
   color: #fff;
+  font-size: 28px;
+  font-weight: 900;
   background: linear-gradient(135deg, var(--p2), var(--p3));
 }
 
-.profileIntro {
+.profileHeroText {
   min-width: 0;
 }
 
-.profileName {
-  margin: 0;
-  font-size: 28px;
-  line-height: 1.1;
+.profileEyebrow {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(11, 27, 42, 0.5);
+}
+
+.profileHeroName {
+  margin: 6px 0 0;
+  font-size: 30px;
+  line-height: 1.08;
   font-weight: 950;
   color: var(--text);
+  letter-spacing: -0.03em;
 }
 
-.profileEmail {
-  margin: 6px 0 0;
-  color: rgba(11, 27, 42, 0.72);
+.profileHeroEmail {
+  margin-top: 8px;
+  font-size: 15px;
   font-weight: 650;
+  color: rgba(11, 27, 42, 0.72);
+  word-break: break-word;
 }
 
-.profileStatus {
-  margin: 8px 0 0;
-  color: rgba(0, 184, 241, 1);
-  font-weight: 800;
-  font-size: 14px;
+.profileHeroMeta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
 }
 
-.profileTopActions {
+.profileBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(0, 184, 241, 0.12);
+  border: 1px solid rgba(0, 184, 241, 0.2);
+  color: rgba(11, 27, 42, 0.82);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.profileBadge.soft {
+  background: rgba(177, 227, 250, 0.28);
+  border-color: rgba(177, 227, 250, 0.45);
+}
+
+.profileHeroActions {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.profileGrid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 16px;
-}
-
-.profileCard,
-.profileEditCard {
-  padding: 18px;
-  border-radius: var(--radius2);
-}
-
-.profileCardTitle {
-  font-size: 17px;
-  font-weight: 950;
-  margin-bottom: 14px;
-  color: var(--text);
-}
-
-.profileInfoList {
-  display: grid;
-  gap: 12px;
-}
-
-.profileInfoRow {
-  display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 14px;
-  align-items: start;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.profileInfoRow:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.profileInfoLabel {
-  font-weight: 850;
-  color: rgba(11, 27, 42, 0.66);
-}
-
-.profileInfoValue {
-  font-weight: 650;
-  color: rgba(11, 27, 42, 0.88);
-  line-height: 1.6;
-  word-break: break-word;
-}
-
-.bioRow .profileInfoValue {
-  white-space: pre-wrap;
-}
-
-.uploadBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0 18px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, rgba(78, 201, 245, 1), rgba(0, 184, 241, 1));
-  color: #06202e;
-  font-weight: 900;
-  cursor: pointer;
-  border: 1px solid rgba(0, 184, 241, 0.35);
-}
-
-.uploadHint {
-  margin-top: 10px;
-  color: var(--muted);
-  font-weight: 650;
-  font-size: 13px;
-}
-
-.profileEditForm {
-  display: grid;
-  gap: 6px;
-}
-
-.profileEditActions {
-  margin-top: 14px;
-  display: flex;
-  justify-content: flex-start;
-}
-
+/* Message */
 .profileMessage {
   padding: 12px 14px;
   border-radius: 14px;
@@ -176,28 +123,169 @@
   color: #047857;
 }
 
+/* View mode */
+.profileGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 18px;
+}
+
+.profilePanel,
+.profileEditPanel {
+  padding: 20px;
+  border-radius: var(--radius2);
+}
+
+.profilePanelHead {
+  margin-bottom: 16px;
+}
+
+.profilePanelTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 950;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.profilePanelSub {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-weight: 650;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.profileInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.profileInfoItem {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.profileInfoLabel {
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(11, 27, 42, 0.5);
+  margin-bottom: 8px;
+}
+
+.profileInfoValue {
+  font-size: 15px;
+  font-weight: 750;
+  color: rgba(11, 27, 42, 0.88);
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.profileAboutBox {
+  min-height: 150px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(225, 255, 248, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  color: rgba(11, 27, 42, 0.8);
+  font-size: 15px;
+  line-height: 1.75;
+  font-weight: 650;
+  white-space: pre-wrap;
+}
+
+/* Edit mode */
+.profileEditTop {
+  margin-bottom: 18px;
+}
+
+.profilePhotoBlock {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.profileUploadArea {
+  display: grid;
+  gap: 10px;
+}
+
+.uploadBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(78, 201, 245, 1), rgba(0, 184, 241, 1));
+  color: #06202e;
+  font-weight: 900;
+  cursor: pointer;
+  border: 1px solid rgba(0, 184, 241, 0.35);
+}
+
+.uploadHint {
+  color: var(--muted);
+  font-weight: 650;
+  font-size: 13px;
+}
+
+.profileEditForm {
+  display: grid;
+  gap: 6px;
+}
+
+.profileFormActions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Responsive */
 @media (max-width: 900px) {
   .profileGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .profileInfoGrid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 700px) {
-  .profileTop {
+  .profileHero {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .profileTopLeft {
+  .profileHeroLeft {
     align-items: flex-start;
   }
 
-  .profileInfoRow {
-    grid-template-columns: 1fr;
-    gap: 6px;
+  .profileHeroName {
+    font-size: 25px;
   }
 
-  .profileName {
-    font-size: 24px;
+  .profileHeroAvatar,
+  .profileEditAvatar {
+    width: 78px;
+    height: 78px;
+    border-radius: 22px;
+  }
+
+  .profileFormActions {
+    justify-content: stretch;
+  }
+
+  .profileFormActions .btn {
+    width: 100%;
   }
 }
