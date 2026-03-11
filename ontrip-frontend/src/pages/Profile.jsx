@@ -102,107 +102,161 @@ export default function Profile() {
   const initial = user?.name?.charAt(0)?.toUpperCase() || "U";
 
   return (
-    <div className="container profile">
-      <div className="profileHead card">
-        <div className="profileIdentity">
-          {avatarSrc ? (
-            <img className="profileAvatarImg" src={avatarSrc} alt={user?.name || "User"} />
-          ) : (
-            <div className="avatar">{initial}</div>
-          )}
+    <div className="container profilePage">
+      <section className="profileHero card">
+        <div className="profileHeroLeft">
+          <div className="profileAvatarBox">
+            {avatarSrc ? (
+              <img
+                className="profileAvatarImg"
+                src={avatarSrc}
+                alt={user?.name || "User"}
+              />
+            ) : (
+              <div className="profileAvatarFallback">{initial}</div>
+            )}
+          </div>
 
-          <div>
-            <div className="name">{user?.name || "Traveler"}</div>
-            <div className="sub">{user?.email || "No email"}</div>
+          <div className="profileHeroText">
+            <div className="profileBadge">Traveler Profile</div>
+            <h1 className="profileName">{user?.name || "Traveler"}</h1>
+            <p className="profileEmail">{user?.email || "No email found"}</p>
+
+            <div className="profileMetaRow">
+              <span className="profileMetaPill">
+                {user?.isEmailVerified ? "Verified account" : "Not verified"}
+              </span>
+              <span className="profileMetaPill">
+                {user?.city || "City not added"}
+              </span>
+            </div>
           </div>
         </div>
 
-        <button className="btn" onClick={logout}>
-          Logout
-        </button>
-      </div>
-
-      <div className="grid2">
-        <div className="card box">
-          <div className="boxTitle">Your Information</div>
-          <div className="muted">Email verified: {user?.isEmailVerified ? "Yes" : "No"}</div>
-          <div className="muted">Phone: {user?.phone || "Not added"}</div>
-          <div className="muted">City: {user?.city || "Not added"}</div>
-        </div>
-
-        <div className="card box">
-          <div className="boxTitle">Profile Photo</div>
-
-          <label className="uploadBtn">
+        <div className="profileHeroRight">
+          <label className="profileUploadBtn">
             <input
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
               hidden
             />
-            {uploading ? "Uploading..." : "Choose Image"}
+            {uploading ? "Uploading..." : "Change photo"}
           </label>
 
-          <div className="muted uploadHint">
-            JPG, PNG, WEBP. Max 5 MB.
+          <button className="profileGhostBtn" onClick={logout} type="button">
+            Logout
+          </button>
+        </div>
+      </section>
+
+      <section className="profileContentGrid">
+        <div className="card profileInfoCard">
+          <div className="profileSectionHead">
+            <h2>Account details</h2>
+            <p>Your basic information visible inside your account.</p>
+          </div>
+
+          <div className="profileInfoList">
+            <div className="profileInfoItem">
+              <span className="profileInfoLabel">Full name</span>
+              <span className="profileInfoValue">{user?.name || "Not added"}</span>
+            </div>
+
+            <div className="profileInfoItem">
+              <span className="profileInfoLabel">Email</span>
+              <span className="profileInfoValue">{user?.email || "Not added"}</span>
+            </div>
+
+            <div className="profileInfoItem">
+              <span className="profileInfoLabel">Phone</span>
+              <span className="profileInfoValue">{user?.phone || "Not added"}</span>
+            </div>
+
+            <div className="profileInfoItem">
+              <span className="profileInfoLabel">City</span>
+              <span className="profileInfoValue">{user?.city || "Not added"}</span>
+            </div>
+
+            <div className="profileInfoItem profileInfoItemBio">
+              <span className="profileInfoLabel">Bio</span>
+              <span className="profileInfoValue">{user?.bio || "No bio added yet."}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="card box profileFormWrap">
-        <div className="boxTitle">Edit Profile</div>
+        <div className="card profileEditCard">
+          <div className="profileSectionHead">
+            <h2>Edit profile</h2>
+            <p>Keep your personal details updated.</p>
+          </div>
 
-        <form className="profileForm" onSubmit={saveProfile}>
-          <label className="label">Full Name</label>
-          <input
-            className="input"
-            value={form.name}
-            onChange={(e) => update("name", e.target.value)}
-            placeholder="Your name"
-          />
-
-          <div className="row2">
-            <div>
-              <label className="label">Phone</label>
+          <form className="profileForm" onSubmit={saveProfile}>
+            <div className="profileField">
+              <label className="profileLabel">Full name</label>
               <input
-                className="input"
-                value={form.phone}
-                onChange={(e) => update("phone", e.target.value)}
-                placeholder="Phone number"
+                className="profileInput"
+                value={form.name}
+                onChange={(e) => update("name", e.target.value)}
+                placeholder="Enter your full name"
               />
             </div>
 
-            <div>
-              <label className="label">City</label>
-              <input
-                className="input"
-                value={form.city}
-                onChange={(e) => update("city", e.target.value)}
-                placeholder="Your city"
+            <div className="profileRow">
+              <div className="profileField">
+                <label className="profileLabel">Phone</label>
+                <input
+                  className="profileInput"
+                  value={form.phone}
+                  onChange={(e) => update("phone", e.target.value)}
+                  placeholder="Enter phone number"
+                />
+              </div>
+
+              <div className="profileField">
+                <label className="profileLabel">City</label>
+                <input
+                  className="profileInput"
+                  value={form.city}
+                  onChange={(e) => update("city", e.target.value)}
+                  placeholder="Enter your city"
+                />
+              </div>
+            </div>
+
+            <div className="profileField">
+              <label className="profileLabel">Bio</label>
+              <textarea
+                className="profileTextarea"
+                rows={5}
+                value={form.bio}
+                onChange={(e) => update("bio", e.target.value)}
+                placeholder="Write something about yourself"
               />
             </div>
-          </div>
 
-          <label className="label">Bio</label>
-          <textarea
-            className="textarea"
-            rows={4}
-            value={form.bio}
-            onChange={(e) => update("bio", e.target.value)}
-            placeholder="Tell something about yourself"
-          />
+            <button
+              className="profileSaveBtn"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Save changes"}
+            </button>
+          </form>
 
-          <button className="btn btnPrimary profileSaveBtn" type="submit" disabled={loading}>
-            {loading ? "Saving..." : "Save Profile"}
-          </button>
-        </form>
-
-        {msg.text && (
-          <div className={`authMessage ${msg.type === "success" ? "success" : "error"}`}>
-            {msg.text}
-          </div>
-        )}
-      </div>
+          {msg.text && (
+            <div
+              className={
+                msg.type === "success"
+                  ? "profileMessage success"
+                  : "profileMessage error"
+              }
+            >
+              {msg.text}
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
