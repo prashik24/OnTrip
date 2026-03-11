@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
     email: {
       type: String,
       required: true,
@@ -14,27 +15,50 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+
     passwordHash: {
       type: String,
       default: null,
     },
+
     isEmailVerified: {
       type: Boolean,
       default: false,
     },
+
     googleId: {
       type: String,
       default: null,
     },
+
     avatar: {
       type: String,
       default: "",
     },
+
+    phone: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    city: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    bio: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
     role: {
       type: String,
       enum: ["user", "provider", "admin"],
       default: "user",
-    }
+    },
   },
   { timestamps: true }
 );
