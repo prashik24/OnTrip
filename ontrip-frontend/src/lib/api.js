@@ -5,7 +5,9 @@ export async function apiFetch(path, options = {}) {
 
   const res = await fetch(`${API_URL}${path}`, {
     headers: {
-      "Content-Type": "application/json",
+      ...(options.body instanceof FormData
+        ? {}
+        : { "Content-Type": "application/json" }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
@@ -26,6 +28,10 @@ export function saveAuth(data) {
   localStorage.setItem("ontrip_user", JSON.stringify(data.user));
 }
 
+export function saveUserOnly(user) {
+  localStorage.setItem("ontrip_user", JSON.stringify(user));
+}
+
 export function clearAuth() {
   localStorage.removeItem("ontrip_token");
   localStorage.removeItem("ontrip_user");
@@ -34,4 +40,8 @@ export function clearAuth() {
 export function getUser() {
   const raw = localStorage.getItem("ontrip_user");
   return raw ? JSON.parse(raw) : null;
+}
+
+export function isLoggedIn() {
+  return !!localStorage.getItem("ontrip_token");
 }
