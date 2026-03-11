@@ -1,300 +1,126 @@
-.profilePage {
-  padding: 28px 0 40px;
+.profilePage{
+padding:40px 0;
 }
 
-.profileLayout {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 4px;
+.profileWrapper{
+max-width:800px;
+margin:auto;
 }
 
-.profileHeader {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 28px;
-  align-items: center;
-  padding-bottom: 28px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+.profileHeader{
+display:flex;
+gap:30px;
+align-items:center;
+flex-wrap:wrap;
 }
 
-.profileImageWrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+.profileAvatar{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:10px;
 }
 
-.profileImage {
-  width: 132px;
-  height: 132px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  background: #f3f4f6;
+.profileAvatar img{
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
 }
 
-.profileImageFallback {
-  display: grid;
-  place-items: center;
-  font-size: 38px;
-  font-weight: 800;
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--p2), var(--p3));
+.avatarFallback{
+width:120px;
+height:120px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:36px;
+font-weight:800;
+background:linear-gradient(135deg,var(--p2),var(--p3));
+color:white;
 }
 
-.profilePhotoBtn {
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--p2);
-  transition: 0.2s ease;
+.changePhoto{
+font-size:13px;
+cursor:pointer;
+color:var(--p2);
 }
 
-.profilePhotoBtn:hover {
-  opacity: 0.8;
+.profileInfo h1{
+margin:0;
+font-size:32px;
+font-weight:800;
 }
 
-.profileIntro {
-  min-width: 0;
+.email{
+margin-top:6px;
+color:#666;
+font-size:14px;
 }
 
-.profileTitleRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+.meta{
+margin-top:8px;
+display:flex;
+gap:12px;
+font-size:14px;
+color:#444;
 }
 
-.profileName {
-  margin: 0;
-  font-size: 34px;
-  line-height: 1.1;
-  font-weight: 800;
-  color: var(--text);
-  letter-spacing: -0.4px;
+.profileActions{
+margin-left:auto;
+display:flex;
+gap:10px;
 }
 
-.profileVerify {
-  font-size: 12px;
-  font-weight: 700;
-  padding: 5px 10px;
-  border-radius: 999px;
+.btn{
+padding:10px 18px;
+border-radius:999px;
+border:none;
+background:#111;
+color:white;
+cursor:pointer;
+font-weight:600;
 }
 
-.profileVerify.verified {
-  color: #15803d;
-  background: rgba(34, 197, 94, 0.1);
+.btn.ghost{
+background:transparent;
+border:1px solid #ccc;
+color:#111;
 }
 
-.profileVerify.notVerified {
-  color: #b45309;
-  background: rgba(245, 158, 11, 0.12);
+.btn.primary{
+background:var(--p2);
+color:white;
+margin-top:16px;
 }
 
-.profileEmail {
-  margin: 8px 0 0;
-  font-size: 15px;
-  color: rgba(15, 23, 42, 0.65);
-  word-break: break-word;
+.profileContent{
+margin-top:40px;
 }
 
-.profileMeta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
-  font-size: 14px;
-  color: rgba(15, 23, 42, 0.78);
+.about h2{
+font-size:20px;
+margin-bottom:10px;
 }
 
-.profileActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: flex-end;
+.about p{
+line-height:1.7;
+color:#444;
 }
 
-.profileBtn {
-  height: 42px;
-  padding: 0 18px;
-  border-radius: 999px;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 700;
-  transition: 0.2s ease;
+.profileForm{
+margin-top:30px;
+display:flex;
+flex-direction:column;
+gap:14px;
+max-width:500px;
 }
 
-.primaryBtn {
-  background: var(--p2);
-  color: #ffffff;
-}
-
-.primaryBtn:hover {
-  filter: brightness(0.96);
-}
-
-.secondaryBtn {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid rgba(15, 23, 42, 0.12);
-}
-
-.secondaryBtn:hover {
-  background: rgba(15, 23, 42, 0.03);
-}
-
-.profileMessage {
-  margin-top: 18px;
-  padding: 12px 0;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.profileMessage.success {
-  color: #15803d;
-}
-
-.profileMessage.error {
-  color: #b42318;
-}
-
-.profileContent,
-.profileForm {
-  padding-top: 28px;
-}
-
-.profileSection + .profileSection {
-  margin-top: 34px;
-}
-
-.sectionTitle {
-  margin: 0 0 16px;
-  font-size: 20px;
-  font-weight: 750;
-  color: var(--text);
-}
-
-.aboutText {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.8;
-  color: rgba(15, 23, 42, 0.8);
-  white-space: pre-wrap;
-}
-
-.infoList {
-  display: flex;
-  flex-direction: column;
-}
-
-.infoRow {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.07);
-}
-
-.infoLabel {
-  font-size: 14px;
-  color: rgba(15, 23, 42, 0.55);
-  font-weight: 600;
-}
-
-.infoValue {
-  font-size: 15px;
-  color: rgba(15, 23, 42, 0.9);
-  font-weight: 600;
-  text-align: right;
-  word-break: break-word;
-}
-
-.formGroup {
-  margin-bottom: 18px;
-}
-
-.label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 650;
-  color: var(--text);
-}
-
-.input,
-.textarea {
-  width: 100%;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 14px;
-  background: #fff;
-  padding: 13px 14px;
-  font-size: 15px;
-  color: var(--text);
-  outline: none;
-  transition: 0.2s ease;
-}
-
-.input:focus,
-.textarea:focus {
-  border-color: var(--p2);
-  box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.08);
-}
-
-.textarea {
-  resize: vertical;
-  min-height: 120px;
-}
-
-.profileFormGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.formActions {
-  margin-top: 8px;
-  display: flex;
-  gap: 12px;
-}
-
-@media (max-width: 860px) {
-  .profileHeader {
-    grid-template-columns: 1fr;
-    align-items: start;
-    gap: 20px;
-  }
-
-  .profileActions {
-    justify-content: flex-start;
-  }
-
-  .profileName {
-    font-size: 28px;
-  }
-}
-
-@media (max-width: 560px) {
-  .profileImage {
-    width: 104px;
-    height: 104px;
-  }
-
-  .profileName {
-    font-size: 24px;
-  }
-
-  .profileFormGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .infoRow {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .infoValue {
-    text-align: left;
-  }
+.profileForm input,
+.profileForm textarea{
+padding:12px;
+border-radius:10px;
+border:1px solid #ddd;
+font-size:14px;
 }
