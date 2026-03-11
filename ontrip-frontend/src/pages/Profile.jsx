@@ -94,6 +94,17 @@ export default function Profile() {
     }
   }
 
+  function cancelEdit() {
+    setEditing(false);
+    setForm({
+      name: user?.name || "",
+      phone: user?.phone || "",
+      city: user?.city || "",
+      bio: user?.bio || "",
+    });
+    setMsg({ text: "", type: "" });
+  }
+
   function logout() {
     clearAuth();
     window.dispatchEvent(new Event("ontrip-auth-changed"));
@@ -105,127 +116,155 @@ export default function Profile() {
 
   return (
     <div className="container profilePage">
-      <div className="profileTop card">
-        <div className="profileTopLeft">
+      <section className="profileHero card">
+        <div className="profileHeroLeft">
           {avatarSrc ? (
             <img
-              className="profileMainAvatar"
+              className="profileHeroAvatar"
               src={avatarSrc}
               alt={user?.name || "User"}
             />
           ) : (
-            <div className="profileMainAvatar profileAvatarFallback">
+            <div className="profileHeroAvatar profileHeroFallback">
               {initial}
             </div>
           )}
 
-          <div className="profileIntro">
-            <h2 className="profileName">{user?.name || "Traveler"}</h2>
-            <p className="profileEmail">{user?.email || "No email"}</p>
-            <p className="profileStatus">
-              {user?.isEmailVerified ? "Verified account" : "Not verified"}
-            </p>
+          <div className="profileHeroText">
+            <div className="profileEyebrow">My Profile</div>
+            <h1 className="profileHeroName">{user?.name || "Traveler"}</h1>
+            <div className="profileHeroEmail">{user?.email || "No email"}</div>
+            <div className="profileHeroMeta">
+              <span className="profileBadge">
+                {user?.isEmailVerified ? "Verified account" : "Not verified"}
+              </span>
+              {user?.city && <span className="profileBadge soft">{user.city}</span>}
+            </div>
           </div>
         </div>
 
-        <div className="profileTopActions">
-          <button
-            className="btn"
-            onClick={() => setEditing((s) => !s)}
-            type="button"
-          >
-            {editing ? "Cancel" : "Edit Profile"}
-          </button>
+        <div className="profileHeroActions">
+          {!editing ? (
+            <button
+              className="btn btnPrimary"
+              type="button"
+              onClick={() => setEditing(true)}
+            >
+              Edit Profile
+            </button>
+          ) : (
+            <button className="btn" type="button" onClick={cancelEdit}>
+              Cancel
+            </button>
+          )}
 
-          <button className="btn" onClick={logout} type="button">
+          <button className="btn" type="button" onClick={logout}>
             Logout
           </button>
         </div>
-      </div>
+      </section>
 
       {msg.text && (
-        <div
-          className={`profileMessage ${
-            msg.type === "success" ? "success" : "error"
-          }`}
-        >
+        <div className={`profileMessage ${msg.type === "success" ? "success" : "error"}`}>
           {msg.text}
         </div>
       )}
 
-      <div className="profileGrid">
-        <div className="card profileCard">
-          <div className="profileCardTitle">Personal Information</div>
-
-          <div className="profileInfoList">
-            <div className="profileInfoRow">
-              <span className="profileInfoLabel">Full Name</span>
-              <span className="profileInfoValue">
-                {user?.name || "Not added"}
-              </span>
+      {!editing ? (
+        <div className="profileGrid">
+          <section className="card profilePanel">
+            <div className="profilePanelHead">
+              <h2 className="profilePanelTitle">Personal Information</h2>
+              <p className="profilePanelSub">Basic account details</p>
             </div>
 
-            <div className="profileInfoRow">
-              <span className="profileInfoLabel">Email</span>
-              <span className="profileInfoValue">
-                {user?.email || "Not added"}
-              </span>
+            <div className="profileInfoGrid">
+              <div className="profileInfoItem">
+                <div className="profileInfoLabel">Full Name</div>
+                <div className="profileInfoValue">{user?.name || "Not added"}</div>
+              </div>
+
+              <div className="profileInfoItem">
+                <div className="profileInfoLabel">Email</div>
+                <div className="profileInfoValue">{user?.email || "Not added"}</div>
+              </div>
+
+              <div className="profileInfoItem">
+                <div className="profileInfoLabel">Phone</div>
+                <div className="profileInfoValue">{user?.phone || "Not added"}</div>
+              </div>
+
+              <div className="profileInfoItem">
+                <div className="profileInfoLabel">City</div>
+                <div className="profileInfoValue">{user?.city || "Not added"}</div>
+              </div>
+            </div>
+          </section>
+
+          <section className="card profilePanel">
+            <div className="profilePanelHead">
+              <h2 className="profilePanelTitle">About</h2>
+              <p className="profilePanelSub">Short personal intro</p>
             </div>
 
-            <div className="profileInfoRow">
-              <span className="profileInfoLabel">Phone</span>
-              <span className="profileInfoValue">
-                {user?.phone || "Not added"}
-              </span>
+            <div className="profileAboutBox">
+              {user?.bio?.trim() ? user.bio : "No bio added yet."}
             </div>
+          </section>
+        </div>
+      ) : (
+        <section className="card profileEditPanel">
+          <div className="profilePanelHead">
+            <h2 className="profilePanelTitle">Edit Profile</h2>
+            <p className="profilePanelSub">
+              Update your details and profile photo
+            </p>
+          </div>
 
-            <div className="profileInfoRow">
-              <span className="profileInfoLabel">City</span>
-              <span className="profileInfoValue">
-                {user?.city || "Not added"}
-              </span>
-            </div>
+          <div className="profileEditTop">
+            <div className="profilePhotoBlock">
+              {avatarSrc ? (
+                <img
+                  className="profileEditAvatar"
+                  src={avatarSrc}
+                  alt={user?.name || "User"}
+                />
+              ) : (
+                <div className="profileEditAvatar profileHeroFallback">
+                  {initial}
+                </div>
+              )}
 
-            <div className="profileInfoRow bioRow">
-              <span className="profileInfoLabel">Bio</span>
-              <span className="profileInfoValue">
-                {user?.bio || "No bio added yet."}
-              </span>
+              <div className="profileUploadArea">
+                <label className="uploadBtn">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    hidden
+                  />
+                  {uploading ? "Uploading..." : "Upload Profile Image"}
+                </label>
+
+                <div className="uploadHint">
+                  JPG, PNG, WEBP. Max 5 MB.
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="card profileCard">
-          <div className="profileCardTitle">Profile Photo</div>
-
-          <label className="uploadBtn">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              hidden
-            />
-            {uploading ? "Uploading..." : "Upload New Photo"}
-          </label>
-
-          <div className="uploadHint">JPG, PNG, WEBP. Max 5 MB.</div>
-        </div>
-      </div>
-
-      {editing && (
-        <div className="card profileEditCard">
-          <div className="profileCardTitle">Edit Profile</div>
 
           <form className="profileEditForm" onSubmit={saveProfile}>
-            <label className="label">Full Name</label>
-            <input
-              className="input"
-              value={form.name}
-              onChange={(e) => update("name", e.target.value)}
-              placeholder="Your name"
-            />
-
             <div className="row2">
+              <div>
+                <label className="label">Full Name</label>
+                <input
+                  className="input"
+                  value={form.name}
+                  onChange={(e) => update("name", e.target.value)}
+                  placeholder="Your full name"
+                />
+              </div>
+
               <div>
                 <label className="label">Phone</label>
                 <input
@@ -235,28 +274,30 @@ export default function Profile() {
                   placeholder="Phone number"
                 />
               </div>
-
-              <div>
-                <label className="label">City</label>
-                <input
-                  className="input"
-                  value={form.city}
-                  onChange={(e) => update("city", e.target.value)}
-                  placeholder="Your city"
-                />
-              </div>
             </div>
+
+            <label className="label">City</label>
+            <input
+              className="input"
+              value={form.city}
+              onChange={(e) => update("city", e.target.value)}
+              placeholder="Your city"
+            />
 
             <label className="label">Bio</label>
             <textarea
               className="textarea"
-              rows={4}
+              rows={5}
               value={form.bio}
               onChange={(e) => update("bio", e.target.value)}
               placeholder="Tell something about yourself"
             />
 
-            <div className="profileEditActions">
+            <div className="profileFormActions">
+              <button className="btn" type="button" onClick={cancelEdit}>
+                Cancel
+              </button>
+
               <button
                 className="btn btnPrimary"
                 type="submit"
@@ -266,7 +307,7 @@ export default function Profile() {
               </button>
             </div>
           </form>
-        </div>
+        </section>
       )}
     </div>
   );
