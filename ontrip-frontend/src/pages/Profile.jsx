@@ -59,7 +59,7 @@ export default function Profile() {
       saveUserOnly(data.user);
       window.dispatchEvent(new Event("ontrip-auth-changed"));
       setEditing(false);
-      setMsg({ text: data.message, type: "success" });
+      setMsg({ text: data.message || "Profile updated successfully", type: "success" });
     } catch (err) {
       setMsg({ text: err.message, type: "error" });
     } finally {
@@ -86,23 +86,12 @@ export default function Profile() {
       setUser(data.user);
       saveUserOnly(data.user);
       window.dispatchEvent(new Event("ontrip-auth-changed"));
-      setMsg({ text: data.message, type: "success" });
+      setMsg({ text: data.message || "Profile image uploaded successfully", type: "success" });
     } catch (err) {
       setMsg({ text: err.message, type: "error" });
     } finally {
       setUploading(false);
     }
-  }
-
-  function cancelEdit() {
-    setEditing(false);
-    setForm({
-      name: user?.name || "",
-      phone: user?.phone || "",
-      city: user?.city || "",
-      bio: user?.bio || "",
-    });
-    setMsg({ text: "", type: "" });
   }
 
   function logout() {
@@ -115,174 +104,147 @@ export default function Profile() {
   const initial = user?.name?.charAt(0)?.toUpperCase() || "U";
 
   return (
-    <div className="container profilePage">
-      <section className="profileHero card">
-        <div className="profileHeroLeft">
-          {avatarSrc ? (
-            <img
-              className="profileHeroAvatar"
-              src={avatarSrc}
-              alt={user?.name || "User"}
-            />
-          ) : (
-            <div className="profileHeroAvatar profileHeroFallback">
-              {initial}
-            </div>
-          )}
-
-          <div className="profileHeroText">
-            <div className="profileEyebrow">My Profile</div>
-            <h1 className="profileHeroName">{user?.name || "Traveler"}</h1>
-            <div className="profileHeroEmail">{user?.email || "No email"}</div>
-            <div className="profileHeroMeta">
-              <span className="profileBadge">
-                {user?.isEmailVerified ? "Verified account" : "Not verified"}
-              </span>
-              {user?.city && <span className="profileBadge soft">{user.city}</span>}
-            </div>
-          </div>
-        </div>
-
-        <div className="profileHeroActions">
-          {!editing ? (
-            <button
-              className="btn btnPrimary"
-              type="button"
-              onClick={() => setEditing(true)}
-            >
-              Edit Profile
-            </button>
-          ) : (
-            <button className="btn" type="button" onClick={cancelEdit}>
-              Cancel
-            </button>
-          )}
-
-          <button className="btn" type="button" onClick={logout}>
-            Logout
-          </button>
-        </div>
-      </section>
-
-      {msg.text && (
-        <div className={`profileMessage ${msg.type === "success" ? "success" : "error"}`}>
-          {msg.text}
-        </div>
-      )}
-
-      {!editing ? (
-        <div className="profileGrid">
-          <section className="card profilePanel">
-            <div className="profilePanelHead">
-              <h2 className="profilePanelTitle">Personal Information</h2>
-              <p className="profilePanelSub">Basic account details</p>
-            </div>
-
-            <div className="profileInfoGrid">
-              <div className="profileInfoItem">
-                <div className="profileInfoLabel">Full Name</div>
-                <div className="profileInfoValue">{user?.name || "Not added"}</div>
+    <div className="container profileSimplePage">
+      <div className="profileSingleCard card">
+        <div className="profileTopRow">
+          <div className="profileAvatarWrap">
+            {avatarSrc ? (
+              <img
+                className="profileHeroAvatar"
+                src={avatarSrc}
+                alt={user?.name || "User"}
+              />
+            ) : (
+              <div className="profileHeroAvatar avatarFallback">
+                {initial}
               </div>
+            )}
 
-              <div className="profileInfoItem">
-                <div className="profileInfoLabel">Email</div>
-                <div className="profileInfoValue">{user?.email || "Not added"}</div>
-              </div>
-
-              <div className="profileInfoItem">
-                <div className="profileInfoLabel">Phone</div>
-                <div className="profileInfoValue">{user?.phone || "Not added"}</div>
-              </div>
-
-              <div className="profileInfoItem">
-                <div className="profileInfoLabel">City</div>
-                <div className="profileInfoValue">{user?.city || "Not added"}</div>
-              </div>
-            </div>
-          </section>
-
-          <section className="card profilePanel">
-            <div className="profilePanelHead">
-              <h2 className="profilePanelTitle">About</h2>
-              <p className="profilePanelSub">Short personal intro</p>
-            </div>
-
-            <div className="profileAboutBox">
-              {user?.bio?.trim() ? user.bio : "No bio added yet."}
-            </div>
-          </section>
-        </div>
-      ) : (
-        <section className="card profileEditPanel">
-          <div className="profilePanelHead">
-            <h2 className="profilePanelTitle">Edit Profile</h2>
-            <p className="profilePanelSub">
-              Update your details and profile photo
-            </p>
-          </div>
-
-          <div className="profileEditTop">
-            <div className="profilePhotoBlock">
-              {avatarSrc ? (
-                <img
-                  className="profileEditAvatar"
-                  src={avatarSrc}
-                  alt={user?.name || "User"}
-                />
-              ) : (
-                <div className="profileEditAvatar profileHeroFallback">
-                  {initial}
-                </div>
-              )}
-
-              <div className="profileUploadArea">
-                <label className="uploadBtn">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    hidden
-                  />
-                  {uploading ? "Uploading..." : "Upload Profile Image"}
-                </label>
-
-                <div className="uploadHint">
-                  JPG, PNG, WEBP. Max 5 MB.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <form className="profileEditForm" onSubmit={saveProfile}>
-            <div className="row2">
-              <div>
-                <label className="label">Full Name</label>
+            {editing && (
+              <label className="profileUploadBtn">
                 <input
-                  className="input"
-                  value={form.name}
-                  onChange={(e) => update("name", e.target.value)}
-                  placeholder="Your full name"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  hidden
                 />
-              </div>
+                {uploading ? "Uploading..." : "Change Photo"}
+              </label>
+            )}
+          </div>
 
+          <div className="profileMainInfo">
+            <div className="profileNameRow">
+              <h2 className="profileMainName">{user?.name || "Traveler"}</h2>
+              <span className="profileBadge">
+                {user?.isEmailVerified ? "Verified" : "Not verified"}
+              </span>
+            </div>
+
+            <div className="profileMainEmail">{user?.email || "No email"}</div>
+
+            <div className="profileQuickInfo">
+              <span className="profileChip">
+                {user?.phone || "Phone not added"}
+              </span>
+              <span className="profileChip">
+                {user?.city || "City not added"}
+              </span>
+            </div>
+          </div>
+
+          <div className="profileActionRow">
+            <button
+              className="btn"
+              type="button"
+              onClick={() => {
+                setEditing((s) => !s);
+                setMsg({ text: "", type: "" });
+              }}
+            >
+              {editing ? "Cancel" : "Edit Profile"}
+            </button>
+
+            <button className="btn" type="button" onClick={logout}>
+              Logout
+            </button>
+          </div>
+        </div>
+
+        {msg.text && (
+          <div className={`profileAlert ${msg.type === "success" ? "success" : "error"}`}>
+            {msg.text}
+          </div>
+        )}
+
+        {!editing ? (
+          <div className="profileContentView">
+            <div className="profileSection">
+              <div className="profileSectionTitle">About</div>
+              <p className="profileBioText">
+                {user?.bio?.trim() || "No bio added yet."}
+              </p>
+            </div>
+
+            <div className="profileSection">
+              <div className="profileSectionTitle">Personal Details</div>
+
+              <div className="profileDetailsGrid">
+                <div className="detailItem">
+                  <div className="detailLabel">Full Name</div>
+                  <div className="detailValue">{user?.name || "Not added"}</div>
+                </div>
+
+                <div className="detailItem">
+                  <div className="detailLabel">Email</div>
+                  <div className="detailValue">{user?.email || "Not added"}</div>
+                </div>
+
+                <div className="detailItem">
+                  <div className="detailLabel">Phone</div>
+                  <div className="detailValue">{user?.phone || "Not added"}</div>
+                </div>
+
+                <div className="detailItem">
+                  <div className="detailLabel">City</div>
+                  <div className="detailValue">{user?.city || "Not added"}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <form className="profileEditFormSingle" onSubmit={saveProfile}>
+            <div className="profileSectionTitle">Edit Details</div>
+
+            <label className="label">Full Name</label>
+            <input
+              className="input"
+              value={form.name}
+              onChange={(e) => update("name", e.target.value)}
+              placeholder="Enter your full name"
+            />
+
+            <div className="row2">
               <div>
                 <label className="label">Phone</label>
                 <input
                   className="input"
                   value={form.phone}
                   onChange={(e) => update("phone", e.target.value)}
-                  placeholder="Phone number"
+                  placeholder="Enter phone number"
+                />
+              </div>
+
+              <div>
+                <label className="label">City</label>
+                <input
+                  className="input"
+                  value={form.city}
+                  onChange={(e) => update("city", e.target.value)}
+                  placeholder="Enter your city"
                 />
               </div>
             </div>
-
-            <label className="label">City</label>
-            <input
-              className="input"
-              value={form.city}
-              onChange={(e) => update("city", e.target.value)}
-              placeholder="Your city"
-            />
 
             <label className="label">Bio</label>
             <textarea
@@ -290,14 +252,10 @@ export default function Profile() {
               rows={5}
               value={form.bio}
               onChange={(e) => update("bio", e.target.value)}
-              placeholder="Tell something about yourself"
+              placeholder="Write something about yourself"
             />
 
             <div className="profileFormActions">
-              <button className="btn" type="button" onClick={cancelEdit}>
-                Cancel
-              </button>
-
               <button
                 className="btn btnPrimary"
                 type="submit"
@@ -307,8 +265,8 @@ export default function Profile() {
               </button>
             </div>
           </form>
-        </section>
-      )}
+        )}
+      </div>
     </div>
   );
 }
