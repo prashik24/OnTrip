@@ -4,7 +4,11 @@ import Provider from "../models/Provider.js";
 
 function parseVehicleTypes(value) {
   if (!value) return [];
-  if (Array.isArray(value)) return value.filter(Boolean);
+
+  if (Array.isArray(value)) {
+    return value.filter(Boolean);
+  }
+
   try {
     const parsed = JSON.parse(value);
     return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
@@ -14,6 +18,10 @@ function parseVehicleTypes(value) {
       .map((x) => x.trim())
       .filter(Boolean);
   }
+}
+
+function parseBoolean(value) {
+  return value === true || value === "true";
 }
 
 function uploadBufferToCloudinary(buffer, folder = "ontrip/providers") {
@@ -35,6 +43,7 @@ function uploadBufferToCloudinary(buffer, folder = "ontrip/providers") {
 
 async function uploadMany(files = []) {
   const uploaded = [];
+
   for (const file of files) {
     const result = await uploadBufferToCloudinary(file.buffer);
     uploaded.push({
@@ -42,11 +51,14 @@ async function uploadMany(files = []) {
       publicId: result.public_id,
     });
   }
+
   return uploaded;
 }
 
 export async function createProvider(req, res) {
   try {
+    const body = req.body || {};
+
     const {
       businessName,
       providerCategory,
@@ -61,16 +73,20 @@ export async function createProvider(req, res) {
       capacity,
       withDriver,
       deliveryAvailable,
-    } = req.body;
+    } = body;
 
-    const vehicleTypes = parseVehicleTypes(req.body.vehicleTypes);
+    const vehicleTypes = parseVehicleTypes(body.vehicleTypes);
 
     if (!businessName || !city || !phone) {
-      return res.status(400).json({ message: "Business name, city and phone are required." });
+      return res.status(400).json({
+        message: "Business name, city and phone are required.",
+      });
     }
 
-    if (providerCategory === "vehicle" && vehicleTypes.length === 0) {
-      return res.status(400).json({ message: "Please select at least one vehicle type." });
+    if ((providerCategory || "vehicle") === "vehicle" && vehicleTypes.length === 0) {
+      return res.status(400).json({
+        message: "Please select at least one vehicle type.",
+      });
     }
 
     const uploadedImages = await uploadMany(req.files || []);
@@ -89,19 +105,20 @@ export async function createProvider(req, res) {
       pricingText: pricingText || "",
       priceFrom: Number(priceFrom || 0),
       capacity: Number(capacity || 1),
-      withDriver: String(withDriver) === "true" || withDriver === true,
-      deliveryAvailable:
-        String(deliveryAvailable) === "true" || deliveryAvailable === true,
+      withDriver: parseBoolean(withDriver),
+      deliveryAvailable: parseBoolean(deliveryAvailable),
       images: uploadedImages,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Provider listing created successfully.",
       provider,
     });
   } catch (error) {
     console.error("createProvider error", error);
-    res.status(500).json({ message: "Failed to create provider listing." });
+    return res.status(500).json({
+      message: "Failed to create provider listing.",
+    });
   }
 }
 
@@ -110,12 +127,18 @@ export async function updateProvider(req, res) {
     const provider = await Provider.findById(req.params.id);
 
     if (!provider) {
-      return res.status(404).json({ message: "Provider listing not found." });
+      return res.status(404).json({
+        message: "Provider listing not found.",
+      });
     }
 
     if (String(provider.owner) !== String(req.user._id)) {
-      return res.status(403).json({ message: "You can edit only your own listing." });
+      return res.status(403).json({
+        message: "You can edit only your own listing.",
+      });
     }
+
+    const body = req.body || {};
 
     const {
       businessName,
@@ -132,9 +155,9 @@ export async function updateProvider(req, res) {
       withDriver,
       deliveryAvailable,
       existingImages,
-    } = req.body;
+    } = body;
 
-    const vehicleTypes = parseVehicleTypes(req.body.vehicleTypes);
+    const vehicleTypes = parseVehicleTypes(body.vehicleTypes);
 
     let keptImages = [];
     if (existingImages) {
@@ -149,7 +172,7 @@ export async function updateProvider(req, res) {
 
     provider.businessName = businessName || provider.businessName;
     provider.providerCategory = providerCategory || provider.providerCategory;
-    provider.vehicleTypes = vehicleTypes;
+    provider.vehicleTypes = vehicleTypes.length ? vehicleTypes : provider.vehicleTypes;
     provider.serviceTitle = serviceTitle || "";
     provider.city = city || provider.city;
     provider.state = state || "";
@@ -159,30 +182,37 @@ export async function updateProvider(req, res) {
     provider.pricingText = pricingText || "";
     provider.priceFrom = Number(priceFrom || 0);
     provider.capacity = Number(capacity || 1);
-    provider.withDriver = String(withDriver) === "true" || withDriver === true;
-    provider.deliveryAvailable =
-      String(deliveryAvailable) === "true" || deliveryAvailable === true;
+    provider.withDriver = parseBoolean(withDriver);
+    provider.deliveryAvailable = parseBoolean(deliveryAvailable);
     provider.images = [...keptImages, ...newImages];
 
     await provider.save();
 
-    res.json({
+    return res.json({
       message: "Provider listing updated successfully.",
       provider,
     });
   } catch (error) {
     console.error("updateProvider error", error);
-    res.status(500).json({ message: "Failed to update provider listing." });
+    return res.status(500).json({
+      message: "Failed to update provider listing.",
+    });
   }
 }
 
 export async function getProviders(req, res) {
   try {
     const { q, city, type } = req.query;
+
     const filter = { isActive: true };
 
-    if (city) filter.city = new RegExp(city, "i");
-    if (type) filter.vehicleTypes = type;
+    if (city) {
+      filter.city = new RegExp(city, "i");
+    }
+
+    if (type) {
+      filter.vehicleTypes = type;
+    }
 
     if (q) {
       filter.$or = [
@@ -197,10 +227,12 @@ export async function getProviders(req, res) {
       .populate("owner", "name avatar")
       .sort({ createdAt: -1 });
 
-    res.json({ providers });
+    return res.json({ providers });
   } catch (error) {
     console.error("getProviders error", error);
-    res.status(500).json({ message: "Failed to fetch providers." });
+    return res.status(500).json({
+      message: "Failed to fetch providers.",
+    });
   }
 }
 
@@ -212,13 +244,17 @@ export async function getProviderById(req, res) {
     );
 
     if (!provider) {
-      return res.status(404).json({ message: "Provider listing not found." });
+      return res.status(404).json({
+        message: "Provider listing not found.",
+      });
     }
 
-    res.json({ provider });
+    return res.json({ provider });
   } catch (error) {
     console.error("getProviderById error", error);
-    res.status(500).json({ message: "Failed to fetch provider listing." });
+    return res.status(500).json({
+      message: "Failed to fetch provider listing.",
+    });
   }
 }
 
@@ -228,9 +264,11 @@ export async function getMyProviders(req, res) {
       createdAt: -1,
     });
 
-    res.json({ providers });
+    return res.json({ providers });
   } catch (error) {
     console.error("getMyProviders error", error);
-    res.status(500).json({ message: "Failed to fetch your listings." });
+    return res.status(500).json({
+      message: "Failed to fetch your listings.",
+    });
   }
 }
