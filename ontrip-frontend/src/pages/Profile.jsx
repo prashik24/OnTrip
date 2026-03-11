@@ -64,7 +64,7 @@ export default function Profile() {
         type: "success",
       });
     } catch (err) {
-      setMsg({ text: err.message, type: "error" });
+      setMsg({ text: err.message || "Something went wrong", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -94,7 +94,7 @@ export default function Profile() {
         type: "success",
       });
     } catch (err) {
-      setMsg({ text: err.message, type: "error" });
+      setMsg({ text: err.message || "Upload failed", type: "error" });
     } finally {
       setUploading(false);
     }
@@ -111,39 +111,41 @@ export default function Profile() {
 
   return (
     <div className="container profilePage">
-      <div className="profileCard">
+      <section className="profileLayout">
         <div className="profileHeader">
-          <div className="profileAvatarSection">
+          <div className="profileImageWrap">
             {avatarSrc ? (
               <img
-                className="profileAvatar"
                 src={avatarSrc}
                 alt={user?.name || "User"}
+                className="profileImage"
               />
             ) : (
-              <div className="profileAvatar profileAvatarFallback">
-                {initial}
-              </div>
+              <div className="profileImage profileImageFallback">{initial}</div>
             )}
 
             {editing && (
-              <label className="changePhotoBtn">
+              <label className="profilePhotoBtn">
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
                   hidden
                 />
-                {uploading ? "Uploading..." : "Change Photo"}
+                {uploading ? "Uploading..." : "Change photo"}
               </label>
             )}
           </div>
 
-          <div className="profileInfo">
-            <div className="profileTopLine">
-              <h2>{user?.name || "Traveler"}</h2>
-              <span className="profileStatus">
-                {user?.isEmailVerified ? "Verified" : "Not Verified"}
+          <div className="profileIntro">
+            <div className="profileTitleRow">
+              <h1 className="profileName">{user?.name || "Traveler"}</h1>
+              <span
+                className={`profileVerify ${
+                  user?.isEmailVerified ? "verified" : "notVerified"
+                }`}
+              >
+                {user?.isEmailVerified ? "Verified" : "Not verified"}
               </span>
             </div>
 
@@ -151,14 +153,15 @@ export default function Profile() {
 
             <div className="profileMeta">
               <span>{user?.phone || "Phone not added"}</span>
+              <span>•</span>
               <span>{user?.city || "City not added"}</span>
             </div>
           </div>
 
-          <div className="profileButtons">
+          <div className="profileActions">
             <button
-              className="btn"
               type="button"
+              className="profileBtn primaryBtn"
               onClick={() => {
                 setEditing((prev) => !prev);
                 setMsg({ text: "", type: "" });
@@ -167,7 +170,11 @@ export default function Profile() {
               {editing ? "Cancel" : "Edit Profile"}
             </button>
 
-            <button className="btn btnGhost" type="button" onClick={logout}>
+            <button
+              type="button"
+              className="profileBtn secondaryBtn"
+              onClick={logout}
+            >
               Logout
             </button>
           </div>
@@ -180,50 +187,56 @@ export default function Profile() {
         )}
 
         {!editing ? (
-          <div className="profileBody">
-            <div className="profileBlock">
-              <h3>About</h3>
-              <p>{user?.bio?.trim() || "No bio added yet."}</p>
+          <div className="profileContent">
+            <div className="profileSection">
+              <h2 className="sectionTitle">About</h2>
+              <p className="aboutText">
+                {user?.bio?.trim() || "No bio added yet."}
+              </p>
             </div>
 
-            <div className="profileBlock">
-              <h3>Details</h3>
+            <div className="profileSection">
+              <h2 className="sectionTitle">Personal Information</h2>
 
-              <div className="profileDetailRow">
-                <span>Full Name</span>
-                <strong>{user?.name || "Not added"}</strong>
-              </div>
+              <div className="infoList">
+                <div className="infoRow">
+                  <span className="infoLabel">Full Name</span>
+                  <span className="infoValue">{user?.name || "Not added"}</span>
+                </div>
 
-              <div className="profileDetailRow">
-                <span>Email</span>
-                <strong>{user?.email || "Not added"}</strong>
-              </div>
+                <div className="infoRow">
+                  <span className="infoLabel">Email</span>
+                  <span className="infoValue">{user?.email || "Not added"}</span>
+                </div>
 
-              <div className="profileDetailRow">
-                <span>Phone</span>
-                <strong>{user?.phone || "Not added"}</strong>
-              </div>
+                <div className="infoRow">
+                  <span className="infoLabel">Phone</span>
+                  <span className="infoValue">{user?.phone || "Not added"}</span>
+                </div>
 
-              <div className="profileDetailRow">
-                <span>City</span>
-                <strong>{user?.city || "Not added"}</strong>
+                <div className="infoRow">
+                  <span className="infoLabel">City</span>
+                  <span className="infoValue">{user?.city || "Not added"}</span>
+                </div>
               </div>
             </div>
           </div>
         ) : (
           <form className="profileForm" onSubmit={saveProfile}>
-            <h3>Edit Profile</h3>
+            <h2 className="sectionTitle">Edit Profile</h2>
 
-            <label className="label">Full Name</label>
-            <input
-              className="input"
-              value={form.name}
-              onChange={(e) => update("name", e.target.value)}
-              placeholder="Enter your full name"
-            />
+            <div className="formGroup">
+              <label className="label">Full Name</label>
+              <input
+                className="input"
+                value={form.name}
+                onChange={(e) => update("name", e.target.value)}
+                placeholder="Enter your full name"
+              />
+            </div>
 
             <div className="profileFormGrid">
-              <div>
+              <div className="formGroup">
                 <label className="label">Phone</label>
                 <input
                   className="input"
@@ -233,7 +246,7 @@ export default function Profile() {
                 />
               </div>
 
-              <div>
+              <div className="formGroup">
                 <label className="label">City</label>
                 <input
                   className="input"
@@ -244,18 +257,20 @@ export default function Profile() {
               </div>
             </div>
 
-            <label className="label">Bio</label>
-            <textarea
-              className="textarea"
-              rows={5}
-              value={form.bio}
-              onChange={(e) => update("bio", e.target.value)}
-              placeholder="Write something about yourself"
-            />
+            <div className="formGroup">
+              <label className="label">Bio</label>
+              <textarea
+                className="textarea"
+                rows={5}
+                value={form.bio}
+                onChange={(e) => update("bio", e.target.value)}
+                placeholder="Write something about yourself"
+              />
+            </div>
 
-            <div className="profileFormActions">
+            <div className="formActions">
               <button
-                className="btn btnPrimary"
+                className="profileBtn primaryBtn"
                 type="submit"
                 disabled={loading}
               >
@@ -264,7 +279,7 @@ export default function Profile() {
             </div>
           </form>
         )}
-      </div>
+      </section>
     </div>
   );
 }
