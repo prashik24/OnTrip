@@ -6,11 +6,13 @@ const reviewSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Provider",
       required: true,
+      index: true,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
     rating: {
       type: Number,
@@ -26,5 +28,7 @@ const reviewSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+reviewSchema.index({ provider: 1, user: 1 }, { unique: true });
 
 export default mongoose.model("Review", reviewSchema);
