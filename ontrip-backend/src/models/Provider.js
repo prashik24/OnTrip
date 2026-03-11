@@ -1,47 +1,122 @@
 import mongoose from "mongoose";
 
+const imageSchema = new mongoose.Schema(
+  {
+    url: { type: String, required: true },
+    publicId: { type: String, default: "" },
+  },
+  { _id: false }
+);
+
 const providerSchema = new mongoose.Schema(
   {
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
-    providerType: {
+
+    businessName: {
       type: String,
-      enum: ["vehicle", "tour"],
       required: true,
+      trim: true,
     },
 
-    // common
-    businessName: { type: String, required: true, trim: true },
-    city: { type: String, required: true, trim: true },
-    phone: { type: String, required: true, trim: true },
-    description: { type: String, default: "" },
-    price: { type: Number, required: true, min: 0 },
-    imageUrl: { type: String, default: "" },
-
-    // vehicle
-    vehicleType: {
+    providerCategory: {
       type: String,
-      enum: ["bus", "jeep", "car", "bike", "scooty", "cycle", ""],
+      enum: ["vehicle", "service"],
+      required: true,
+      default: "vehicle",
+    },
+
+    vehicleTypes: [
+      {
+        type: String,
+        enum: ["car", "bike", "van", "truck", "jeep", "bus", "scooty", "cycle"],
+      },
+    ],
+
+    serviceTitle: {
+      type: String,
+      trim: true,
       default: "",
     },
-    capacity: { type: Number, default: 1 },
-    fuelType: { type: String, default: "" },
-    withDriver: { type: Boolean, default: false },
 
-    // tour
-    tripMode: {
+    city: {
       type: String,
-      enum: ["own_trip", "without_car", "customized_trip", ""],
-      default: "",
+      required: true,
+      trim: true,
     },
-    durationText: { type: String, default: "" },
-    includes: [{ type: String }],
 
-    ratingAverage: { type: Number, default: 0 },
-    ratingCount: { type: Number, default: 0 },
+    state: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    whatsapp: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    pricingText: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    priceFrom: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    capacity: {
+      type: Number,
+      default: 1,
+      min: 1,
+    },
+
+    withDriver: {
+      type: Boolean,
+      default: false,
+    },
+
+    deliveryAvailable: {
+      type: Boolean,
+      default: false,
+    },
+
+    images: [imageSchema],
+
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+
+    ratingAverage: {
+      type: Number,
+      default: 0,
+    },
+
+    ratingCount: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
