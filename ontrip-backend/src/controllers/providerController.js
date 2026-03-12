@@ -2,22 +2,23 @@ import { Readable } from "stream";
 import cloudinary from "../config/cloudinary.js";
 import Provider from "../models/Provider.js";
 
-function parseVehicleTypes(value) {
-  if (!value) return [];
-
-  if (Array.isArray(value)) {
-    return value.filter(Boolean);
-  }
-
+function safeJsonParse(value, fallback) {
+  if (!value) return fallback;
+  if (typeof value !== "string") return value;
   try {
-    const parsed = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+    return JSON.parse(value);
   } catch {
-    return String(value)
-      .split(",")
-      .map((x) => x.trim())
-      .filter(Boolean);
+    return fallback;
   }
+}
+
+function splitTextList(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.filter(Boolean);
+  return String(value)
+    .split(",")
+    .map((x) => x.trim())
+    .filter(Boolean);
 }
 
 function parseBoolean(value) {
@@ -27,23 +28,18 @@ function parseBoolean(value) {
 function uploadBufferToCloudinary(buffer, folder = "ontrip/providers") {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      {
-        folder,
-        resource_type: "image",
-      },
+      { folder, resource_type: "image" },
       (error, result) => {
         if (error) return reject(error);
         resolve(result);
       }
     );
-
     Readable.from(buffer).pipe(stream);
   });
 }
 
 async function uploadMany(files = []) {
   const uploaded = [];
-
   for (const file of files) {
     const result = await uploadBufferToCloudinary(file.buffer);
     uploaded.push({
@@ -51,63 +47,98 @@ async function uploadMany(files = []) {
       publicId: result.public_id,
     });
   }
-
   return uploaded;
+}
+
+function groupFilesByField(files = []) {
+  const grouped = {};
+  for (const file of files) {
+    const key = file.fieldname;
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(file);
+  }
+  return grouped;
 }
 
 export async function createProvider(req, res) {
   try {
     const body = req.body || {};
-
     const {
       businessName,
-      providerCategory,
-      serviceTitle,
+      listingType,
       city,
       state,
       phone,
       whatsapp,
       description,
-      pricingText,
-      priceFrom,
-      capacity,
-      withDriver,
-      deliveryAvailable,
     } = body;
 
-    const vehicleTypes = parseVehicleTypes(body.vehicleTypes);
-
-    if (!businessName || !city || !phone) {
+    if (!businessName || !listingType || !city || !phone) {
       return res.status(400).json({
-        message: "Business name, city and phone are required.",
+        message: "Business name, listing type, city and phone are required.",
       });
     }
 
-    if ((providerCategory || "vehicle") === "vehicle" && vehicleTypes.length === 0) {
-      return res.status(400).json({
-        message: "Please select at least one vehicle type.",
-      });
+    const groupedFiles = groupFilesByField(req.files || []);
+
+    let vehicles = [];
+    let travelPlanner = {};
+
+    if (listingType === "vehicle") {
+      const rawVehicles = safeJsonParse(body.vehicles, []);
+
+      if (!Array.isArray(rawVehicles) || rawVehicles.length === 0) {
+        return res.status(400).json({
+          message: "Please add at least one vehicle.",
+        });
+      }
+
+      vehicles = [];
+      for (let i = 0; i < rawVehicles.length; i++) {
+        const item = rawVehicles[i];
+        const images = await uploadMany(groupedFiles[`vehicleImages_${i}`] || []);
+
+        vehicles.push({
+          vehicleType: item.vehicleType,
+          title: item.title || "",
+          price: Number(item.price || 0),
+          capacity: Number(item.capacity || 1),
+          fuelType: item.fuelType || "",
+          withDriver: parseBoolean(item.withDriver),
+          images,
+        });
+      }
     }
 
-    const uploadedImages = await uploadMany(req.files || []);
+    if (listingType === "travel_planner") {
+      const placesCovered = splitTextList(body.placesCovered);
+      const inclusions = splitTextList(body.inclusions);
+      const exclusions = splitTextList(body.exclusions);
+      const plannerImages = await uploadMany(groupedFiles["plannerImages"] || []);
+
+      travelPlanner = {
+        plannerMode: body.plannerMode || "customized_trip",
+        packageTitle: body.packageTitle || "",
+        durationText: body.durationText || "",
+        priceFrom: Number(body.priceFrom || 0),
+        placesCovered,
+        inclusions,
+        exclusions,
+        images: plannerImages,
+      };
+    }
 
     const provider = await Provider.create({
       owner: req.user._id,
       businessName,
-      providerCategory: providerCategory || "vehicle",
-      vehicleTypes,
-      serviceTitle: serviceTitle || "",
+      listingType,
       city,
       state: state || "",
       phone,
       whatsapp: whatsapp || "",
       description: description || "",
-      pricingText: pricingText || "",
-      priceFrom: Number(priceFrom || 0),
-      capacity: Number(capacity || 1),
-      withDriver: parseBoolean(withDriver),
-      deliveryAvailable: parseBoolean(deliveryAvailable),
-      images: uploadedImages,
+      vehicles,
+      travelPlanner,
     });
 
     return res.status(201).json({
@@ -127,64 +158,65 @@ export async function updateProvider(req, res) {
     const provider = await Provider.findById(req.params.id);
 
     if (!provider) {
-      return res.status(404).json({
-        message: "Provider listing not found.",
-      });
+      return res.status(404).json({ message: "Listing not found." });
     }
 
     if (String(provider.owner) !== String(req.user._id)) {
-      return res.status(403).json({
-        message: "You can edit only your own listing.",
-      });
+      return res.status(403).json({ message: "You can edit only your own listing." });
     }
 
     const body = req.body || {};
+    const groupedFiles = groupFilesByField(req.files || []);
 
-    const {
-      businessName,
-      providerCategory,
-      serviceTitle,
-      city,
-      state,
-      phone,
-      whatsapp,
-      description,
-      pricingText,
-      priceFrom,
-      capacity,
-      withDriver,
-      deliveryAvailable,
-      existingImages,
-    } = body;
+    provider.businessName = body.businessName || provider.businessName;
+    provider.city = body.city || provider.city;
+    provider.state = body.state || "";
+    provider.phone = body.phone || provider.phone;
+    provider.whatsapp = body.whatsapp || "";
+    provider.description = body.description || "";
+    provider.listingType = body.listingType || provider.listingType;
 
-    const vehicleTypes = parseVehicleTypes(body.vehicleTypes);
+    if (provider.listingType === "vehicle") {
+      const rawVehicles = safeJsonParse(body.vehicles, []);
+      const existingVehicles = safeJsonParse(body.existingVehicles, []);
 
-    let keptImages = [];
-    if (existingImages) {
-      try {
-        keptImages = JSON.parse(existingImages);
-      } catch {
-        keptImages = [];
+      const updatedVehicles = [];
+      for (let i = 0; i < rawVehicles.length; i++) {
+        const item = rawVehicles[i];
+        const existingImages = existingVehicles[i]?.images || [];
+        const newImages = await uploadMany(groupedFiles[`vehicleImages_${i}`] || []);
+
+        updatedVehicles.push({
+          vehicleType: item.vehicleType,
+          title: item.title || "",
+          price: Number(item.price || 0),
+          capacity: Number(item.capacity || 1),
+          fuelType: item.fuelType || "",
+          withDriver: parseBoolean(item.withDriver),
+          images: [...existingImages, ...newImages],
+        });
       }
+
+      provider.vehicles = updatedVehicles;
+      provider.travelPlanner = {};
     }
 
-    const newImages = await uploadMany(req.files || []);
+    if (provider.listingType === "travel_planner") {
+      const existingPlannerImages = safeJsonParse(body.existingPlannerImages, []);
+      const newPlannerImages = await uploadMany(groupedFiles["plannerImages"] || []);
 
-    provider.businessName = businessName || provider.businessName;
-    provider.providerCategory = providerCategory || provider.providerCategory;
-    provider.vehicleTypes = vehicleTypes.length ? vehicleTypes : provider.vehicleTypes;
-    provider.serviceTitle = serviceTitle || "";
-    provider.city = city || provider.city;
-    provider.state = state || "";
-    provider.phone = phone || provider.phone;
-    provider.whatsapp = whatsapp || "";
-    provider.description = description || "";
-    provider.pricingText = pricingText || "";
-    provider.priceFrom = Number(priceFrom || 0);
-    provider.capacity = Number(capacity || 1);
-    provider.withDriver = parseBoolean(withDriver);
-    provider.deliveryAvailable = parseBoolean(deliveryAvailable);
-    provider.images = [...keptImages, ...newImages];
+      provider.vehicles = [];
+      provider.travelPlanner = {
+        plannerMode: body.plannerMode || "customized_trip",
+        packageTitle: body.packageTitle || "",
+        durationText: body.durationText || "",
+        priceFrom: Number(body.priceFrom || 0),
+        placesCovered: splitTextList(body.placesCovered),
+        inclusions: splitTextList(body.inclusions),
+        exclusions: splitTextList(body.exclusions),
+        images: [...existingPlannerImages, ...newPlannerImages],
+      };
+    }
 
     await provider.save();
 
@@ -195,31 +227,52 @@ export async function updateProvider(req, res) {
   } catch (error) {
     console.error("updateProvider error", error);
     return res.status(500).json({
-      message: "Failed to update provider listing.",
+      message: "Failed to update listing.",
+    });
+  }
+}
+
+export async function deleteProvider(req, res) {
+  try {
+    const provider = await Provider.findById(req.params.id);
+
+    if (!provider) {
+      return res.status(404).json({ message: "Listing not found." });
+    }
+
+    if (String(provider.owner) !== String(req.user._id)) {
+      return res.status(403).json({ message: "You can remove only your own listing." });
+    }
+
+    await Provider.findByIdAndDelete(req.params.id);
+
+    return res.json({
+      message: "Provider listing removed successfully.",
+    });
+  } catch (error) {
+    console.error("deleteProvider error", error);
+    return res.status(500).json({
+      message: "Failed to remove listing.",
     });
   }
 }
 
 export async function getProviders(req, res) {
   try {
-    const { q, city, type } = req.query;
+    const { q, city, listingType, vehicleType } = req.query;
 
     const filter = { isActive: true };
 
-    if (city) {
-      filter.city = new RegExp(city, "i");
-    }
-
-    if (type) {
-      filter.vehicleTypes = type;
-    }
+    if (city) filter.city = new RegExp(city, "i");
+    if (listingType) filter.listingType = listingType;
+    if (vehicleType) filter["vehicles.vehicleType"] = vehicleType;
 
     if (q) {
       filter.$or = [
         { businessName: new RegExp(q, "i") },
-        { serviceTitle: new RegExp(q, "i") },
-        { city: new RegExp(q, "i") },
         { description: new RegExp(q, "i") },
+        { city: new RegExp(q, "i") },
+        { "travelPlanner.packageTitle": new RegExp(q, "i") },
       ];
     }
 
@@ -244,16 +297,14 @@ export async function getProviderById(req, res) {
     );
 
     if (!provider) {
-      return res.status(404).json({
-        message: "Provider listing not found.",
-      });
+      return res.status(404).json({ message: "Listing not found." });
     }
 
     return res.json({ provider });
   } catch (error) {
     console.error("getProviderById error", error);
     return res.status(500).json({
-      message: "Failed to fetch provider listing.",
+      message: "Failed to fetch provider.",
     });
   }
 }
