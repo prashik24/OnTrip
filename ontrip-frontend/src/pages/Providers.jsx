@@ -1,67 +1,92 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
+import { useNavigate } from "react-router-dom";
 import "./Providers.css";
 
-const VEHICLE_OPTIONS = ["car", "bike", "van", "truck", "jeep", "bus", "scooty", "cycle"];
+const vehicleTypes = ["car", "bike", "van", "truck", "jeep", "bus", "scooty", "cycle"];
+
+function emptyVehicle() {
+  return {
+    vehicleType: "car",
+    title: "",
+    price: "",
+    capacity: "",
+    fuelType: "",
+    withDriver: false,
+    images: null,
+    existingImages: [],
+  };
+}
 
 export default function Providers() {
   const navigate = useNavigate();
   const user = getUser();
 
   const [providers, setProviders] = useState([]);
-  const [selected, setSelected] = useState(null);
-  const [reviews, setReviews] = useState([]);
   const [myProviders, setMyProviders] = useState([]);
-  const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [msg, setMsg] = useState({ text: "", type: "" });
+  const [selectedProvider, setSelectedProvider] = useState(null);
 
   const [filters, setFilters] = useState({
     q: "",
     city: "",
-    type: "",
+    listingType: "",
+    vehicleType: "",
+  });
+
+  const [form, setForm] = useState({
+    businessName: "",
+    listingType: "vehicle",
+    city: "",
+    state: "",
+    phone: "",
+    whatsapp: "",
+    description: "",
+    vehicles: [emptyVehicle()],
+    plannerMode: "customized_trip",
+    packageTitle: "",
+    durationText: "",
+    priceFrom: "",
+    placesCovered: "",
+    inclusions: "",
+    exclusions: "",
+    plannerImages: null,
+    existingPlannerImages: [],
   });
 
   const [reviewForm, setReviewForm] = useState({
     rating: 5,
     comment: "",
   });
-
-  const [form, setForm] = useState({
-    businessName: "",
-    providerCategory: "vehicle",
-    serviceTitle: "",
-    city: "",
-    state: "",
-    phone: "",
-    whatsapp: "",
-    description: "",
-    pricingText: "",
-    priceFrom: "",
-    capacity: "",
-    withDriver: false,
-    deliveryAvailable: false,
-    vehicleTypes: [],
-    images: [],
-    existingImages: [],
-  });
-
-  const [msg, setMsg] = useState({ text: "", type: "" });
-
-  const selectedProvider = useMemo(
-    () => providers.find((item) => item._id === selected) || null,
-    [providers, selected]
-  );
-
-  const isOwnerOfSelected =
-    user && selectedProvider && String(selectedProvider.owner?._id || selectedProvider.owner) === String(user.id);
+  const [reviews, setReviews] = useState([]);
 
   function setMessage(text, type = "success") {
     setMsg({ text, type });
   }
 
-  function clearMessage() {
-    setMsg({ text: "", type: "" });
+  function resetForm() {
+    setForm({
+      businessName: "",
+      listingType: "vehicle",
+      city: "",
+      state: "",
+      phone: "",
+      whatsapp: "",
+      description: "",
+      vehicles: [emptyVehicle()],
+      plannerMode: "customized_trip",
+      packageTitle: "",
+      durationText: "",
+      priceFrom: "",
+      placesCovered: "",
+      inclusions: "",
+      exclusions: "",
+      plannerImages: null,
+      existingPlannerImages: [],
+    });
+    setEditingId(null);
   }
 
   async function loadProviders() {
@@ -69,7 +94,8 @@ export default function Providers() {
       const params = new URLSearchParams();
       if (filters.q) params.set("q", filters.q);
       if (filters.city) params.set("city", filters.city);
-      if (filters.type) params.set("type", filters.type);
+      if (filters.listingType) params.set("listingType", filters.listingType);
+      if (filters.vehicleType) params.set("vehicleType", filters.vehicleType);
 
       const data = await apiFetch(`/api/providers?${params.toString()}`);
       setProviders(data.providers || []);
@@ -102,121 +128,154 @@ export default function Providers() {
     loadMyProviders();
   }, []);
 
-  async function handleSearch(e) {
-    e.preventDefault();
-    clearMessage();
-    await loadProviders();
-  }
-
-  function toggleVehicleType(type) {
-    setForm((prev) => {
-      const exists = prev.vehicleTypes.includes(type);
-      return {
-        ...prev,
-        vehicleTypes: exists
-          ? prev.vehicleTypes.filter((x) => x !== type)
-          : [...prev.vehicleTypes, type],
-      };
-    });
-  }
-
-  function resetForm() {
-    setForm({
-      businessName: "",
-      providerCategory: "vehicle",
-      serviceTitle: "",
-      city: "",
-      state: "",
-      phone: "",
-      whatsapp: "",
-      description: "",
-      pricingText: "",
-      priceFrom: "",
-      capacity: "",
-      withDriver: false,
-      deliveryAvailable: false,
-      vehicleTypes: [],
-      images: [],
-      existingImages: [],
-    });
-    setEditingId(null);
-  }
-
   function openCreateForm() {
     if (!isLoggedIn()) {
-      setMessage("Please login first to register as a provider.", "error");
       navigate("/login");
       return;
     }
     resetForm();
-    clearMessage();
     setShowForm(true);
   }
 
   function openEditForm(item) {
+    setEditingId(item._id);
+    setShowForm(true);
+
     setForm({
       businessName: item.businessName || "",
-      providerCategory: item.providerCategory || "vehicle",
-      serviceTitle: item.serviceTitle || "",
+      listingType: item.listingType || "vehicle",
       city: item.city || "",
       state: item.state || "",
       phone: item.phone || "",
       whatsapp: item.whatsapp || "",
       description: item.description || "",
-      pricingText: item.pricingText || "",
-      priceFrom: item.priceFrom || "",
-      capacity: item.capacity || "",
-      withDriver: !!item.withDriver,
-      deliveryAvailable: !!item.deliveryAvailable,
-      vehicleTypes: item.vehicleTypes || [],
-      images: [],
-      existingImages: item.images || [],
+      vehicles:
+        item.vehicles?.length > 0
+          ? item.vehicles.map((v) => ({
+              vehicleType: v.vehicleType || "car",
+              title: v.title || "",
+              price: v.price || "",
+              capacity: v.capacity || "",
+              fuelType: v.fuelType || "",
+              withDriver: !!v.withDriver,
+              images: null,
+              existingImages: v.images || [],
+            }))
+          : [emptyVehicle()],
+      plannerMode: item.travelPlanner?.plannerMode || "customized_trip",
+      packageTitle: item.travelPlanner?.packageTitle || "",
+      durationText: item.travelPlanner?.durationText || "",
+      priceFrom: item.travelPlanner?.priceFrom || "",
+      placesCovered: (item.travelPlanner?.placesCovered || []).join(", "),
+      inclusions: (item.travelPlanner?.inclusions || []).join(", "),
+      exclusions: (item.travelPlanner?.exclusions || []).join(", "),
+      plannerImages: null,
+      existingPlannerImages: item.travelPlanner?.images || [],
     });
-    setEditingId(item._id);
-    clearMessage();
-    setShowForm(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function removeExistingImage(index) {
+  function addVehicle() {
     setForm((prev) => ({
       ...prev,
-      existingImages: prev.existingImages.filter((_, i) => i !== index),
+      vehicles: [...prev.vehicles, emptyVehicle()],
+    }));
+  }
+
+  function removeVehicle(index) {
+    setForm((prev) => ({
+      ...prev,
+      vehicles: prev.vehicles.filter((_, i) => i !== index),
+    }));
+  }
+
+  function updateVehicle(index, key, value) {
+    setForm((prev) => ({
+      ...prev,
+      vehicles: prev.vehicles.map((item, i) =>
+        i === index ? { ...item, [key]: value } : item
+      ),
+    }));
+  }
+
+  function removeVehicleExistingImage(vehicleIndex, imageIndex) {
+    setForm((prev) => ({
+      ...prev,
+      vehicles: prev.vehicles.map((item, i) =>
+        i === vehicleIndex
+          ? {
+              ...item,
+              existingImages: item.existingImages.filter((_, idx) => idx !== imageIndex),
+            }
+          : item
+      ),
+    }));
+  }
+
+  function removePlannerExistingImage(index) {
+    setForm((prev) => ({
+      ...prev,
+      existingPlannerImages: prev.existingPlannerImages.filter((_, i) => i !== index),
     }));
   }
 
   async function submitProvider(e) {
     e.preventDefault();
 
-    if (!isLoggedIn()) {
-      setMessage("Please login first to register as a provider.", "error");
-      navigate("/login");
-      return;
-    }
-
     try {
-      clearMessage();
-
       const fd = new FormData();
+
       fd.append("businessName", form.businessName);
-      fd.append("providerCategory", form.providerCategory);
-      fd.append("serviceTitle", form.serviceTitle);
+      fd.append("listingType", form.listingType);
       fd.append("city", form.city);
       fd.append("state", form.state);
       fd.append("phone", form.phone);
       fd.append("whatsapp", form.whatsapp);
       fd.append("description", form.description);
-      fd.append("pricingText", form.pricingText);
-      fd.append("priceFrom", form.priceFrom);
-      fd.append("capacity", form.capacity);
-      fd.append("withDriver", form.withDriver);
-      fd.append("deliveryAvailable", form.deliveryAvailable);
-      fd.append("vehicleTypes", JSON.stringify(form.vehicleTypes));
-      fd.append("existingImages", JSON.stringify(form.existingImages));
 
-      Array.from(form.images || []).forEach((file) => {
-        fd.append("images", file);
-      });
+      if (form.listingType === "vehicle") {
+        const cleanVehicles = form.vehicles.map((v) => ({
+          vehicleType: v.vehicleType,
+          title: v.title,
+          price: v.price,
+          capacity: v.capacity,
+          fuelType: v.fuelType,
+          withDriver: v.withDriver,
+        }));
+
+        fd.append("vehicles", JSON.stringify(cleanVehicles));
+        fd.append(
+          "existingVehicles",
+          JSON.stringify(
+            form.vehicles.map((v) => ({
+              images: v.existingImages || [],
+            }))
+          )
+        );
+
+        form.vehicles.forEach((v, index) => {
+          Array.from(v.images || []).forEach((file) => {
+            fd.append(`vehicleImages_${index}`, file);
+          });
+        });
+      }
+
+      if (form.listingType === "travel_planner") {
+        fd.append("plannerMode", form.plannerMode);
+        fd.append("packageTitle", form.packageTitle);
+        fd.append("durationText", form.durationText);
+        fd.append("priceFrom", form.priceFrom);
+        fd.append("placesCovered", form.placesCovered);
+        fd.append("inclusions", form.inclusions);
+        fd.append("exclusions", form.exclusions);
+        fd.append(
+          "existingPlannerImages",
+          JSON.stringify(form.existingPlannerImages || [])
+        );
+
+        Array.from(form.plannerImages || []).forEach((file) => {
+          fd.append("plannerImages", file);
+        });
+      }
 
       const url = editingId ? `/api/providers/${editingId}` : "/api/providers";
       const method = editingId ? "PUT" : "POST";
@@ -236,14 +295,28 @@ export default function Providers() {
     }
   }
 
+  async function removeProvider(id) {
+    const ok = window.confirm("Are you sure you want to remove this listing?");
+    if (!ok) return;
+
+    try {
+      const data = await apiFetch(`/api/providers/${id}`, {
+        method: "DELETE",
+      });
+      setMessage(data.message, "success");
+      await loadProviders();
+      await loadMyProviders();
+      if (selectedProvider?._id === id) setSelectedProvider(null);
+    } catch (err) {
+      setMessage(err.message, "error");
+    }
+  }
+
   async function submitReview(e) {
     e.preventDefault();
-
     if (!selectedProvider) return;
 
     try {
-      clearMessage();
-
       const data = await apiFetch("/api/reviews", {
         method: "POST",
         body: JSON.stringify({
@@ -252,7 +325,6 @@ export default function Providers() {
           comment: reviewForm.comment,
         }),
       });
-
       setMessage(data.message, "success");
       setReviewForm({ rating: 5, comment: "" });
       await loadReviews(selectedProvider._id);
@@ -262,247 +334,410 @@ export default function Providers() {
     }
   }
 
+  const isOwner =
+    user &&
+    selectedProvider &&
+    String(selectedProvider.owner?._id || selectedProvider.owner) === String(user.id);
+
   return (
-    <div className="container providersPlatformPage">
-      <div className="providersHero card">
+    <div className="container providerPlatformPage">
+      <div className="providerHero card">
         <div>
-          <h1 className="providersHeroTitle">Verified Service Providers</h1>
-          <p className="providersHeroSub">
-            Discover vehicle rentals and travel services in a clean, trusted marketplace.
+          <h1 className="providerHeroTitle">Provider Platform</h1>
+          <p className="providerHeroSub">
+            Add vehicle services and travel planner packages in a clean, professional marketplace.
           </p>
         </div>
 
-        <div className="providersHeroActions">
+        <div className="providerHeroActions">
           <button className="btn btnPrimary" onClick={openCreateForm}>
             Register as Provider
           </button>
-          {isLoggedIn() && (
-            <button className="btn" onClick={() => navigate("/profile")}>
-              Go to Profile
-            </button>
-          )}
         </div>
       </div>
 
       {msg.text && (
-        <div className={`providerNotice ${msg.type === "success" ? "success" : "error"}`}>
+        <div className={`providerMessage ${msg.type === "success" ? "success" : "error"}`}>
           {msg.text}
         </div>
       )}
 
       {showForm && (
         <div className="providerFormCard card">
-          <div className="providerFormHead">
+          <div className="providerFormTop">
             <div>
               <h2 className="providerSectionTitle">
-                {editingId ? "Edit Provider Listing" : "Create Provider Listing"}
+                {editingId ? "Edit Listing" : "Create Listing"}
               </h2>
               <p className="providerSectionSub">
-                Only logged-in users can create provider listings.
+                Keep your vehicle services and travel planner details separate and organized.
               </p>
             </div>
 
-            <button className="btn" onClick={() => setShowForm(false)} type="button">
+            <button className="btn" type="button" onClick={() => setShowForm(false)}>
               Close
             </button>
           </div>
 
-          <form className="providerFormGrid" onSubmit={submitProvider}>
-            <div className="providerFieldFull">
-              <label className="label">Business Name</label>
-              <input
-                className="input"
-                value={form.businessName}
-                onChange={(e) => setForm((s) => ({ ...s, businessName: e.target.value }))}
-                placeholder="Example: City Wheels Rentals"
-                required
-              />
+          <form className="providerForm" onSubmit={submitProvider}>
+            <div className="providerFormGrid">
+              <div className="fullCol">
+                <label className="label">Business Name</label>
+                <input
+                  className="input"
+                  value={form.businessName}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, businessName: e.target.value }))
+                  }
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="label">Listing Type</label>
+                <select
+                  className="select"
+                  value={form.listingType}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, listingType: e.target.value }))
+                  }
+                >
+                  <option value="vehicle">Vehicle Service</option>
+                  <option value="travel_planner">Travel Planner</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="label">City</label>
+                <input
+                  className="input"
+                  value={form.city}
+                  onChange={(e) => setForm((s) => ({ ...s, city: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="label">State</label>
+                <input
+                  className="input"
+                  value={form.state}
+                  onChange={(e) => setForm((s) => ({ ...s, state: e.target.value }))}
+                />
+              </div>
+
+              <div>
+                <label className="label">Phone</label>
+                <input
+                  className="input"
+                  value={form.phone}
+                  onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="label">WhatsApp</label>
+                <input
+                  className="input"
+                  value={form.whatsapp}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, whatsapp: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div className="fullCol">
+                <label className="label">Description</label>
+                <textarea
+                  className="textarea"
+                  rows={4}
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, description: e.target.value }))
+                  }
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="label">Category</label>
-              <select
-                className="select"
-                value={form.providerCategory}
-                onChange={(e) =>
-                  setForm((s) => ({ ...s, providerCategory: e.target.value }))
-                }
-              >
-                <option value="vehicle">Vehicle</option>
-                <option value="service">Service</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="label">Service Title</label>
-              <input
-                className="input"
-                value={form.serviceTitle}
-                onChange={(e) => setForm((s) => ({ ...s, serviceTitle: e.target.value }))}
-                placeholder="Optional short title"
-              />
-            </div>
-
-            <div>
-              <label className="label">City</label>
-              <input
-                className="input"
-                value={form.city}
-                onChange={(e) => setForm((s) => ({ ...s, city: e.target.value }))}
-                required
-              />
-            </div>
-
-            <div>
-              <label className="label">State</label>
-              <input
-                className="input"
-                value={form.state}
-                onChange={(e) => setForm((s) => ({ ...s, state: e.target.value }))}
-              />
-            </div>
-
-            <div>
-              <label className="label">Phone</label>
-              <input
-                className="input"
-                value={form.phone}
-                onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))}
-                required
-              />
-            </div>
-
-            <div>
-              <label className="label">WhatsApp</label>
-              <input
-                className="input"
-                value={form.whatsapp}
-                onChange={(e) => setForm((s) => ({ ...s, whatsapp: e.target.value }))}
-              />
-            </div>
-
-            <div>
-              <label className="label">Price From</label>
-              <input
-                className="input"
-                type="number"
-                value={form.priceFrom}
-                onChange={(e) => setForm((s) => ({ ...s, priceFrom: e.target.value }))}
-              />
-            </div>
-
-            <div>
-              <label className="label">Capacity</label>
-              <input
-                className="input"
-                type="number"
-                value={form.capacity}
-                onChange={(e) => setForm((s) => ({ ...s, capacity: e.target.value }))}
-              />
-            </div>
-
-            <div className="providerFieldFull">
-              <label className="label">Pricing Summary</label>
-              <input
-                className="input"
-                value={form.pricingText}
-                onChange={(e) => setForm((s) => ({ ...s, pricingText: e.target.value }))}
-                placeholder="Example: Car from ₹1800/day, Bike from ₹500/day"
-              />
-            </div>
-
-            <div className="providerFieldFull">
-              <label className="label">Description</label>
-              <textarea
-                className="textarea"
-                rows={4}
-                value={form.description}
-                onChange={(e) => setForm((s) => ({ ...s, description: e.target.value }))}
-                placeholder="Describe your service professionally"
-              />
-            </div>
-
-            <div className="providerFieldFull">
-              <label className="label">Vehicle Types</label>
-              <div className="vehicleTypeGrid">
-                {VEHICLE_OPTIONS.map((type) => (
-                  <button
-                    key={type}
-                    type="button"
-                    className={
-                      form.vehicleTypes.includes(type)
-                        ? "vehicleTypeBtn active"
-                        : "vehicleTypeBtn"
-                    }
-                    onClick={() => toggleVehicleType(type)}
-                  >
-                    {type}
+            {form.listingType === "vehicle" && (
+              <div className="providerBlock">
+                <div className="providerBlockTop">
+                  <h3 className="providerBlockTitle">Vehicles</h3>
+                  <button className="btn" type="button" onClick={addVehicle}>
+                    Add Vehicle
                   </button>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            <div className="providerChecks providerFieldFull">
-              <label className="providerCheckItem">
-                <input
-                  type="checkbox"
-                  checked={form.withDriver}
-                  onChange={(e) =>
-                    setForm((s) => ({ ...s, withDriver: e.target.checked }))
-                  }
-                />
-                <span>Available with driver</span>
-              </label>
+                <div className="vehicleCardList">
+                  {form.vehicles.map((vehicle, index) => (
+                    <div className="vehicleItemCard" key={index}>
+                      <div className="vehicleItemTop">
+                        <div className="vehicleItemHeading">Vehicle {index + 1}</div>
+                        {form.vehicles.length > 1 && (
+                          <button
+                            className="removeMiniBtn"
+                            type="button"
+                            onClick={() => removeVehicle(index)}
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
 
-              <label className="providerCheckItem">
-                <input
-                  type="checkbox"
-                  checked={form.deliveryAvailable}
-                  onChange={(e) =>
-                    setForm((s) => ({ ...s, deliveryAvailable: e.target.checked }))
-                  }
-                />
-                <span>Delivery available</span>
-              </label>
-            </div>
+                      <div className="providerFormGrid">
+                        <div>
+                          <label className="label">Vehicle Type</label>
+                          <select
+                            className="select"
+                            value={vehicle.vehicleType}
+                            onChange={(e) =>
+                              updateVehicle(index, "vehicleType", e.target.value)
+                            }
+                          >
+                            {vehicleTypes.map((type) => (
+                              <option value={type} key={type}>
+                                {type}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
 
-            <div className="providerFieldFull">
-              <label className="label">Upload Images</label>
-              <input
-                className="input"
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(e) => setForm((s) => ({ ...s, images: e.target.files }))}
-              />
-              <div className="providerFieldHint">
-                Upload multiple clear images for a professional listing.
-              </div>
-            </div>
+                        <div>
+                          <label className="label">Title</label>
+                          <input
+                            className="input"
+                            value={vehicle.title}
+                            onChange={(e) =>
+                              updateVehicle(index, "title", e.target.value)
+                            }
+                            placeholder="Example: Swift Dzire AC"
+                          />
+                        </div>
 
-            {form.existingImages.length > 0 && (
-              <div className="providerFieldFull">
-                <label className="label">Current Images</label>
-                <div className="providerImageGrid">
-                  {form.existingImages.map((img, index) => (
-                    <div key={`${img.url}-${index}`} className="providerImageItem">
-                      <img src={img.url} alt="Provider" />
-                      <button
-                        type="button"
-                        className="removeImageBtn"
-                        onClick={() => removeExistingImage(index)}
-                      >
-                        Remove
-                      </button>
+                        <div>
+                          <label className="label">Price</label>
+                          <input
+                            className="input"
+                            type="number"
+                            value={vehicle.price}
+                            onChange={(e) =>
+                              updateVehicle(index, "price", e.target.value)
+                            }
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="label">Capacity</label>
+                          <input
+                            className="input"
+                            type="number"
+                            value={vehicle.capacity}
+                            onChange={(e) =>
+                              updateVehicle(index, "capacity", e.target.value)
+                            }
+                          />
+                        </div>
+
+                        <div>
+                          <label className="label">Fuel Type</label>
+                          <input
+                            className="input"
+                            value={vehicle.fuelType}
+                            onChange={(e) =>
+                              updateVehicle(index, "fuelType", e.target.value)
+                            }
+                            placeholder="Petrol / Diesel / EV"
+                          />
+                        </div>
+
+                        <div className="vehicleCheckWrap">
+                          <label className="providerCheck">
+                            <input
+                              type="checkbox"
+                              checked={vehicle.withDriver}
+                              onChange={(e) =>
+                                updateVehicle(index, "withDriver", e.target.checked)
+                              }
+                            />
+                            <span>With Driver</span>
+                          </label>
+                        </div>
+
+                        <div className="fullCol">
+                          <label className="label">Vehicle Images</label>
+                          <input
+                            className="input"
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={(e) =>
+                              updateVehicle(index, "images", e.target.files)
+                            }
+                          />
+                        </div>
+
+                        {vehicle.existingImages?.length > 0 && (
+                          <div className="fullCol">
+                            <div className="providerImageGrid">
+                              {vehicle.existingImages.map((img, imgIndex) => (
+                                <div className="providerImageItem" key={imgIndex}>
+                                  <img src={img.url} alt="vehicle" />
+                                  <button
+                                    type="button"
+                                    className="removeImageBtn"
+                                    onClick={() =>
+                                      removeVehicleExistingImage(index, imgIndex)
+                                    }
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            <div className="providerFormActions providerFieldFull">
+            {form.listingType === "travel_planner" && (
+              <div className="providerBlock">
+                <h3 className="providerBlockTitle">Travel Planner Details</h3>
+
+                <div className="providerFormGrid">
+                  <div>
+                    <label className="label">Planner Type</label>
+                    <select
+                      className="select"
+                      value={form.plannerMode}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, plannerMode: e.target.value }))
+                      }
+                    >
+                      <option value="customized_trip">Customized Trip</option>
+                      <option value="self_customized_places">
+                        Self Customized Places
+                      </option>
+                      <option value="day_package">Day Package</option>
+                      <option value="multi_day_package">Multi Day Package</option>
+                      <option value="group_trip">Group Trip</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="label">Package Title</label>
+                    <input
+                      className="input"
+                      value={form.packageTitle}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, packageTitle: e.target.value }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="label">Duration</label>
+                    <input
+                      className="input"
+                      value={form.durationText}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, durationText: e.target.value }))
+                      }
+                      placeholder="Example: 2 days 1 night"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="label">Price From</label>
+                    <input
+                      className="input"
+                      type="number"
+                      value={form.priceFrom}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, priceFrom: e.target.value }))
+                      }
+                    />
+                  </div>
+
+                  <div className="fullCol">
+                    <label className="label">Places Covered</label>
+                    <input
+                      className="input"
+                      value={form.placesCovered}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, placesCovered: e.target.value }))
+                      }
+                      placeholder="Example: Jaipur Fort, City Palace, Hawa Mahal"
+                    />
+                  </div>
+
+                  <div className="fullCol">
+                    <label className="label">Inclusions</label>
+                    <input
+                      className="input"
+                      value={form.inclusions}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, inclusions: e.target.value }))
+                      }
+                      placeholder="Example: Guide, transport, breakfast"
+                    />
+                  </div>
+
+                  <div className="fullCol">
+                    <label className="label">Exclusions</label>
+                    <input
+                      className="input"
+                      value={form.exclusions}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, exclusions: e.target.value }))
+                      }
+                      placeholder="Example: Entry tickets, lunch"
+                    />
+                  </div>
+
+                  <div className="fullCol">
+                    <label className="label">Planner Images</label>
+                    <input
+                      className="input"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, plannerImages: e.target.files }))
+                      }
+                    />
+                  </div>
+
+                  {form.existingPlannerImages?.length > 0 && (
+                    <div className="fullCol">
+                      <div className="providerImageGrid">
+                        {form.existingPlannerImages.map((img, index) => (
+                          <div className="providerImageItem" key={index}>
+                            <img src={img.url} alt="planner" />
+                            <button
+                              type="button"
+                              className="removeImageBtn"
+                              onClick={() => removePlannerExistingImage(index)}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className="providerFormActions">
               <button className="btn btnPrimary" type="submit">
-                {editingId ? "Save Listing" : "Create Listing"}
+                {editingId ? "Save Changes" : "Create Listing"}
               </button>
             </div>
           </form>
@@ -511,43 +746,47 @@ export default function Providers() {
 
       {myProviders.length > 0 && (
         <div className="providerOwnedSection">
-          <div className="providerSectionHeader">
-            <h2 className="providerSectionTitle">My Listings</h2>
-          </div>
+          <div className="providerSectionTitle">My Listings</div>
 
-          <div className="providerCardGrid">
+          <div className="providerGrid">
             {myProviders.map((item) => (
-              <article key={item._id} className="providerCard card">
+              <div className="providerCard card" key={item._id}>
                 <div className="providerCardTop">
                   <div>
                     <div className="providerCardTitle">{item.businessName}</div>
-                    <div className="providerCardMeta">{item.city}</div>
+                    <div className="providerMetaText">
+                      {item.city} • {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+                    </div>
                   </div>
-                  <button className="btn" onClick={() => openEditForm(item)}>
-                    Edit
-                  </button>
+
+                  <div className="providerCardActions">
+                    <button className="btn" onClick={() => openEditForm(item)}>
+                      Edit
+                    </button>
+                    <button className="btn" onClick={() => removeProvider(item._id)}>
+                      Remove
+                    </button>
+                  </div>
                 </div>
 
-                <div className="providerTagRow">
-                  {(item.vehicleTypes || []).map((type) => (
-                    <span className="providerTag" key={type}>
-                      {type}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="providerCardDesc">{item.description}</div>
-              </article>
+                <div className="providerDesc">{item.description || "No description added."}</div>
+              </div>
             ))}
           </div>
         </div>
       )}
 
-      <div className="providerSearchCard card">
-        <form className="providerSearchGrid" onSubmit={handleSearch}>
+      <div className="providerSearch card">
+        <form
+          className="providerSearchGrid"
+          onSubmit={(e) => {
+            e.preventDefault();
+            loadProviders();
+          }}
+        >
           <input
             className="input"
-            placeholder="Search business or service"
+            placeholder="Search providers"
             value={filters.q}
             onChange={(e) => setFilters((s) => ({ ...s, q: e.target.value }))}
           />
@@ -559,12 +798,25 @@ export default function Providers() {
           />
           <select
             className="select"
-            value={filters.type}
-            onChange={(e) => setFilters((s) => ({ ...s, type: e.target.value }))}
+            value={filters.listingType}
+            onChange={(e) =>
+              setFilters((s) => ({ ...s, listingType: e.target.value }))
+            }
           >
-            <option value="">All vehicle types</option>
-            {VEHICLE_OPTIONS.map((type) => (
-              <option value={type} key={type}>
+            <option value="">All Types</option>
+            <option value="vehicle">Vehicle Service</option>
+            <option value="travel_planner">Travel Planner</option>
+          </select>
+          <select
+            className="select"
+            value={filters.vehicleType}
+            onChange={(e) =>
+              setFilters((s) => ({ ...s, vehicleType: e.target.value }))
+            }
+          >
+            <option value="">All Vehicles</option>
+            {vehicleTypes.map((type) => (
+              <option key={type} value={type}>
                 {type}
               </option>
             ))}
@@ -575,113 +827,172 @@ export default function Providers() {
         </form>
       </div>
 
-      <div className="providerCardGrid">
+      <div className="providerGrid">
         {providers.map((item) => (
-          <article key={item._id} className="providerCard card">
-            <div className="providerCardMedia">
-              {item.images?.[0]?.url ? (
-                <img src={item.images[0].url} alt={item.businessName} />
+          <div className="providerCard card" key={item._id}>
+            <div className="providerMedia">
+              {item.listingType === "vehicle" ? (
+                item.vehicles?.[0]?.images?.[0]?.url ? (
+                  <img src={item.vehicles[0].images[0].url} alt={item.businessName} />
+                ) : (
+                  <div className="providerMediaEmpty">No Image</div>
+                )
+              ) : item.travelPlanner?.images?.[0]?.url ? (
+                <img src={item.travelPlanner.images[0].url} alt={item.businessName} />
               ) : (
-                <div className="providerCardMediaEmpty">No Image</div>
+                <div className="providerMediaEmpty">No Image</div>
               )}
             </div>
 
-            <div className="providerCardBody">
-              <div className="providerCardHeader">
+            <div className="providerBody">
+              <div className="providerCardTop">
                 <div>
                   <div className="providerCardTitle">{item.businessName}</div>
-                  <div className="providerCardMeta">
+                  <div className="providerMetaText">
                     {item.city} • by {item.owner?.name || "Provider"}
                   </div>
                 </div>
 
-                <div className="providerRatingBox">
-                  ⭐ {item.ratingAverage || 0} <span>({item.ratingCount || 0})</span>
+                <div className="providerRating">
+                  ⭐ {item.ratingAverage || 0} ({item.ratingCount || 0})
                 </div>
               </div>
 
-              <div className="providerTagRow">
-                {(item.vehicleTypes || []).map((type) => (
-                  <span className="providerTag" key={type}>
-                    {type}
-                  </span>
-                ))}
+              <div className="providerTypeBadge">
+                {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
               </div>
 
-              <div className="providerPriceText">
-                {item.pricingText || (item.priceFrom ? `From ₹${item.priceFrom}` : "Price on request")}
-              </div>
+              {item.listingType === "vehicle" && (
+                <div className="providerMiniList">
+                  {item.vehicles?.map((v, index) => (
+                    <div key={index} className="providerMiniItem">
+                      <strong>{v.vehicleType}</strong> — ₹{v.price}
+                    </div>
+                  ))}
+                </div>
+              )}
 
-              <p className="providerCardDesc">
-                {item.description || "No description provided."}
-              </p>
+              {item.listingType === "travel_planner" && (
+                <div className="providerMiniItem">
+                  <strong>{item.travelPlanner?.packageTitle || "Package"}</strong>
+                  {" — "}
+                  ₹{item.travelPlanner?.priceFrom || 0}
+                </div>
+              )}
+
+              <div className="providerDesc">
+                {item.description || "No description available."}
+              </div>
 
               <div className="providerCardActions">
                 <button
                   className="btn"
                   onClick={async () => {
-                    setSelected(item._id);
+                    setSelectedProvider(item);
                     await loadReviews(item._id);
                   }}
                 >
                   View Details
                 </button>
-
-                {user && String(item.owner?._id || item.owner) === String(user.id) && (
-                  <button className="btn" onClick={() => openEditForm(item)}>
-                    Edit
-                  </button>
-                )}
               </div>
             </div>
-          </article>
+          </div>
         ))}
       </div>
 
       {selectedProvider && (
-        <div className="providerDetailCard card">
-          <div className="providerDetailHead">
+        <div className="providerDetail card">
+          <div className="providerDetailTop">
             <div>
-              <h2 className="providerSectionTitle">{selectedProvider.businessName}</h2>
-              <p className="providerSectionSub">
+              <div className="providerSectionTitle">{selectedProvider.businessName}</div>
+              <div className="providerMetaText">
                 {selectedProvider.city} • {selectedProvider.phone}
-              </p>
-            </div>
-          </div>
-
-          <div className="providerImageGrid">
-            {(selectedProvider.images || []).map((img, index) => (
-              <div key={`${img.url}-${index}`} className="providerImageItem">
-                <img src={img.url} alt={`${selectedProvider.businessName}-${index}`} />
               </div>
-            ))}
-          </div>
-
-          <div className="providerDetailDesc">{selectedProvider.description}</div>
-
-          <div className="providerTagRow">
-            {(selectedProvider.vehicleTypes || []).map((type) => (
-              <span key={type} className="providerTag">
-                {type}
-              </span>
-            ))}
-          </div>
-
-          <div className="providerReviewSection">
-            <div className="providerSectionHeader">
-              <h3 className="providerSectionTitle">Reviews</h3>
             </div>
+          </div>
+
+          {selectedProvider.listingType === "vehicle" ? (
+            <div className="detailVehicleList">
+              {selectedProvider.vehicles?.map((vehicle, index) => (
+                <div className="detailVehicleCard" key={index}>
+                  <div className="detailVehicleHead">
+                    <div className="detailVehicleTitle">
+                      {vehicle.title || vehicle.vehicleType}
+                    </div>
+                    <div className="detailVehiclePrice">₹{vehicle.price}</div>
+                  </div>
+
+                  <div className="detailVehicleMeta">
+                    Capacity: {vehicle.capacity || 1} • Fuel: {vehicle.fuelType || "N/A"} •{" "}
+                    {vehicle.withDriver ? "With Driver" : "Without Driver"}
+                  </div>
+
+                  <div className="providerImageGrid">
+                    {vehicle.images?.map((img, imgIndex) => (
+                      <div className="providerImageItem" key={imgIndex}>
+                        <img src={img.url} alt={vehicle.title || vehicle.vehicleType} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="plannerDetailBox">
+              <div className="plannerTitle">
+                {selectedProvider.travelPlanner?.packageTitle || "Travel Package"}
+              </div>
+              <div className="plannerMeta">
+                {selectedProvider.travelPlanner?.plannerMode} • {selectedProvider.travelPlanner?.durationText} • ₹
+                {selectedProvider.travelPlanner?.priceFrom || 0}
+              </div>
+
+              <div className="plannerInfoGrid">
+                <div>
+                  <div className="plannerInfoTitle">Places Covered</div>
+                  <div className="plannerInfoText">
+                    {(selectedProvider.travelPlanner?.placesCovered || []).join(", ") || "N/A"}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="plannerInfoTitle">Inclusions</div>
+                  <div className="plannerInfoText">
+                    {(selectedProvider.travelPlanner?.inclusions || []).join(", ") || "N/A"}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="plannerInfoTitle">Exclusions</div>
+                  <div className="plannerInfoText">
+                    {(selectedProvider.travelPlanner?.exclusions || []).join(", ") || "N/A"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="providerImageGrid">
+                {(selectedProvider.travelPlanner?.images || []).map((img, index) => (
+                  <div className="providerImageItem" key={index}>
+                    <img src={img.url} alt="planner" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="reviewSection">
+            <div className="providerSectionTitle">Reviews</div>
 
             {!isLoggedIn() ? (
-              <div className="providerInlineNote">
-                Please login to add a review.
-              </div>
-            ) : isOwnerOfSelected ? (
-              <div className="providerInlineNote">
+              <div className="providerNote">Please login to add a review.</div>
+            ) : user &&
+              String(selectedProvider.owner?._id || selectedProvider.owner) ===
+                String(user.id) ? (
+              <div className="providerNote">
                 You cannot review your own product or service.
               </div>
             ) : (
-              <form className="providerReviewForm" onSubmit={submitReview}>
+              <form className="reviewForm" onSubmit={submitReview}>
                 <select
                   className="select"
                   value={reviewForm.rating}
@@ -689,11 +1000,11 @@ export default function Providers() {
                     setReviewForm((s) => ({ ...s, rating: e.target.value }))
                   }
                 >
-                  <option value={5}>5 stars</option>
-                  <option value={4}>4 stars</option>
-                  <option value={3}>3 stars</option>
-                  <option value={2}>2 stars</option>
-                  <option value={1}>1 star</option>
+                  <option value={5}>5 Stars</option>
+                  <option value={4}>4 Stars</option>
+                  <option value={3}>3 Stars</option>
+                  <option value={2}>2 Stars</option>
+                  <option value={1}>1 Star</option>
                 </select>
 
                 <textarea
@@ -712,26 +1023,17 @@ export default function Providers() {
               </form>
             )}
 
-            <div className="providerReviewList">
+            <div className="reviewList">
               {reviews.length === 0 ? (
-                <div className="providerInlineNote">No reviews yet.</div>
+                <div className="providerNote">No reviews yet.</div>
               ) : (
                 reviews.map((review) => (
-                  <div key={review._id} className="providerReviewItem">
-                    <div className="providerReviewTop">
-                      <div className="providerReviewer">
-                        {review.user?.avatar ? (
-                          <img src={review.user.avatar} alt={review.user.name} />
-                        ) : (
-                          <span className="providerReviewerFallback">
-                            {review.user?.name?.charAt(0)?.toUpperCase() || "U"}
-                          </span>
-                        )}
-                        <span>{review.user?.name || "User"}</span>
-                      </div>
-                      <div className="providerReviewRating">⭐ {review.rating}</div>
+                  <div className="reviewItem" key={review._id}>
+                    <div className="reviewTop">
+                      <div className="reviewUser">{review.user?.name || "User"}</div>
+                      <div className="reviewStars">⭐ {review.rating}</div>
                     </div>
-                    <div className="providerReviewText">{review.comment || "No comment"}</div>
+                    <div className="reviewText">{review.comment || "No comment"}</div>
                   </div>
                 ))
               )}
