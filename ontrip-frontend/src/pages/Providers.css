@@ -1,140 +1,167 @@
-.providersPlatformPage {
+.providerPlatformPage {
   display: grid;
   gap: 18px;
   padding-bottom: 24px;
 }
 
-.providersHero,
+.providerHero,
 .providerFormCard,
-.providerSearchCard,
-.providerDetailCard {
-  padding: 20px;
+.providerSearch,
+.providerDetail {
+  padding: 22px;
   border-radius: 28px;
 }
 
-.providersHero {
+.providerHero {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  align-items: center;
+  gap: 16px;
 }
 
-.providersHeroTitle {
+.providerHeroTitle {
   margin: 0;
   font-size: 32px;
-  line-height: 1.1;
   font-weight: 950;
+  line-height: 1.1;
   color: var(--text);
 }
 
-.providersHeroSub {
+.providerHeroSub {
   margin: 8px 0 0;
   color: var(--muted);
   font-weight: 600;
+  line-height: 1.6;
 }
 
-.providersHeroActions {
+.providerHeroActions {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.providerNotice {
+.providerMessage {
   padding: 12px 14px;
   border-radius: 16px;
   font-weight: 700;
   font-size: 13px;
 }
 
-.providerNotice.success {
+.providerMessage.success {
   background: rgba(16, 185, 129, 0.1);
   border: 1px solid rgba(16, 185, 129, 0.2);
   color: #047857;
 }
 
-.providerNotice.error {
+.providerMessage.error {
   background: rgba(255, 98, 98, 0.09);
   border: 1px solid rgba(255, 98, 98, 0.22);
   color: #b42318;
 }
 
-.providerSectionHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
 .providerSectionTitle {
-  margin: 0;
   font-size: 22px;
   font-weight: 900;
   color: var(--text);
+  margin: 0;
 }
 
 .providerSectionSub {
-  margin: 6px 0 0;
+  margin-top: 6px;
   color: var(--muted);
   font-weight: 600;
 }
 
-.providerFormHead {
+.providerFormTop {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
+}
+
+.providerForm {
+  display: grid;
+  gap: 20px;
 }
 
 .providerFormGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
-.providerFieldFull {
+.fullCol {
   grid-column: 1 / -1;
 }
 
-.providerChecks {
-  display: flex;
-  gap: 18px;
-  flex-wrap: wrap;
+.providerBlock {
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.providerCheckItem {
+.providerBlockTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.providerBlockTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.vehicleCardList {
+  display: grid;
+  gap: 16px;
+}
+
+.vehicleItemCard {
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.vehicleItemTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.vehicleItemHeading {
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.removeMiniBtn {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.vehicleCheckWrap {
+  display: flex;
+  align-items: end;
+}
+
+.providerCheck {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-weight: 700;
   color: rgba(11, 27, 42, 0.78);
-}
-
-.vehicleTypeGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.vehicleTypeBtn {
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 999px;
-  padding: 10px 14px;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.vehicleTypeBtn.active {
-  background: rgba(0, 184, 241, 0.12);
-  border-color: rgba(0, 184, 241, 0.25);
-}
-
-.providerFieldHint {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 600;
 }
 
 .providerFormActions {
@@ -149,11 +176,11 @@
 
 .providerSearchGrid {
   display: grid;
-  grid-template-columns: 1.3fr 1fr 1fr auto;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
   gap: 12px;
 }
 
-.providerCardGrid {
+.providerGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
@@ -164,12 +191,12 @@
   border-radius: 28px;
 }
 
-.providerCardMedia {
-  height: 220px;
-  background: rgba(177, 227, 250, 0.2);
+.providerMedia {
+  height: 230px;
+  background: rgba(177, 227, 250, 0.18);
 }
 
-.providerCardMedia img,
+.providerMedia img,
 .providerImageItem img {
   width: 100%;
   height: 100%;
@@ -177,7 +204,7 @@
   display: block;
 }
 
-.providerCardMediaEmpty {
+.providerMediaEmpty {
   width: 100%;
   height: 100%;
   display: grid;
@@ -186,24 +213,16 @@
   color: rgba(11, 27, 42, 0.5);
 }
 
-.providerCardBody {
+.providerBody {
   padding: 18px;
   display: grid;
   gap: 12px;
 }
 
 .providerCardTop {
-  padding: 18px;
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
-}
-
-.providerCardHeader {
-  display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 12px;
 }
 
@@ -214,31 +233,43 @@
   line-height: 1.2;
 }
 
-.providerCardMeta {
+.providerMetaText {
   margin-top: 6px;
   color: var(--muted);
   font-weight: 650;
 }
 
-.providerRatingBox {
+.providerRating {
   font-weight: 900;
   white-space: nowrap;
 }
 
-.providerRatingBox span {
-  color: var(--muted);
-  font-weight: 700;
-}
-
-.providerPriceText {
+.providerTypeBadge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(0, 184, 241, 0.1);
+  border: 1px solid rgba(0, 184, 241, 0.18);
+  font-size: 12px;
   font-weight: 900;
-  color: rgba(11, 27, 42, 0.86);
 }
 
-.providerCardDesc,
-.providerDetailDesc {
+.providerMiniList {
+  display: grid;
+  gap: 8px;
+}
+
+.providerMiniItem {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(11, 27, 42, 0.8);
+}
+
+.providerDesc {
   color: rgba(11, 27, 42, 0.74);
-  line-height: 1.65;
+  line-height: 1.6;
   font-weight: 600;
 }
 
@@ -248,33 +279,18 @@
   flex-wrap: wrap;
 }
 
-.providerTagRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.providerTag {
-  padding: 7px 11px;
-  border-radius: 999px;
-  background: rgba(0, 184, 241, 0.1);
-  border: 1px solid rgba(0, 184, 241, 0.18);
-  font-size: 12px;
-  font-weight: 900;
-}
-
 .providerImageGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 .providerImageItem {
   position: relative;
   overflow: hidden;
-  border-radius: 18px;
   min-height: 140px;
+  border-radius: 18px;
   background: rgba(177, 227, 250, 0.16);
 }
 
@@ -283,80 +299,127 @@
   right: 8px;
   top: 8px;
   border: none;
-  background: rgba(255, 255, 255, 0.92);
   border-radius: 999px;
   padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.94);
   font-size: 12px;
   font-weight: 900;
   cursor: pointer;
 }
 
-.providerReviewSection {
-  margin-top: 20px;
+.detailVehicleList {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.detailVehicleCard {
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.detailVehicleHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detailVehicleTitle {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.detailVehiclePrice {
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.detailVehicleMeta {
+  margin-top: 8px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.plannerDetailBox {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.plannerTitle {
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.plannerMeta {
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.plannerInfoGrid {
   display: grid;
   gap: 14px;
 }
 
-.providerReviewForm {
+.plannerInfoTitle {
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.plannerInfoText {
+  color: rgba(11, 27, 42, 0.76);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.reviewSection {
+  margin-top: 22px;
+  display: grid;
+  gap: 14px;
+}
+
+.providerNote {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(177, 227, 250, 0.18);
+  border: 1px solid rgba(177, 227, 250, 0.34);
+  font-weight: 700;
+  color: rgba(11, 27, 42, 0.76);
+}
+
+.reviewForm {
   display: grid;
   gap: 10px;
 }
 
-.providerInlineNote {
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: rgba(177, 227, 250, 0.2);
-  border: 1px solid rgba(177, 227, 250, 0.35);
-  color: rgba(11, 27, 42, 0.74);
-  font-weight: 700;
-}
-
-.providerReviewList {
+.reviewList {
   display: grid;
   gap: 12px;
 }
 
-.providerReviewItem {
+.reviewItem {
   padding: 14px;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.76);
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.providerReviewTop {
+.reviewTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 
-.providerReviewer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.reviewUser,
+.reviewStars {
   font-weight: 900;
 }
 
-.providerReviewer img,
-.providerReviewerFallback {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  object-fit: cover;
-  display: grid;
-  place-items: center;
-}
-
-.providerReviewerFallback {
-  background: linear-gradient(135deg, var(--p2), var(--p3));
-  color: white;
-}
-
-.providerReviewRating {
-  font-weight: 900;
-}
-
-.providerReviewText {
+.reviewText {
   margin-top: 8px;
   color: rgba(11, 27, 42, 0.74);
   line-height: 1.6;
@@ -364,15 +427,15 @@
 }
 
 @media (max-width: 980px) {
-  .providersHero,
-  .providerFormHead {
+  .providerHero,
+  .providerFormTop {
     flex-direction: column;
     align-items: flex-start;
   }
 
   .providerFormGrid,
   .providerSearchGrid,
-  .providerCardGrid,
+  .providerGrid,
   .providerImageGrid {
     grid-template-columns: 1fr;
   }
