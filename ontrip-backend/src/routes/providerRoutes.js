@@ -2,6 +2,7 @@ import express from "express";
 import {
   createProvider,
   updateProvider,
+  deleteProvider,
   getProviders,
   getProviderById,
   getMyProviders,
@@ -15,8 +16,8 @@ router.get("/", getProviders);
 router.get("/mine", protect, getMyProviders);
 router.get("/:id", getProviderById);
 
-// IMPORTANT: multer must come before controller
-router.post("/", protect, upload.array("images", 10), createProvider);
-router.put("/:id", protect, upload.array("images", 10), updateProvider);
+router.post("/", protect, upload.any(), createProvider);
+router.put("/:id", protect, upload.any(), updateProvider);
+router.delete("/:id", protect, deleteProvider);
 
 export default router;
