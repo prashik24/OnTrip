@@ -4,6 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
+import ProviderDetails from "./pages/ProviderDetails";
+import MyListings from "./pages/MyListings";
+import ProviderDashboard from "./pages/ProviderDashboard";
+import BookingHistory from "./pages/BookingHistory";
 
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
@@ -54,6 +58,11 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/providers" element={<Providers />} />
+      
+<Route path="/providers/:id" element={<ProviderDetails />} />
+<Route path="/profile/my-listings" element={<MyListings />} />
+<Route path="/profile/bookings" element={<BookingHistory />} />
+<Route path="/provider/dashboard" element={<ProviderDashboard />} />
             <Route path="/provider-register" element={<ProviderRegister />} />
 
             <Route path="/home" element={<Navigate to="/" replace />} />

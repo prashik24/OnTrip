@@ -22,13 +22,16 @@ export default function Profile() {
     async function loadMe() {
       try {
         const data = await apiFetch("/api/auth/me");
+
         setUser(data.user);
+
         setForm({
           name: data.user?.name || "",
           phone: data.user?.phone || "",
           city: data.user?.city || "",
           bio: data.user?.bio || "",
         });
+
         saveUserOnly(data.user);
         window.dispatchEvent(new Event("ontrip-auth-changed"));
       } catch {
@@ -57,8 +60,11 @@ export default function Profile() {
 
       setUser(data.user);
       saveUserOnly(data.user);
+
       window.dispatchEvent(new Event("ontrip-auth-changed"));
+
       setEditing(false);
+
       setMsg({
         text: data.message || "Profile updated successfully",
         type: "success",
@@ -88,7 +94,9 @@ export default function Profile() {
 
       setUser(data.user);
       saveUserOnly(data.user);
+
       window.dispatchEvent(new Event("ontrip-auth-changed"));
+
       setMsg({
         text: data.message || "Profile image uploaded successfully",
         type: "success",
@@ -112,7 +120,10 @@ export default function Profile() {
   return (
     <div className="container profilePage">
       <div className="profileCard">
+
+        {/* HEADER */}
         <div className="profileHeader">
+
           <div className="profileAvatarArea">
             {avatarSrc ? (
               <img
@@ -140,17 +151,12 @@ export default function Profile() {
           </div>
 
           <div className="profileMain">
-            <div className="profileTop">
-              <div>
-                <h1 className="profileName">{user?.name || "Traveler"}</h1>
-                <p className="profileEmail">{user?.email || "No email added"}</p>
-              </div>
-            </div>
+            <h1 className="profileName">{user?.name || "Traveler"}</h1>
+            <p className="profileEmail">{user?.email || "No email added"}</p>
           </div>
 
           <div className="profileActions">
             <button
-              type="button"
               className="profileBtn primaryBtn"
               onClick={() => {
                 setEditing((prev) => !prev);
@@ -161,7 +167,6 @@ export default function Profile() {
             </button>
 
             <button
-              type="button"
               className="profileBtn lightBtn"
               onClick={logout}
             >
@@ -178,6 +183,8 @@ export default function Profile() {
 
         {!editing ? (
           <div className="profileContent">
+
+            {/* BIO */}
             <div className="profileSection">
               <h2 className="sectionTitle">Bio</h2>
               <p className="aboutText">
@@ -185,10 +192,12 @@ export default function Profile() {
               </p>
             </div>
 
+            {/* PERSONAL INFO */}
             <div className="profileSection">
               <h2 className="sectionTitle">Personal Information</h2>
 
               <div className="infoGrid">
+
                 <div className="infoItem">
                   <span className="infoLabel">Full Name</span>
                   <span className="infoValue">{user?.name || "Not added"}</span>
@@ -208,11 +217,60 @@ export default function Profile() {
                   <span className="infoLabel">City</span>
                   <span className="infoValue">{user?.city || "Not added"}</span>
                 </div>
+
               </div>
             </div>
+
+            {/* NEW SECTION */}
+            <div className="grid2">
+
+              <div className="card box">
+                <div className="boxTitle">My Listings</div>
+                <div className="muted">Manage your provider services.</div>
+
+                <button
+                  className="btn"
+                  onClick={() => navigate("/profile/my-listings")}
+                >
+                  Open My Listings
+                </button>
+              </div>
+
+              <div className="card box">
+                <div className="boxTitle">Booking History</div>
+                <div className="muted">
+                  Track your previous and upcoming bookings.
+                </div>
+
+                <button
+                  className="btn"
+                  onClick={() => navigate("/profile/bookings")}
+                >
+                  Open Booking History
+                </button>
+              </div>
+
+              <div className="card box">
+                <div className="boxTitle">Provider Dashboard</div>
+                <div className="muted">
+                  Customer bookings, payments and statuses.
+                </div>
+
+                <button
+                  className="btn"
+                  onClick={() => navigate("/provider/dashboard")}
+                >
+                  Open Dashboard
+                </button>
+              </div>
+
+            </div>
+
           </div>
         ) : (
+
           <form className="profileForm" onSubmit={saveProfile}>
+
             <h2 className="sectionTitle">Edit Profile</h2>
 
             <div className="formGroup">
@@ -226,6 +284,7 @@ export default function Profile() {
             </div>
 
             <div className="profileFormGrid">
+
               <div className="formGroup">
                 <label className="label">Phone</label>
                 <input
@@ -245,6 +304,7 @@ export default function Profile() {
                   placeholder="Enter your city"
                 />
               </div>
+
             </div>
 
             <div className="formGroup">
@@ -267,6 +327,7 @@ export default function Profile() {
                 {loading ? "Saving..." : "Save Changes"}
               </button>
             </div>
+
           </form>
         )}
       </div>
