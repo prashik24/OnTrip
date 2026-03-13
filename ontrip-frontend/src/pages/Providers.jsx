@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { apiFetch, isLoggedIn } from "../lib/api";
-import { useNavigate } from "react-router-dom";
 import "./Providers.css";
 
 const vehicleTypes = ["car", "bike", "van", "truck", "jeep", "bus", "scooty", "cycle"];
@@ -305,7 +305,7 @@ export default function Providers() {
         </div>
 
         <div className="providerHeroActions">
-          <button className="btn btnPrimary" onClick={openCreateForm}>
+          <button className="btn btnPrimary" onClick={openCreateForm} type="button">
             Register as Provider
           </button>
         </div>
@@ -853,4 +853,4 @@ export default function Providers() {
       </div>
     </div>
   );
-}
+} 
