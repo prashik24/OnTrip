@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../lib/api";
 import { useNavigate } from "react-router-dom";
+import "./MyListings.css";
 
 export default function MyListings() {
   const navigate = useNavigate();
@@ -33,46 +34,81 @@ export default function MyListings() {
   }
 
   return (
-    <div className="container providersPlatformPage">
-      <div className="providerSearch card">
-        <h2 className="providerSectionTitle">My Listings</h2>
-        <p className="providerSectionSub">
-          View, edit, update and remove your services.
+    <div className="myListingsPage container">
+      <section className="myListingsHero">
+        <h1>My Listings</h1>
+        <p>
+          View, manage, and update your travel or vehicle services with a cleaner professional layout.
         </p>
-      </div>
+      </section>
 
-      {msg && <div className="providerMessage error">{msg}</div>}
+      {msg && <div className="myListingsMessage">{msg}</div>}
 
-      <div className="providerGrid">
+      <div className="myListingsGrid">
         {items.map((item) => (
-          <div className="providerCard card" key={item._id}>
-            <div className="providerBody">
-              <div className="providerCardTop">
+          <article className="myListingsCard" key={item._id}>
+            <div className="myListingsMedia">
+              {item.serviceImage?.url ? (
+                <img src={item.serviceImage.url} alt={item.businessName} />
+              ) : item.listingType === "vehicle" ? (
+                item.vehicles?.[0]?.images?.[0]?.url ? (
+                  <img src={item.vehicles[0].images[0].url} alt={item.businessName} />
+                ) : (
+                  <div className="myListingsMediaEmpty">No Image</div>
+                )
+              ) : item.travelPlanner?.images?.[0]?.url ? (
+                <img src={item.travelPlanner.images[0].url} alt={item.businessName} />
+              ) : (
+                <div className="myListingsMediaEmpty">No Image</div>
+              )}
+            </div>
+
+            <div className="myListingsBody">
+              <div className="myListingsTop">
                 <div>
-                  <div className="providerCardTitle">{item.businessName}</div>
-                  <div className="providerMetaText">
-                    {item.city} • {item.listingType}
-                  </div>
+                  <h3>{item.businessName}</h3>
+                  <p>
+                    {item.city} • {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+                  </p>
+                </div>
+
+                <div className="myListingsType">
+                  {item.listingType === "vehicle" ? "Vehicle" : "Travel"}
                 </div>
               </div>
 
-              <div className="providerDesc">
+              <div className="myListingsDesc">
                 {item.description || "No description available."}
               </div>
 
-              <div className="providerCardActions">
-                <button className="btn" onClick={() => navigate(`/providers/${item._id}`)}>
+              {item.listingType === "travel_planner" && (
+                <div className="myListingsMeta">
+                  From ₹{item.travelPlanner?.priceFrom || 0} • Per person ₹
+                  {item.travelPlanner?.pricePerPerson || 0}
+                </div>
+              )}
+
+              {item.listingType === "vehicle" && (
+                <div className="myListingsMeta">
+                  {item.vehicles?.length || 0} vehicles added
+                </div>
+              )}
+
+              <div className="myListingsActions">
+                <button className="myListingsBtn" onClick={() => navigate(`/providers/${item._id}`)}>
                   View
                 </button>
-                <button className="btn" onClick={() => navigate(`/providers/${item._id}/edit`)}>
-                  Edit
+
+                <button className="myListingsBtn" onClick={() => navigate("/providers")}>
+                  Edit from Providers
                 </button>
-                <button className="btn" onClick={() => removeItem(item._id)}>
+
+                <button className="myListingsBtn danger" onClick={() => removeItem(item._id)}>
                   Remove
                 </button>
               </div>
             </div>
-          </div>
+          </article>
         ))}
       </div>
     </div>

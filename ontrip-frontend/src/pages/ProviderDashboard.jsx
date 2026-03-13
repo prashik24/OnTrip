@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../lib/api";
+import "./ProviderDashboard.css";
 
 export default function ProviderDashboard() {
   const [bookings, setBookings] = useState([]);
@@ -31,47 +32,65 @@ export default function ProviderDashboard() {
   }
 
   return (
-    <div className="container providersPlatformPage">
-      <div className="providerSearch card">
-        <h2 className="providerSectionTitle">Provider Dashboard</h2>
-        <p className="providerSectionSub">
-          Customer bookings, payment details and booking status.
+    <div className="providerDashboardPage container">
+      <section className="providerDashboardHero">
+        <h1>Provider Dashboard</h1>
+        <p>
+          Manage customer bookings, payment status, trip details, and booking progress in one clean dashboard.
         </p>
-      </div>
+      </section>
 
-      {msg && <div className="providerMessage error">{msg}</div>}
+      {msg && <div className="providerDashboardMessage">{msg}</div>}
 
-      <div className="providerGrid">
+      <div className="providerDashboardGrid">
         {bookings.map((booking) => (
-          <div className="providerCard card" key={booking._id}>
-            <div className="providerBody">
-              <div className="providerCardTitle">{booking.serviceTitle}</div>
-              <div className="providerMetaText">
-                Customer: {booking.user?.name || "User"}
+          <article className="providerDashboardCard" key={booking._id}>
+            <div className="providerDashboardTop">
+              <div>
+                <h3>{booking.serviceTitle}</h3>
+                <p>{booking.provider?.businessName || "Service"}</p>
               </div>
-              <div className="providerMiniItem">Email: {booking.user?.email || "N/A"}</div>
-              <div className="providerMiniItem">Phone: {booking.contactPhone}</div>
-              <div className="providerMiniItem">
-                Booking Date: {new Date(booking.bookingDate).toLocaleDateString()}
-              </div>
-              <div className="providerMiniItem">People: {booking.peopleCount}</div>
-              <div className="providerMiniItem">Amount: ₹{booking.amount}</div>
-              <div className="providerMiniItem">Payment: {booking.paymentStatus}</div>
-              <div className="providerMiniItem">Status: {booking.bookingStatus}</div>
 
-              <div className="providerCardActions">
-                <button className="btn" onClick={() => updateStatus(booking._id, "confirmed")}>
-                  Confirm
-                </button>
-                <button className="btn" onClick={() => updateStatus(booking._id, "completed")}>
-                  Complete
-                </button>
-                <button className="btn" onClick={() => updateStatus(booking._id, "cancelled")}>
-                  Cancel
-                </button>
+              <div className={`providerDashboardStatus providerDashboardStatus--${booking.bookingStatus}`}>
+                {booking.bookingStatus}
               </div>
             </div>
-          </div>
+
+            <div className="providerDashboardInfo">
+              <div><strong>Customer:</strong> {booking.user?.name || "User"}</div>
+              <div><strong>Email:</strong> {booking.user?.email || booking.contactEmail || "N/A"}</div>
+              <div><strong>Phone:</strong> {booking.contactPhone || "N/A"}</div>
+              <div><strong>Date:</strong> {new Date(booking.travelDate || booking.bookingDate).toLocaleDateString()}</div>
+              <div><strong>People:</strong> {booking.peopleCount || 1}</div>
+              <div><strong>Days:</strong> {booking.days || 1}</div>
+              <div><strong>Destination / Place:</strong> {booking.destination || booking.place || "N/A"}</div>
+              <div><strong>Amount:</strong> ₹{booking.amount}</div>
+              <div><strong>Payment:</strong> {booking.paymentStatus}</div>
+            </div>
+
+            <div className="providerDashboardActions">
+              <button
+                className="providerDashboardBtn confirm"
+                onClick={() => updateStatus(booking._id, "confirmed")}
+              >
+                Confirm
+              </button>
+
+              <button
+                className="providerDashboardBtn complete"
+                onClick={() => updateStatus(booking._id, "completed")}
+              >
+                Complete
+              </button>
+
+              <button
+                className="providerDashboardBtn cancel"
+                onClick={() => updateStatus(booking._id, "cancelled")}
+              >
+                Cancel
+              </button>
+            </div>
+          </article>
         ))}
       </div>
     </div>
