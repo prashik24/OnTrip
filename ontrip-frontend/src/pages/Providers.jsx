@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiFetch, isLoggedIn } from "../lib/api";
+import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import "./Providers.css";
 
 const vehicleTypes = ["car", "bike", "van", "truck", "jeep", "bus", "scooty", "cycle"];
@@ -21,6 +21,7 @@ function emptyVehicle() {
 
 export default function Providers() {
   const navigate = useNavigate();
+  const currentUser = getUser();
 
   const [providers, setProviders] = useState([]);
   const [myProviders, setMyProviders] = useState([]);
@@ -118,6 +119,14 @@ export default function Providers() {
     loadMyProviders();
   }, []);
 
+  const visibleProviders = useMemo(() => {
+    return providers.filter((item) => {
+      if (!currentUser) return true;
+      const ownerId = item.owner?._id || item.owner;
+      return String(ownerId) !== String(currentUser.id);
+    });
+  }, [providers, currentUser]);
+
   function openCreateForm() {
     if (!isLoggedIn()) {
       navigate("/login");
@@ -205,9 +214,7 @@ export default function Providers() {
       fd.append("whatsapp", form.whatsapp);
       fd.append("description", form.description);
 
-      if (form.serviceImage) {
-        fd.append("serviceImage", form.serviceImage);
-      }
+      if (form.serviceImage) fd.append("serviceImage", form.serviceImage);
 
       if (form.listingType === "vehicle") {
         const cleanVehicles = form.vehicles.map((v) => ({
@@ -276,51 +283,44 @@ export default function Providers() {
   }
 
   return (
-    <div className="container providerPlatformPage">
-      <div className="providerHero card">
+    <div className="providersPage container">
+      <section className="providersHero">
         <div>
-          <h1 className="providerHeroTitle">Provider Platform</h1>
-          <p className="providerHeroSub">
-            Create premium travel and vehicle services with rich cards, images, pricing and modern booking flow.
+          <h1 className="providersTitle">Provider Marketplace</h1>
+          <p className="providersSub">
+            Discover travel planners and vehicle services with rich cards, cleaner pricing, and a better booking flow.
           </p>
         </div>
 
-        <div className="providerHeroActions">
-          <button className="btn btnPrimary" onClick={openCreateForm}>
-            Register as Provider
-          </button>
-        </div>
-      </div>
+        <button className="providersPrimaryBtn" onClick={openCreateForm}>
+          Register as Provider
+        </button>
+      </section>
 
       {msg.text && (
-        <div className={`providerMessage ${msg.type === "success" ? "success" : "error"}`}>
+        <div className={`providersMessage ${msg.type}`}>
           {msg.text}
         </div>
       )}
 
       {showForm && (
-        <div className="providerFormCard card">
-          <div className="providerFormTop">
+        <section className="providersFormWrap">
+          <div className="providersFormHead">
             <div>
-              <h2 className="providerSectionTitle">
-                {editingId ? "Edit Listing" : "Create Listing"}
-              </h2>
-              <p className="providerSectionSub">
-                Add service card image, pricing and detailed service information.
-              </p>
+              <h2>{editingId ? "Edit Listing" : "Create Listing"}</h2>
+              <p>Add your service information with professional structure.</p>
             </div>
 
-            <button className="btn" type="button" onClick={() => setShowForm(false)}>
+            <button className="providersGhostBtn" type="button" onClick={() => setShowForm(false)}>
               Close
             </button>
           </div>
 
-          <form className="providerForm" onSubmit={submitProvider}>
-            <div className="providerFormGrid">
-              <div className="fullCol">
-                <label className="label">Business Name</label>
+          <form className="providersForm" onSubmit={submitProvider}>
+            <div className="providersFormGrid">
+              <div className="fullSpan">
+                <label>Business Name</label>
                 <input
-                  className="input"
                   value={form.businessName}
                   onChange={(e) => setForm((s) => ({ ...s, businessName: e.target.value }))}
                   required
@@ -328,9 +328,8 @@ export default function Providers() {
               </div>
 
               <div>
-                <label className="label">Listing Type</label>
+                <label>Listing Type</label>
                 <select
-                  className="select"
                   value={form.listingType}
                   onChange={(e) => setForm((s) => ({ ...s, listingType: e.target.value }))}
                 >
@@ -340,9 +339,8 @@ export default function Providers() {
               </div>
 
               <div>
-                <label className="label">City</label>
+                <label>City</label>
                 <input
-                  className="input"
                   value={form.city}
                   onChange={(e) => setForm((s) => ({ ...s, city: e.target.value }))}
                   required
@@ -350,18 +348,16 @@ export default function Providers() {
               </div>
 
               <div>
-                <label className="label">State</label>
+                <label>State</label>
                 <input
-                  className="input"
                   value={form.state}
                   onChange={(e) => setForm((s) => ({ ...s, state: e.target.value }))}
                 />
               </div>
 
               <div>
-                <label className="label">Phone</label>
+                <label>Phone</label>
                 <input
-                  className="input"
                   value={form.phone}
                   onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))}
                   required
@@ -369,18 +365,16 @@ export default function Providers() {
               </div>
 
               <div>
-                <label className="label">WhatsApp</label>
+                <label>WhatsApp</label>
                 <input
-                  className="input"
                   value={form.whatsapp}
                   onChange={(e) => setForm((s) => ({ ...s, whatsapp: e.target.value }))}
                 />
               </div>
 
-              <div className="fullCol">
-                <label className="label">Service Card Image</label>
+              <div className="fullSpan">
+                <label>Service Card Image</label>
                 <input
-                  className="input"
                   type="file"
                   accept="image/*"
                   onChange={(e) =>
@@ -389,10 +383,9 @@ export default function Providers() {
                 />
               </div>
 
-              <div className="fullCol">
-                <label className="label">Description</label>
+              <div className="fullSpan">
+                <label>Description</label>
                 <textarea
-                  className="textarea"
                   rows={4}
                   value={form.description}
                   onChange={(e) => setForm((s) => ({ ...s, description: e.target.value }))}
@@ -401,22 +394,22 @@ export default function Providers() {
             </div>
 
             {form.listingType === "vehicle" && (
-              <div className="providerBlock">
-                <div className="providerBlockTop">
-                  <h3 className="providerBlockTitle">Vehicles</h3>
-                  <button className="btn" type="button" onClick={addVehicle}>
+              <div className="providersBlock">
+                <div className="providersBlockHead">
+                  <h3>Vehicles</h3>
+                  <button className="providersGhostBtn" type="button" onClick={addVehicle}>
                     Add Vehicle
                   </button>
                 </div>
 
-                <div className="vehicleCardList">
+                <div className="providersVehicleList">
                   {form.vehicles.map((vehicle, index) => (
-                    <div className="vehicleItemCard" key={index}>
-                      <div className="vehicleItemTop">
-                        <div className="vehicleItemHeading">Vehicle {index + 1}</div>
+                    <div className="providersVehicleCard" key={index}>
+                      <div className="providersVehicleCardTop">
+                        <strong>Vehicle {index + 1}</strong>
                         {form.vehicles.length > 1 && (
                           <button
-                            className="removeMiniBtn"
+                            className="providersDangerBtn"
                             type="button"
                             onClick={() => removeVehicle(index)}
                           >
@@ -425,16 +418,15 @@ export default function Providers() {
                         )}
                       </div>
 
-                      <div className="providerFormGrid">
+                      <div className="providersFormGrid">
                         <div>
-                          <label className="label">Vehicle Type</label>
+                          <label>Vehicle Type</label>
                           <select
-                            className="select"
                             value={vehicle.vehicleType}
                             onChange={(e) => updateVehicle(index, "vehicleType", e.target.value)}
                           >
                             {vehicleTypes.map((type) => (
-                              <option value={type} key={type}>
+                              <option key={type} value={type}>
                                 {type}
                               </option>
                             ))}
@@ -442,18 +434,16 @@ export default function Providers() {
                         </div>
 
                         <div>
-                          <label className="label">Title</label>
+                          <label>Title</label>
                           <input
-                            className="input"
                             value={vehicle.title}
                             onChange={(e) => updateVehicle(index, "title", e.target.value)}
                           />
                         </div>
 
                         <div>
-                          <label className="label">Price</label>
+                          <label>Price</label>
                           <input
-                            className="input"
                             type="number"
                             value={vehicle.price}
                             onChange={(e) => updateVehicle(index, "price", e.target.value)}
@@ -462,9 +452,8 @@ export default function Providers() {
                         </div>
 
                         <div>
-                          <label className="label">Price Unit</label>
+                          <label>Price Unit</label>
                           <select
-                            className="select"
                             value={vehicle.priceUnit}
                             onChange={(e) => updateVehicle(index, "priceUnit", e.target.value)}
                           >
@@ -475,9 +464,8 @@ export default function Providers() {
                         </div>
 
                         <div>
-                          <label className="label">Capacity</label>
+                          <label>Capacity</label>
                           <input
-                            className="input"
                             type="number"
                             value={vehicle.capacity}
                             onChange={(e) => updateVehicle(index, "capacity", e.target.value)}
@@ -485,16 +473,15 @@ export default function Providers() {
                         </div>
 
                         <div>
-                          <label className="label">Fuel Type</label>
+                          <label>Fuel Type</label>
                           <input
-                            className="input"
                             value={vehicle.fuelType}
                             onChange={(e) => updateVehicle(index, "fuelType", e.target.value)}
                           />
                         </div>
 
-                        <div className="vehicleCheckWrap">
-                          <label className="providerCheck">
+                        <div className="fullSpan">
+                          <label className="providersCheck">
                             <input
                               type="checkbox"
                               checked={vehicle.withDriver}
@@ -504,10 +491,9 @@ export default function Providers() {
                           </label>
                         </div>
 
-                        <div className="fullCol">
-                          <label className="label">Vehicle Images</label>
+                        <div className="fullSpan">
+                          <label>Vehicle Images</label>
                           <input
-                            className="input"
                             type="file"
                             accept="image/*"
                             multiple
@@ -522,14 +508,13 @@ export default function Providers() {
             )}
 
             {form.listingType === "travel_planner" && (
-              <div className="providerBlock">
-                <h3 className="providerBlockTitle">Travel Planner Details</h3>
+              <div className="providersBlock">
+                <h3>Travel Planner Details</h3>
 
-                <div className="providerFormGrid">
+                <div className="providersFormGrid">
                   <div>
-                    <label className="label">Planner Type</label>
+                    <label>Planner Type</label>
                     <select
-                      className="select"
                       value={form.plannerMode}
                       onChange={(e) => setForm((s) => ({ ...s, plannerMode: e.target.value }))}
                     >
@@ -542,27 +527,24 @@ export default function Providers() {
                   </div>
 
                   <div>
-                    <label className="label">Package Title</label>
+                    <label>Package Title</label>
                     <input
-                      className="input"
                       value={form.packageTitle}
                       onChange={(e) => setForm((s) => ({ ...s, packageTitle: e.target.value }))}
                     />
                   </div>
 
                   <div>
-                    <label className="label">Duration Text</label>
+                    <label>Duration Text</label>
                     <input
-                      className="input"
                       value={form.durationText}
                       onChange={(e) => setForm((s) => ({ ...s, durationText: e.target.value }))}
                     />
                   </div>
 
                   <div>
-                    <label className="label">Days</label>
+                    <label>Days</label>
                     <input
-                      className="input"
                       type="number"
                       value={form.days}
                       onChange={(e) => setForm((s) => ({ ...s, days: e.target.value }))}
@@ -570,9 +552,8 @@ export default function Providers() {
                   </div>
 
                   <div>
-                    <label className="label">Price From</label>
+                    <label>Price From</label>
                     <input
-                      className="input"
                       type="number"
                       value={form.priceFrom}
                       onChange={(e) => setForm((s) => ({ ...s, priceFrom: e.target.value }))}
@@ -580,46 +561,41 @@ export default function Providers() {
                   </div>
 
                   <div>
-                    <label className="label">Price Per Person</label>
+                    <label>Price Per Person</label>
                     <input
-                      className="input"
                       type="number"
                       value={form.pricePerPerson}
                       onChange={(e) => setForm((s) => ({ ...s, pricePerPerson: e.target.value }))}
                     />
                   </div>
 
-                  <div className="fullCol">
-                    <label className="label">Places Covered</label>
+                  <div className="fullSpan">
+                    <label>Places Covered</label>
                     <input
-                      className="input"
                       value={form.placesCovered}
                       onChange={(e) => setForm((s) => ({ ...s, placesCovered: e.target.value }))}
                     />
                   </div>
 
-                  <div className="fullCol">
-                    <label className="label">Inclusions</label>
+                  <div className="fullSpan">
+                    <label>Inclusions</label>
                     <input
-                      className="input"
                       value={form.inclusions}
                       onChange={(e) => setForm((s) => ({ ...s, inclusions: e.target.value }))}
                     />
                   </div>
 
-                  <div className="fullCol">
-                    <label className="label">Exclusions</label>
+                  <div className="fullSpan">
+                    <label>Exclusions</label>
                     <input
-                      className="input"
                       value={form.exclusions}
                       onChange={(e) => setForm((s) => ({ ...s, exclusions: e.target.value }))}
                     />
                   </div>
 
-                  <div className="fullCol">
-                    <label className="label">Planner Images</label>
+                  <div className="fullSpan">
+                    <label>Planner Images</label>
                     <input
-                      className="input"
                       type="file"
                       accept="image/*"
                       multiple
@@ -630,37 +606,62 @@ export default function Providers() {
               </div>
             )}
 
-            <div className="providerFormActions">
-              <button className="btn btnPrimary" type="submit">
-                {editingId ? "Save Changes" : "Create Listing"}
-              </button>
-            </div>
+            <button className="providersPrimaryBtn" type="submit">
+              {editingId ? "Save Changes" : "Create Listing"}
+            </button>
           </form>
-        </div>
+        </section>
       )}
 
-      <div className="providerSearch card">
+      {myProviders.length > 0 && (
+        <section className="providersOwned">
+          <h2>My Listings</h2>
+          <div className="providersGrid">
+            {myProviders.map((item) => (
+              <div className="providerCard" key={item._id}>
+                <div className="providerCardBody">
+                  <div className="providerCardHeader">
+                    <div>
+                      <h3>{item.businessName}</h3>
+                      <p>{item.city} • {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}</p>
+                    </div>
+
+                    <div className="providerCardActions">
+                      <button className="providersGhostBtn" onClick={() => openEditForm(item)}>
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="providerCardDesc">
+                    {item.description || "No description added."}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="providersSearchBox">
         <form
-          className="providerSearchGrid"
+          className="providersSearchGrid"
           onSubmit={(e) => {
             e.preventDefault();
             loadProviders();
           }}
         >
           <input
-            className="input"
             placeholder="Search providers"
             value={filters.q}
             onChange={(e) => setFilters((s) => ({ ...s, q: e.target.value }))}
           />
           <input
-            className="input"
             placeholder="City / Destination"
             value={filters.city}
             onChange={(e) => setFilters((s) => ({ ...s, city: e.target.value }))}
           />
           <select
-            className="select"
             value={filters.listingType}
             onChange={(e) => setFilters((s) => ({ ...s, listingType: e.target.value }))}
           >
@@ -669,7 +670,6 @@ export default function Providers() {
             <option value="travel_planner">Travel Planner</option>
           </select>
           <select
-            className="select"
             value={filters.vehicleType}
             onChange={(e) => setFilters((s) => ({ ...s, vehicleType: e.target.value }))}
           >
@@ -680,82 +680,60 @@ export default function Providers() {
               </option>
             ))}
           </select>
-          <button className="btn btnPrimary" type="submit">
+          <button className="providersPrimaryBtn" type="submit">
             Search
           </button>
         </form>
-      </div>
+      </section>
 
-      <div className="providerGrid">
-        {providers.map((item) => (
-          <div className="providerCard card" key={item._id}>
-            <div className="providerMedia">
+      <section className="providersGrid">
+        {visibleProviders.map((item) => (
+          <div className="providerCard" key={item._id}>
+            <div className="providerCardMedia">
               {item.serviceImage?.url ? (
                 <img src={item.serviceImage.url} alt={item.businessName} />
               ) : item.listingType === "vehicle" ? (
                 item.vehicles?.[0]?.images?.[0]?.url ? (
                   <img src={item.vehicles[0].images[0].url} alt={item.businessName} />
                 ) : (
-                  <div className="providerMediaEmpty">No Image</div>
+                  <div className="providerCardMediaEmpty">No Image</div>
                 )
               ) : item.travelPlanner?.images?.[0]?.url ? (
                 <img src={item.travelPlanner.images[0].url} alt={item.businessName} />
               ) : (
-                <div className="providerMediaEmpty">No Image</div>
+                <div className="providerCardMediaEmpty">No Image</div>
               )}
             </div>
 
-            <div className="providerBody">
-              <div className="providerCardTop">
+            <div className="providerCardBody">
+              <div className="providerCardHeader">
                 <div>
-                  <div className="providerCardTitle">{item.businessName}</div>
-                  <div className="providerMetaText">
-                    {item.city} • by {item.owner?.name || "Provider"}
-                  </div>
+                  <h3>{item.businessName}</h3>
+                  <p>{item.city} • by {item.owner?.name || "Provider"}</p>
                 </div>
-
-                <div className="providerRating">
-                  ⭐ {item.ratingAverage || 0} ({item.ratingCount || 0})
+                <div className="providerCardRating">
+                  ⭐ {item.ratingAverage || 0}
                 </div>
               </div>
 
-              <div className="providerTypeBadge">
+              <div className="providerTypePill">
                 {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
               </div>
 
-              <div className="providerDesc">
+              <div className="providerCardDesc">
                 {item.description || "No description available."}
               </div>
 
-              {item.listingType === "travel_planner" && (
-                <div className="providerMiniItem">
-                  From ₹{item.travelPlanner?.priceFrom || 0} • Per person ₹
-                  {item.travelPlanner?.pricePerPerson || 0}
-                </div>
-              )}
-
-              {item.listingType === "vehicle" && (
-                <div className="providerMiniList">
-                  {item.vehicles?.slice(0, 2).map((v, index) => (
-                    <div key={index} className="providerMiniItem">
-                      {v.title || v.vehicleType} — ₹{v.price}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="providerCardActions">
-                <button
-                  className="btn"
-                  onClick={() => navigate(`/providers/${item._id}`)}
-                >
-                  View Details
-                </button>
-              </div>
+              <button
+                className="providersGhostBtn"
+                onClick={() => navigate(`/providers/${item._id}`)}
+              >
+                View Details
+              </button>
             </div>
           </div>
         ))}
-      </div>
+      </section>
     </div>
   );
 }
