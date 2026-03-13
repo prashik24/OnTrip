@@ -57,7 +57,7 @@ export default function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/providers" element={<Providers />} />
+            <Route path="/providers/:id" element={<ProviderDetails />} />
       
 <Route path="/providers/:id" element={<ProviderDetails />} />
 <Route path="/profile/my-listings" element={<MyListings />} />
