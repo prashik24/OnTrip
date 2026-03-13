@@ -22,20 +22,17 @@ export default function Profile() {
     async function loadMe() {
       try {
         const data = await apiFetch("/api/auth/me");
-
         setUser(data.user);
-
         setForm({
           name: data.user?.name || "",
           phone: data.user?.phone || "",
           city: data.user?.city || "",
           bio: data.user?.bio || "",
         });
-
         saveUserOnly(data.user);
         window.dispatchEvent(new Event("ontrip-auth-changed"));
       } catch {
-        // ignore
+        //
       }
     }
 
@@ -60,9 +57,7 @@ export default function Profile() {
 
       setUser(data.user);
       saveUserOnly(data.user);
-
       window.dispatchEvent(new Event("ontrip-auth-changed"));
-
       setEditing(false);
 
       setMsg({
@@ -94,7 +89,6 @@ export default function Profile() {
 
       setUser(data.user);
       saveUserOnly(data.user);
-
       window.dispatchEvent(new Event("ontrip-auth-changed"));
 
       setMsg({
@@ -118,27 +112,18 @@ export default function Profile() {
   const initial = user?.name?.charAt(0)?.toUpperCase() || "U";
 
   return (
-    <div className="container profilePage">
-      <div className="profileCard">
-
-        {/* HEADER */}
+    <div className="profilePage container">
+      <section className="profileCard">
         <div className="profileHeader">
-
           <div className="profileAvatarArea">
             {avatarSrc ? (
-              <img
-                src={avatarSrc}
-                alt={user?.name || "User"}
-                className="profileAvatar"
-              />
+              <img src={avatarSrc} alt={user?.name || "User"} className="profileAvatar" />
             ) : (
-              <div className="profileAvatar profileAvatarFallback">
-                {initial}
-              </div>
+              <div className="profileAvatar profileAvatarFallback">{initial}</div>
             )}
 
             {editing && (
-              <label className="changePhotoText">
+              <label className="profilePhotoChange">
                 <input
                   type="file"
                   accept="image/*"
@@ -151,13 +136,20 @@ export default function Profile() {
           </div>
 
           <div className="profileMain">
-            <h1 className="profileName">{user?.name || "Traveler"}</h1>
-            <p className="profileEmail">{user?.email || "No email added"}</p>
+            <div className="profileIdentity">
+              <h1>{user?.name || "Traveler"}</h1>
+              <p>{user?.email || "No email added"}</p>
+            </div>
+
+            <div className="profileMiniInfo">
+              <span>{user?.city || "City not added"}</span>
+              <span>{user?.phone || "Phone not added"}</span>
+            </div>
           </div>
 
           <div className="profileActions">
             <button
-              className="profileBtn primaryBtn"
+              className="profilePrimaryBtn"
               onClick={() => {
                 setEditing((prev) => !prev);
                 setMsg({ text: "", type: "" });
@@ -166,10 +158,7 @@ export default function Profile() {
               {editing ? "Cancel" : "Edit Profile"}
             </button>
 
-            <button
-              className="profileBtn lightBtn"
-              onClick={logout}
-            >
+            <button className="profileGhostBtn" onClick={logout}>
               Logout
             </button>
           </div>
@@ -183,154 +172,107 @@ export default function Profile() {
 
         {!editing ? (
           <div className="profileContent">
-
-            {/* BIO */}
             <div className="profileSection">
-              <h2 className="sectionTitle">Bio</h2>
-              <p className="aboutText">
-                {user?.bio?.trim() || "No bio added yet."}
-              </p>
+              <h2>Bio</h2>
+              <p>{user?.bio?.trim() || "No bio added yet."}</p>
             </div>
 
-            {/* PERSONAL INFO */}
             <div className="profileSection">
-              <h2 className="sectionTitle">Personal Information</h2>
-
-              <div className="infoGrid">
-
-                <div className="infoItem">
-                  <span className="infoLabel">Full Name</span>
-                  <span className="infoValue">{user?.name || "Not added"}</span>
+              <h2>Personal Information</h2>
+              <div className="profileInfoGrid">
+                <div className="profileInfoItem">
+                  <strong>Full Name</strong>
+                  <span>{user?.name || "Not added"}</span>
                 </div>
 
-                <div className="infoItem">
-                  <span className="infoLabel">Email</span>
-                  <span className="infoValue">{user?.email || "Not added"}</span>
+                <div className="profileInfoItem">
+                  <strong>Email</strong>
+                  <span>{user?.email || "Not added"}</span>
                 </div>
 
-                <div className="infoItem">
-                  <span className="infoLabel">Phone</span>
-                  <span className="infoValue">{user?.phone || "Not added"}</span>
+                <div className="profileInfoItem">
+                  <strong>Phone</strong>
+                  <span>{user?.phone || "Not added"}</span>
                 </div>
 
-                <div className="infoItem">
-                  <span className="infoLabel">City</span>
-                  <span className="infoValue">{user?.city || "Not added"}</span>
+                <div className="profileInfoItem">
+                  <strong>City</strong>
+                  <span>{user?.city || "Not added"}</span>
                 </div>
-
               </div>
             </div>
 
-            {/* NEW SECTION */}
-            <div className="grid2">
-
-              <div className="card box">
-                <div className="boxTitle">My Listings</div>
-                <div className="muted">Manage your provider services.</div>
-
-                <button
-                  className="btn"
-                  onClick={() => navigate("/profile/my-listings")}
-                >
+            <div className="profileQuickGrid">
+              <div className="profileQuickCard">
+                <h3>My Listings</h3>
+                <p>Manage your provider services in one place.</p>
+                <button className="profileGhostBtn" onClick={() => navigate("/profile/my-listings")}>
                   Open My Listings
                 </button>
               </div>
 
-              <div className="card box">
-                <div className="boxTitle">Booking History</div>
-                <div className="muted">
-                  Track your previous and upcoming bookings.
-                </div>
-
-                <button
-                  className="btn"
-                  onClick={() => navigate("/profile/bookings")}
-                >
+              <div className="profileQuickCard">
+                <h3>Booking History</h3>
+                <p>Track bookings, payment state, and travel plans.</p>
+                <button className="profileGhostBtn" onClick={() => navigate("/profile/bookings")}>
                   Open Booking History
                 </button>
               </div>
 
-              <div className="card box">
-                <div className="boxTitle">Provider Dashboard</div>
-                <div className="muted">
-                  Customer bookings, payments and statuses.
-                </div>
-
-                <button
-                  className="btn"
-                  onClick={() => navigate("/provider/dashboard")}
-                >
+              <div className="profileQuickCard">
+                <h3>Provider Dashboard</h3>
+                <p>View customer bookings, statuses, and updates.</p>
+                <button className="profileGhostBtn" onClick={() => navigate("/provider/dashboard")}>
                   Open Dashboard
                 </button>
               </div>
-
             </div>
-
           </div>
         ) : (
-
           <form className="profileForm" onSubmit={saveProfile}>
-
-            <h2 className="sectionTitle">Edit Profile</h2>
-
-            <div className="formGroup">
-              <label className="label">Full Name</label>
-              <input
-                className="input"
-                value={form.name}
-                onChange={(e) => update("name", e.target.value)}
-                placeholder="Enter your full name"
-              />
-            </div>
+            <h2>Edit Profile</h2>
 
             <div className="profileFormGrid">
-
-              <div className="formGroup">
-                <label className="label">Phone</label>
+              <div>
+                <label>Full Name</label>
                 <input
-                  className="input"
+                  value={form.name}
+                  onChange={(e) => update("name", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label>Phone</label>
+                <input
                   value={form.phone}
                   onChange={(e) => update("phone", e.target.value)}
-                  placeholder="Enter phone number"
                 />
               </div>
 
-              <div className="formGroup">
-                <label className="label">City</label>
+              <div>
+                <label>City</label>
                 <input
-                  className="input"
                   value={form.city}
                   onChange={(e) => update("city", e.target.value)}
-                  placeholder="Enter your city"
                 />
               </div>
 
+              <div className="fullSpan">
+                <label>Bio</label>
+                <textarea
+                  rows={5}
+                  value={form.bio}
+                  onChange={(e) => update("bio", e.target.value)}
+                />
+              </div>
             </div>
 
-            <div className="formGroup">
-              <label className="label">Bio</label>
-              <textarea
-                className="textarea"
-                rows={5}
-                value={form.bio}
-                onChange={(e) => update("bio", e.target.value)}
-                placeholder="Write something about yourself"
-              />
-            </div>
-
-            <div className="formActions">
-              <button
-                className="profileBtn primaryBtn"
-                type="submit"
-                disabled={loading}
-              >
-                {loading ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
-
+            <button className="profilePrimaryBtn" type="submit" disabled={loading}>
+              {loading ? "Saving..." : "Save Changes"}
+            </button>
           </form>
         )}
-      </div>
+      </section>
     </div>
   );
 }
