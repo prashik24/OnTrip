@@ -305,7 +305,7 @@ export default function Providers() {
         </div>
 
         <div className="providerHeroActions">
-          <button className="btn btnPrimary" onClick={openCreateForm} type="button">
+          <button className="btn btnPrimary" onClick={openCreateForm}>
             Register as Provider
           </button>
         </div>
@@ -341,9 +341,7 @@ export default function Providers() {
                 <input
                   className="input"
                   value={form.businessName}
-                  onChange={(e) =>
-                    setForm((s) => ({ ...s, businessName: e.target.value }))
-                  }
+                  onChange={(e) => setForm((s) => ({ ...s, businessName: e.target.value }))}
                   required
                 />
               </div>
@@ -353,9 +351,7 @@ export default function Providers() {
                 <select
                   className="select"
                   value={form.listingType}
-                  onChange={(e) =>
-                    setForm((s) => ({ ...s, listingType: e.target.value }))
-                  }
+                  onChange={(e) => setForm((s) => ({ ...s, listingType: e.target.value }))}
                 >
                   <option value="vehicle">Vehicle Service</option>
                   <option value="travel_planner">Travel Planner</option>
@@ -396,9 +392,7 @@ export default function Providers() {
                 <input
                   className="input"
                   value={form.whatsapp}
-                  onChange={(e) =>
-                    setForm((s) => ({ ...s, whatsapp: e.target.value }))
-                  }
+                  onChange={(e) => setForm((s) => ({ ...s, whatsapp: e.target.value }))}
                 />
               </div>
 
@@ -408,9 +402,7 @@ export default function Providers() {
                   className="textarea"
                   rows={4}
                   value={form.description}
-                  onChange={(e) =>
-                    setForm((s) => ({ ...s, description: e.target.value }))
-                  }
+                  onChange={(e) => setForm((s) => ({ ...s, description: e.target.value }))}
                 />
               </div>
             </div>
@@ -446,9 +438,7 @@ export default function Providers() {
                           <select
                             className="select"
                             value={vehicle.vehicleType}
-                            onChange={(e) =>
-                              updateVehicle(index, "vehicleType", e.target.value)
-                            }
+                            onChange={(e) => updateVehicle(index, "vehicleType", e.target.value)}
                           >
                             {vehicleTypes.map((type) => (
                               <option value={type} key={type}>
@@ -463,9 +453,7 @@ export default function Providers() {
                           <input
                             className="input"
                             value={vehicle.title}
-                            onChange={(e) =>
-                              updateVehicle(index, "title", e.target.value)
-                            }
+                            onChange={(e) => updateVehicle(index, "title", e.target.value)}
                             placeholder="Example: Swift Dzire AC"
                           />
                         </div>
@@ -476,9 +464,7 @@ export default function Providers() {
                             className="input"
                             type="number"
                             value={vehicle.price}
-                            onChange={(e) =>
-                              updateVehicle(index, "price", e.target.value)
-                            }
+                            onChange={(e) => updateVehicle(index, "price", e.target.value)}
                             required
                           />
                         </div>
@@ -489,9 +475,7 @@ export default function Providers() {
                             className="input"
                             type="number"
                             value={vehicle.capacity}
-                            onChange={(e) =>
-                              updateVehicle(index, "capacity", e.target.value)
-                            }
+                            onChange={(e) => updateVehicle(index, "capacity", e.target.value)}
                           />
                         </div>
 
@@ -500,9 +484,7 @@ export default function Providers() {
                           <input
                             className="input"
                             value={vehicle.fuelType}
-                            onChange={(e) =>
-                              updateVehicle(index, "fuelType", e.target.value)
-                            }
+                            onChange={(e) => updateVehicle(index, "fuelType", e.target.value)}
                             placeholder="Petrol / Diesel / EV"
                           />
                         </div>
@@ -512,9 +494,7 @@ export default function Providers() {
                             <input
                               type="checkbox"
                               checked={vehicle.withDriver}
-                              onChange={(e) =>
-                                updateVehicle(index, "withDriver", e.target.checked)
-                              }
+                              onChange={(e) => updateVehicle(index, "withDriver", e.target.checked)}
                             />
                             <span>With Driver</span>
                           </label>
@@ -527,9 +507,7 @@ export default function Providers() {
                             type="file"
                             accept="image/*"
                             multiple
-                            onChange={(e) =>
-                              updateVehicle(index, "images", e.target.files)
-                            }
+                            onChange={(e) => updateVehicle(index, "images", e.target.files)}
                           />
                         </div>
 
@@ -542,9 +520,7 @@ export default function Providers() {
                                   <button
                                     type="button"
                                     className="removeImageBtn"
-                                    onClick={() =>
-                                      removeVehicleExistingImage(index, imgIndex)
-                                    }
+                                    onClick={() => removeVehicleExistingImage(index, imgIndex)}
                                   >
                                     Remove
                                   </button>
@@ -570,14 +546,10 @@ export default function Providers() {
                     <select
                       className="select"
                       value={form.plannerMode}
-                      onChange={(e) =>
-                        setForm((s) => ({ ...s, plannerMode: e.target.value }))
-                      }
+                      onChange={(e) => setForm((s) => ({ ...s, plannerMode: e.target.value }))}
                     >
                       <option value="customized_trip">Customized Trip</option>
-                      <option value="self_customized_places">
-                        Self Customized Places
-                      </option>
+                      <option value="self_customized_places">Self Customized Places</option>
                       <option value="day_package">Day Package</option>
                       <option value="multi_day_package">Multi Day Package</option>
                       <option value="group_trip">Group Trip</option>
@@ -589,9 +561,7 @@ export default function Providers() {
                     <input
                       className="input"
                       value={form.packageTitle}
-                      onChange={(e) =>
-                        setForm((s) => ({ ...s, packageTitle: e.target.value }))
-                      }
+                      onChange={(e) => setForm((s) => ({ ...s, packageTitle: e.target.value }))}
                     />
                   </div>
 
@@ -600,9 +570,7 @@ export default function Providers() {
                     <input
                       className="input"
                       value={form.durationText}
-                      onChange={(e) =>
-                        setForm((s) => ({ ...s, durationText: e.target.value }))
-                      }
+                      onChange={(e) => setForm((s) => ({ ...s, durationText: e.target.value }))}
                       placeholder="Example: 2 days 1 night"
                     />
                   </div>
@@ -613,9 +581,7 @@ export default function Providers() {
                       className="input"
                       type="number"
                       value={form.priceFrom}
-                      onChange={(e) =>
-                        setForm((s) => ({ ...s, priceFrom: e.target.value }))
-                      }
+                      onChange={(e) => setForm((s) => ({ ...s, priceFrom: e.target.value }))}
                     />
                   </div>
 
@@ -624,9 +590,7 @@ export default function Providers() {
                     <input
                       className="input"
                       value={form.placesCovered}
-                      onChange={(e) =>
-                        setForm((s) => ({ ...s, placesCovered: e.target.value }))
-                      }
+                      onChange={(e) => setForm((s) => ({ ...s, placesCovered: e.target.value }))}
                       placeholder="Example: Jaipur Fort, City Palace, Hawa Mahal"
                     />
                   </div>
@@ -636,9 +600,7 @@ export default function Providers() {
                     <input
                       className="input"
                       value={form.inclusions}
-                      onChange={(e) =>
-                        setForm((s) => ({ ...s, inclusions: e.target.value }))
-                      }
+                      onChange={(e) => setForm((s) => ({ ...s, inclusions: e.target.value }))}
                       placeholder="Example: Guide, transport, breakfast"
                     />
                   </div>
@@ -648,9 +610,7 @@ export default function Providers() {
                     <input
                       className="input"
                       value={form.exclusions}
-                      onChange={(e) =>
-                        setForm((s) => ({ ...s, exclusions: e.target.value }))
-                      }
+                      onChange={(e) => setForm((s) => ({ ...s, exclusions: e.target.value }))}
                       placeholder="Example: Entry tickets, lunch"
                     />
                   </div>
@@ -662,9 +622,7 @@ export default function Providers() {
                       type="file"
                       accept="image/*"
                       multiple
-                      onChange={(e) =>
-                        setForm((s) => ({ ...s, plannerImages: e.target.files }))
-                      }
+                      onChange={(e) => setForm((s) => ({ ...s, plannerImages: e.target.files }))}
                     />
                   </div>
 
@@ -754,9 +712,7 @@ export default function Providers() {
           <select
             className="select"
             value={filters.listingType}
-            onChange={(e) =>
-              setFilters((s) => ({ ...s, listingType: e.target.value }))
-            }
+            onChange={(e) => setFilters((s) => ({ ...s, listingType: e.target.value }))}
           >
             <option value="">All Types</option>
             <option value="vehicle">Vehicle Service</option>
@@ -765,9 +721,7 @@ export default function Providers() {
           <select
             className="select"
             value={filters.vehicleType}
-            onChange={(e) =>
-              setFilters((s) => ({ ...s, vehicleType: e.target.value }))
-            }
+            onChange={(e) => setFilters((s) => ({ ...s, vehicleType: e.target.value }))}
           >
             <option value="">All Vehicles</option>
             {vehicleTypes.map((type) => (
@@ -840,12 +794,9 @@ export default function Providers() {
               </div>
 
               <div className="providerCardActions">
-                <button
-                  className="btn"
-                  onClick={() => navigate(`/providers/${item._id}`)}
-                >
+                <Link className="btn" to={`/providers/${item._id}`}>
                   View Details
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -853,4 +804,4 @@ export default function Providers() {
       </div>
     </div>
   );
-} 
+}
