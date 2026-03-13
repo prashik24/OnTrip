@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { apiFetch, isLoggedIn } from "../lib/api";
 import "./Providers.css";
 
@@ -10,6 +10,7 @@ function emptyVehicle() {
     vehicleType: "car",
     title: "",
     price: "",
+    priceUnit: "per_day",
     capacity: "",
     fuelType: "",
     withDriver: false,
@@ -42,11 +43,14 @@ export default function Providers() {
     phone: "",
     whatsapp: "",
     description: "",
+    serviceImage: null,
     vehicles: [emptyVehicle()],
     plannerMode: "customized_trip",
     packageTitle: "",
     durationText: "",
+    days: "",
     priceFrom: "",
+    pricePerPerson: "",
     placesCovered: "",
     inclusions: "",
     exclusions: "",
@@ -67,11 +71,14 @@ export default function Providers() {
       phone: "",
       whatsapp: "",
       description: "",
+      serviceImage: null,
       vehicles: [emptyVehicle()],
       plannerMode: "customized_trip",
       packageTitle: "",
       durationText: "",
+      days: "",
       priceFrom: "",
+      pricePerPerson: "",
       placesCovered: "",
       inclusions: "",
       exclusions: "",
@@ -102,7 +109,7 @@ export default function Providers() {
       const data = await apiFetch("/api/providers/mine");
       setMyProviders(data.providers || []);
     } catch {
-      // ignore
+      //
     }
   }
 
@@ -132,12 +139,14 @@ export default function Providers() {
       phone: item.phone || "",
       whatsapp: item.whatsapp || "",
       description: item.description || "",
+      serviceImage: null,
       vehicles:
         item.vehicles?.length > 0
           ? item.vehicles.map((v) => ({
               vehicleType: v.vehicleType || "car",
               title: v.title || "",
               price: v.price || "",
+              priceUnit: v.priceUnit || "per_day",
               capacity: v.capacity || "",
               fuelType: v.fuelType || "",
               withDriver: !!v.withDriver,
@@ -148,7 +157,9 @@ export default function Providers() {
       plannerMode: item.travelPlanner?.plannerMode || "customized_trip",
       packageTitle: item.travelPlanner?.packageTitle || "",
       durationText: item.travelPlanner?.durationText || "",
+      days: item.travelPlanner?.days || "",
       priceFrom: item.travelPlanner?.priceFrom || "",
+      pricePerPerson: item.travelPlanner?.pricePerPerson || "",
       placesCovered: (item.travelPlanner?.placesCovered || []).join(", "),
       inclusions: (item.travelPlanner?.inclusions || []).join(", "),
       exclusions: (item.travelPlanner?.exclusions || []).join(", "),
@@ -180,27 +191,6 @@ export default function Providers() {
     }));
   }
 
-  function removeVehicleExistingImage(vehicleIndex, imageIndex) {
-    setForm((prev) => ({
-      ...prev,
-      vehicles: prev.vehicles.map((item, i) =>
-        i === vehicleIndex
-          ? {
-              ...item,
-              existingImages: item.existingImages.filter((_, idx) => idx !== imageIndex),
-            }
-          : item
-      ),
-    }));
-  }
-
-  function removePlannerExistingImage(index) {
-    setForm((prev) => ({
-      ...prev,
-      existingPlannerImages: prev.existingPlannerImages.filter((_, i) => i !== index),
-    }));
-  }
-
   async function submitProvider(e) {
     e.preventDefault();
 
@@ -215,11 +205,16 @@ export default function Providers() {
       fd.append("whatsapp", form.whatsapp);
       fd.append("description", form.description);
 
+      if (form.serviceImage) {
+        fd.append("serviceImage", form.serviceImage);
+      }
+
       if (form.listingType === "vehicle") {
         const cleanVehicles = form.vehicles.map((v) => ({
           vehicleType: v.vehicleType,
           title: v.title,
           price: v.price,
+          priceUnit: v.priceUnit,
           capacity: v.capacity,
           fuelType: v.fuelType,
           withDriver: v.withDriver,
@@ -246,7 +241,9 @@ export default function Providers() {
         fd.append("plannerMode", form.plannerMode);
         fd.append("packageTitle", form.packageTitle);
         fd.append("durationText", form.durationText);
+        fd.append("days", form.days);
         fd.append("priceFrom", form.priceFrom);
+        fd.append("pricePerPerson", form.pricePerPerson);
         fd.append("placesCovered", form.placesCovered);
         fd.append("inclusions", form.inclusions);
         fd.append("exclusions", form.exclusions);
@@ -278,29 +275,13 @@ export default function Providers() {
     }
   }
 
-  async function removeProvider(id) {
-    const ok = window.confirm("Are you sure you want to remove this listing?");
-    if (!ok) return;
-
-    try {
-      const data = await apiFetch(`/api/providers/${id}`, {
-        method: "DELETE",
-      });
-      setMessage(data.message, "success");
-      await loadProviders();
-      await loadMyProviders();
-    } catch (err) {
-      setMessage(err.message, "error");
-    }
-  }
-
   return (
     <div className="container providerPlatformPage">
       <div className="providerHero card">
         <div>
           <h1 className="providerHeroTitle">Provider Platform</h1>
           <p className="providerHeroSub">
-            Add vehicle services and travel planner packages in a clean, professional marketplace.
+            Create premium travel and vehicle services with rich cards, images, pricing and modern booking flow.
           </p>
         </div>
 
@@ -325,7 +306,7 @@ export default function Providers() {
                 {editingId ? "Edit Listing" : "Create Listing"}
               </h2>
               <p className="providerSectionSub">
-                Keep your vehicle services and travel planner details separate and organized.
+                Add service card image, pricing and detailed service information.
               </p>
             </div>
 
@@ -397,6 +378,18 @@ export default function Providers() {
               </div>
 
               <div className="fullCol">
+                <label className="label">Service Card Image</label>
+                <input
+                  className="input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, serviceImage: e.target.files?.[0] || null }))
+                  }
+                />
+              </div>
+
+              <div className="fullCol">
                 <label className="label">Description</label>
                 <textarea
                   className="textarea"
@@ -454,7 +447,6 @@ export default function Providers() {
                             className="input"
                             value={vehicle.title}
                             onChange={(e) => updateVehicle(index, "title", e.target.value)}
-                            placeholder="Example: Swift Dzire AC"
                           />
                         </div>
 
@@ -467,6 +459,19 @@ export default function Providers() {
                             onChange={(e) => updateVehicle(index, "price", e.target.value)}
                             required
                           />
+                        </div>
+
+                        <div>
+                          <label className="label">Price Unit</label>
+                          <select
+                            className="select"
+                            value={vehicle.priceUnit}
+                            onChange={(e) => updateVehicle(index, "priceUnit", e.target.value)}
+                          >
+                            <option value="per_day">Per Day</option>
+                            <option value="per_hour">Per Hour</option>
+                            <option value="fixed">Fixed</option>
+                          </select>
                         </div>
 
                         <div>
@@ -485,7 +490,6 @@ export default function Providers() {
                             className="input"
                             value={vehicle.fuelType}
                             onChange={(e) => updateVehicle(index, "fuelType", e.target.value)}
-                            placeholder="Petrol / Diesel / EV"
                           />
                         </div>
 
@@ -510,25 +514,6 @@ export default function Providers() {
                             onChange={(e) => updateVehicle(index, "images", e.target.files)}
                           />
                         </div>
-
-                        {vehicle.existingImages?.length > 0 && (
-                          <div className="fullCol">
-                            <div className="providerImageGrid">
-                              {vehicle.existingImages.map((img, imgIndex) => (
-                                <div className="providerImageItem" key={imgIndex}>
-                                  <img src={img.url} alt="vehicle" />
-                                  <button
-                                    type="button"
-                                    className="removeImageBtn"
-                                    onClick={() => removeVehicleExistingImage(index, imgIndex)}
-                                  >
-                                    Remove
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
@@ -566,12 +551,21 @@ export default function Providers() {
                   </div>
 
                   <div>
-                    <label className="label">Duration</label>
+                    <label className="label">Duration Text</label>
                     <input
                       className="input"
                       value={form.durationText}
                       onChange={(e) => setForm((s) => ({ ...s, durationText: e.target.value }))}
-                      placeholder="Example: 2 days 1 night"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="label">Days</label>
+                    <input
+                      className="input"
+                      type="number"
+                      value={form.days}
+                      onChange={(e) => setForm((s) => ({ ...s, days: e.target.value }))}
                     />
                   </div>
 
@@ -585,13 +579,22 @@ export default function Providers() {
                     />
                   </div>
 
+                  <div>
+                    <label className="label">Price Per Person</label>
+                    <input
+                      className="input"
+                      type="number"
+                      value={form.pricePerPerson}
+                      onChange={(e) => setForm((s) => ({ ...s, pricePerPerson: e.target.value }))}
+                    />
+                  </div>
+
                   <div className="fullCol">
                     <label className="label">Places Covered</label>
                     <input
                       className="input"
                       value={form.placesCovered}
                       onChange={(e) => setForm((s) => ({ ...s, placesCovered: e.target.value }))}
-                      placeholder="Example: Jaipur Fort, City Palace, Hawa Mahal"
                     />
                   </div>
 
@@ -601,7 +604,6 @@ export default function Providers() {
                       className="input"
                       value={form.inclusions}
                       onChange={(e) => setForm((s) => ({ ...s, inclusions: e.target.value }))}
-                      placeholder="Example: Guide, transport, breakfast"
                     />
                   </div>
 
@@ -611,7 +613,6 @@ export default function Providers() {
                       className="input"
                       value={form.exclusions}
                       onChange={(e) => setForm((s) => ({ ...s, exclusions: e.target.value }))}
-                      placeholder="Example: Entry tickets, lunch"
                     />
                   </div>
 
@@ -625,25 +626,6 @@ export default function Providers() {
                       onChange={(e) => setForm((s) => ({ ...s, plannerImages: e.target.files }))}
                     />
                   </div>
-
-                  {form.existingPlannerImages?.length > 0 && (
-                    <div className="fullCol">
-                      <div className="providerImageGrid">
-                        {form.existingPlannerImages.map((img, index) => (
-                          <div className="providerImageItem" key={index}>
-                            <img src={img.url} alt="planner" />
-                            <button
-                              type="button"
-                              className="removeImageBtn"
-                              onClick={() => removePlannerExistingImage(index)}
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             )}
@@ -654,38 +636,6 @@ export default function Providers() {
               </button>
             </div>
           </form>
-        </div>
-      )}
-
-      {myProviders.length > 0 && (
-        <div className="providerOwnedSection">
-          <div className="providerSectionTitle">My Listings</div>
-
-          <div className="providerGrid">
-            {myProviders.map((item) => (
-              <div className="providerCard card" key={item._id}>
-                <div className="providerCardTop">
-                  <div>
-                    <div className="providerCardTitle">{item.businessName}</div>
-                    <div className="providerMetaText">
-                      {item.city} • {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
-                    </div>
-                  </div>
-
-                  <div className="providerCardActions">
-                    <button className="btn" onClick={() => openEditForm(item)}>
-                      Edit
-                    </button>
-                    <button className="btn" onClick={() => removeProvider(item._id)}>
-                      Remove
-                    </button>
-                  </div>
-                </div>
-
-                <div className="providerDesc">{item.description || "No description added."}</div>
-              </div>
-            ))}
-          </div>
         </div>
       )}
 
@@ -705,7 +655,7 @@ export default function Providers() {
           />
           <input
             className="input"
-            placeholder="City"
+            placeholder="City / Destination"
             value={filters.city}
             onChange={(e) => setFilters((s) => ({ ...s, city: e.target.value }))}
           />
@@ -740,7 +690,9 @@ export default function Providers() {
         {providers.map((item) => (
           <div className="providerCard card" key={item._id}>
             <div className="providerMedia">
-              {item.listingType === "vehicle" ? (
+              {item.serviceImage?.url ? (
+                <img src={item.serviceImage.url} alt={item.businessName} />
+              ) : item.listingType === "vehicle" ? (
                 item.vehicles?.[0]?.images?.[0]?.url ? (
                   <img src={item.vehicles[0].images[0].url} alt={item.businessName} />
                 ) : (
@@ -771,32 +723,34 @@ export default function Providers() {
                 {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
               </div>
 
+              <div className="providerDesc">
+                {item.description || "No description available."}
+              </div>
+
+              {item.listingType === "travel_planner" && (
+                <div className="providerMiniItem">
+                  From ₹{item.travelPlanner?.priceFrom || 0} • Per person ₹
+                  {item.travelPlanner?.pricePerPerson || 0}
+                </div>
+              )}
+
               {item.listingType === "vehicle" && (
                 <div className="providerMiniList">
-                  {item.vehicles?.map((v, index) => (
+                  {item.vehicles?.slice(0, 2).map((v, index) => (
                     <div key={index} className="providerMiniItem">
-                      <strong>{v.vehicleType}</strong> — ₹{v.price}
+                      {v.title || v.vehicleType} — ₹{v.price}
                     </div>
                   ))}
                 </div>
               )}
 
-              {item.listingType === "travel_planner" && (
-                <div className="providerMiniItem">
-                  <strong>{item.travelPlanner?.packageTitle || "Package"}</strong>
-                  {" — "}
-                  ₹{item.travelPlanner?.priceFrom || 0}
-                </div>
-              )}
-
-              <div className="providerDesc">
-                {item.description || "No description available."}
-              </div>
-
               <div className="providerCardActions">
-                <Link className="btn" to={`/providers/${item._id}`}>
+                <button
+                  className="btn"
+                  onClick={() => navigate(`/providers/${item._id}`)}
+                >
                   View Details
-                </Link>
+                </button>
               </div>
             </div>
           </div>

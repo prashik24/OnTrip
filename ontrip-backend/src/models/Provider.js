@@ -25,6 +25,11 @@ const vehicleItemSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    priceUnit: {
+      type: String,
+      enum: ["per_day", "per_hour", "fixed"],
+      default: "per_day",
+    },
     capacity: {
       type: Number,
       default: 1,
@@ -67,7 +72,17 @@ const travelPlannerSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    days: {
+      type: Number,
+      default: 1,
+      min: 1,
+    },
     priceFrom: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    pricePerPerson: {
       type: Number,
       default: 0,
       min: 0,
@@ -129,6 +144,11 @@ const providerSchema = new mongoose.Schema(
       type: String,
       default: "",
       trim: true,
+    },
+
+    serviceImage: {
+      type: imageSchema,
+      default: null,
     },
 
     vehicles: [vehicleItemSchema],

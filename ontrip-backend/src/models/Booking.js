@@ -53,9 +53,27 @@ const bookingSchema = new mongoose.Schema(
       trim: true,
     },
 
-    bookingDate: {
+    destination: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    place: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    travelDate: {
       type: Date,
       required: true,
+    },
+
+    days: {
+      type: Number,
+      default: 1,
+      min: 1,
     },
 
     peopleCount: {
@@ -64,7 +82,28 @@ const bookingSchema = new mongoose.Schema(
       min: 1,
     },
 
-    destination: {
+    selectedVehicleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null,
+    },
+
+    selectedVehicleTitle: {
+      type: String,
+      default: "",
+    },
+
+    selectedPackageTitle: {
+      type: String,
+      default: "",
+    },
+
+    unitPrice: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
+    pricingLabel: {
       type: String,
       default: "",
       trim: true,
