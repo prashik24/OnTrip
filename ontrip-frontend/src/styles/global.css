@@ -1,104 +1,241 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: var(--font-ui);
+  color: var(--text);
+  background: var(--bg);
+}
+
+body {
+  min-width: 320px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.btn {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  padding: 11px 16px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.1);
+}
+
+.btn:active {
+  transform: translateY(0px);
+  opacity: 0.92;
+}
+
+.btnPrimary {
+  border-color: rgba(0, 184, 241, 0.45);
+  background: linear-gradient(135deg, rgba(78, 201, 245, 1), rgba(0, 184, 241, 1));
+  color: #06202e;
+}
+
+.btnSun {
+  border-color: rgba(255, 204, 128, 0.6);
+  background: linear-gradient(135deg, rgba(255, 211, 109, 1), rgba(255, 204, 128, 1));
+  color: #2a1a05;
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 12px;
+  background: rgba(255, 255, 255, 0.92);
+  outline: none;
+  font: inherit;
+  color: var(--text);
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: rgba(0, 184, 241, 0.55);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.pill {
+  font-size: 12px;
+  color: rgba(11, 27, 42, 0.75);
+  background: rgba(177, 227, 250, 0.3);
+  border: 1px solid rgba(177, 227, 250, 0.45);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.note {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(0, 184, 241, 0.12);
+  border: 1px solid rgba(0, 184, 241, 0.2);
+  font-weight: 800;
+  color: rgba(11, 27, 42, 0.8);
+}
+
+.label {
+  display: block;
+  font-weight: 900;
+  margin: 10px 0 6px;
+  color: rgba(11, 27, 42, 0.8);
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.empty {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(177, 227, 250, 0.25);
+  border: 1px solid rgba(177, 227, 250, 0.45);
+  color: rgba(11, 27, 42, 0.72);
+  font-weight: 700;
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 184, 241, 0.1);
+  border: 1px solid rgba(0, 184, 241, 0.18);
+}
+
+.pageHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: -0.4px;
+}
+
+.pageSub {
+  margin: 6px 0 0 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.filters {
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+  min-width: 320px;
+}
+
+@media (max-width: 900px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .row2 {
+    grid-template-columns: 1fr;
+  }
+
+  .pageHead {
+    flex-direction: column;
+  }
+
+  .filters {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
 .input,
 .textarea,
 .select,
-input[type="text"],
-input[type="email"],
-input[type="number"],
-input[type="date"],
-input[type="password"],
-textarea,
 select {
   width: 100%;
   border: 1px solid rgba(11, 27, 42, 0.12);
   border-radius: 16px;
-  padding: 13px 14px;
-  background: rgba(255, 255, 255, 0.96);
+  padding: 13px 44px 13px 14px;
+  background: #ffffff;
   outline: none;
   font: inherit;
   color: var(--text);
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("data:image/svg+xml;utf8,<svg fill='none' stroke='%230b1b2a' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='m6 9 6 6 6-6'></path></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 18px;
 }
 
 .input:focus,
 .textarea:focus,
 .select:focus,
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="number"]:focus,
-input[type="date"]:focus,
-input[type="password"]:focus,
-textarea:focus,
 select:focus {
-  border-color: rgba(0, 184, 241, 0.6);
+  border-color: #00b8f1;
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+}
+
+.select:hover,
+select:hover {
+  border-color: rgba(0, 184, 241, 0.4);
+}
+
+select option {
   background: #ffffff;
-}
-
-.select,
-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  padding-right: 44px;
-  background-image:
-    linear-gradient(45deg, transparent 50%, rgba(11, 27, 42, 0.7) 50%),
-    linear-gradient(135deg, rgba(11, 27, 42, 0.7) 50%, transparent 50%);
-  background-position:
-    calc(100% - 18px) calc(50% - 3px),
-    calc(100% - 12px) calc(50% - 3px);
-  background-size: 6px 6px, 6px 6px;
-  background-repeat: no-repeat;
-}
-
-.textarea,
-textarea {
-  resize: vertical;
-  min-height: 110px;
-}
-
-/* Better file input styling */
-input[type="file"] {
-  width: 100%;
-  border: 1px dashed rgba(0, 184, 241, 0.35);
-  border-radius: 18px;
-  padding: 12px;
-  background: linear-gradient(
-    135deg,
-    rgba(177, 227, 250, 0.18),
-    rgba(225, 255, 248, 0.5)
-  );
-  color: rgba(11, 27, 42, 0.78);
-  font: inherit;
-  cursor: pointer;
-}
-
-input[type="file"]:hover {
-  border-color: rgba(0, 184, 241, 0.55);
-  background: linear-gradient(
-    135deg,
-    rgba(177, 227, 250, 0.26),
-    rgba(225, 255, 248, 0.72)
-  );
-}
-
-input[type="file"]::file-selector-button {
-  border: none;
-  border-radius: 999px;
-  padding: 10px 14px;
-  margin-right: 12px;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #06202e;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-input[type="file"]::-webkit-file-upload-button {
-  border: none;
-  border-radius: 999px;
-  padding: 10px 14px;
-  margin-right: 12px;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #06202e;
-  font-weight: 800;
-  cursor: pointer;
+  color: #0b1b2a;
+  padding: 10px;
 }
