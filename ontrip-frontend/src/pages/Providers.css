@@ -1,78 +1,89 @@
-.providerPlatformPage {
+.providersPage {
+  padding-bottom: 32px;
   display: grid;
-  gap: 18px;
-  padding-bottom: 28px;
+  gap: 22px;
 }
 
-.providerHero,
-.providerFormCard,
-.providerSearch,
-.providerDetailSection,
-.providerDetailHero {
-  padding: 22px;
+.providersHero,
+.providersFormWrap,
+.providersSearchBox,
+.providersOwned {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 28px;
+  box-shadow: 0 14px 40px rgba(10, 22, 35, 0.08);
+  padding: 24px;
 }
 
-.providerHero {
+.providersHero {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 }
 
-.providerHeroTitle {
+.providersTitle {
   margin: 0;
-  font-size: 32px;
-  font-weight: 950;
-  line-height: 1.1;
-  color: var(--text);
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.6px;
 }
 
-.providerHeroSub {
+.providersSub {
   margin: 8px 0 0;
   color: var(--muted);
+  line-height: 1.7;
   font-weight: 600;
-  line-height: 1.6;
+  max-width: 760px;
 }
 
-.providerHeroActions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+.providersPrimaryBtn,
+.providersGhostBtn,
+.providersDangerBtn {
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 12px 18px;
+  font-size: 14px;
 }
 
-.providerMessage {
-  padding: 12px 14px;
-  border-radius: 16px;
-  font-weight: 700;
-  font-size: 13px;
+.providersPrimaryBtn {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
 }
 
-.providerMessage.success {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  color: #047857;
+.providersGhostBtn {
+  background: #f8fafc;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  color: #112131;
 }
 
-.providerMessage.error {
-  background: rgba(255, 98, 98, 0.09);
+.providersDangerBtn {
+  background: rgba(255, 98, 98, 0.1);
   border: 1px solid rgba(255, 98, 98, 0.22);
   color: #b42318;
 }
 
-.providerSectionTitle {
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--text);
-  margin: 0 0 10px;
+.providersMessage {
+  padding: 13px 16px;
+  border-radius: 16px;
+  font-weight: 700;
 }
 
-.providerSectionSub {
-  color: var(--muted);
-  font-weight: 600;
+.providersMessage.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-.providerFormTop {
+.providersMessage.error {
+  background: rgba(255, 98, 98, 0.1);
+  color: #b42318;
+  border: 1px solid rgba(255, 98, 98, 0.2);
+}
+
+.providersFormHead {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -80,164 +91,175 @@
   margin-bottom: 18px;
 }
 
-.providerForm {
+.providersFormHead h2,
+.providersOwned h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.providersFormHead p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.providersForm {
   display: grid;
   gap: 20px;
 }
 
-.providerFormGrid {
+.providersFormGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 16px;
 }
 
-.fullCol {
-  grid-column: 1 / -1;
+.providersForm label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: #12212f;
 }
 
-.providerBlock {
-  padding: 18px;
+.providersForm input,
+.providersForm textarea,
+.providersForm select,
+.providersSearchGrid input,
+.providersSearchGrid select {
+  width: 100%;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  border-radius: 16px;
+  padding: 13px 14px;
+  font: inherit;
+  background: #fff;
+  outline: none;
+}
+
+.providersForm input:focus,
+.providersForm textarea:focus,
+.providersForm select:focus,
+.providersSearchGrid input:focus,
+.providersSearchGrid select:focus {
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+}
+
+.providersBlock {
+  background: rgba(244, 251, 255, 0.95);
+  border: 1px solid rgba(11, 27, 42, 0.06);
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 18px;
 }
 
-.providerBlockTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.providerBlockTitle {
+.providersBlock h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 900;
 }
 
-.vehicleCardList,
-.detailVehicleList,
-.reviewList,
-.similarList {
+.providersBlockHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.providersVehicleList {
   display: grid;
   gap: 16px;
 }
 
-.vehicleItemCard,
-.detailVehicleCard,
-.reviewItem,
-.similarCard,
-.providerInfoBox {
+.providersVehicleCard {
+  background: #fff;
+  border: 1px solid rgba(11, 27, 42, 0.06);
+  border-radius: 20px;
   padding: 16px;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.vehicleItemTop,
-.detailVehicleHead,
-.reviewTop,
-.providerCardTop {
+.providersVehicleCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.providersCheck {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.providersSearchGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+  gap: 12px;
+}
+
+.providersGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.providerCard {
+  overflow: hidden;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  box-shadow: 0 12px 32px rgba(10, 22, 35, 0.08);
+}
+
+.providerCardMedia {
+  height: 240px;
+  background: rgba(177, 227, 250, 0.18);
+}
+
+.providerCardMedia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.providerCardMediaEmpty {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: rgba(11, 27, 42, 0.5);
+}
+
+.providerCardBody {
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.providerCardHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
 }
 
-.vehicleItemHeading,
-.detailVehicleTitle,
-.reviewUser,
-.reviewStars,
-.plannerTitle,
-.bookingSummaryTitle,
-.similarCardTitle {
+.providerCardHeader h3 {
+  margin: 0;
+  font-size: 22px;
   font-weight: 900;
 }
 
-.removeMiniBtn,
-.removeImageBtn {
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: #fff;
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.providerCheck {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 700;
-}
-
-.providerSearchGrid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
-  gap: 12px;
-}
-
-.providerGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.providerCard {
-  overflow: hidden;
-  border-radius: 28px;
-}
-
-.providerMedia {
-  height: 240px;
-  background: rgba(177, 227, 250, 0.18);
-}
-
-.providerMedia img,
-.providerDetailHeroMedia img,
-.providerImageItem img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.providerMediaEmpty {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  font-weight: 900;
-  color: rgba(11, 27, 42, 0.45);
-}
-
-.providerBody {
-  padding: 18px;
-  display: grid;
-  gap: 12px;
-}
-
-.providerCardTitle {
-  font-size: 20px;
-  font-weight: 950;
-  color: var(--text);
-}
-
-.providerMetaText {
+.providerCardHeader p {
+  margin: 6px 0 0;
   color: var(--muted);
-  font-weight: 650;
+  font-weight: 600;
 }
 
-.providerRating {
+.providerCardRating {
   font-weight: 900;
   white-space: nowrap;
 }
 
-.providerTypeBadge,
-.providerInfoChip {
-  display: inline-flex;
-  align-items: center;
+.providerTypePill {
   width: fit-content;
   padding: 7px 12px;
   border-radius: 999px;
@@ -247,138 +269,26 @@
   font-weight: 900;
 }
 
-.providerInfoBar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.providerMiniList {
-  display: grid;
-  gap: 8px;
-}
-
-.providerMiniItem,
-.reviewText,
-.plannerInfoText,
-.providerSideInfo {
-  color: rgba(11, 27, 42, 0.8);
-  font-weight: 600;
-  line-height: 1.6;
-}
-
-.providerDesc {
-  color: rgba(11, 27, 42, 0.74);
+.providerCardDesc {
+  color: rgba(11, 27, 42, 0.76);
   line-height: 1.7;
   font-weight: 600;
 }
 
-.providerCardActions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.providerImageGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.providerImageItem {
-  overflow: hidden;
-  min-height: 160px;
-  border-radius: 18px;
-  background: rgba(177, 227, 250, 0.16);
-}
-
-.providerDetailHero {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 22px;
-}
-
-.providerDetailHeroMedia {
-  min-height: 360px;
-  overflow: hidden;
-  border-radius: 22px;
-  background: rgba(177, 227, 250, 0.18);
-}
-
-.providerDetailHeroContent {
-  display: grid;
-  align-content: start;
-  gap: 14px;
-}
-
-.providerDetailGrid {
-  display: grid;
-  grid-template-columns: 1.5fr 0.9fr;
-  gap: 18px;
-}
-
-.providerDetailMain,
-.providerDetailSide {
-  display: grid;
-  gap: 18px;
-}
-
-.providerNote {
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: rgba(177, 227, 250, 0.18);
-  border: 1px solid rgba(177, 227, 250, 0.34);
-  font-weight: 700;
-  color: rgba(11, 27, 42, 0.76);
-}
-
-.plannerMeta,
-.detailVehicleMeta {
-  color: var(--muted);
-  font-weight: 650;
-}
-
-.vehiclePriceUnit {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.reviewForm {
-  display: grid;
-  gap: 12px;
-}
-
-.bookingSummary {
-  padding: 14px;
-  border-radius: 18px;
-  background: rgba(0, 184, 241, 0.08);
-  border: 1px solid rgba(0, 184, 241, 0.16);
-}
-
-.bookingSummaryRow {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-weight: 700;
-}
-
-.similarCard {
-  display: grid;
-  gap: 10px;
+.fullSpan {
+  grid-column: 1 / -1;
 }
 
 @media (max-width: 980px) {
-  .providerHero,
-  .providerFormTop,
-  .providerDetailHero,
-  .providerDetailGrid,
-  .providerFormGrid,
-  .providerSearchGrid,
-  .providerGrid,
-  .providerImageGrid {
-    grid-template-columns: 1fr;
+  .providersHero,
+  .providersFormHead {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .providersFormGrid,
+  .providersSearchGrid,
+  .providersGrid {
+    grid-template-columns: 1fr;
   }
 }
