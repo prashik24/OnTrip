@@ -1,0 +1,187 @@
+.providerDashboardPage {
+  padding-bottom: 32px;
+  display: grid;
+  gap: 20px;
+}
+
+.providerDashboardHero {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 28px;
+  box-shadow: 0 14px 40px rgba(10, 22, 35, 0.08);
+  padding: 24px;
+}
+
+.providerDashboardHero h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.providerDashboardHero p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-weight: 600;
+}
+
+.providerDashboardMessage {
+  padding: 13px 16px;
+  border-radius: 16px;
+  background: rgba(255, 98, 98, 0.1);
+  border: 1px solid rgba(255, 98, 98, 0.2);
+  color: #b42318;
+  font-weight: 700;
+}
+
+.providerDashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.providerDashboardCard {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 12px 32px rgba(10, 22, 35, 0.08);
+  padding: 20px;
+  display: grid;
+  gap: 18px;
+}
+
+.providerDashboardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.providerDashboardTop h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.providerDashboardTop p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.providerDashboardStatus {
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.providerDashboardStatus--pending {
+  background: rgba(245, 158, 11, 0.14);
+  color: #b45309;
+}
+
+.providerDashboardStatus--confirmed {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+
+.providerDashboardStatus--completed {
+  background: rgba(0, 184, 241, 0.12);
+  color: #0369a1;
+}
+
+.providerDashboardStatus--cancelled {
+  background: rgba(255, 98, 98, 0.12);
+  color: #b42318;
+}
+
+.providerDashboardInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.providerDashboardInfoItem {
+  background: rgba(244, 251, 255, 0.95);
+  border: 1px solid rgba(11, 27, 42, 0.06);
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 6px;
+}
+
+.providerDashboardInfoItem strong {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: rgba(11, 27, 42, 0.55);
+}
+
+.providerDashboardInfoItem span {
+  color: rgba(11, 27, 42, 0.82);
+  font-weight: 600;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.providerDashboardInfoItem--full {
+  grid-column: 1 / -1;
+}
+
+.providerDashboardActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.providerDashboardBtn {
+  border: none;
+  border-radius: 999px;
+  padding: 11px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.providerDashboardBtn--confirm {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.providerDashboardBtn--complete {
+  background: rgba(0, 184, 241, 0.12);
+  color: #0369a1;
+  border: 1px solid rgba(0, 184, 241, 0.2);
+}
+
+.providerDashboardBtn--cancel {
+  background: rgba(255, 98, 98, 0.12);
+  color: #b42318;
+  border: 1px solid rgba(255, 98, 98, 0.2);
+}
+
+.providerDashboardEmpty {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 24px;
+  padding: 22px;
+  color: rgba(11, 27, 42, 0.72);
+  font-weight: 700;
+}
+
+@media (max-width: 980px) {
+  .providerDashboardGrid,
+  .providerDashboardInfoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .providerDashboardTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
