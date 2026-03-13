@@ -51,10 +51,10 @@ export async function addReview(req, res) {
 
     await refreshProviderRating(providerId);
 
-    res.json({ message: "Review saved successfully.", review });
+    return res.json({ message: "Review saved successfully.", review });
   } catch (error) {
     console.error("addReview error", error);
-    res.status(500).json({ message: "Failed to save review." });
+    return res.status(500).json({ message: "Failed to save review." });
   }
 }
 
@@ -64,9 +64,9 @@ export async function getReviewsByProvider(req, res) {
       .populate("user", "name avatar")
       .sort({ createdAt: -1 });
 
-    res.json({ reviews });
+    return res.json({ reviews });
   } catch (error) {
     console.error("getReviewsByProvider error", error);
-    res.status(500).json({ message: "Failed to fetch reviews." });
+    return res.status(500).json({ message: "Failed to fetch reviews." });
   }
 }
