@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
-import "./Providers.css";
+import "./ProviderDetails.css";
 
 export default function ProviderDetails() {
   const { id } = useParams();
@@ -11,26 +11,11 @@ export default function ProviderDetails() {
   const [provider, setProvider] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [similarProviders, setSimilarProviders] = useState([]);
-  const [showBookingForm, setShowBookingForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState({ text: "", type: "" });
-
   const [reviewForm, setReviewForm] = useState({
     rating: 5,
     comment: "",
-  });
-
-  const [bookingForm, setBookingForm] = useState({
-    contactName: user?.name || "",
-    contactEmail: user?.email || "",
-    contactPhone: user?.phone || "",
-    destination: "",
-    place: "",
-    travelDate: "",
-    days: 1,
-    peopleCount: 1,
-    selectedVehicleId: "",
-    notes: "",
   });
 
   useEffect(() => {
@@ -53,54 +38,10 @@ export default function ProviderDetails() {
     loadData();
   }, [id]);
 
-  const isOwner =
-    user && provider && String(provider.owner?._id || provider.owner) === String(user.id);
-
-  const selectedVehicle = useMemo(() => {
-    if (!provider || provider.listingType !== "vehicle") return null;
-    return provider.vehicles?.find(
-      (v) => String(v._id) === String(bookingForm.selectedVehicleId)
-    );
-  }, [provider, bookingForm.selectedVehicleId]);
-
-  const bookingPreview = useMemo(() => {
-    if (!provider) return { total: 0, label: "" };
-
-    if (provider.listingType === "travel_planner") {
-      const perPerson =
-        Number(provider.travelPlanner?.pricePerPerson || 0) ||
-        Number(provider.travelPlanner?.priceFrom || 0);
-
-      const people = Math.max(Number(bookingForm.peopleCount || 1), 1);
-
-      return {
-        total: perPerson * people,
-        label: `₹${perPerson} per person × ${people}`,
-      };
-    }
-
-    if (provider.listingType === "vehicle" && selectedVehicle) {
-      const days = Math.max(Number(bookingForm.days || 1), 1);
-      const unit = Number(selectedVehicle.price || 0);
-
-      if (selectedVehicle.priceUnit === "fixed") {
-        return {
-          total: unit,
-          label: `Fixed price`,
-        };
-      }
-
-      return {
-        total: unit * days,
-        label:
-          selectedVehicle.priceUnit === "per_hour"
-            ? `₹${unit} per hour`
-            : `₹${unit} per day × ${days}`,
-      };
-    }
-
-    return { total: 0, label: "" };
-  }, [provider, bookingForm.peopleCount, bookingForm.days, selectedVehicle]);
+  const isOwner = useMemo(() => {
+    if (!provider || !user) return false;
+    return String(provider.owner?._id || provider.owner) === String(user.id);
+  }, [provider, user]);
 
   async function submitReview(e) {
     e.preventDefault();
@@ -125,73 +66,18 @@ export default function ProviderDetails() {
     }
   }
 
-  async function handleBooking(e) {
-    e.preventDefault();
-
-    try {
-      const data = await apiFetch("/api/bookings/create-order", {
-        method: "POST",
-        body: JSON.stringify({
-          providerId: id,
-          ...bookingForm,
-          days: Number(bookingForm.days || 1),
-          peopleCount: Number(bookingForm.peopleCount || 1),
-        }),
-      });
-
-      const options = {
-        key: data.razorpayKeyId || import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: data.order.amount,
-        currency: data.order.currency,
-        name: "OnTrip",
-        description: provider.businessName,
-        order_id: data.order.id,
-        handler: async function (response) {
-          try {
-            const verify = await apiFetch("/api/bookings/verify-payment", {
-              method: "POST",
-              body: JSON.stringify({
-                bookingId: data.bookingId,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
-
-            setMsg({ text: verify.message, type: "success" });
-            setShowBookingForm(false);
-          } catch (err) {
-            setMsg({ text: err.message, type: "error" });
-          }
-        },
-        prefill: {
-          name: bookingForm.contactName,
-          email: bookingForm.contactEmail,
-          contact: bookingForm.contactPhone,
-        },
-        theme: {
-          color: "#00b8f1",
-        },
-      };
-
-      const rz = new window.Razorpay(options);
-      rz.open();
-    } catch (err) {
-      setMsg({ text: err.message, type: "error" });
-    }
-  }
-
   if (loading) {
     return (
-      <div className="container providerPlatformPage">
-        <div className="providerNote">Loading provider details...</div>
+      <div className="providerDetailsPage container">
+        <div className="providerDetailsNote">Loading provider details...</div>
       </div>
     );
   }
 
   if (!provider) {
     return (
-      <div className="container providerPlatformPage">
-        <div className="providerMessage error">
+      <div className="providerDetailsPage container">
+        <div className="providerDetailsMessage error">
           {msg.text || "Provider not found."}
         </div>
       </div>
@@ -199,420 +85,237 @@ export default function ProviderDetails() {
   }
 
   return (
-    <div className="container providerPlatformPage">
+    <div className="providerDetailsPage container">
       {msg.text && (
-        <div className={`providerMessage ${msg.type === "success" ? "success" : "error"}`}>
+        <div className={`providerDetailsMessage ${msg.type}`}>
           {msg.text}
         </div>
       )}
 
-      <div className="providerDetailHero card">
-        <div className="providerDetailHeroMedia">
-          {provider.serviceImage?.url ? (
-            <img src={provider.serviceImage.url} alt={provider.businessName} />
-          ) : (
-            <div className="providerMediaEmpty">No Service Image</div>
-          )}
-        </div>
-
-        <div className="providerDetailHeroContent">
-          <div className="providerTypeBadge">
-            {provider.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+      <section className="providerDetailsCard">
+        <div className="providerDetailsTop">
+          <div className="providerDetailsHeroImage">
+            {provider.serviceImage?.url ? (
+              <img src={provider.serviceImage.url} alt={provider.businessName} />
+            ) : (
+              <div className="providerDetailsImageEmpty">No Service Image</div>
+            )}
           </div>
 
-          <h1 className="providerHeroTitle">{provider.businessName}</h1>
-          <div className="providerMetaText">
-            {provider.city}, {provider.state || "India"}
-          </div>
-
-          <div className="providerDesc">
-            {provider.description || "No description provided."}
-          </div>
-
-          <div className="providerInfoBar">
-            <div className="providerInfoChip">⭐ {provider.ratingAverage || 0}</div>
-            <div className="providerInfoChip">Reviews {provider.ratingCount || 0}</div>
-            <div className="providerInfoChip">Phone {provider.phone}</div>
-            <div className="providerInfoChip">WhatsApp {provider.whatsapp || "N/A"}</div>
-          </div>
-
-          {!isLoggedIn() ? (
-            <button className="btn btnPrimary" onClick={() => navigate("/login")}>
-              Login to Book
-            </button>
-          ) : isOwner ? (
-            <div className="providerNote">You cannot book your own service.</div>
-          ) : (
-            <button
-              className="btn btnPrimary"
-              onClick={() => setShowBookingForm((s) => !s)}
-            >
-              {showBookingForm ? "Close Booking Form" : "Book Service"}
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="providerDetailGrid">
-        <div className="providerDetailMain">
-          {provider.listingType === "travel_planner" ? (
-            <div className="card providerDetailSection">
-              <h2 className="providerSectionTitle">Travel Package Details</h2>
-
-              <div className="plannerTitle">
-                {provider.travelPlanner?.packageTitle || "Travel Package"}
-              </div>
-
-              <div className="plannerMeta">
-                {provider.travelPlanner?.durationText || "Flexible duration"} • {provider.travelPlanner?.days || 1} days
-              </div>
-
-              <div className="providerInfoBar">
-                <div className="providerInfoChip">From ₹{provider.travelPlanner?.priceFrom || 0}</div>
-                <div className="providerInfoChip">Per Person ₹{provider.travelPlanner?.pricePerPerson || 0}</div>
-                <div className="providerInfoChip">{provider.travelPlanner?.plannerMode}</div>
-              </div>
-
-              <div className="plannerInfoGrid">
-                <div className="providerInfoBox">
-                  <div className="plannerInfoTitle">Places Covered</div>
-                  <div className="plannerInfoText">
-                    {(provider.travelPlanner?.placesCovered || []).join(", ") || "N/A"}
-                  </div>
-                </div>
-
-                <div className="providerInfoBox">
-                  <div className="plannerInfoTitle">Inclusions</div>
-                  <div className="plannerInfoText">
-                    {(provider.travelPlanner?.inclusions || []).join(", ") || "N/A"}
-                  </div>
-                </div>
-
-                <div className="providerInfoBox">
-                  <div className="plannerInfoTitle">Exclusions</div>
-                  <div className="plannerInfoText">
-                    {(provider.travelPlanner?.exclusions || []).join(", ") || "N/A"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="providerImageGrid">
-                {(provider.travelPlanner?.images || []).map((img, index) => (
-                  <div className="providerImageItem" key={index}>
-                    <img src={img.url} alt="travel package" />
-                  </div>
-                ))}
-              </div>
+          <div className="providerDetailsTopContent">
+            <div className="providerDetailsType">
+              {provider.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
             </div>
-          ) : (
-            <div className="card providerDetailSection">
-              <h2 className="providerSectionTitle">Available Vehicles</h2>
 
-              <div className="detailVehicleList">
-                {(provider.vehicles || []).map((vehicle) => (
-                  <div className="detailVehicleCard" key={vehicle._id}>
-                    <div className="detailVehicleHead">
-                      <div>
-                        <div className="detailVehicleTitle">
-                          {vehicle.title || vehicle.vehicleType}
-                        </div>
-                        <div className="detailVehicleMeta">
-                          {vehicle.vehicleType} • Capacity {vehicle.capacity || 1} •{" "}
-                          {vehicle.withDriver ? "With Driver" : "Without Driver"}
-                        </div>
-                      </div>
+            <h1>{provider.businessName}</h1>
 
-                      <div className="detailVehiclePrice">
-                        ₹{vehicle.price}{" "}
-                        <span className="vehiclePriceUnit">
-                          / {vehicle.priceUnit === "per_hour" ? "hour" : vehicle.priceUnit === "fixed" ? "fixed" : "day"}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="providerImageGrid">
-                      {(vehicle.images || []).map((img, imgIndex) => (
-                        <div className="providerImageItem" key={imgIndex}>
-                          <img src={img.url} alt={vehicle.title || vehicle.vehicleType} />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="providerDetailsMeta">
+              {provider.city}{provider.state ? `, ${provider.state}` : ""} • ⭐ {provider.ratingAverage || 0} • {provider.ratingCount || 0} reviews
             </div>
-          )}
 
-          {showBookingForm && !isOwner && (
-            <div className="card providerDetailSection">
-              <h2 className="providerSectionTitle">Booking Form</h2>
+            <p className="providerDetailsDesc">
+              {provider.description || "No description provided."}
+            </p>
 
-              <form className="reviewForm" onSubmit={handleBooking}>
-                <div className="providerFormGrid">
-                  <div>
-                    <label className="label">Your Name</label>
-                    <input
-                      className="input"
-                      value={bookingForm.contactName}
-                      onChange={(e) =>
-                        setBookingForm((s) => ({ ...s, contactName: e.target.value }))
-                      }
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="label">Email</label>
-                    <input
-                      className="input"
-                      value={bookingForm.contactEmail}
-                      onChange={(e) =>
-                        setBookingForm((s) => ({ ...s, contactEmail: e.target.value }))
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <label className="label">Phone</label>
-                    <input
-                      className="input"
-                      value={bookingForm.contactPhone}
-                      onChange={(e) =>
-                        setBookingForm((s) => ({ ...s, contactPhone: e.target.value }))
-                      }
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="label">Travel Date</label>
-                    <input
-                      className="input"
-                      type="date"
-                      value={bookingForm.travelDate}
-                      onChange={(e) =>
-                        setBookingForm((s) => ({ ...s, travelDate: e.target.value }))
-                      }
-                      required
-                    />
-                  </div>
-
-                  {provider.listingType === "travel_planner" ? (
-                    <>
-                      <div>
-                        <label className="label">Destination</label>
-                        <input
-                          className="input"
-                          value={bookingForm.destination}
-                          onChange={(e) =>
-                            setBookingForm((s) => ({ ...s, destination: e.target.value }))
-                          }
-                          placeholder="Goa, Jaipur, Manali..."
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <label className="label">Number of Days</label>
-                        <input
-                          className="input"
-                          type="number"
-                          min="1"
-                          value={bookingForm.days}
-                          onChange={(e) =>
-                            setBookingForm((s) => ({ ...s, days: e.target.value }))
-                          }
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <label className="label">Number of People</label>
-                        <input
-                          className="input"
-                          type="number"
-                          min="1"
-                          value={bookingForm.peopleCount}
-                          onChange={(e) =>
-                            setBookingForm((s) => ({ ...s, peopleCount: e.target.value }))
-                          }
-                          required
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div>
-                        <label className="label">Place</label>
-                        <input
-                          className="input"
-                          value={bookingForm.place}
-                          onChange={(e) =>
-                            setBookingForm((s) => ({ ...s, place: e.target.value }))
-                          }
-                          placeholder="Pickup / usage place"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <label className="label">Number of Days</label>
-                        <input
-                          className="input"
-                          type="number"
-                          min="1"
-                          value={bookingForm.days}
-                          onChange={(e) =>
-                            setBookingForm((s) => ({ ...s, days: e.target.value }))
-                          }
-                          required
-                        />
-                      </div>
-
-                      <div className="fullCol">
-                        <label className="label">Select Vehicle</label>
-                        <select
-                          className="select"
-                          value={bookingForm.selectedVehicleId}
-                          onChange={(e) =>
-                            setBookingForm((s) => ({ ...s, selectedVehicleId: e.target.value }))
-                          }
-                          required
-                        >
-                          <option value="">Choose vehicle</option>
-                          {(provider.vehicles || []).map((vehicle) => (
-                            <option key={vehicle._id} value={vehicle._id}>
-                              {vehicle.title || vehicle.vehicleType} — ₹{vehicle.price}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </>
-                  )}
-
-                  <div className="fullCol">
-                    <label className="label">Notes</label>
-                    <textarea
-                      className="textarea"
-                      rows={4}
-                      value={bookingForm.notes}
-                      onChange={(e) =>
-                        setBookingForm((s) => ({ ...s, notes: e.target.value }))
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="bookingSummary">
-                  <div className="bookingSummaryTitle">Price Summary</div>
-                  <div className="bookingSummaryRow">
-                    <span>{bookingPreview.label || "Select details to calculate"}</span>
-                    <strong>₹{bookingPreview.total || 0}</strong>
-                  </div>
-                </div>
-
-                <button className="btn btnPrimary" type="submit">
-                  Pay & Book
-                </button>
-              </form>
+            <div className="providerDetailsInfoRow">
+              <span>Provider: {provider.owner?.name || "Provider"}</span>
+              <span>Phone: {provider.phone}</span>
+              <span>WhatsApp: {provider.whatsapp || "N/A"}</span>
             </div>
-          )}
-
-          <div className="card providerDetailSection">
-            <h2 className="providerSectionTitle">Reviews</h2>
 
             {!isLoggedIn() ? (
-              <div className="providerNote">Please login to add a review.</div>
+              <button className="providerDetailsPrimaryBtn" onClick={() => navigate("/login")}>
+                Login to Book
+              </button>
             ) : isOwner ? (
-              <div className="providerNote">You cannot review your own service.</div>
+              <div className="providerDetailsNote">You cannot book your own service.</div>
             ) : (
-              <form className="reviewForm" onSubmit={submitReview}>
-                <select
-                  className="select"
-                  value={reviewForm.rating}
-                  onChange={(e) =>
-                    setReviewForm((s) => ({ ...s, rating: e.target.value }))
-                  }
-                >
-                  <option value={5}>5 Stars</option>
-                  <option value={4}>4 Stars</option>
-                  <option value={3}>3 Stars</option>
-                  <option value={2}>2 Stars</option>
-                  <option value={1}>1 Star</option>
-                </select>
-
-                <textarea
-                  className="textarea"
-                  rows={3}
-                  value={reviewForm.comment}
-                  onChange={(e) =>
-                    setReviewForm((s) => ({ ...s, comment: e.target.value }))
-                  }
-                  placeholder="Write your review"
-                />
-
-                <button className="btn btnPrimary" type="submit">
-                  Submit Review
-                </button>
-              </form>
+              <button
+                className="providerDetailsPrimaryBtn"
+                onClick={() => navigate(`/providers/${id}/book`)}
+              >
+                Book Service
+              </button>
             )}
-
-            <div className="reviewList">
-              {reviews.length === 0 ? (
-                <div className="providerNote">No reviews yet.</div>
-              ) : (
-                reviews.map((review) => (
-                  <div className="reviewItem" key={review._id}>
-                    <div className="reviewTop">
-                      <div className="reviewUser">{review.user?.name || "User"}</div>
-                      <div className="reviewStars">⭐ {review.rating}</div>
-                    </div>
-                    <div className="reviewText">{review.comment || "No comment"}</div>
-                  </div>
-                ))
-              )}
-            </div>
           </div>
         </div>
 
-        <div className="providerDetailSide">
-          <div className="card providerDetailSection">
-            <h2 className="providerSectionTitle">Provider Info</h2>
-            <div className="providerSideInfo">
-              <div><strong>Name:</strong> {provider.owner?.name || "Provider"}</div>
-              <div><strong>Email:</strong> {provider.owner?.email || "N/A"}</div>
-              <div><strong>Phone:</strong> {provider.phone}</div>
-              <div><strong>City:</strong> {provider.city}</div>
-              <div><strong>WhatsApp:</strong> {provider.whatsapp || "N/A"}</div>
+        {provider.listingType === "travel_planner" ? (
+          <div className="providerDetailsSection">
+            <h2>Travel Package Details</h2>
+
+            <div className="providerDetailsDataGrid">
+              <div className="providerDetailsDataBox">
+                <strong>Package</strong>
+                <span>{provider.travelPlanner?.packageTitle || "Travel Package"}</span>
+              </div>
+
+              <div className="providerDetailsDataBox">
+                <strong>Duration</strong>
+                <span>{provider.travelPlanner?.durationText || "Flexible"}</span>
+              </div>
+
+              <div className="providerDetailsDataBox">
+                <strong>Days</strong>
+                <span>{provider.travelPlanner?.days || 1}</span>
+              </div>
+
+              <div className="providerDetailsDataBox">
+                <strong>Price From</strong>
+                <span>₹{provider.travelPlanner?.priceFrom || 0}</span>
+              </div>
+
+              <div className="providerDetailsDataBox">
+                <strong>Price Per Person</strong>
+                <span>₹{provider.travelPlanner?.pricePerPerson || 0}</span>
+              </div>
+
+              <div className="providerDetailsDataBox">
+                <strong>Planner Mode</strong>
+                <span>{provider.travelPlanner?.plannerMode || "N/A"}</span>
+              </div>
+            </div>
+
+            <div className="providerDetailsInfoBlocks">
+              <div className="providerDetailsInfoBlock">
+                <h3>Places Covered</h3>
+                <p>{(provider.travelPlanner?.placesCovered || []).join(", ") || "N/A"}</p>
+              </div>
+
+              <div className="providerDetailsInfoBlock">
+                <h3>Inclusions</h3>
+                <p>{(provider.travelPlanner?.inclusions || []).join(", ") || "N/A"}</p>
+              </div>
+
+              <div className="providerDetailsInfoBlock">
+                <h3>Exclusions</h3>
+                <p>{(provider.travelPlanner?.exclusions || []).join(", ") || "N/A"}</p>
+              </div>
+            </div>
+
+            <div className="providerDetailsGallery">
+              {(provider.travelPlanner?.images || []).map((img, index) => (
+                <div className="providerDetailsGalleryItem" key={index}>
+                  <img src={img.url} alt="travel package" />
+                </div>
+              ))}
             </div>
           </div>
+        ) : (
+          <div className="providerDetailsSection">
+            <h2>Available Vehicles</h2>
 
-          <div className="card providerDetailSection">
-            <h2 className="providerSectionTitle">Similar Providers</h2>
-
-            <div className="similarList">
-              {similarProviders.length === 0 ? (
-                <div className="providerNote">No similar providers found.</div>
-              ) : (
-                similarProviders.map((item) => (
-                  <div className="similarCard" key={item._id}>
-                    <div className="similarCardTitle">{item.businessName}</div>
-                    <div className="providerMetaText">
-                      {item.city} • ⭐ {item.ratingAverage || 0}
+            <div className="providerDetailsVehicleList">
+              {(provider.vehicles || []).map((vehicle) => (
+                <div className="providerDetailsVehicleCard" key={vehicle._id}>
+                  <div className="providerDetailsVehicleHead">
+                    <div>
+                      <h3>{vehicle.title || vehicle.vehicleType}</h3>
+                      <p>
+                        {vehicle.vehicleType} • Capacity {vehicle.capacity || 1} •{" "}
+                        {vehicle.withDriver ? "With Driver" : "Without Driver"} •{" "}
+                        {vehicle.fuelType || "N/A"}
+                      </p>
                     </div>
-                    <button
-                      className="btn"
-                      onClick={() => navigate(`/providers/${item._id}`)}
-                    >
-                      View
-                    </button>
+
+                    <div className="providerDetailsVehiclePrice">
+                      ₹{vehicle.price} / {vehicle.priceUnit === "per_hour" ? "hour" : vehicle.priceUnit === "fixed" ? "fixed" : "day"}
+                    </div>
                   </div>
-                ))
-              )}
+
+                  <div className="providerDetailsGallery">
+                    {(vehicle.images || []).map((img, index) => (
+                      <div className="providerDetailsGalleryItem" key={index}>
+                        <img src={img.url} alt={vehicle.title || vehicle.vehicleType} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
+          </div>
+        )}
+
+        <div className="providerDetailsSection">
+          <h2>Reviews</h2>
+
+          {!isLoggedIn() ? (
+            <div className="providerDetailsNote">Please login to add a review.</div>
+          ) : isOwner ? (
+            <div className="providerDetailsNote">You cannot review your own service.</div>
+          ) : (
+            <form className="providerDetailsReviewForm" onSubmit={submitReview}>
+              <select
+                value={reviewForm.rating}
+                onChange={(e) =>
+                  setReviewForm((s) => ({ ...s, rating: e.target.value }))
+                }
+              >
+                <option value={5}>5 Stars</option>
+                <option value={4}>4 Stars</option>
+                <option value={3}>3 Stars</option>
+                <option value={2}>2 Stars</option>
+                <option value={1}>1 Star</option>
+              </select>
+
+              <textarea
+                rows={4}
+                value={reviewForm.comment}
+                onChange={(e) =>
+                  setReviewForm((s) => ({ ...s, comment: e.target.value }))
+                }
+                placeholder="Write your review"
+              />
+
+              <button className="providerDetailsPrimaryBtn" type="submit">
+                Submit Review
+              </button>
+            </form>
+          )}
+
+          <div className="providerDetailsReviewList">
+            {reviews.length === 0 ? (
+              <div className="providerDetailsNote">No reviews yet.</div>
+            ) : (
+              reviews.map((review) => (
+                <div className="providerDetailsReviewItem" key={review._id}>
+                  <div className="providerDetailsReviewTop">
+                    <strong>{review.user?.name || "User"}</strong>
+                    <span>⭐ {review.rating}</span>
+                  </div>
+                  <p>{review.comment || "No comment"}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
-      </div>
+
+        <div className="providerDetailsSection">
+          <h2>Similar Services</h2>
+
+          <div className="providerDetailsSimilarList">
+            {similarProviders.length === 0 ? (
+              <div className="providerDetailsNote">No similar services found.</div>
+            ) : (
+              similarProviders.map((item) => (
+                <div className="providerDetailsSimilarCard" key={item._id}>
+                  <div>
+                    <strong>{item.businessName}</strong>
+                    <p>{item.city} • ⭐ {item.ratingAverage || 0}</p>
+                  </div>
+
+                  <button
+                    className="providerDetailsGhostBtn"
+                    onClick={() => navigate(`/providers/${item._id}`)}
+                  >
+                    View
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
