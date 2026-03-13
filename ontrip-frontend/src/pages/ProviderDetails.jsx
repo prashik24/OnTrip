@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import "./Providers.css";
@@ -9,6 +9,7 @@ export default function ProviderDetails() {
 
   const [provider, setProvider] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState({ text: "", type: "" });
 
   const [reviewForm, setReviewForm] = useState({
@@ -19,7 +20,7 @@ export default function ProviderDetails() {
   const [bookingForm, setBookingForm] = useState({
     contactName: user?.name || "",
     contactEmail: user?.email || "",
-    contactPhone: "",
+    contactPhone: user?.phone || "",
     bookingDate: "",
     peopleCount: 1,
     destination: "",
@@ -30,18 +31,44 @@ export default function ProviderDetails() {
   useEffect(() => {
     async function loadData() {
       try {
+        setLoading(true);
+        setMsg({ text: "", type: "" });
+
         const providerData = await apiFetch(`/api/providers/${id}`);
         setProvider(providerData.provider);
 
         const reviewData = await apiFetch(`/api/reviews/${id}`);
         setReviews(reviewData.reviews || []);
       } catch (err) {
-        setMsg({ text: err.message, type: "error" });
+        setMsg({ text: err.message || "Failed to load provider details", type: "error" });
+      } finally {
+        setLoading(false);
       }
     }
 
     loadData();
   }, [id]);
+
+  const isOwner = useMemo(() => {
+    if (!provider || !user) return false;
+    return String(provider.owner?._id || provider.owner) === String(user.id);
+  }, [provider, user]);
+
+  const defaultAmount = useMemo(() => {
+    if (!provider) return 0;
+    return provider.listingType === "vehicle"
+      ? provider.vehicles?.[0]?.price || 0
+      : provider.travelPlanner?.priceFrom || 0;
+  }, [provider]);
+
+  useEffect(() => {
+    if (defaultAmount > 0) {
+      setBookingForm((prev) => ({
+        ...prev,
+        amount: prev.amount || String(defaultAmount),
+      }));
+    }
+  }, [defaultAmount]);
 
   async function submitReview(e) {
     e.preventDefault();
@@ -70,18 +97,22 @@ export default function ProviderDetails() {
     e.preventDefault();
 
     try {
+      setMsg({ text: "", type: "" });
+
+      const finalAmount = Number(bookingForm.amount || defaultAmount);
+
       const data = await apiFetch("/api/bookings/create-order", {
         method: "POST",
         body: JSON.stringify({
           providerId: id,
           ...bookingForm,
           peopleCount: Number(bookingForm.peopleCount),
-          amount: Number(bookingForm.amount),
+          amount: finalAmount,
         }),
       });
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        key: data.razorpayKeyId || import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: data.order.amount,
         currency: data.order.currency,
         name: "OnTrip",
@@ -121,17 +152,23 @@ export default function ProviderDetails() {
     }
   }
 
-  if (!provider) {
-    return <div className="container providerPlatformPage">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="container providerPlatformPage">
+        <div className="providerNote">Loading provider details...</div>
+      </div>
+    );
   }
 
-  const isOwner =
-    user && String(provider.owner?._id || provider.owner) === String(user.id);
-
-  const defaultAmount =
-    provider.listingType === "vehicle"
-      ? provider.vehicles?.[0]?.price || 0
-      : provider.travelPlanner?.priceFrom || 0;
+  if (!provider) {
+    return (
+      <div className="container providerPlatformPage">
+        <div className={`providerMessage ${msg.type === "success" ? "success" : "error"}`}>
+          {msg.text || "Provider not found."}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container providerPlatformPage">
@@ -154,7 +191,9 @@ export default function ProviderDetails() {
           </div>
         </div>
 
-        <div className="providerDesc">{provider.description || "No description provided."}</div>
+        <div className="providerDesc">
+          {provider.description || "No description provided."}
+        </div>
 
         {provider.listingType === "vehicle" ? (
           <div className="detailVehicleList">
@@ -306,7 +345,7 @@ export default function ProviderDetails() {
                 className="input"
                 type="number"
                 placeholder="Amount to pay"
-                value={bookingForm.amount || defaultAmount}
+                value={bookingForm.amount}
                 onChange={(e) =>
                   setBookingForm((s) => ({ ...s, amount: e.target.value }))
                 }
