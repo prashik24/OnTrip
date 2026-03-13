@@ -111,9 +111,6 @@ export async function createProvider(req, res) {
     }
 
     if (listingType === "travel_planner") {
-      const placesCovered = splitTextList(body.placesCovered);
-      const inclusions = splitTextList(body.inclusions);
-      const exclusions = splitTextList(body.exclusions);
       const plannerImages = await uploadMany(groupedFiles["plannerImages"] || []);
 
       travelPlanner = {
@@ -121,9 +118,9 @@ export async function createProvider(req, res) {
         packageTitle: body.packageTitle || "",
         durationText: body.durationText || "",
         priceFrom: Number(body.priceFrom || 0),
-        placesCovered,
-        inclusions,
-        exclusions,
+        placesCovered: splitTextList(body.placesCovered),
+        inclusions: splitTextList(body.inclusions),
+        exclusions: splitTextList(body.exclusions),
         images: plannerImages,
       };
     }

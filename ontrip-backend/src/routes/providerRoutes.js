@@ -1,21 +1,25 @@
 import express from "express";
 import {
-  createBookingOrder,
-  verifyBookingPayment,
-  getMyBookings,
-  getProviderBookings,
-  updateBookingStatus,
-} from "../controllers/bookingController.js";
+  createProvider,
+  updateProvider,
+  deleteProvider,
+  getProviders,
+  getProviderById,
+  getMyProviders,
+} from "../controllers/providerController.js";
 import { protect } from "../middleware/auth.js";
+import upload from "../middleware/upload.js";
 
 const router = express.Router();
 
-router.post("/create-order", protect, createBookingOrder);
-router.post("/verify-payment", protect, verifyBookingPayment);
+// Public routes
+router.get("/", getProviders);
+router.get("/:id", getProviderById);
 
-router.get("/mine", protect, getMyBookings);
-router.get("/provider", protect, getProviderBookings);
-
-router.put("/:id/status", protect, updateBookingStatus);
+// Logged-in provider routes
+router.get("/mine", protect, getMyProviders);
+router.post("/", protect, upload.any(), createProvider);
+router.put("/:id", protect, upload.any(), updateProvider);
+router.delete("/:id", protect, deleteProvider);
 
 export default router;
