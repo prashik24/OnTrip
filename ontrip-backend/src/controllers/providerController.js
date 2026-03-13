@@ -1,4 +1,5 @@
 import { Readable } from "stream";
+import mongoose from "mongoose";
 import cloudinary from "../config/cloudinary.js";
 import Provider from "../models/Provider.js";
 
@@ -34,12 +35,14 @@ function uploadBufferToCloudinary(buffer, folder = "ontrip/providers") {
         resolve(result);
       }
     );
+
     Readable.from(buffer).pipe(stream);
   });
 }
 
 async function uploadMany(files = []) {
   const uploaded = [];
+
   for (const file of files) {
     const result = await uploadBufferToCloudinary(file.buffer);
     uploaded.push({
@@ -47,6 +50,7 @@ async function uploadMany(files = []) {
       publicId: result.public_id,
     });
   }
+
   return uploaded;
 }
 
@@ -94,6 +98,7 @@ export async function createProvider(req, res) {
       }
 
       vehicles = [];
+
       for (let i = 0; i < rawVehicles.length; i++) {
         const item = rawVehicles[i];
         const images = await uploadMany(groupedFiles[`vehicleImages_${i}`] || []);
@@ -155,11 +160,15 @@ export async function updateProvider(req, res) {
     const provider = await Provider.findById(req.params.id);
 
     if (!provider) {
-      return res.status(404).json({ message: "Listing not found." });
+      return res.status(404).json({
+        message: "Listing not found.",
+      });
     }
 
     if (String(provider.owner) !== String(req.user._id)) {
-      return res.status(403).json({ message: "You can edit only your own listing." });
+      return res.status(403).json({
+        message: "You can edit only your own listing.",
+      });
     }
 
     const body = req.body || {};
@@ -178,6 +187,7 @@ export async function updateProvider(req, res) {
       const existingVehicles = safeJsonParse(body.existingVehicles, []);
 
       const updatedVehicles = [];
+
       for (let i = 0; i < rawVehicles.length; i++) {
         const item = rawVehicles[i];
         const existingImages = existingVehicles[i]?.images || [];
@@ -234,11 +244,15 @@ export async function deleteProvider(req, res) {
     const provider = await Provider.findById(req.params.id);
 
     if (!provider) {
-      return res.status(404).json({ message: "Listing not found." });
+      return res.status(404).json({
+        message: "Listing not found.",
+      });
     }
 
     if (String(provider.owner) !== String(req.user._id)) {
-      return res.status(403).json({ message: "You can remove only your own listing." });
+      return res.status(403).json({
+        message: "You can remove only your own listing.",
+      });
     }
 
     await Provider.findByIdAndDelete(req.params.id);
@@ -288,13 +302,23 @@ export async function getProviders(req, res) {
 
 export async function getProviderById(req, res) {
   try {
-    const provider = await Provider.findById(req.params.id).populate(
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid provider id.",
+      });
+    }
+
+    const provider = await Provider.findById(id).populate(
       "owner",
       "name avatar email"
     );
 
     if (!provider) {
-      return res.status(404).json({ message: "Listing not found." });
+      return res.status(404).json({
+        message: "Listing not found.",
+      });
     }
 
     return res.json({ provider });
@@ -308,6 +332,12 @@ export async function getProviderById(req, res) {
 
 export async function getMyProviders(req, res) {
   try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({
+        message: "Not authorized.",
+      });
+    }
+
     const providers = await Provider.find({ owner: req.user._id }).sort({
       createdAt: -1,
     });
