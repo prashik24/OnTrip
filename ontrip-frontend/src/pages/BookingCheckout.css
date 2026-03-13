@@ -1,0 +1,146 @@
+.bookingCheckoutPage {
+  padding-bottom: 32px;
+}
+
+.bookingCheckoutCard {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 30px;
+  box-shadow: 0 14px 40px rgba(10, 22, 35, 0.08);
+  padding: 24px;
+  display: grid;
+  gap: 22px;
+}
+
+.bookingCheckoutHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.bookingCheckoutHeader h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 900;
+}
+
+.bookingCheckoutHeader p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.bookingCheckoutForm {
+  display: grid;
+  gap: 18px;
+}
+
+.bookingCheckoutGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.bookingCheckoutForm label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.bookingCheckoutForm input,
+.bookingCheckoutForm textarea,
+.bookingCheckoutForm select {
+  width: 100%;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  border-radius: 16px;
+  padding: 13px 14px;
+  font: inherit;
+  background: #fff;
+  outline: none;
+}
+
+.bookingCheckoutForm input:focus,
+.bookingCheckoutForm textarea:focus,
+.bookingCheckoutForm select:focus {
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+}
+
+.bookingCheckoutSummary {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(0, 184, 241, 0.08);
+  border: 1px solid rgba(0, 184, 241, 0.16);
+}
+
+.bookingCheckoutSummaryTitle {
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.bookingCheckoutSummaryRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 700;
+}
+
+.bookingCheckoutPrimaryBtn,
+.bookingCheckoutGhostBtn {
+  width: fit-content;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.bookingCheckoutPrimaryBtn {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
+}
+
+.bookingCheckoutGhostBtn {
+  background: #f8fafc;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  color: #12212f;
+}
+
+.bookingCheckoutMessage,
+.bookingCheckoutNote {
+  padding: 13px 16px;
+  border-radius: 16px;
+  font-weight: 700;
+}
+
+.bookingCheckoutMessage.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.bookingCheckoutMessage.error {
+  background: rgba(255, 98, 98, 0.1);
+  color: #b42318;
+  border: 1px solid rgba(255, 98, 98, 0.2);
+}
+
+.bookingCheckoutNote {
+  background: rgba(177, 227, 250, 0.18);
+  border: 1px solid rgba(177, 227, 250, 0.3);
+  color: rgba(11, 27, 42, 0.75);
+}
+
+.fullSpan {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 980px) {
+  .bookingCheckoutHeader,
+  .bookingCheckoutGrid {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
