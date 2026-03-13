@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { apiFetch, getUser, isLoggedIn } from "../lib/api";
+import { apiFetch, isLoggedIn } from "../lib/api";
 import { useNavigate } from "react-router-dom";
 import "./Providers.css";
 
@@ -20,14 +20,12 @@ function emptyVehicle() {
 
 export default function Providers() {
   const navigate = useNavigate();
-  const user = getUser();
 
   const [providers, setProviders] = useState([]);
   const [myProviders, setMyProviders] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [msg, setMsg] = useState({ text: "", type: "" });
-  const [selectedProvider, setSelectedProvider] = useState(null);
 
   const [filters, setFilters] = useState({
     q: "",
@@ -55,12 +53,6 @@ export default function Providers() {
     plannerImages: null,
     existingPlannerImages: [],
   });
-
-  const [reviewForm, setReviewForm] = useState({
-    rating: 5,
-    comment: "",
-  });
-  const [reviews, setReviews] = useState([]);
 
   function setMessage(text, type = "success") {
     setMsg({ text, type });
@@ -111,15 +103,6 @@ export default function Providers() {
       setMyProviders(data.providers || []);
     } catch {
       // ignore
-    }
-  }
-
-  async function loadReviews(providerId) {
-    try {
-      const data = await apiFetch(`/api/reviews/${providerId}`);
-      setReviews(data.reviews || []);
-    } catch (err) {
-      setMessage(err.message, "error");
     }
   }
 
@@ -306,38 +289,10 @@ export default function Providers() {
       setMessage(data.message, "success");
       await loadProviders();
       await loadMyProviders();
-      if (selectedProvider?._id === id) setSelectedProvider(null);
     } catch (err) {
       setMessage(err.message, "error");
     }
   }
-
-  async function submitReview(e) {
-    e.preventDefault();
-    if (!selectedProvider) return;
-
-    try {
-      const data = await apiFetch("/api/reviews", {
-        method: "POST",
-        body: JSON.stringify({
-          providerId: selectedProvider._id,
-          rating: Number(reviewForm.rating),
-          comment: reviewForm.comment,
-        }),
-      });
-      setMessage(data.message, "success");
-      setReviewForm({ rating: 5, comment: "" });
-      await loadReviews(selectedProvider._id);
-      await loadProviders();
-    } catch (err) {
-      setMessage(err.message, "error");
-    }
-  }
-
-  const isOwner =
-    user &&
-    selectedProvider &&
-    String(selectedProvider.owner?._id || selectedProvider.owner) === String(user.id);
 
   return (
     <div className="container providerPlatformPage">
@@ -887,10 +842,7 @@ export default function Providers() {
               <div className="providerCardActions">
                 <button
                   className="btn"
-                  onClick={async () => {
-                    setSelectedProvider(item);
-                    await loadReviews(item._id);
-                  }}
+                  onClick={() => navigate(`/providers/${item._id}`)}
                 >
                   View Details
                 </button>
@@ -899,148 +851,6 @@ export default function Providers() {
           </div>
         ))}
       </div>
-
-      {selectedProvider && (
-        <div className="providerDetail card">
-          <div className="providerDetailTop">
-            <div>
-              <div className="providerSectionTitle">{selectedProvider.businessName}</div>
-              <div className="providerMetaText">
-                {selectedProvider.city} • {selectedProvider.phone}
-              </div>
-            </div>
-          </div>
-
-          {selectedProvider.listingType === "vehicle" ? (
-            <div className="detailVehicleList">
-              {selectedProvider.vehicles?.map((vehicle, index) => (
-                <div className="detailVehicleCard" key={index}>
-                  <div className="detailVehicleHead">
-                    <div className="detailVehicleTitle">
-                      {vehicle.title || vehicle.vehicleType}
-                    </div>
-                    <div className="detailVehiclePrice">₹{vehicle.price}</div>
-                  </div>
-
-                  <div className="detailVehicleMeta">
-                    Capacity: {vehicle.capacity || 1} • Fuel: {vehicle.fuelType || "N/A"} •{" "}
-                    {vehicle.withDriver ? "With Driver" : "Without Driver"}
-                  </div>
-
-                  <div className="providerImageGrid">
-                    {vehicle.images?.map((img, imgIndex) => (
-                      <div className="providerImageItem" key={imgIndex}>
-                        <img src={img.url} alt={vehicle.title || vehicle.vehicleType} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="plannerDetailBox">
-              <div className="plannerTitle">
-                {selectedProvider.travelPlanner?.packageTitle || "Travel Package"}
-              </div>
-              <div className="plannerMeta">
-                {selectedProvider.travelPlanner?.plannerMode} • {selectedProvider.travelPlanner?.durationText} • ₹
-                {selectedProvider.travelPlanner?.priceFrom || 0}
-              </div>
-
-              <div className="plannerInfoGrid">
-                <div>
-                  <div className="plannerInfoTitle">Places Covered</div>
-                  <div className="plannerInfoText">
-                    {(selectedProvider.travelPlanner?.placesCovered || []).join(", ") || "N/A"}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="plannerInfoTitle">Inclusions</div>
-                  <div className="plannerInfoText">
-                    {(selectedProvider.travelPlanner?.inclusions || []).join(", ") || "N/A"}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="plannerInfoTitle">Exclusions</div>
-                  <div className="plannerInfoText">
-                    {(selectedProvider.travelPlanner?.exclusions || []).join(", ") || "N/A"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="providerImageGrid">
-                {(selectedProvider.travelPlanner?.images || []).map((img, index) => (
-                  <div className="providerImageItem" key={index}>
-                    <img src={img.url} alt="planner" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="reviewSection">
-            <div className="providerSectionTitle">Reviews</div>
-
-            {!isLoggedIn() ? (
-              <div className="providerNote">Please login to add a review.</div>
-            ) : user &&
-              String(selectedProvider.owner?._id || selectedProvider.owner) ===
-                String(user.id) ? (
-              <div className="providerNote">
-                You cannot review your own product or service.
-              </div>
-            ) : (
-              <form className="reviewForm" onSubmit={submitReview}>
-                <select
-                  className="select"
-                  value={reviewForm.rating}
-                  onChange={(e) =>
-                    setReviewForm((s) => ({ ...s, rating: e.target.value }))
-                  }
-                >
-                  <option value={5}>5 Stars</option>
-                  <option value={4}>4 Stars</option>
-                  <option value={3}>3 Stars</option>
-                  <option value={2}>2 Stars</option>
-                  <option value={1}>1 Star</option>
-                </select>
-
-                <textarea
-                  className="textarea"
-                  rows={3}
-                  value={reviewForm.comment}
-                  onChange={(e) =>
-                    setReviewForm((s) => ({ ...s, comment: e.target.value }))
-                  }
-                  placeholder="Write your review"
-                />
-
-                <button className="btn btnPrimary" type="submit">
-                  Submit Review
-                </button>
-              </form>
-            )}
-
-            <div className="reviewList">
-              {reviews.length === 0 ? (
-                <div className="providerNote">No reviews yet.</div>
-              ) : (
-                reviews.map((review) => (
-                  <div className="reviewItem" key={review._id}>
-                    <div className="reviewTop">
-                      <div className="reviewUser">{review.user?.name || "User"}</div>
-                      <div className="reviewStars">⭐ {review.rating}</div>
-                    </div>
-                    <div className="reviewText">{review.comment || "No comment"}</div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

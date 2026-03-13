@@ -28,7 +28,7 @@ export default function ProviderDetails() {
   });
 
   useEffect(() => {
-    async function load() {
+    async function loadData() {
       try {
         const providerData = await apiFetch(`/api/providers/${id}`);
         setProvider(providerData.provider);
@@ -39,11 +39,13 @@ export default function ProviderDetails() {
         setMsg({ text: err.message, type: "error" });
       }
     }
-    load();
+
+    loadData();
   }, [id]);
 
   async function submitReview(e) {
     e.preventDefault();
+
     try {
       const data = await apiFetch("/api/reviews", {
         method: "POST",
@@ -120,14 +122,19 @@ export default function ProviderDetails() {
   }
 
   if (!provider) {
-    return <div className="container providersPlatformPage">Loading...</div>;
+    return <div className="container providerPlatformPage">Loading...</div>;
   }
 
   const isOwner =
     user && String(provider.owner?._id || provider.owner) === String(user.id);
 
+  const defaultAmount =
+    provider.listingType === "vehicle"
+      ? provider.vehicles?.[0]?.price || 0
+      : provider.travelPlanner?.priceFrom || 0;
+
   return (
-    <div className="container providersPlatformPage">
+    <div className="container providerPlatformPage">
       {msg.text && (
         <div className={`providerMessage ${msg.type === "success" ? "success" : "error"}`}>
           {msg.text}
@@ -159,8 +166,9 @@ export default function ProviderDetails() {
                   </div>
                   <div className="detailVehiclePrice">₹{vehicle.price}</div>
                 </div>
+
                 <div className="detailVehicleMeta">
-                  Capacity: {vehicle.capacity} • Fuel: {vehicle.fuelType || "N/A"} •{" "}
+                  Capacity: {vehicle.capacity || 1} • Fuel: {vehicle.fuelType || "N/A"} •{" "}
                   {vehicle.withDriver ? "With Driver" : "Without Driver"}
                 </div>
 
@@ -191,12 +199,14 @@ export default function ProviderDetails() {
                   {(provider.travelPlanner?.placesCovered || []).join(", ") || "N/A"}
                 </div>
               </div>
+
               <div>
                 <div className="plannerInfoTitle">Inclusions</div>
                 <div className="plannerInfoText">
                   {(provider.travelPlanner?.inclusions || []).join(", ") || "N/A"}
                 </div>
               </div>
+
               <div>
                 <div className="plannerInfoTitle">Exclusions</div>
                 <div className="plannerInfoText">
@@ -228,57 +238,81 @@ export default function ProviderDetails() {
                 className="input"
                 placeholder="Your name"
                 value={bookingForm.contactName}
-                onChange={(e) => setBookingForm((s) => ({ ...s, contactName: e.target.value }))}
+                onChange={(e) =>
+                  setBookingForm((s) => ({ ...s, contactName: e.target.value }))
+                }
                 required
               />
+
               <input
                 className="input"
                 placeholder="Email"
                 value={bookingForm.contactEmail}
-                onChange={(e) => setBookingForm((s) => ({ ...s, contactEmail: e.target.value }))}
+                onChange={(e) =>
+                  setBookingForm((s) => ({ ...s, contactEmail: e.target.value }))
+                }
               />
+
               <input
                 className="input"
                 placeholder="Phone"
                 value={bookingForm.contactPhone}
-                onChange={(e) => setBookingForm((s) => ({ ...s, contactPhone: e.target.value }))}
+                onChange={(e) =>
+                  setBookingForm((s) => ({ ...s, contactPhone: e.target.value }))
+                }
                 required
               />
+
               <input
                 className="input"
                 type="date"
                 value={bookingForm.bookingDate}
-                onChange={(e) => setBookingForm((s) => ({ ...s, bookingDate: e.target.value }))}
+                onChange={(e) =>
+                  setBookingForm((s) => ({ ...s, bookingDate: e.target.value }))
+                }
                 required
               />
+
               <input
                 className="input"
                 type="number"
                 placeholder="Number of people"
                 value={bookingForm.peopleCount}
-                onChange={(e) => setBookingForm((s) => ({ ...s, peopleCount: e.target.value }))}
+                onChange={(e) =>
+                  setBookingForm((s) => ({ ...s, peopleCount: e.target.value }))
+                }
               />
+
               <input
                 className="input"
                 placeholder="Destination / Place"
                 value={bookingForm.destination}
-                onChange={(e) => setBookingForm((s) => ({ ...s, destination: e.target.value }))}
+                onChange={(e) =>
+                  setBookingForm((s) => ({ ...s, destination: e.target.value }))
+                }
               />
+
               <textarea
                 className="textarea"
                 rows={3}
                 placeholder="Additional notes"
                 value={bookingForm.notes}
-                onChange={(e) => setBookingForm((s) => ({ ...s, notes: e.target.value }))}
+                onChange={(e) =>
+                  setBookingForm((s) => ({ ...s, notes: e.target.value }))
+                }
               />
+
               <input
                 className="input"
                 type="number"
                 placeholder="Amount to pay"
-                value={bookingForm.amount}
-                onChange={(e) => setBookingForm((s) => ({ ...s, amount: e.target.value }))}
+                value={bookingForm.amount || defaultAmount}
+                onChange={(e) =>
+                  setBookingForm((s) => ({ ...s, amount: e.target.value }))
+                }
                 required
               />
+
               <button className="btn btnPrimary" type="submit">
                 Pay & Book
               </button>
@@ -287,7 +321,7 @@ export default function ProviderDetails() {
         </div>
 
         <div className="reviewSection">
-          <div className="providerSectionTitle">Reviews & Ratings</div>
+          <div className="providerSectionTitle">Reviews</div>
 
           {!isLoggedIn() ? (
             <div className="providerNote">Please login to add a review.</div>
