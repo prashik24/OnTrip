@@ -10,10 +10,11 @@
   border: 1.5px solid rgba(11, 27, 42, 0.12);
   border-radius: 18px;
   background: #ffffff;
-  color: var(--text);
+  color: #0b1b2a;
   font: inherit;
+  font-size: 16px;
   font-weight: 700;
-  padding: 0 16px;
+  padding: 0 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -37,11 +38,15 @@
 .customSelectValue {
   flex: 1;
   text-align: left;
-  color: var(--text);
+  color: #0b1b2a;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .customSelectValue.placeholder {
-  color: rgba(11, 27, 42, 0.55);
+  color: rgba(11, 27, 42, 0.58);
+  font-weight: 500;
 }
 
 .customSelectArrow {
@@ -98,6 +103,7 @@
   padding: 13px 14px;
   text-align: left;
   font: inherit;
+  font-size: 16px;
   font-weight: 700;
   color: #203040;
   cursor: pointer;
