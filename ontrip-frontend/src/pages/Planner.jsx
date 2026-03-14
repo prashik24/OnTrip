@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import CustomSelect from "../components/CustomSelect";
 import "./Planner.css";
 
 export default function Planner() {
@@ -13,6 +14,13 @@ export default function Planner() {
     travelStyle: "Balanced",
     startCity: "",
   });
+
+  const travelStyleOptions = [
+    { label: "Budget", value: "Budget" },
+    { label: "Balanced", value: "Balanced" },
+    { label: "Comfort", value: "Comfort" },
+    { label: "Luxury", value: "Luxury" },
+  ];
 
   const mockPlan = useMemo(() => {
     if (!form.destination.trim()) return null;
@@ -99,16 +107,11 @@ export default function Planner() {
           />
 
           <label className="label">Travel Style</label>
-          <select
-            className="select"
+          <CustomSelect
             value={form.travelStyle}
             onChange={(e) => update("travelStyle", e.target.value)}
-          >
-            <option>Budget</option>
-            <option>Balanced</option>
-            <option>Comfort</option>
-            <option>Luxury</option>
-          </select>
+            options={travelStyleOptions}
+          />
 
           <button className="btn btnPrimary planBtn">
             Generate Plan (connect GPT later)
