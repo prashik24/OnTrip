@@ -136,7 +136,7 @@
   color: #12212f;
 }
 
-.providersForm input,
+.providersForm input:not([type="checkbox"]):not([type="file"]),
 .providersForm textarea {
   width: 100%;
   border: 1px solid rgba(11, 27, 42, 0.12);
@@ -152,7 +152,7 @@
   color: #12212f;
 }
 
-.providersForm input::placeholder,
+.providersForm input:not([type="checkbox"]):not([type="file"])::placeholder,
 .providersForm textarea::placeholder {
   color: rgba(11, 27, 42, 0.58);
   font-weight: 500;
@@ -163,7 +163,7 @@
   resize: vertical;
 }
 
-.providersForm input:focus,
+.providersForm input:not([type="checkbox"]):not([type="file"]):focus,
 .providersForm textarea:focus {
   border-color: #00b8f1;
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
@@ -208,7 +208,7 @@
   margin-bottom: 14px;
 }
 
-/* DRIVER OPTION FIX */
+/* DRIVER OPTION */
 .providersCheckField {
   min-height: 54px;
   border: 1px solid rgba(11, 27, 42, 0.12);
@@ -220,10 +220,12 @@
 }
 
 .providersCheck {
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
-  gap: 16px; /* more space */
+  justify-content: flex-start;
+  gap: 16px;
   margin: 0;
+  padding: 0;
   font-weight: 700;
   font-size: 16px;
   color: #12212f;
@@ -236,6 +238,7 @@
   width: 20px;
   height: 20px;
   margin: 0;
+  padding: 0;
   accent-color: #00b8f1;
   box-shadow: none !important;
   outline: none;
@@ -244,12 +247,17 @@
 }
 
 .providersCheck span {
-  display: inline-block;
+  display: block;
+  margin: 0;
+  padding: 0;
   line-height: 1;
   color: #12212f;
+  transform: none; /* important */
+  position: relative;
+  top: 0;
 }
 
-/* FILE INPUT FIX */
+/* FILE INPUT */
 .providersForm input[type="file"] {
   width: 100%;
   min-height: 54px;
@@ -298,7 +306,7 @@
   cursor: pointer;
 }
 
-/* SEARCH ROW FIX */
+/* SEARCH ROW */
 .providersSearchGrid {
   display: grid;
   grid-template-columns: 1.15fr 0.95fr 1fr 1fr auto;
@@ -317,14 +325,15 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 1;
-  color: #12212f; /* same color */
+  color: #12212f;
   outline: none;
 }
 
 .providersSearchInput::placeholder {
-  color: rgba(11, 27, 42, 0.58);
+  color: #12212f; /* same color as dropdowns */
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 700; /* same weight */
+  opacity: 1;
 }
 
 .providersSearchInput:focus {

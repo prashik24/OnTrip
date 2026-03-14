@@ -10,7 +10,7 @@
   border: 1.5px solid rgba(11, 27, 42, 0.12);
   border-radius: 18px;
   background: #ffffff;
-  color: #12212f; /* same color */
+  color: #12212f;
   font: inherit;
   font-size: 16px;
   font-weight: 700;
@@ -39,15 +39,16 @@
 .customSelectValue {
   flex: 1;
   text-align: left;
-  color: #12212f; /* same color */
+  color: #12212f;
   font-size: 16px;
   font-weight: 700;
   line-height: 1;
 }
 
 .customSelectValue.placeholder {
-  color: rgba(11, 27, 42, 0.58);
-  font-weight: 500;
+  color: #12212f; /* same as inputs */
+  font-weight: 700;
+  opacity: 1;
 }
 
 .customSelectArrow {
