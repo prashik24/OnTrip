@@ -1,15 +1,15 @@
 :root {
   --auth-bg: #ffffff;
-  --auth-card: rgba(255, 255, 255, 0.96);
+  --auth-card: #ffffff;
   --auth-text: #111827;
   --auth-muted: #6b7280;
-  --auth-border: rgba(0, 184, 241, 0.14);
-  --auth-border-strong: rgba(0, 184, 241, 0.24);
+  --auth-border: #e5e7eb;
+  --auth-border-strong: #d1d5db;
   --auth-primary: #00b8f1;
-  --auth-primary-hover: #00a8de;
-  --auth-shadow: 0 12px 30px rgba(10, 22, 35, 0.06);
-  --auth-radius-xl: 18px;
-  --auth-radius-lg: 12px;
+  --auth-primary-hover: #009fd0;
+  --auth-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  --auth-radius-xl: 22px;
+  --auth-radius-lg: 999px;
   --auth-radius-md: 12px;
 }
 
@@ -42,7 +42,7 @@
   background: var(--auth-card);
   border: 1px solid var(--auth-border);
   border-radius: var(--auth-radius-xl);
-  padding: 24px;
+  padding: 26px;
   box-shadow: var(--auth-shadow);
 }
 
@@ -61,7 +61,7 @@
   margin: 8px 0 6px;
   font-size: 24px;
   line-height: 1.2;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--auth-text);
 }
 
@@ -70,7 +70,6 @@
   font-size: 14px;
   line-height: 1.6;
   color: var(--auth-muted);
-  font-weight: 500;
 }
 
 .authDivider {
@@ -87,7 +86,7 @@
   right: 0;
   top: 50%;
   height: 1px;
-  background: rgba(0, 184, 241, 0.12);
+  background: var(--auth-border);
   transform: translateY(-50%);
 }
 
@@ -109,13 +108,13 @@
 .authLabel {
   margin-top: 2px;
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 700;
   color: #374151;
 }
 
 .authInput {
   width: 100%;
-  min-height: 46px;
+  height: 44px;
   border: 1px solid var(--auth-border);
   border-radius: var(--auth-radius-md);
   padding: 0 12px;
@@ -133,8 +132,8 @@
 }
 
 .authInput:focus {
-  border-color: var(--auth-border-strong);
-  box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.08);
+  border-color: var(--auth-primary);
+  box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.1);
 }
 
 .authPassRow {
@@ -144,10 +143,10 @@
 }
 
 .authMiniBtn {
-  min-width: 82px;
-  min-height: 46px;
+  min-width: 78px;
+  height: 44px;
   border: 1px solid var(--auth-border);
-  background: #f8fdff;
+  background: #ffffff;
   border-radius: var(--auth-radius-md);
   cursor: pointer;
   font-size: 13px;
@@ -157,7 +156,7 @@
 }
 
 .authMiniBtn:hover {
-  background: rgba(0, 184, 241, 0.06);
+  background: #f9fafb;
   border-color: var(--auth-border-strong);
 }
 
@@ -203,10 +202,10 @@
 .authPrimary {
   margin-top: 8px;
   width: 100%;
-  min-height: 46px;
-  border: 1px solid rgba(0, 184, 241, 0.24);
+  height: 46px;
+  border: none;
   border-radius: var(--auth-radius-lg);
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  background: var(--auth-primary);
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
@@ -215,7 +214,7 @@
 }
 
 .authPrimary:hover {
-  background: linear-gradient(135deg, #47c2ed, #00a8de);
+  background: var(--auth-primary-hover);
 }
 
 .authBottom {
@@ -244,21 +243,21 @@
 .authMessage {
   margin-top: 12px;
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.5;
 }
 
 .authMessage.error {
-  background: rgba(255, 98, 98, 0.08);
-  border: 1px solid rgba(255, 98, 98, 0.16);
+  background: rgba(255, 98, 98, 0.09);
+  border: 1px solid rgba(255, 98, 98, 0.22);
   color: #b42318;
 }
 
 .authMessage.success {
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.16);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   color: #047857;
 }
 
@@ -277,18 +276,16 @@
 
 .authTab {
   border: 1px solid var(--auth-border);
-  background: #f8fdff;
+  background: rgba(255, 255, 255, 0.9);
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: 999px;
   cursor: pointer;
-  font-weight: 700;
-  color: #1f2937;
+  font-weight: 800;
 }
 
 .authTab.active {
-  background: rgba(0, 184, 241, 0.08);
-  border-color: rgba(0, 184, 241, 0.2);
-  color: #0f5b80;
+  background: rgba(0, 184, 241, 0.12);
+  border-color: rgba(0, 184, 241, 0.22);
 }
 
 @media (max-width: 640px) {
@@ -299,6 +296,7 @@
   .authCard {
     max-width: 100%;
     padding: 20px 16px;
+    border-radius: 16px;
   }
 
   .authTitle {
