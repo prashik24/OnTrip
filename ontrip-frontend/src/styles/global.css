@@ -36,10 +36,6 @@ a {
   backdrop-filter: blur(10px);
 }
 
-/* =========================
-   BUTTONS
-========================= */
-
 .btn {
   border: 1px solid rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.9);
@@ -72,61 +68,38 @@ a {
   color: #2a1a05;
 }
 
-/* =========================
-   FORM CONTROLS
-========================= */
-
 .input,
-.textarea,
-.select,
-input,
-textarea,
-select {
+.textarea {
   width: 100%;
-  border: 1px solid rgba(11, 27, 42, 0.12);
+  border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 13px 14px;
-  background: #ffffff;
+  padding: 12px 12px;
+  background: rgba(255, 255, 255, 0.92);
   outline: none;
   font: inherit;
   color: var(--text);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .input:focus,
-.textarea:focus,
-.select:focus,
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: #00b8f1;
+.textarea:focus {
+  border-color: rgba(0, 184, 241, 0.55);
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
 }
 
 /* =========================
-   TEXTAREA
-========================= */
-
-.textarea,
-textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
-/* =========================
-   GLOBAL DROPDOWN STYLING
+   GLOBAL DROPDOWN (NATIVE FALLBACK)
 ========================= */
 
 .select,
 select {
-  height: 54px;
-  padding: 0 54px 0 18px;
-  border: 1.5px solid #f2b45a;
+  height: 52px;
+  padding: 0 48px 0 16px;
+  border: 1.5px solid rgba(0, 184, 241, 0.35);
   border-radius: 18px;
-  background-color: #fffefb;
-  color: #8b5a0a;
+  background-color: #ffffff;
+  color: var(--text);
   font: inherit;
-  font-weight: 800;
+  font-weight: 700;
   outline: none;
   cursor: pointer;
 
@@ -134,57 +107,40 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
 
-  background-image: url("data:image/svg+xml;utf8,<svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M7 10L12 15L17 10' stroke='%23d08a19' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg width='18' height='18' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M7 10L12 15L17 10' stroke='%2300b8f1' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
   background-repeat: no-repeat;
-  background-position: right 18px center;
+  background-position: right 16px center;
   background-size: 18px;
 
-  box-shadow:
-    0 8px 24px rgba(40, 30, 10, 0.05),
-    0 2px 6px rgba(242, 180, 90, 0.12);
-
-  transition: all 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .select:hover,
 select:hover {
-  border-color: #e8a53d;
-  background-color: #fffaf1;
+  border-color: rgba(0, 184, 241, 0.65);
+  background: #fcfeff;
 }
 
 .select:focus,
 select:focus {
-  border-color: #e8a53d;
-  box-shadow:
-    0 0 0 4px rgba(232, 165, 61, 0.16),
-    0 10px 26px rgba(40, 30, 10, 0.08);
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.16);
 }
 
 select option {
   background: #ffffff;
-  color: #374151;
+  color: #0b1b2a;
   font-weight: 600;
 }
-
-/* =========================
-   GRID & LAYOUT HELPERS
-========================= */
 
 .grid2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
-
-.row2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-/* =========================
-   TAGS & PILLS
-========================= */
 
 .pill {
   font-size: 12px;
@@ -194,6 +150,38 @@ select option {
   padding: 6px 10px;
   border-radius: 999px;
   font-weight: 800;
+}
+
+.note {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(0, 184, 241, 0.12);
+  border: 1px solid rgba(0, 184, 241, 0.2);
+  font-weight: 800;
+  color: rgba(11, 27, 42, 0.8);
+}
+
+.label {
+  display: block;
+  font-weight: 900;
+  margin: 10px 0 6px;
+  color: rgba(11, 27, 42, 0.8);
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.empty {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(177, 227, 250, 0.25);
+  border: 1px solid rgba(177, 227, 250, 0.45);
+  color: rgba(11, 27, 42, 0.72);
+  font-weight: 700;
 }
 
 .tagRow {
@@ -210,33 +198,6 @@ select option {
   background: rgba(0, 184, 241, 0.1);
   border: 1px solid rgba(0, 184, 241, 0.18);
 }
-
-/* =========================
-   NOTES
-========================= */
-
-.note {
-  margin-top: 12px;
-  padding: 10px 12px;
-  border-radius: 16px;
-  background: rgba(0, 184, 241, 0.12);
-  border: 1px solid rgba(0, 184, 241, 0.2);
-  font-weight: 800;
-  color: rgba(11, 27, 42, 0.8);
-}
-
-.empty {
-  padding: 16px;
-  border-radius: 16px;
-  background: rgba(177, 227, 250, 0.25);
-  border: 1px solid rgba(177, 227, 250, 0.45);
-  color: rgba(11, 27, 42, 0.72);
-  font-weight: 700;
-}
-
-/* =========================
-   PAGE HEAD
-========================= */
 
 .pageHead {
   display: flex;
@@ -265,12 +226,7 @@ select option {
   min-width: 320px;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
-
 @media (max-width: 900px) {
-
   .grid2 {
     grid-template-columns: 1fr;
   }
@@ -287,5 +243,4 @@ select option {
     width: 100%;
     min-width: 0;
   }
-
 }
