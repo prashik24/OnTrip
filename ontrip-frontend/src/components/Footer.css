@@ -6,7 +6,7 @@
 
   /* ✅ Full screen width even inside sidebar/main layout */
   width: 100vw;
-  margin-left: calc(55% - 56vw);
+  margin-left: calc(53% - 56vw);
 
   /* prevent horizontal scroll */
   overflow-x: hidden;
