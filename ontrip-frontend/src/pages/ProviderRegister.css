@@ -1,0 +1,187 @@
+.providerRegisterPage {
+  padding-bottom: 32px;
+  display: grid;
+  gap: 20px;
+}
+
+.providerRegisterHead h1 {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.providerRegisterHead p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.providerRegisterMessage {
+  padding: 13px 16px;
+  border-radius: 16px;
+  font-weight: 700;
+}
+
+.providerRegisterMessage.error {
+  background: rgba(255, 98, 98, 0.1);
+  color: #b42318;
+}
+
+.providerRegisterForm {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 28px;
+  box-shadow: 0 14px 40px rgba(10, 22, 35, 0.08);
+  padding: 24px;
+  display: grid;
+  gap: 20px;
+}
+
+.providerRegisterGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.providerRegisterForm label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: #12212f;
+}
+
+.providerRegisterForm input:not([type="checkbox"]):not([type="file"]),
+.providerRegisterForm textarea {
+  width: 100%;
+  min-height: 54px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  border-radius: 18px;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: #12212f;
+  background: #fff;
+  outline: none;
+}
+
+.providerRegisterForm textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.providerRegisterForm input[type="file"] {
+  width: 100%;
+  min-height: 54px;
+  border: 1.5px solid rgba(11, 27, 42, 0.12);
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.providerRegisterForm input[type="file"]::file-selector-button {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
+  font: inherit;
+  font-weight: 800;
+  padding: 10px 14px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+.providerRegisterBlock {
+  background: rgba(244, 251, 255, 0.95);
+  border: 1px solid rgba(11, 27, 42, 0.06);
+  border-radius: 24px;
+  padding: 18px;
+}
+
+.providerRegisterBlockHead,
+.providerRegisterVehicleTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.providerRegisterVehicleList {
+  display: grid;
+  gap: 16px;
+}
+
+.providerRegisterVehicleCard {
+  background: #fff;
+  border: 1px solid rgba(11, 27, 42, 0.06);
+  border-radius: 20px;
+  padding: 16px;
+}
+
+.providerRegisterCheckField {
+  min-height: 54px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+}
+
+.providerRegisterCheck {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+  font-weight: 700;
+  font-size: 16px;
+  color: #12212f;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.providerRegisterCheck input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: #00b8f1;
+}
+
+.providerRegisterPrimaryBtn,
+.providerRegisterGhostBtn,
+.providerRegisterDangerBtn {
+  border: none;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.providerRegisterPrimaryBtn {
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
+}
+
+.providerRegisterGhostBtn {
+  padding: 10px 16px;
+  background: #f8fafc;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+}
+
+.providerRegisterDangerBtn {
+  padding: 10px 16px;
+  background: rgba(255, 98, 98, 0.1);
+  color: #b42318;
+}
+
+.fullSpan {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 980px) {
+  .providerRegisterGrid {
+    grid-template-columns: 1fr;
+  }
+}
