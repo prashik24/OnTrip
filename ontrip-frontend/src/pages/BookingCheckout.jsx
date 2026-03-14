@@ -58,7 +58,11 @@ export default function BookingCheckout() {
     if (!provider) return 0;
 
     if (provider.listingType === "travel_planner") {
-      const base = Number(provider.travelPlanner?.pricePerPerson || provider.travelPlanner?.priceFrom || 0);
+      const base = Number(
+        provider.travelPlanner?.pricePerPerson ||
+        provider.travelPlanner?.priceFrom ||
+        0
+      );
       return base * Number(form.peopleCount || 1);
     }
 
@@ -80,8 +84,19 @@ export default function BookingCheckout() {
       return;
     }
 
+    if (provider.listingType === "vehicle" && !form.selectedVehicleTitle) {
+      setMsg("Please select a vehicle first.");
+      return;
+    }
+
+    if (!amount || amount <= 0) {
+      setMsg("Invalid booking amount.");
+      return;
+    }
+
     try {
       setPayLoading(true);
+      setMsg("");
 
       const data = await apiFetch("/api/bookings/create-order", {
         method: "POST",
