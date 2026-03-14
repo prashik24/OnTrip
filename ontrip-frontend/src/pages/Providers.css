@@ -64,25 +64,78 @@
 .providersSearchInput {
   width: 100%;
   min-height: 48px;
+  height: 48px;
   border: 1px solid rgba(11, 27, 42, 0.12);
   border-radius: 12px;
   padding: 0 14px;
   background: #ffffff;
-  color: var(--text);
-  font: inherit;
+  color: rgba(11, 27, 42, 0.78);
+  font-size: 15px;
+  font-family: inherit;
   font-weight: 600;
+  line-height: 1;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .providersSearchInput::placeholder {
-  color: rgba(11, 27, 42, 0.5);
-  font-weight: 500;
+  color: rgba(11, 27, 42, 0.56);
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 1;
 }
 
 .providersSearchInput:focus {
   border-color: rgba(0, 184, 241, 0.55);
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
+}
+
+/* make all 4 search fields same */
+.providersSearchGrid .customSelect,
+.providersSearchGrid .customSelectTrigger,
+.providersSearchGrid .providersSearchInput {
+  min-height: 48px;
+  height: 48px;
+}
+
+.providersSearchGrid .customSelectTrigger {
+  border-radius: 12px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  background: #ffffff;
+  padding: 0 14px;
+  color: rgba(11, 27, 42, 0.78);
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.providersSearchGrid .customSelectTrigger:hover {
+  border-color: rgba(11, 27, 42, 0.12);
+  background: #ffffff;
+}
+
+.providersSearchGrid .customSelect.open .customSelectTrigger,
+.providersSearchGrid .customSelectTrigger:focus {
+  border-color: rgba(0, 184, 241, 0.55);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
+}
+
+.providersSearchGrid .customSelectValue,
+.providersSearchGrid .customSelectValue.placeholder {
+  color: rgba(11, 27, 42, 0.78);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.providersSearchGrid .customSelectValue.placeholder {
+  color: rgba(11, 27, 42, 0.56);
+}
+
+.providersSearchGrid .customSelectArrow {
+  color: #00b8f1;
 }
 
 .providersGrid {
@@ -176,7 +229,8 @@
   padding: 0 16px;
   border-radius: 12px;
   cursor: pointer;
-  font: inherit;
+  font-size: 14px;
+  font-family: inherit;
   font-weight: 700;
   transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
