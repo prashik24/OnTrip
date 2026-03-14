@@ -1,0 +1,121 @@
+.customSelect {
+  position: relative;
+  width: 100%;
+}
+
+.customSelectTrigger {
+  width: 100%;
+  min-height: 52px;
+  border: 1.5px solid rgba(11, 27, 42, 0.12);
+  border-radius: 18px;
+  background: #ffffff;
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.customSelectTrigger:hover {
+  border-color: rgba(0, 184, 241, 0.4);
+  background: #fcfeff;
+}
+
+.customSelect.open .customSelectTrigger,
+.customSelectTrigger:focus {
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+}
+
+.customSelectValue {
+  flex: 1;
+  text-align: left;
+  color: var(--text);
+}
+
+.customSelectValue.placeholder {
+  color: rgba(11, 27, 42, 0.55);
+}
+
+.customSelectArrow {
+  width: 18px;
+  height: 18px;
+  color: #00b8f1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.customSelectArrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+.customSelect.open .customSelectArrow {
+  transform: rotate(180deg);
+}
+
+.customSelectMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: #ffffff;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 18px 40px rgba(10, 22, 35, 0.14);
+  padding: 8px;
+  display: grid;
+  gap: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.customSelectOption {
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 14px;
+  padding: 13px 14px;
+  text-align: left;
+  font: inherit;
+  font-weight: 700;
+  color: #203040;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.customSelectOption:hover {
+  background: rgba(177, 227, 250, 0.28);
+  color: #0b1b2a;
+}
+
+.customSelectOption.selected {
+  background: linear-gradient(
+    135deg,
+    rgba(78, 201, 245, 0.18),
+    rgba(0, 184, 241, 0.14)
+  );
+  color: #0369a1;
+}
+
+.customSelect.disabled .customSelectTrigger {
+  opacity: 0.65;
+  cursor: not-allowed;
+  background: #f8fafc;
+}
+
+@media (max-width: 768px) {
+  .customSelectMenu {
+    max-height: 240px;
+  }
+}
