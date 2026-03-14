@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
+import CustomSelect from "../components/CustomSelect";
 import "./Providers.css";
 
 const vehicleTypes = ["car", "bike", "van", "truck", "jeep", "bus", "scooty", "cycle"];
@@ -58,6 +59,39 @@ export default function Providers() {
     plannerImages: null,
     existingPlannerImages: [],
   });
+
+  const listingTypeOptions = [
+    { label: "Vehicle Service", value: "vehicle" },
+    { label: "Travel Planner", value: "travel_planner" },
+  ];
+
+  const searchListingTypeOptions = [
+    { label: "All Types", value: "" },
+    { label: "Vehicle Service", value: "vehicle" },
+    { label: "Travel Planner", value: "travel_planner" },
+  ];
+
+  const searchVehicleTypeOptions = [
+    { label: "All Vehicles", value: "" },
+    ...vehicleTypes.map((type) => ({
+      label: type,
+      value: type,
+    })),
+  ];
+
+  const plannerModeOptions = [
+    { label: "Customized Trip", value: "customized_trip" },
+    { label: "Self Customized Places", value: "self_customized_places" },
+    { label: "Day Package", value: "day_package" },
+    { label: "Multi Day Package", value: "multi_day_package" },
+    { label: "Group Trip", value: "group_trip" },
+  ];
+
+  const priceUnitOptions = [
+    { label: "Per Day", value: "per_day" },
+    { label: "Per Hour", value: "per_hour" },
+    { label: "Fixed", value: "fixed" },
+  ];
 
   function setMessage(text, type = "success") {
     setMsg({ text, type });
@@ -329,13 +363,11 @@ export default function Providers() {
 
               <div>
                 <label>Listing Type</label>
-                <select
+                <CustomSelect
                   value={form.listingType}
                   onChange={(e) => setForm((s) => ({ ...s, listingType: e.target.value }))}
-                >
-                  <option value="vehicle">Vehicle Service</option>
-                  <option value="travel_planner">Travel Planner</option>
-                </select>
+                  options={listingTypeOptions}
+                />
               </div>
 
               <div>
@@ -421,16 +453,14 @@ export default function Providers() {
                       <div className="providersFormGrid">
                         <div>
                           <label>Vehicle Type</label>
-                          <select
+                          <CustomSelect
                             value={vehicle.vehicleType}
                             onChange={(e) => updateVehicle(index, "vehicleType", e.target.value)}
-                          >
-                            {vehicleTypes.map((type) => (
-                              <option key={type} value={type}>
-                                {type}
-                              </option>
-                            ))}
-                          </select>
+                            options={vehicleTypes.map((type) => ({
+                              label: type,
+                              value: type,
+                            }))}
+                          />
                         </div>
 
                         <div>
@@ -453,14 +483,11 @@ export default function Providers() {
 
                         <div>
                           <label>Price Unit</label>
-                          <select
+                          <CustomSelect
                             value={vehicle.priceUnit}
                             onChange={(e) => updateVehicle(index, "priceUnit", e.target.value)}
-                          >
-                            <option value="per_day">Per Day</option>
-                            <option value="per_hour">Per Hour</option>
-                            <option value="fixed">Fixed</option>
-                          </select>
+                            options={priceUnitOptions}
+                          />
                         </div>
 
                         <div>
@@ -514,16 +541,11 @@ export default function Providers() {
                 <div className="providersFormGrid">
                   <div>
                     <label>Planner Type</label>
-                    <select
+                    <CustomSelect
                       value={form.plannerMode}
                       onChange={(e) => setForm((s) => ({ ...s, plannerMode: e.target.value }))}
-                    >
-                      <option value="customized_trip">Customized Trip</option>
-                      <option value="self_customized_places">Self Customized Places</option>
-                      <option value="day_package">Day Package</option>
-                      <option value="multi_day_package">Multi Day Package</option>
-                      <option value="group_trip">Group Trip</option>
-                    </select>
+                      options={plannerModeOptions}
+                    />
                   </div>
 
                   <div>
@@ -661,25 +683,21 @@ export default function Providers() {
             value={filters.city}
             onChange={(e) => setFilters((s) => ({ ...s, city: e.target.value }))}
           />
-          <select
+
+          <CustomSelect
             value={filters.listingType}
             onChange={(e) => setFilters((s) => ({ ...s, listingType: e.target.value }))}
-          >
-            <option value="">All Types</option>
-            <option value="vehicle">Vehicle Service</option>
-            <option value="travel_planner">Travel Planner</option>
-          </select>
-          <select
+            options={searchListingTypeOptions}
+            placeholder="All Types"
+          />
+
+          <CustomSelect
             value={filters.vehicleType}
             onChange={(e) => setFilters((s) => ({ ...s, vehicleType: e.target.value }))}
-          >
-            <option value="">All Vehicles</option>
-            {vehicleTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
+            options={searchVehicleTypeOptions}
+            placeholder="All Vehicles"
+          />
+
           <button className="providersPrimaryBtn" type="submit">
             Search
           </button>
@@ -711,9 +729,7 @@ export default function Providers() {
                   <h3>{item.businessName}</h3>
                   <p>{item.city} • by {item.owner?.name || "Provider"}</p>
                 </div>
-                <div className="providerCardRating">
-                  ⭐ {item.ratingAverage || 0}
-                </div>
+                <div className="providerCardRating">⭐ {item.ratingAverage || 0}</div>
               </div>
 
               <div className="providerTypePill">
