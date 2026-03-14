@@ -40,20 +40,11 @@ function uploadBufferToCloudinary(buffer, folder = "ontrip/providers") {
   });
 }
 
-async function uploadOne(file) {
-  if (!file) return null;
-  const result = await uploadBufferToCloudinary(file.buffer);
-  return {
-    url: result.secure_url,
-    publicId: result.public_id,
-  };
-}
-
-async function uploadMany(files = []) {
+async function uploadMany(files = [], folder = "ontrip/providers") {
   const uploaded = [];
 
   for (const file of files) {
-    const result = await uploadBufferToCloudinary(file.buffer);
+    const result = await uploadBufferToCloudinary(file.buffer, folder);
     uploaded.push({
       url: result.secure_url,
       publicId: result.public_id,
@@ -93,7 +84,11 @@ export async function createProvider(req, res) {
     }
 
     const groupedFiles = groupFilesByField(req.files || []);
-    const serviceImage = await uploadOne(groupedFiles["serviceImage"]?.[0]);
+
+    const serviceImageUpload = await uploadMany(
+      groupedFiles["serviceImage"] || [],
+      "ontrip/providers/service"
+    );
 
     let vehicles = [];
     let travelPlanner = {};
@@ -107,9 +102,14 @@ export async function createProvider(req, res) {
         });
       }
 
+      vehicles = [];
+
       for (let i = 0; i < rawVehicles.length; i++) {
         const item = rawVehicles[i];
-        const images = await uploadMany(groupedFiles[`vehicleImages_${i}`] || []);
+        const images = await uploadMany(
+          groupedFiles[`vehicleImages_${i}`] || [],
+          "ontrip/providers/vehicles"
+        );
 
         vehicles.push({
           vehicleType: item.vehicleType,
@@ -125,7 +125,10 @@ export async function createProvider(req, res) {
     }
 
     if (listingType === "travel_planner") {
-      const plannerImages = await uploadMany(groupedFiles["plannerImages"] || []);
+      const plannerImages = await uploadMany(
+        groupedFiles["plannerImages"] || [],
+        "ontrip/providers/planner"
+      );
 
       travelPlanner = {
         plannerMode: body.plannerMode || "customized_trip",
@@ -150,7 +153,7 @@ export async function createProvider(req, res) {
       phone,
       whatsapp: whatsapp || "",
       description: description || "",
-      serviceImage,
+      serviceImage: serviceImageUpload[0] || null,
       vehicles,
       travelPlanner,
     });
@@ -194,9 +197,13 @@ export async function updateProvider(req, res) {
     provider.description = body.description || "";
     provider.listingType = body.listingType || provider.listingType;
 
-    const newServiceImage = await uploadOne(groupedFiles["serviceImage"]?.[0]);
-    if (newServiceImage) {
-      provider.serviceImage = newServiceImage;
+    const serviceImageUpload = await uploadMany(
+      groupedFiles["serviceImage"] || [],
+      "ontrip/providers/service"
+    );
+
+    if (serviceImageUpload.length > 0) {
+      provider.serviceImage = serviceImageUpload[0];
     }
 
     if (provider.listingType === "vehicle") {
@@ -208,7 +215,10 @@ export async function updateProvider(req, res) {
       for (let i = 0; i < rawVehicles.length; i++) {
         const item = rawVehicles[i];
         const existingImages = existingVehicles[i]?.images || [];
-        const newImages = await uploadMany(groupedFiles[`vehicleImages_${i}`] || []);
+        const newImages = await uploadMany(
+          groupedFiles[`vehicleImages_${i}`] || [],
+          "ontrip/providers/vehicles"
+        );
 
         updatedVehicles.push({
           vehicleType: item.vehicleType,
@@ -228,7 +238,10 @@ export async function updateProvider(req, res) {
 
     if (provider.listingType === "travel_planner") {
       const existingPlannerImages = safeJsonParse(body.existingPlannerImages, []);
-      const newPlannerImages = await uploadMany(groupedFiles["plannerImages"] || []);
+      const newPlannerImages = await uploadMany(
+        groupedFiles["plannerImages"] || [],
+        "ontrip/providers/planner"
+      );
 
       provider.vehicles = [];
       provider.travelPlanner = {
@@ -304,12 +317,11 @@ export async function getProviders(req, res) {
         { description: new RegExp(q, "i") },
         { city: new RegExp(q, "i") },
         { "travelPlanner.packageTitle": new RegExp(q, "i") },
-        { "travelPlanner.placesCovered": new RegExp(q, "i") },
       ];
     }
 
     const providers = await Provider.find(filter)
-      .populate("owner", "name avatar email")
+      .populate("owner", "name avatar")
       .sort({ createdAt: -1 });
 
     return res.json({ providers });
@@ -333,7 +345,7 @@ export async function getProviderById(req, res) {
 
     const provider = await Provider.findById(id).populate(
       "owner",
-      "name avatar email phone city"
+      "name avatar email"
     );
 
     if (!provider) {
@@ -345,12 +357,12 @@ export async function getProviderById(req, res) {
     const similarProviders = await Provider.find({
       _id: { $ne: provider._id },
       isActive: true,
-      city: new RegExp(`^${provider.city}$`, "i"),
       listingType: provider.listingType,
+      city: provider.city,
     })
       .populate("owner", "name avatar")
-      .limit(4)
-      .sort({ ratingAverage: -1, createdAt: -1 });
+      .sort({ ratingAverage: -1, createdAt: -1 })
+      .limit(4);
 
     return res.json({ provider, similarProviders });
   } catch (error) {
@@ -363,6 +375,12 @@ export async function getProviderById(req, res) {
 
 export async function getMyProviders(req, res) {
   try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({
+        message: "Not authorized.",
+      });
+    }
+
     const providers = await Provider.find({ owner: req.user._id }).sort({
       createdAt: -1,
     });
