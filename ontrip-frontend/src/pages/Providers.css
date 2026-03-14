@@ -302,3 +302,68 @@
 .providersPage {
   overflow: visible;
 }
+
+/* =========================
+   FILE INPUT STYLING
+========================= */
+
+.providersForm input[type="file"] {
+  width: 100%;
+  min-height: 54px;
+  border: 1.5px solid rgba(11, 27, 42, 0.12);
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 10px 12px;
+  font: inherit;
+  color: rgba(11, 27, 42, 0.72);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.providersForm input[type="file"]:hover {
+  border-color: rgba(0, 184, 241, 0.42);
+  background: #fcfeff;
+}
+
+.providersForm input[type="file"]:focus {
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+}
+
+.providersForm input[type="file"]::file-selector-button {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
+  font: inherit;
+  font-weight: 800;
+  padding: 10px 14px;
+  margin-right: 12px;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.providersForm input[type="file"]::file-selector-button:hover {
+  filter: brightness(0.98);
+}
+
+.providersForm input[type="file"]::-webkit-file-upload-button {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
+  font: inherit;
+  font-weight: 800;
+  padding: 10px 14px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+/* keep dropdown menus visible */
+.providersSearchBox,
+.providersFormWrap,
+.providersOwned,
+.providersHero,
+.providersPage {
+  overflow: visible;
+}
