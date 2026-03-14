@@ -26,7 +26,6 @@ export default function Providers() {
 
   const [providers, setProviders] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
   const [msg, setMsg] = useState({ text: "", type: "" });
 
   const [filters, setFilters] = useState({
@@ -56,7 +55,6 @@ export default function Providers() {
     inclusions: "",
     exclusions: "",
     plannerImages: null,
-    existingPlannerImages: [],
   });
 
   const listingTypeOptions = [
@@ -117,9 +115,7 @@ export default function Providers() {
       inclusions: "",
       exclusions: "",
       plannerImages: null,
-      existingPlannerImages: [],
     });
-    setEditingId(null);
   }
 
   async function loadProviders() {
@@ -272,11 +268,15 @@ export default function Providers() {
         <section className="providersFormWrap">
           <div className="providersFormHead">
             <div>
-              <h2>{editingId ? "Edit Listing" : "Create Listing"}</h2>
+              <h2>Create Listing</h2>
               <p>Add your service information with professional structure.</p>
             </div>
 
-            <button className="providersGhostBtn" type="button" onClick={() => setShowForm(false)}>
+            <button
+              className="providersGhostBtn"
+              type="button"
+              onClick={() => setShowForm(false)}
+            >
               Close
             </button>
           </div>
@@ -287,7 +287,9 @@ export default function Providers() {
                 <label>Business Name</label>
                 <input
                   value={form.businessName}
-                  onChange={(e) => setForm((s) => ({ ...s, businessName: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, businessName: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -296,7 +298,9 @@ export default function Providers() {
                 <label>Listing Type</label>
                 <CustomSelect
                   value={form.listingType}
-                  onChange={(e) => setForm((s) => ({ ...s, listingType: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, listingType: e.target.value }))
+                  }
                   options={listingTypeOptions}
                 />
               </div>
@@ -331,7 +335,9 @@ export default function Providers() {
                 <label>WhatsApp</label>
                 <input
                   value={form.whatsapp}
-                  onChange={(e) => setForm((s) => ({ ...s, whatsapp: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, whatsapp: e.target.value }))
+                  }
                 />
               </div>
 
@@ -341,7 +347,10 @@ export default function Providers() {
                   type="file"
                   accept="image/*"
                   onChange={(e) =>
-                    setForm((s) => ({ ...s, serviceImage: e.target.files?.[0] || null }))
+                    setForm((s) => ({
+                      ...s,
+                      serviceImage: e.target.files?.[0] || null,
+                    }))
                   }
                 />
               </div>
@@ -351,7 +360,9 @@ export default function Providers() {
                 <textarea
                   rows={4}
                   value={form.description}
-                  onChange={(e) => setForm((s) => ({ ...s, description: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, description: e.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -360,7 +371,11 @@ export default function Providers() {
               <div className="providersBlock">
                 <div className="providersBlockHead">
                   <h3>Vehicles</h3>
-                  <button className="providersGhostBtn" type="button" onClick={addVehicle}>
+                  <button
+                    className="providersGhostBtn"
+                    type="button"
+                    onClick={addVehicle}
+                  >
                     Add Vehicle
                   </button>
                 </div>
@@ -370,6 +385,7 @@ export default function Providers() {
                     <div className="providersVehicleCard" key={index}>
                       <div className="providersVehicleCardTop">
                         <strong>Vehicle {index + 1}</strong>
+
                         {form.vehicles.length > 1 && (
                           <button
                             className="providersDangerBtn"
@@ -386,7 +402,9 @@ export default function Providers() {
                           <label>Vehicle Type</label>
                           <CustomSelect
                             value={vehicle.vehicleType}
-                            onChange={(e) => updateVehicle(index, "vehicleType", e.target.value)}
+                            onChange={(e) =>
+                              updateVehicle(index, "vehicleType", e.target.value)
+                            }
                             options={vehicleTypes.map((type) => ({
                               label: type,
                               value: type,
@@ -398,7 +416,9 @@ export default function Providers() {
                           <label>Title</label>
                           <input
                             value={vehicle.title}
-                            onChange={(e) => updateVehicle(index, "title", e.target.value)}
+                            onChange={(e) =>
+                              updateVehicle(index, "title", e.target.value)
+                            }
                           />
                         </div>
 
@@ -407,7 +427,9 @@ export default function Providers() {
                           <input
                             type="number"
                             value={vehicle.price}
-                            onChange={(e) => updateVehicle(index, "price", e.target.value)}
+                            onChange={(e) =>
+                              updateVehicle(index, "price", e.target.value)
+                            }
                             required
                           />
                         </div>
@@ -416,12 +438,10 @@ export default function Providers() {
                           <label>Price Unit</label>
                           <CustomSelect
                             value={vehicle.priceUnit}
-                            onChange={(e) => updateVehicle(index, "priceUnit", e.target.value)}
-                            options={[
-                              { label: "Per Day", value: "per_day" },
-                              { label: "Per Hour", value: "per_hour" },
-                              { label: "Fixed", value: "fixed" },
-                            ]}
+                            onChange={(e) =>
+                              updateVehicle(index, "priceUnit", e.target.value)
+                            }
+                            options={priceUnitOptions}
                           />
                         </div>
 
@@ -430,7 +450,9 @@ export default function Providers() {
                           <input
                             type="number"
                             value={vehicle.capacity}
-                            onChange={(e) => updateVehicle(index, "capacity", e.target.value)}
+                            onChange={(e) =>
+                              updateVehicle(index, "capacity", e.target.value)
+                            }
                           />
                         </div>
 
@@ -438,19 +460,30 @@ export default function Providers() {
                           <label>Fuel Type</label>
                           <input
                             value={vehicle.fuelType}
-                            onChange={(e) => updateVehicle(index, "fuelType", e.target.value)}
+                            onChange={(e) =>
+                              updateVehicle(index, "fuelType", e.target.value)
+                            }
                           />
                         </div>
 
-                        <div className="providersCheckWrap">
-                          <label className="providersCheck">
-                            <input
-                              type="checkbox"
-                              checked={vehicle.withDriver}
-                              onChange={(e) => updateVehicle(index, "withDriver", e.target.checked)}
-                            />
-                            <span>With Driver</span>
-                          </label>
+                        <div className="fullSpan">
+                          <label>Driver Option</label>
+                          <div className="providersCheckField">
+                            <label className="providersCheck">
+                              <input
+                                type="checkbox"
+                                checked={vehicle.withDriver}
+                                onChange={(e) =>
+                                  updateVehicle(
+                                    index,
+                                    "withDriver",
+                                    e.target.checked
+                                  )
+                                }
+                              />
+                              <span>With Driver</span>
+                            </label>
+                          </div>
                         </div>
 
                         <div className="fullSpan">
@@ -459,7 +492,9 @@ export default function Providers() {
                             type="file"
                             accept="image/*"
                             multiple
-                            onChange={(e) => updateVehicle(index, "images", e.target.files)}
+                            onChange={(e) =>
+                              updateVehicle(index, "images", e.target.files)
+                            }
                           />
                         </div>
                       </div>
@@ -478,7 +513,9 @@ export default function Providers() {
                     <label>Planner Type</label>
                     <CustomSelect
                       value={form.plannerMode}
-                      onChange={(e) => setForm((s) => ({ ...s, plannerMode: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, plannerMode: e.target.value }))
+                      }
                       options={plannerModeOptions}
                     />
                   </div>
@@ -487,7 +524,9 @@ export default function Providers() {
                     <label>Package Title</label>
                     <input
                       value={form.packageTitle}
-                      onChange={(e) => setForm((s) => ({ ...s, packageTitle: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, packageTitle: e.target.value }))
+                      }
                     />
                   </div>
 
@@ -495,7 +534,9 @@ export default function Providers() {
                     <label>Duration Text</label>
                     <input
                       value={form.durationText}
-                      onChange={(e) => setForm((s) => ({ ...s, durationText: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, durationText: e.target.value }))
+                      }
                     />
                   </div>
 
@@ -504,7 +545,9 @@ export default function Providers() {
                     <input
                       type="number"
                       value={form.days}
-                      onChange={(e) => setForm((s) => ({ ...s, days: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, days: e.target.value }))
+                      }
                     />
                   </div>
 
@@ -513,7 +556,9 @@ export default function Providers() {
                     <input
                       type="number"
                       value={form.priceFrom}
-                      onChange={(e) => setForm((s) => ({ ...s, priceFrom: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, priceFrom: e.target.value }))
+                      }
                     />
                   </div>
 
@@ -522,7 +567,9 @@ export default function Providers() {
                     <input
                       type="number"
                       value={form.pricePerPerson}
-                      onChange={(e) => setForm((s) => ({ ...s, pricePerPerson: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, pricePerPerson: e.target.value }))
+                      }
                     />
                   </div>
 
@@ -530,7 +577,9 @@ export default function Providers() {
                     <label>Places Covered</label>
                     <input
                       value={form.placesCovered}
-                      onChange={(e) => setForm((s) => ({ ...s, placesCovered: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, placesCovered: e.target.value }))
+                      }
                     />
                   </div>
 
@@ -538,7 +587,9 @@ export default function Providers() {
                     <label>Inclusions</label>
                     <input
                       value={form.inclusions}
-                      onChange={(e) => setForm((s) => ({ ...s, inclusions: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, inclusions: e.target.value }))
+                      }
                     />
                   </div>
 
@@ -546,7 +597,9 @@ export default function Providers() {
                     <label>Exclusions</label>
                     <input
                       value={form.exclusions}
-                      onChange={(e) => setForm((s) => ({ ...s, exclusions: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, exclusions: e.target.value }))
+                      }
                     />
                   </div>
 
@@ -556,7 +609,9 @@ export default function Providers() {
                       type="file"
                       accept="image/*"
                       multiple
-                      onChange={(e) => setForm((s) => ({ ...s, plannerImages: e.target.files }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, plannerImages: e.target.files }))
+                      }
                     />
                   </div>
                 </div>
@@ -579,31 +634,40 @@ export default function Providers() {
           }}
         >
           <input
+            className="providersSearchInput"
             placeholder="Search providers"
             value={filters.q}
             onChange={(e) => setFilters((s) => ({ ...s, q: e.target.value }))}
           />
+
           <input
+            className="providersSearchInput"
             placeholder="City / Destination"
             value={filters.city}
-            onChange={(e) => setFilters((s) => ({ ...s, city: e.target.value }))}
+            onChange={(e) =>
+              setFilters((s) => ({ ...s, city: e.target.value }))
+            }
           />
 
           <CustomSelect
             value={filters.listingType}
-            onChange={(e) => setFilters((s) => ({ ...s, listingType: e.target.value }))}
+            onChange={(e) =>
+              setFilters((s) => ({ ...s, listingType: e.target.value }))
+            }
             options={searchListingTypeOptions}
             placeholder="All Types"
           />
 
           <CustomSelect
             value={filters.vehicleType}
-            onChange={(e) => setFilters((s) => ({ ...s, vehicleType: e.target.value }))}
+            onChange={(e) =>
+              setFilters((s) => ({ ...s, vehicleType: e.target.value }))
+            }
             options={searchVehicleTypeOptions}
             placeholder="All Vehicles"
           />
 
-          <button className="providersPrimaryBtn" type="submit">
+          <button className="providersSearchBtn" type="submit">
             Search
           </button>
         </form>
@@ -617,12 +681,18 @@ export default function Providers() {
                 <img src={item.serviceImage.url} alt={item.businessName} />
               ) : item.listingType === "vehicle" ? (
                 item.vehicles?.[0]?.images?.[0]?.url ? (
-                  <img src={item.vehicles[0].images[0].url} alt={item.businessName} />
+                  <img
+                    src={item.vehicles[0].images[0].url}
+                    alt={item.businessName}
+                  />
                 ) : (
                   <div className="providerCardMediaEmpty">No Image</div>
                 )
               ) : item.travelPlanner?.images?.[0]?.url ? (
-                <img src={item.travelPlanner.images[0].url} alt={item.businessName} />
+                <img
+                  src={item.travelPlanner.images[0].url}
+                  alt={item.businessName}
+                />
               ) : (
                 <div className="providerCardMediaEmpty">No Image</div>
               )}
@@ -632,13 +702,19 @@ export default function Providers() {
               <div className="providerCardHeader">
                 <div>
                   <h3>{item.businessName}</h3>
-                  <p>{item.city} • by {item.owner?.name || "Provider"}</p>
+                  <p>
+                    {item.city} • by {item.owner?.name || "Provider"}
+                  </p>
                 </div>
-                <div className="providerCardRating">⭐ {item.ratingAverage || 0}</div>
+                <div className="providerCardRating">
+                  ⭐ {item.ratingAverage || 0}
+                </div>
               </div>
 
               <div className="providerTypePill">
-                {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+                {item.listingType === "vehicle"
+                  ? "Vehicle Service"
+                  : "Travel Planner"}
               </div>
 
               <div className="providerCardDesc">

@@ -40,30 +40,43 @@
 
 .providersPrimaryBtn,
 .providersGhostBtn,
-.providersDangerBtn {
+.providersDangerBtn,
+.providersSearchBtn {
   border: none;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 800;
-  padding: 12px 18px;
   font-size: 14px;
 }
 
 .providersPrimaryBtn {
+  padding: 12px 18px;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #06202e;
 }
 
 .providersGhostBtn {
+  padding: 12px 18px;
   background: #f8fafc;
   border: 1px solid rgba(11, 27, 42, 0.08);
   color: #112131;
 }
 
 .providersDangerBtn {
+  padding: 10px 16px;
   background: rgba(255, 98, 98, 0.1);
   border: 1px solid rgba(255, 98, 98, 0.22);
   color: #b42318;
+}
+
+.providersSearchBtn {
+  min-height: 54px;
+  padding: 0 22px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .providersMessage {
@@ -125,11 +138,17 @@
 .providersForm textarea {
   width: 100%;
   border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 16px;
-  padding: 13px 14px;
+  border-radius: 18px;
+  padding: 14px 16px;
   font: inherit;
   background: #fff;
   outline: none;
+  min-height: 54px;
+}
+
+.providersForm textarea {
+  min-height: 120px;
+  resize: vertical;
 }
 
 .providersForm input:focus,
@@ -177,27 +196,30 @@
   margin-bottom: 14px;
 }
 
-/* FIXED CHECKBOX AREA */
-.providersCheckWrap {
+/* CHECKBOX FIX */
+.providersCheckField {
+  min-height: 54px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 0 16px;
   display: flex;
   align-items: center;
-  min-height: 52px;
 }
 
 .providersCheck {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  color: #12212f;
+  gap: 12px;
   margin: 0;
+  font-weight: 800;
+  color: #12212f;
   cursor: pointer;
-  min-height: 20px;
 }
 
 .providersCheck input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   margin: 0;
   accent-color: #00b8f1;
   box-shadow: none !important;
@@ -206,10 +228,10 @@
 }
 
 .providersCheck span {
-  line-height: 1.2;
+  line-height: 1;
 }
 
-/* FILE INPUT */
+/* FILE INPUT FIX */
 .providersForm input[type="file"] {
   width: 100%;
   min-height: 54px;
@@ -220,7 +242,6 @@
   font: inherit;
   color: rgba(11, 27, 42, 0.72);
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .providersForm input[type="file"]:hover {
@@ -257,10 +278,29 @@
   cursor: pointer;
 }
 
+/* SEARCH ROW FIX */
 .providersSearchGrid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
-  gap: 12px;
+  grid-template-columns: 1.15fr 0.95fr 1fr 1fr auto;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.providersSearchInput {
+  width: 100%;
+  min-height: 54px;
+  border: 1.5px solid rgba(11, 27, 42, 0.12);
+  border-radius: 18px;
+  padding: 0 16px;
+  background: #ffffff;
+  font: inherit;
+  color: var(--text);
+  outline: none;
+}
+
+.providersSearchInput:focus {
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
 }
 
 .providersGrid {

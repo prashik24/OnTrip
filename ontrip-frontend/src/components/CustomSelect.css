@@ -1,17 +1,18 @@
 .customSelect {
   position: relative;
   width: 100%;
+  min-height: 54px;
 }
 
 .customSelectTrigger {
   width: 100%;
-  min-height: 52px;
+  min-height: 54px;
   border: 1.5px solid rgba(11, 27, 42, 0.12);
   border-radius: 18px;
   background: #ffffff;
   color: var(--text);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   padding: 0 16px;
   display: flex;
   align-items: center;
@@ -76,12 +77,9 @@
   padding: 8px;
   display: grid;
   gap: 4px;
-
   max-height: 320px;
   overflow-y: auto;
   overflow-x: hidden;
-
-  /* hide visible scrollbar */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
