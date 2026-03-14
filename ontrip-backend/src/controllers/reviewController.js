@@ -1,5 +1,39 @@
+import { Readable } from "stream";
 import Review from "../models/Review.js";
 import Provider from "../models/Provider.js";
+import Booking from "../models/Booking.js";
+import cloudinary from "../config/cloudinary.js";
+
+function uploadBufferToCloudinary(buffer, folder = "ontrip/reviews") {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+
+    Readable.from(buffer).pipe(stream);
+  });
+}
+
+async function uploadMany(files = []) {
+  const uploaded = [];
+
+  for (const file of files) {
+    const result = await uploadBufferToCloudinary(file.buffer);
+    uploaded.push({
+      url: result.secure_url,
+      publicId: result.public_id,
+    });
+  }
+
+  return uploaded;
+}
 
 async function refreshProviderRating(providerId) {
   const reviews = await Review.find({ provider: providerId });
@@ -15,45 +49,57 @@ async function refreshProviderRating(providerId) {
   });
 }
 
-export async function addReview(req, res) {
+export async function addReviewFromBooking(req, res) {
   try {
-    const { providerId, rating, comment } = req.body;
+    const { bookingId, rating, comment } = req.body;
 
-    const provider = await Provider.findById(providerId);
-
-    if (!provider) {
-      return res.status(404).json({ message: "Provider listing not found." });
+    const booking = await Booking.findById(bookingId).populate("provider");
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found." });
     }
 
-    if (String(provider.owner) === String(req.user._id)) {
-      return res
-        .status(403)
-        .json({ message: "You cannot review your own product or service." });
+    if (String(booking.user) !== String(req.user._id)) {
+      return res.status(403).json({ message: "You can review only your own booking." });
     }
+
+    if (booking.paymentStatus !== "paid") {
+      return res.status(403).json({ message: "Only paid bookings can be reviewed." });
+    }
+
+    const uploadedImages = await uploadMany(req.files || []);
 
     let review = await Review.findOne({
-      provider: providerId,
+      provider: booking.provider,
       user: req.user._id,
     });
 
     if (review) {
       review.rating = Number(rating);
       review.comment = comment || "";
+      if (uploadedImages.length > 0) {
+        review.images = uploadedImages;
+      }
+      review.booking = booking._id;
       await review.save();
     } else {
       review = await Review.create({
-        provider: providerId,
+        provider: booking.provider._id || booking.provider,
+        booking: booking._id,
         user: req.user._id,
         rating: Number(rating),
         comment: comment || "",
+        images: uploadedImages,
       });
     }
 
-    await refreshProviderRating(providerId);
+    await refreshProviderRating(booking.provider._id || booking.provider);
 
-    return res.json({ message: "Review saved successfully.", review });
+    return res.json({
+      message: "Review saved successfully.",
+      review,
+    });
   } catch (error) {
-    console.error("addReview error", error);
+    console.error("addReviewFromBooking error", error);
     return res.status(500).json({ message: "Failed to save review." });
   }
 }
