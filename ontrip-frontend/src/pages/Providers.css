@@ -221,11 +221,10 @@
   font-weight: 550;
 }
 
+/* main buttons */
 .providersPrimaryBtn,
 .providersGhostBtn,
-.providersSearchBtn,
-.providerCardBody .btn,
-.providerCardBody a.btn {
+.providersSearchBtn {
   min-height: 44px;
   padding: 0 16px;
   border-radius: 12px;
@@ -237,9 +236,7 @@
 }
 
 .providersPrimaryBtn,
-.providersSearchBtn,
-.providerCardBody .btn,
-.providerCardBody a.btn {
+.providersSearchBtn {
   border: 1px solid rgba(0, 184, 241, 0.38);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
@@ -251,11 +248,31 @@
   color: var(--text);
 }
 
+/* ✅ View Details button blue */
+.providerCardBody .btn,
+.providerCardBody a.btn,
+.providerCardActions .btn,
+.providerCardActions a.btn {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 700;
+  border: 1px solid rgba(0, 184, 241, 0.38);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
 .providersPrimaryBtn:hover,
 .providersGhostBtn:hover,
 .providersSearchBtn:hover,
 .providerCardBody .btn:hover,
-.providerCardBody a.btn:hover {
+.providerCardBody a.btn:hover,
+.providerCardActions .btn:hover,
+.providerCardActions a.btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(10, 22, 35, 0.08);
 }
