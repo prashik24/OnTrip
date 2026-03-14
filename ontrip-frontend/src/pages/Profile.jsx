@@ -151,11 +151,7 @@ export default function Profile() {
               <h1>{user?.name || "Traveler"}</h1>
               <p>{user?.email || "No email added"}</p>
             </div>
-
-            <div className="profileMiniInfo">
-              <span>{user?.city || "City not added"}</span>
-              <span>{user?.phone || "Phone not added"}</span>
-            </div>
+ 
           </div>
 
           <div className="profileActions">
