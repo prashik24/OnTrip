@@ -19,9 +19,14 @@ function emptyVehicle() {
   };
 }
 
+function onlyPhone(value) {
+  return value.replace(/\D/g, "").slice(0, 10);
+}
+
 export default function ProviderRegister() {
   const navigate = useNavigate();
   const [msg, setMsg] = useState({ text: "", type: "" });
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const [form, setForm] = useState({
     businessName: "",
@@ -95,7 +100,18 @@ export default function ProviderRegister() {
       return;
     }
 
+    if (form.phone.length !== 10) {
+      setMsg({ text: "Phone number must be 10 digits.", type: "error" });
+      return;
+    }
+
+    if (form.whatsapp && form.whatsapp.length !== 10) {
+      setMsg({ text: "WhatsApp number must be 10 digits.", type: "error" });
+      return;
+    }
+
     try {
+      setSubmitLoading(true);
       const fd = new FormData();
 
       fd.append("businessName", form.businessName);
@@ -156,6 +172,8 @@ export default function ProviderRegister() {
       navigate("/profile/my-listings");
     } catch (err) {
       setMsg({ text: err.message, type: "error" });
+    } finally {
+      setSubmitLoading(false);
     }
   }
 
@@ -212,8 +230,9 @@ export default function ProviderRegister() {
           <div>
             <label>Phone</label>
             <input
+              inputMode="numeric"
               value={form.phone}
-              onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))}
+              onChange={(e) => setForm((s) => ({ ...s, phone: onlyPhone(e.target.value) }))}
               required
             />
           </div>
@@ -221,8 +240,9 @@ export default function ProviderRegister() {
           <div>
             <label>WhatsApp</label>
             <input
+              inputMode="numeric"
               value={form.whatsapp}
-              onChange={(e) => setForm((s) => ({ ...s, whatsapp: e.target.value }))}
+              onChange={(e) => setForm((s) => ({ ...s, whatsapp: onlyPhone(e.target.value) }))}
             />
           </div>
 
@@ -450,8 +470,8 @@ export default function ProviderRegister() {
           </div>
         )}
 
-        <button className="providerRegisterPrimaryBtn" type="submit">
-          Create Listing
+        <button className="providerRegisterPrimaryBtn" type="submit" disabled={submitLoading}>
+          {submitLoading ? "Creating..." : "Create Listing"}
         </button>
       </form>
     </div>
