@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
-import CustomSelect from "../components/CustomSelect";
+import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDetails.css";
 
 export default function ProviderDetails() {
@@ -14,10 +14,6 @@ export default function ProviderDetails() {
   const [similarProviders, setSimilarProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState({ text: "", type: "" });
-  const [reviewForm, setReviewForm] = useState({
-    rating: 5,
-    comment: "",
-  });
 
   useEffect(() => {
     async function loadData() {
@@ -39,48 +35,8 @@ export default function ProviderDetails() {
     loadData();
   }, [id]);
 
-  const isOwner = useMemo(() => {
-    if (!provider || !user) return false;
-    return String(provider.owner?._id || provider.owner) === String(user.id);
-  }, [provider, user]);
-
-  const reviewRatingOptions = [
-    { label: "5 Stars", value: 5 },
-    { label: "4 Stars", value: 4 },
-    { label: "3 Stars", value: 3 },
-    { label: "2 Stars", value: 2 },
-    { label: "1 Star", value: 1 },
-  ];
-
-  async function submitReview(e) {
-    e.preventDefault();
-
-    try {
-      const data = await apiFetch("/api/reviews", {
-        method: "POST",
-        body: JSON.stringify({
-          providerId: id,
-          rating: Number(reviewForm.rating),
-          comment: reviewForm.comment,
-        }),
-      });
-
-      setMsg({ text: data.message, type: "success" });
-
-      const reviewData = await apiFetch(`/api/reviews/${id}`);
-      setReviews(reviewData.reviews || []);
-      setReviewForm({ rating: 5, comment: "" });
-    } catch (err) {
-      setMsg({ text: err.message, type: "error" });
-    }
-  }
-
   if (loading) {
-    return (
-      <div className="providerDetailsPage container">
-        <div className="providerDetailsNote">Loading provider details...</div>
-      </div>
-    );
+    return <LoadingSpinner text="Loading provider details..." />;
   }
 
   if (!provider) {
@@ -92,6 +48,9 @@ export default function ProviderDetails() {
       </div>
     );
   }
+
+  const isOwner =
+    user && String(provider.owner?._id || provider.owner) === String(user.id);
 
   return (
     <div className="providerDetailsPage container">
@@ -252,40 +211,13 @@ export default function ProviderDetails() {
         )}
 
         <div className="providerDetailsSection">
-          <h2>Reviews</h2>
-
-          {!isLoggedIn() ? (
-            <div className="providerDetailsNote">Please login to add a review.</div>
-          ) : isOwner ? (
-            <div className="providerDetailsNote">You cannot review your own service.</div>
-          ) : (
-            <form className="providerDetailsReviewForm" onSubmit={submitReview}>
-              <CustomSelect
-                value={reviewForm.rating}
-                onChange={(e) =>
-                  setReviewForm((s) => ({ ...s, rating: e.target.value }))
-                }
-                options={reviewRatingOptions}
-              />
-
-              <textarea
-                rows={4}
-                value={reviewForm.comment}
-                onChange={(e) =>
-                  setReviewForm((s) => ({ ...s, comment: e.target.value }))
-                }
-                placeholder="Write your review"
-              />
-
-              <button className="providerDetailsPrimaryBtn" type="submit">
-                Submit Review
-              </button>
-            </form>
-          )}
+          <h2>Comments & Reviews</h2>
 
           <div className="providerDetailsReviewList">
             {reviews.length === 0 ? (
-              <div className="providerDetailsNote">No reviews yet.</div>
+              <div className="providerDetailsNote">
+                No comments yet. Reviews can be written only by users from Booking History after booking/payment.
+              </div>
             ) : (
               reviews.map((review) => (
                 <div className="providerDetailsReviewItem" key={review._id}>
@@ -293,7 +225,18 @@ export default function ProviderDetails() {
                     <strong>{review.user?.name || "User"}</strong>
                     <span>⭐ {review.rating}</span>
                   </div>
+
                   <p>{review.comment || "No comment"}</p>
+
+                  {review.images?.length > 0 && (
+                    <div className="providerDetailsGallery">
+                      {review.images.map((img, index) => (
+                        <div className="providerDetailsGalleryItem" key={index}>
+                          <img src={img.url} alt="review" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))
             )}
