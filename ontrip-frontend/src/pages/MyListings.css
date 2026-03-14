@@ -130,7 +130,8 @@
   background: #ffffff;
   color: var(--text);
   transition: 0.18s ease;
-  margin-top: -5px;
+  margin: 4px;
+  
 }
 
 .myListingsBtn:hover {
