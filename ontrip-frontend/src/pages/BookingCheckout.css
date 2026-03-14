@@ -1,109 +1,117 @@
 .bookingCheckoutPage {
   padding-bottom: 32px;
   display: grid;
-  gap: 20px;
+  gap: 18px;
 }
 
 .bookingCheckoutHead h1 {
   margin: 0;
   font-size: 32px;
-  font-weight: 900;
+  font-weight: 820;
+  color: var(--text);
 }
 
 .bookingCheckoutHead p {
   margin: 8px 0 0;
   color: var(--muted);
-  line-height: 1.7;
-  font-weight: 600;
+  line-height: 1.65;
+  font-weight: 550;
 }
 
 .bookingCheckoutMessage {
-  padding: 13px 16px;
-  border-radius: 16px;
-  background: rgba(255, 98, 98, 0.1);
-  border: 1px solid rgba(255, 98, 98, 0.2);
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 98, 98, 0.08);
+  border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
-  font-weight: 700;
+  font-weight: 650;
 }
 
 .bookingCheckoutCard {
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 28px;
-  box-shadow: 0 14px 40px rgba(10, 22, 35, 0.08);
-  padding: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  padding: 20px;
   display: grid;
-  gap: 20px;
+  gap: 18px;
 }
 
 .bookingCheckoutGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 14px;
 }
 
 .bookingCheckoutCard label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 700;
+  font-weight: 650;
   color: #12212f;
 }
 
 .bookingCheckoutCard input,
 .bookingCheckoutCard textarea {
   width: 100%;
-  min-height: 54px;
+  min-height: 46px;
   border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 18px;
-  padding: 14px 16px;
+  border-radius: 12px;
+  padding: 12px 14px;
   font: inherit;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 550;
   color: #12212f;
   background: #fff;
   outline: none;
 }
 
 .bookingCheckoutCard textarea {
-  min-height: 120px;
+  min-height: 110px;
   resize: vertical;
 }
 
 .bookingCheckoutCard input:focus,
 .bookingCheckoutCard textarea:focus {
   border-color: #00b8f1;
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
 }
 
 .bookingCheckoutDate {
   appearance: none;
   -webkit-appearance: none;
-  position: relative;
 }
 
 .bookingCheckoutAmount {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 650;
   color: #12212f;
 }
 
 .bookingCheckoutAmount strong {
   color: #0369a1;
-  font-size: 24px;
+  font-size: 22px;
+  font-weight: 780;
 }
 
 .bookingCheckoutBtn {
-  border: none;
-  border-radius: 999px;
-  padding: 12px 18px;
-  font-weight: 900;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
   cursor: pointer;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #06202e;
+  color: #ffffff;
+  transition: 0.18s ease;
+}
+
+.bookingCheckoutBtn:hover {
+  box-shadow: 0 8px 18px rgba(0, 184, 241, 0.16);
 }
 
 .bookingCheckoutBtn:disabled {
-  opacity: 0.7;
+  opacity: 0.72;
   cursor: not-allowed;
 }
 
