@@ -1,57 +1,59 @@
 .myListingsPage {
   padding-bottom: 32px;
   display: grid;
-  gap: 20px;
+  gap: 18px;
 }
 
 .myListingsHead h1 {
   margin: 0;
   font-size: 32px;
-  font-weight: 900;
+  font-weight: 820;
+  color: var(--text);
 }
 
 .myListingsHead p {
   margin: 8px 0 0;
   color: var(--muted);
-  line-height: 1.7;
-  font-weight: 600;
+  line-height: 1.65;
+  font-weight: 550;
   max-width: 760px;
 }
 
 .myListingsMessage {
-  padding: 13px 16px;
-  border-radius: 16px;
-  background: rgba(255, 98, 98, 0.1);
-  border: 1px solid rgba(255, 98, 98, 0.2);
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 98, 98, 0.08);
+  border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
-  font-weight: 700;
+  font-weight: 650;
 }
 
 .myListingsEmpty {
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 24px;
-  padding: 28px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  padding: 24px;
   color: rgba(11, 27, 42, 0.72);
-  font-weight: 700;
+  font-weight: 650;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
 }
 
 .myListingsGrid {
   display: grid;
-  gap: 18px;
+  gap: 16px;
 }
 
 .myListingsCard {
   overflow: hidden;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  box-shadow: 0 12px 32px rgba(10, 22, 35, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
 }
 
 .myListingsMedia {
   height: 220px;
-  background: rgba(177, 227, 250, 0.18);
+  background: rgba(177, 227, 250, 0.14);
 }
 
 .myListingsMedia img {
@@ -65,14 +67,14 @@
   height: 100%;
   display: grid;
   place-items: center;
-  font-weight: 800;
+  font-weight: 650;
   color: rgba(11, 27, 42, 0.5);
 }
 
 .myListingsBody {
-  padding: 18px;
+  padding: 16px;
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .myListingsTop {
@@ -84,30 +86,31 @@
 
 .myListingsTop h3 {
   margin: 0;
-  font-size: 22px;
-  font-weight: 900;
+  font-size: 20px;
+  font-weight: 780;
 }
 
 .myListingsTop p {
   margin: 6px 0 0;
   color: var(--muted);
-  font-weight: 600;
+  font-weight: 550;
 }
 
 .myListingsType {
-  padding: 7px 12px;
-  border-radius: 999px;
+  padding: 6px 10px;
+  border-radius: 10px;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 700;
   background: rgba(0, 184, 241, 0.1);
-  border: 1px solid rgba(0, 184, 241, 0.18);
+  border: 1px solid rgba(0, 184, 241, 0.16);
   white-space: nowrap;
+  color: #0369a1;
 }
 
 .myListingsDesc {
   color: rgba(11, 27, 42, 0.76);
-  line-height: 1.7;
-  font-weight: 600;
+  line-height: 1.65;
+  font-weight: 550;
 }
 
 .myListingsActions {
@@ -117,25 +120,31 @@
 }
 
 .myListingsBtn {
-  border: none;
-  border-radius: 999px;
-  padding: 10px 16px;
-  font-weight: 800;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
   cursor: pointer;
-  background: #f8fafc;
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  color: #12212f;
+  background: #ffffff;
+  color: var(--text);
+  transition: 0.18s ease;
+}
+
+.myListingsBtn:hover {
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
 }
 
 .myListingsBtn:disabled {
-  opacity: 0.7;
+  opacity: 0.72;
   cursor: not-allowed;
 }
 
 .myListingsBtn.danger {
-  background: rgba(255, 98, 98, 0.12);
+  background: rgba(255, 98, 98, 0.08);
   color: #b42318;
-  border: 1px solid rgba(255, 98, 98, 0.2);
+  border-color: rgba(255, 98, 98, 0.16);
 }
 
 .myListingsEditForm {
@@ -149,14 +158,14 @@
 .myListingsFormGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 14px;
 }
 
 .myListingsEditForm > .myListingsFormGrid label,
 .myListingsBlock label:not(.myListingsCheck) {
   display: block;
   margin-bottom: 8px;
-  font-weight: 700;
+  font-weight: 650;
   color: #12212f;
 }
 
@@ -164,76 +173,61 @@
 .myListingsEditForm textarea {
   width: 100%;
   border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 16px;
-  padding: 13px 14px;
+  border-radius: 12px;
+  padding: 12px 14px;
   font: inherit;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 550;
   color: #12212f;
   background: #fff;
   outline: none;
-  min-height: 52px;
-}
-
-.myListingsEditForm input:not([type="checkbox"]):not([type="file"])::placeholder,
-.myListingsEditForm textarea::placeholder {
-  color: rgba(11, 27, 42, 0.55);
-  font-weight: 500;
+  min-height: 46px;
 }
 
 .myListingsEditForm input:not([type="checkbox"]):not([type="file"]):focus,
 .myListingsEditForm textarea:focus {
   border-color: #00b8f1;
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
 }
 
 .myListingsEditForm textarea {
-  min-height: 120px;
+  min-height: 110px;
   resize: vertical;
 }
 
 .myListingsEditForm input[type="file"] {
   width: 100%;
-  min-height: 54px;
-  border: 1.5px solid rgba(11, 27, 42, 0.12);
-  border-radius: 18px;
+  min-height: 46px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  border-radius: 12px;
   background: #ffffff;
   padding: 10px 12px;
   font: inherit;
-  font-size: 16px;
-  font-weight: 600;
-  color: rgba(11, 27, 42, 0.72);
-  outline: none;
-}
-
-.myListingsEditForm input[type="file"]:focus {
-  border-color: #00b8f1;
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
 }
 
 .myListingsEditForm input[type="file"]::file-selector-button {
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #06202e;
+  color: #ffffff;
   font: inherit;
-  font-weight: 800;
+  font-weight: 700;
   padding: 10px 14px;
   margin-right: 12px;
   cursor: pointer;
 }
 
 .myListingsBlock {
-  background: rgba(244, 251, 255, 0.95);
-  border: 1px solid rgba(11, 27, 42, 0.06);
-  border-radius: 20px;
+  background: rgba(244, 251, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 14px;
   padding: 16px;
 }
 
 .myListingsBlock h4 {
   margin: 0;
   font-size: 18px;
-  font-weight: 900;
+  font-weight: 760;
 }
 
 .myListingsBlockHead,
@@ -251,17 +245,17 @@
 
 .myListingsVehicleCard {
   background: #fff;
-  border: 1px solid rgba(11, 27, 42, 0.06);
-  border-radius: 18px;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 14px;
   padding: 14px;
 }
 
 .myListingsCheckField {
-  min-height: 54px;
+  min-height: 46px;
   border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 18px;
+  border-radius: 12px;
   background: #fff;
-  padding: 0 18px;
+  padding: 0 14px;
   display: flex;
   align-items: center;
 }
@@ -269,9 +263,9 @@
 .myListingsCheck {
   display: inline-flex;
   align-items: center;
-  gap: 16px;
-  font-weight: 700;
-  font-size: 16px;
+  gap: 14px;
+  font-weight: 650;
+  font-size: 15px;
   cursor: pointer;
   line-height: 1;
   color: #12212f;
@@ -280,8 +274,8 @@
 }
 
 .myListingsCheck input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   margin: 0;
   accent-color: #00b8f1;
   flex-shrink: 0;
@@ -302,10 +296,10 @@
 
 .myListingsThumb {
   position: relative;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
   min-height: 120px;
-  background: rgba(177, 227, 250, 0.18);
+  background: rgba(177, 227, 250, 0.14);
 }
 
 .myListingsThumb img {
@@ -318,12 +312,12 @@
   position: absolute;
   right: 8px;
   top: 8px;
-  border: none;
-  border-radius: 999px;
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  border-radius: 10px;
   padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 650;
   cursor: pointer;
 }
 
