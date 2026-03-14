@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import Booking from "../models/Booking.js";
 import Provider from "../models/Provider.js";
+import Review from "../models/Review.js";
 import razorpay from "../config/razorpay.js";
 
 export async function createBookingOrder(req, res) {
@@ -10,13 +11,11 @@ export async function createBookingOrder(req, res) {
       contactName,
       contactEmail,
       contactPhone,
-      destination,
-      place,
-      travelDate,
-      days,
+      bookingDate,
       peopleCount,
-      selectedVehicleId,
+      destination,
       notes,
+      amount,
     } = req.body;
 
     const provider = await Provider.findById(providerId).populate("owner", "_id");
@@ -29,60 +28,7 @@ export async function createBookingOrder(req, res) {
       return res.status(403).json({ message: "You cannot book your own service." });
     }
 
-    const totalDays = Math.max(Number(days || 1), 1);
-    const totalPeople = Math.max(Number(peopleCount || 1), 1);
-
-    let unitPrice = 0;
-    let totalAmount = 0;
-    let serviceTitle = "";
-    let pricingLabel = "";
-    let selectedVehicleTitle = "";
-    let selectedPackageTitle = "";
-
-    if (provider.listingType === "travel_planner") {
-      unitPrice =
-        Number(provider.travelPlanner?.pricePerPerson || 0) ||
-        Number(provider.travelPlanner?.priceFrom || 0);
-
-      if (!unitPrice || unitPrice < 1) {
-        return res.status(400).json({ message: "Travel package pricing is not available." });
-      }
-
-      totalAmount = unitPrice * totalPeople;
-      serviceTitle = provider.travelPlanner?.packageTitle || provider.businessName;
-      selectedPackageTitle = serviceTitle;
-      pricingLabel = "Per person";
-    }
-
-    if (provider.listingType === "vehicle") {
-      const selectedVehicle = provider.vehicles.find(
-        (item) => String(item._id) === String(selectedVehicleId)
-      );
-
-      if (!selectedVehicle) {
-        return res.status(400).json({ message: "Please select a vehicle." });
-      }
-
-      unitPrice = Number(selectedVehicle.price || 0);
-
-      if (!unitPrice || unitPrice < 1) {
-        return res.status(400).json({ message: "Vehicle pricing is not available." });
-      }
-
-      totalAmount =
-        selectedVehicle.priceUnit === "fixed" ? unitPrice : unitPrice * totalDays;
-
-      serviceTitle = selectedVehicle.title || selectedVehicle.vehicleType;
-      selectedVehicleTitle = serviceTitle;
-      pricingLabel =
-        selectedVehicle.priceUnit === "per_hour"
-          ? "Per hour"
-          : selectedVehicle.priceUnit === "fixed"
-          ? "Fixed"
-          : "Per day";
-    }
-
-    const amountInPaise = Math.round(totalAmount * 100);
+    const amountInPaise = Math.round(Number(amount) * 100);
 
     if (!amountInPaise || amountInPaise < 100) {
       return res.status(400).json({ message: "Invalid amount." });
@@ -94,6 +40,11 @@ export async function createBookingOrder(req, res) {
       receipt: `booking_${Date.now()}`,
     });
 
+    const serviceTitle =
+      provider.listingType === "vehicle"
+        ? provider.businessName
+        : provider.travelPlanner?.packageTitle || provider.businessName;
+
     const booking = await Booking.create({
       user: req.user._id,
       provider: provider._id,
@@ -103,18 +54,11 @@ export async function createBookingOrder(req, res) {
       contactName,
       contactEmail: contactEmail || "",
       contactPhone,
+      bookingDate,
+      peopleCount: Number(peopleCount || 1),
       destination: destination || "",
-      place: place || "",
-      travelDate,
-      days: totalDays,
-      peopleCount: totalPeople,
-      selectedVehicleId: selectedVehicleId || null,
-      selectedVehicleTitle,
-      selectedPackageTitle,
-      unitPrice,
-      pricingLabel,
       notes: notes || "",
-      amount: totalAmount,
+      amount: Number(amount),
       currency: "INR",
       paymentStatus: "created",
       bookingStatus: "pending",
@@ -126,11 +70,6 @@ export async function createBookingOrder(req, res) {
       bookingId: booking._id,
       order,
       razorpayKeyId: process.env.RAZORPAY_KEY_ID,
-      summary: {
-        unitPrice,
-        totalAmount,
-        pricingLabel,
-      },
     });
   } catch (error) {
     console.error("createBookingOrder error", error);
@@ -185,10 +124,32 @@ export async function verifyBookingPayment(req, res) {
 export async function getMyBookings(req, res) {
   try {
     const bookings = await Booking.find({ user: req.user._id })
-      .populate("provider", "businessName listingType city serviceImage")
-      .sort({ createdAt: -1 });
+      .populate("provider", "businessName listingType city")
+      .sort({ createdAt: -1 })
+      .lean();
 
-    return res.json({ bookings });
+    const providerIds = bookings.map((b) => b.provider?._id).filter(Boolean);
+
+    const reviews = await Review.find({
+      user: req.user._id,
+      provider: { $in: providerIds },
+    }).lean();
+
+    const reviewMap = new Map(
+      reviews.map((review) => [String(review.provider), review])
+    );
+
+    const hydrated = bookings.map((booking) => {
+      const existingReview = reviewMap.get(String(booking.provider?._id || booking.provider)) || null;
+
+      return {
+        ...booking,
+        canReview: booking.paymentStatus === "paid",
+        existingReview,
+      };
+    });
+
+    return res.json({ bookings: hydrated });
   } catch (error) {
     console.error("getMyBookings error", error);
     return res.status(500).json({ message: "Failed to fetch booking history." });
@@ -199,7 +160,7 @@ export async function getProviderBookings(req, res) {
   try {
     const bookings = await Booking.find({ providerOwner: req.user._id })
       .populate("user", "name email phone avatar")
-      .populate("provider", "businessName listingType city serviceImage")
+      .populate("provider", "businessName listingType city")
       .sort({ createdAt: -1 });
 
     return res.json({ bookings });
