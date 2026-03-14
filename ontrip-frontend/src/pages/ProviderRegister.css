@@ -1,93 +1,96 @@
 .providerRegisterPage {
   padding-bottom: 32px;
   display: grid;
-  gap: 20px;
+  gap: 18px;
 }
 
 .providerRegisterHead h1 {
   margin: 0;
-  font-size: 34px;
-  font-weight: 900;
+  font-size: 32px;
+  font-weight: 820;
+  color: var(--text);
 }
 
 .providerRegisterHead p {
   margin: 8px 0 0;
   color: var(--muted);
-  font-weight: 600;
-  line-height: 1.7;
+  line-height: 1.65;
+  font-weight: 550;
 }
 
 .providerRegisterMessage {
-  padding: 13px 16px;
-  border-radius: 16px;
-  font-weight: 700;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 650;
 }
 
 .providerRegisterMessage.error {
-  background: rgba(255, 98, 98, 0.1);
+  background: rgba(255, 98, 98, 0.08);
   color: #b42318;
+  border: 1px solid rgba(255, 98, 98, 0.16);
 }
 
 .providerRegisterMessage.success {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(16, 185, 129, 0.08);
   color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.16);
 }
 
 .providerRegisterForm {
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 28px;
-  box-shadow: 0 14px 40px rgba(10, 22, 35, 0.08);
-  padding: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  padding: 20px;
   display: grid;
-  gap: 20px;
+  gap: 18px;
 }
 
 .providerRegisterGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 14px;
 }
 
 .providerRegisterForm > .providerRegisterGrid label,
 .providerRegisterBlock label:not(.providerRegisterCheck) {
   display: block;
   margin-bottom: 8px;
-  font-weight: 700;
+  font-weight: 650;
   color: #12212f;
 }
 
 .providerRegisterForm input:not([type="checkbox"]):not([type="file"]),
 .providerRegisterForm textarea {
   width: 100%;
-  min-height: 54px;
+  min-height: 46px;
   border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 18px;
-  padding: 14px 16px;
+  border-radius: 12px;
+  padding: 12px 14px;
   font: inherit;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 550;
   color: #12212f;
   background: #fff;
   outline: none;
 }
 
 .providerRegisterForm textarea {
-  min-height: 120px;
+  min-height: 110px;
   resize: vertical;
 }
 
 .providerRegisterForm input:not([type="checkbox"]):not([type="file"]):focus,
 .providerRegisterForm textarea:focus {
   border-color: #00b8f1;
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
 }
 
 .providerRegisterForm input[type="file"] {
   width: 100%;
-  min-height: 54px;
-  border: 1.5px solid rgba(11, 27, 42, 0.12);
-  border-radius: 18px;
+  min-height: 46px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  border-radius: 12px;
   background: #ffffff;
   padding: 10px 12px;
   font: inherit;
@@ -95,21 +98,27 @@
 
 .providerRegisterForm input[type="file"]::file-selector-button {
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #06202e;
+  color: #ffffff;
   font: inherit;
-  font-weight: 800;
+  font-weight: 700;
   padding: 10px 14px;
   margin-right: 12px;
   cursor: pointer;
 }
 
 .providerRegisterBlock {
-  background: rgba(244, 251, 255, 0.95);
-  border: 1px solid rgba(11, 27, 42, 0.06);
-  border-radius: 24px;
-  padding: 18px;
+  background: rgba(244, 251, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.providerRegisterBlock h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 760;
 }
 
 .providerRegisterBlockHead,
@@ -117,27 +126,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
+  gap: 12px;
 }
 
 .providerRegisterVehicleList {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .providerRegisterVehicleCard {
   background: #fff;
-  border: 1px solid rgba(11, 27, 42, 0.06);
-  border-radius: 20px;
-  padding: 16px;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 14px;
+  padding: 14px;
 }
 
 .providerRegisterCheckField {
-  min-height: 54px;
+  min-height: 46px;
   border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 18px;
+  border-radius: 12px;
   background: #ffffff;
-  padding: 0 18px;
+  padding: 0 14px;
   display: flex;
   align-items: center;
 }
@@ -145,11 +155,11 @@
 .providerRegisterCheck {
   display: inline-flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   margin: 0 !important;
   padding: 0 !important;
-  font-weight: 700;
-  font-size: 16px;
+  font-weight: 650;
+  font-size: 15px;
   color: #12212f;
   cursor: pointer;
   line-height: 1;
@@ -157,8 +167,8 @@
 }
 
 .providerRegisterCheck input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   margin: 0;
   accent-color: #00b8f1;
   flex-shrink: 0;
@@ -174,32 +184,39 @@
 .providerRegisterPrimaryBtn,
 .providerRegisterGhostBtn,
 .providerRegisterDangerBtn {
-  border: none;
-  border-radius: 999px;
-  font-weight: 800;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
   cursor: pointer;
+  transition: 0.18s ease;
 }
 
 .providerRegisterPrimaryBtn {
-  padding: 12px 18px;
+  border: 1px solid rgba(0, 184, 241, 0.32);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #06202e;
+  color: #ffffff;
+}
+
+.providerRegisterPrimaryBtn:hover {
+  box-shadow: 0 8px 18px rgba(0, 184, 241, 0.16);
 }
 
 .providerRegisterPrimaryBtn:disabled {
-  opacity: 0.7;
+  opacity: 0.72;
   cursor: not-allowed;
 }
 
 .providerRegisterGhostBtn {
-  padding: 10px 16px;
-  background: #f8fafc;
-  border: 1px solid rgba(11, 27, 42, 0.08);
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  background: #ffffff;
+  color: var(--text);
 }
 
 .providerRegisterDangerBtn {
-  padding: 10px 16px;
-  background: rgba(255, 98, 98, 0.1);
+  border: 1px solid rgba(255, 98, 98, 0.16);
+  background: rgba(255, 98, 98, 0.08);
   color: #b42318;
 }
 
