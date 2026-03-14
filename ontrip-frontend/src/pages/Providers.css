@@ -2,17 +2,6 @@
   padding-bottom: 32px;
   display: grid;
   gap: 22px;
-  background: #ffffff;
-}
-
-.providersTopBar,
-.providersSearchStrip,
-.providerCard {
-  background: #ffffff;
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-top: 4px solid rgba(0, 184, 241, 0.22);
-  border-radius: 20px;
-  box-shadow: 0 10px 28px rgba(10, 22, 35, 0.06);
 }
 
 .providersTopBar {
@@ -20,82 +9,69 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 18px;
-  padding: 24px;
 }
 
 .providersTitle {
   margin: 0;
-  font-size: 33px;
-  font-weight: 800;
-  letter-spacing: -0.4px;
-  color: #0b1b2a;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.6px;
 }
 
 .providersSub {
   margin: 8px 0 0;
-  color: rgba(11, 27, 42, 0.68);
+  color: var(--muted);
   line-height: 1.7;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .providersPrimaryBtn,
 .providersGhostBtn,
 .providersSearchBtn {
-  border: 1px solid transparent;
-  border-radius: 12px;
+  border: none;
+  border-radius: 999px;
   cursor: pointer;
-  font: inherit;
-  font-weight: 700;
-  transition: 0.2s ease;
+  font-weight: 800;
 }
 
 .providersPrimaryBtn {
-  min-height: 46px;
-  padding: 0 18px;
-  background: linear-gradient(135deg, #30b6ea, #00aee8);
-  color: #ffffff;
-  box-shadow: 0 8px 20px rgba(0, 184, 241, 0.18);
-}
-
-.providersPrimaryBtn:hover,
-.providersSearchBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(0, 184, 241, 0.22);
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
 }
 
 .providersGhostBtn {
-  min-height: 44px;
-  padding: 0 16px;
-  background: #ffffff;
-  border-color: rgba(0, 184, 241, 0.18);
-  color: #0b1b2a;
+  padding: 11px 16px;
+  background: #f8fafc;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  color: #12212f;
 }
 
-.providersGhostBtn:hover {
-  background: #f7fcff;
-  border-color: rgba(0, 184, 241, 0.32);
+.providersSearchBtn {
+  min-height: 54px;
+  padding: 0 22px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
+  font-size: 16px;
 }
 
 .providersMessage {
   padding: 13px 16px;
-  border-radius: 14px;
-  font-weight: 600;
-  border: 1px solid transparent;
+  border-radius: 16px;
+  font-weight: 700;
 }
 
 .providersMessage.error {
-  background: rgba(255, 98, 98, 0.08);
+  background: rgba(255, 98, 98, 0.1);
   color: #b42318;
-  border-color: rgba(255, 98, 98, 0.16);
-}
-
-.providersMessage.success {
-  background: rgba(16, 185, 129, 0.08);
-  color: #047857;
-  border-color: rgba(16, 185, 129, 0.16);
+  border: 1px solid rgba(255, 98, 98, 0.2);
 }
 
 .providersSearchStrip {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 28px;
+  box-shadow: 0 14px 40px rgba(10, 22, 35, 0.08);
   padding: 18px;
 }
 
@@ -108,34 +84,28 @@
 
 .providersSearchInput {
   width: 100%;
-  min-height: 52px;
-  border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 14px;
-  padding: 0 16px;
+  min-height: 54px;
+  border: 1.5px solid rgba(11, 27, 42, 0.12);
+  border-radius: 18px;
+  padding: 0 18px;
   background: #ffffff;
   font: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  color: #0b1b2a;
+  font-size: 16px;
+  font-weight: 700;
+  color: #12212f;
   outline: none;
-  transition: 0.2s ease;
 }
 
 .providersSearchInput::placeholder {
-  color: rgba(11, 27, 42, 0.46);
-  font-weight: 500;
+  color: #12212f;
+  font-size: 16px;
+  font-weight: 700;
+  opacity: 1;
 }
 
 .providersSearchInput:focus {
-  border-color: rgba(0, 184, 241, 0.55);
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.10);
-}
-
-.providersSearchBtn {
-  min-height: 52px;
-  padding: 0 22px;
-  background: linear-gradient(135deg, #30b6ea, #00aee8);
-  color: #ffffff;
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
 }
 
 .providersGrid {
@@ -146,12 +116,15 @@
 
 .providerCard {
   overflow: hidden;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  box-shadow: 0 12px 32px rgba(10, 22, 35, 0.08);
 }
 
 .providerCardMedia {
   height: 240px;
-  background: #f4fbff;
-  border-bottom: 1px solid rgba(11, 27, 42, 0.06);
+  background: rgba(177, 227, 250, 0.18);
 }
 
 .providerCardMedia img {
@@ -165,8 +138,8 @@
   height: 100%;
   display: grid;
   place-items: center;
-  font-weight: 600;
-  color: rgba(11, 27, 42, 0.46);
+  font-weight: 800;
+  color: rgba(11, 27, 42, 0.5);
 }
 
 .providerCardBody {
@@ -185,47 +158,42 @@
 .providerCardHeader h3 {
   margin: 0;
   font-size: 22px;
-  font-weight: 750;
-  color: #0b1b2a;
+  font-weight: 900;
 }
 
 .providerCardHeader p {
   margin: 6px 0 0;
-  color: rgba(11, 27, 42, 0.62);
-  font-weight: 500;
+  color: var(--muted);
+  font-weight: 600;
 }
 
 .providerCardRating {
-  font-weight: 700;
-  color: #0b1b2a;
+  font-weight: 900;
   white-space: nowrap;
 }
 
 .providerTypePill {
   width: fit-content;
   padding: 7px 12px;
-  border-radius: 12px;
-  background: rgba(0, 184, 241, 0.08);
-  border: 1px solid rgba(0, 184, 241, 0.16);
+  border-radius: 999px;
+  background: rgba(0, 184, 241, 0.1);
+  border: 1px solid rgba(0, 184, 241, 0.18);
   font-size: 12px;
-  font-weight: 700;
-  color: #0b1b2a;
+  font-weight: 900;
 }
 
 .providerCardDesc {
-  color: rgba(11, 27, 42, 0.72);
+  color: rgba(11, 27, 42, 0.76);
   line-height: 1.7;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 @media (max-width: 980px) {
-  .providersTopBar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
+  .providersTopBar,
   .providersSearchGrid,
   .providersGrid {
     grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
