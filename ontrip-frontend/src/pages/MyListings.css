@@ -4,21 +4,13 @@
   gap: 20px;
 }
 
-.myListingsHero {
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 28px;
-  box-shadow: 0 14px 40px rgba(10, 22, 35, 0.08);
-  padding: 24px;
-}
-
-.myListingsHero h1 {
+.myListingsHead h1 {
   margin: 0;
   font-size: 32px;
   font-weight: 900;
 }
 
-.myListingsHero p {
+.myListingsHead p {
   margin: 8px 0 0;
   color: var(--muted);
   line-height: 1.7;
@@ -32,6 +24,15 @@
   background: rgba(255, 98, 98, 0.1);
   border: 1px solid rgba(255, 98, 98, 0.2);
   color: #b42318;
+  font-weight: 700;
+}
+
+.myListingsEmpty {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 24px;
+  padding: 28px;
+  color: rgba(11, 27, 42, 0.72);
   font-weight: 700;
 }
 
@@ -124,6 +125,11 @@
   background: #f8fafc;
   border: 1px solid rgba(11, 27, 42, 0.08);
   color: #12212f;
+}
+
+.myListingsBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .myListingsBtn.danger {
@@ -249,14 +255,14 @@
   padding: 14px;
 }
 
-.myListingsCheckWrap {
-  display: flex;
-  align-items: center;
+.myListingsCheckField {
   min-height: 54px;
   border: 1px solid rgba(11, 27, 42, 0.12);
   border-radius: 18px;
   background: #fff;
   padding: 0 18px;
+  display: flex;
+  align-items: center;
 }
 
 .myListingsCheck {
