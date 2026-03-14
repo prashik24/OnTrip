@@ -14,7 +14,7 @@
 .providersTitle {
   margin: 0;
   font-size: 32px;
-  font-weight: 850;
+  font-weight: 760;
   letter-spacing: -0.4px;
   color: var(--text);
 }
@@ -90,7 +90,6 @@
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
 }
 
-/* make all 4 search fields same */
 .providersSearchGrid .customSelect,
 .providersSearchGrid .customSelectTrigger,
 .providersSearchGrid .providersSearchInput {
@@ -189,7 +188,7 @@
 .providerCardHeader h3 {
   margin: 0;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 740;
   color: var(--text);
 }
 
@@ -200,7 +199,7 @@
 }
 
 .providerCardRating {
-  font-weight: 750;
+  font-weight: 740;
   color: var(--text);
   white-space: nowrap;
 }
@@ -224,7 +223,9 @@
 
 .providersPrimaryBtn,
 .providersGhostBtn,
-.providersSearchBtn {
+.providersSearchBtn,
+.providerCardBody .btn,
+.providerCardBody a.btn {
   min-height: 44px;
   padding: 0 16px;
   border-radius: 12px;
@@ -236,7 +237,9 @@
 }
 
 .providersPrimaryBtn,
-.providersSearchBtn {
+.providersSearchBtn,
+.providerCardBody .btn,
+.providerCardBody a.btn {
   border: 1px solid rgba(0, 184, 241, 0.38);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
@@ -250,7 +253,9 @@
 
 .providersPrimaryBtn:hover,
 .providersGhostBtn:hover,
-.providersSearchBtn:hover {
+.providersSearchBtn:hover,
+.providerCardBody .btn:hover,
+.providerCardBody a.btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(10, 22, 35, 0.08);
 }
