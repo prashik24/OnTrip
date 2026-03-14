@@ -7,7 +7,7 @@
 .providerDashboardHead h1 {
   margin: 0;
   font-size: 32px;
-  font-weight: 820;
+  font-weight: 760;
   color: var(--text);
 }
 
@@ -62,7 +62,7 @@
 .providerDashboardTop h3 {
   margin: 0;
   font-size: 20px;
-  font-weight: 780;
+  font-weight: 740;
 }
 
 .providerDashboardTop p {
@@ -73,7 +73,7 @@
 
 .providerDashboardPrice {
   font-size: 21px;
-  font-weight: 760;
+  font-weight: 740;
   color: #0369a1;
 }
 
