@@ -25,7 +25,6 @@ export default function Providers() {
   const currentUser = getUser();
 
   const [providers, setProviders] = useState([]);
-  const [myProviders, setMyProviders] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [msg, setMsg] = useState({ text: "", type: "" });
@@ -138,19 +137,8 @@ export default function Providers() {
     }
   }
 
-  async function loadMyProviders() {
-    if (!isLoggedIn()) return;
-    try {
-      const data = await apiFetch("/api/providers/mine");
-      setMyProviders(data.providers || []);
-    } catch {
-      //
-    }
-  }
-
   useEffect(() => {
     loadProviders();
-    loadMyProviders();
   }, []);
 
   const visibleProviders = useMemo(() => {
@@ -168,47 +156,6 @@ export default function Providers() {
     }
     resetForm();
     setShowForm(true);
-  }
-
-  function openEditForm(item) {
-    setEditingId(item._id);
-    setShowForm(true);
-
-    setForm({
-      businessName: item.businessName || "",
-      listingType: item.listingType || "vehicle",
-      city: item.city || "",
-      state: item.state || "",
-      phone: item.phone || "",
-      whatsapp: item.whatsapp || "",
-      description: item.description || "",
-      serviceImage: null,
-      vehicles:
-        item.vehicles?.length > 0
-          ? item.vehicles.map((v) => ({
-              vehicleType: v.vehicleType || "car",
-              title: v.title || "",
-              price: v.price || "",
-              priceUnit: v.priceUnit || "per_day",
-              capacity: v.capacity || "",
-              fuelType: v.fuelType || "",
-              withDriver: !!v.withDriver,
-              images: null,
-              existingImages: v.images || [],
-            }))
-          : [emptyVehicle()],
-      plannerMode: item.travelPlanner?.plannerMode || "customized_trip",
-      packageTitle: item.travelPlanner?.packageTitle || "",
-      durationText: item.travelPlanner?.durationText || "",
-      days: item.travelPlanner?.days || "",
-      priceFrom: item.travelPlanner?.priceFrom || "",
-      pricePerPerson: item.travelPlanner?.pricePerPerson || "",
-      placesCovered: (item.travelPlanner?.placesCovered || []).join(", "),
-      inclusions: (item.travelPlanner?.inclusions || []).join(", "),
-      exclusions: (item.travelPlanner?.exclusions || []).join(", "),
-      plannerImages: null,
-      existingPlannerImages: item.travelPlanner?.images || [],
-    });
   }
 
   function addVehicle() {
@@ -262,14 +209,6 @@ export default function Providers() {
         }));
 
         fd.append("vehicles", JSON.stringify(cleanVehicles));
-        fd.append(
-          "existingVehicles",
-          JSON.stringify(
-            form.vehicles.map((v) => ({
-              images: v.existingImages || [],
-            }))
-          )
-        );
 
         form.vehicles.forEach((v, index) => {
           Array.from(v.images || []).forEach((file) => {
@@ -288,21 +227,14 @@ export default function Providers() {
         fd.append("placesCovered", form.placesCovered);
         fd.append("inclusions", form.inclusions);
         fd.append("exclusions", form.exclusions);
-        fd.append(
-          "existingPlannerImages",
-          JSON.stringify(form.existingPlannerImages || [])
-        );
 
         Array.from(form.plannerImages || []).forEach((file) => {
           fd.append("plannerImages", file);
         });
       }
 
-      const url = editingId ? `/api/providers/${editingId}` : "/api/providers";
-      const method = editingId ? "PUT" : "POST";
-
-      const data = await apiFetch(url, {
-        method,
+      const data = await apiFetch("/api/providers", {
+        method: "POST",
         body: fd,
       });
 
@@ -310,7 +242,6 @@ export default function Providers() {
       setShowForm(false);
       resetForm();
       await loadProviders();
-      await loadMyProviders();
     } catch (err) {
       setMessage(err.message, "error");
     }
@@ -486,7 +417,11 @@ export default function Providers() {
                           <CustomSelect
                             value={vehicle.priceUnit}
                             onChange={(e) => updateVehicle(index, "priceUnit", e.target.value)}
-                            options={priceUnitOptions}
+                            options={[
+                              { label: "Per Day", value: "per_day" },
+                              { label: "Per Hour", value: "per_hour" },
+                              { label: "Fixed", value: "fixed" },
+                            ]}
                           />
                         </div>
 
@@ -507,7 +442,7 @@ export default function Providers() {
                           />
                         </div>
 
-                        <div className="fullSpan">
+                        <div className="providersCheckWrap">
                           <label className="providersCheck">
                             <input
                               type="checkbox"
@@ -629,39 +564,9 @@ export default function Providers() {
             )}
 
             <button className="providersPrimaryBtn" type="submit">
-              {editingId ? "Save Changes" : "Create Listing"}
+              Create Listing
             </button>
           </form>
-        </section>
-      )}
-
-      {myProviders.length > 0 && (
-        <section className="providersOwned">
-          <h2>My Listings</h2>
-          <div className="providersGrid">
-            {myProviders.map((item) => (
-              <div className="providerCard" key={item._id}>
-                <div className="providerCardBody">
-                  <div className="providerCardHeader">
-                    <div>
-                      <h3>{item.businessName}</h3>
-                      <p>{item.city} • {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}</p>
-                    </div>
-
-                    <div className="providerCardActions">
-                      <button className="providersGhostBtn" onClick={() => openEditForm(item)}>
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="providerCardDesc">
-                    {item.description || "No description added."}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
         </section>
       )}
 
