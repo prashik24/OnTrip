@@ -10,10 +10,11 @@
   border: 1.5px solid rgba(11, 27, 42, 0.12);
   border-radius: 18px;
   background: #ffffff;
-  color: #0b1b2a;
+  color: #12212f;
   font: inherit;
   font-size: 16px;
   font-weight: 700;
+  line-height: 1;
   padding: 0 18px;
   display: flex;
   align-items: center;
@@ -38,7 +39,7 @@
 .customSelectValue {
   flex: 1;
   text-align: left;
-  color: #0b1b2a;
+  color: #12212f;
   font-size: 16px;
   font-weight: 700;
   line-height: 1;

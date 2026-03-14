@@ -650,7 +650,6 @@ export default function Providers() {
           />
 
           <CustomSelect
-            className="providersSearchSelect"
             value={filters.listingType}
             onChange={(e) =>
               setFilters((s) => ({ ...s, listingType: e.target.value }))
@@ -660,7 +659,6 @@ export default function Providers() {
           />
 
           <CustomSelect
-            className="providersSearchSelect"
             value={filters.vehicleType}
             onChange={(e) =>
               setFilters((s) => ({ ...s, vehicleType: e.target.value }))
