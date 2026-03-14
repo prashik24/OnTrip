@@ -198,38 +198,62 @@
   margin-bottom: 14px;
 }
 
+/* DRIVER OPTION FIELD */
+
 .providersCheckField {
   min-height: 54px;
-  border: 1px solid rgba(11, 27, 42, 0.12);
+  border: 1.5px solid rgba(11, 27, 42, 0.12);
   border-radius: 18px;
   background: #ffffff;
-  padding: 0 16px;
+
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+
+  padding: 0 20px;
 }
 
+/* label container */
+
 .providersCheck {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+
   margin: 0;
-  font-weight: 700;
+  padding: 0;
+
   font-size: 15px;
+  font-weight: 700;
   color: #12212f;
+
   cursor: pointer;
 }
 
+/* checkbox */
+
 .providersCheck input[type="checkbox"] {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
+
   margin: 0;
+  padding: 0;
+
   accent-color: #00b8f1;
-  box-shadow: none !important;
+
+  box-shadow: none;
   outline: none;
+
   flex-shrink: 0;
+
+  cursor: pointer;
 }
 
+/* text */
+
 .providersCheck span {
+  display: inline-flex;
+  align-items: center;
   line-height: 1;
 }
 
@@ -287,6 +311,7 @@
 }
 
 /* SAME FONT + SAME COLOR FOR ALL 4 SEARCH FIELDS */
+
 .providersSearchInput {
   width: 100%;
   min-height: 54px;
