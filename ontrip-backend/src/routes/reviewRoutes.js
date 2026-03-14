@@ -1,10 +1,11 @@
 import express from "express";
-import { addReview, getReviewsByProvider } from "../controllers/reviewController.js";
+import { addReviewFromBooking, getReviewsByProvider } from "../controllers/reviewController.js";
 import { protect } from "../middleware/auth.js";
+import upload from "../middleware/upload.js";
 
 const router = express.Router();
 
-router.post("/", protect, addReview);
+router.post("/from-booking", protect, upload.array("images", 4), addReviewFromBooking);
 router.get("/:providerId", getReviewsByProvider);
 
 export default router;
