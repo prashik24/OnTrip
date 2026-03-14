@@ -288,3 +288,7 @@
     grid-template-columns: 1fr;
   }
 }
+.providersGhostBtn {
+  background-color: #4ec9f5;
+  color: #ffffff;
+}
