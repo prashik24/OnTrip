@@ -76,8 +76,20 @@
   padding: 8px;
   display: grid;
   gap: 4px;
-  max-height: 280px;
+
+  max-height: 320px;
   overflow-y: auto;
+  overflow-x: hidden;
+
+  /* hide visible scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.customSelectMenu::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .customSelectOption {
