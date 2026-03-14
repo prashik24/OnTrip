@@ -292,3 +292,13 @@
     grid-template-columns: 1fr;
   }
 }
+.providersSearchBox,
+.providersFormWrap,
+.providersOwned,
+.providersHero {
+  overflow: visible;
+}
+
+.providersPage {
+  overflow: visible;
+}
