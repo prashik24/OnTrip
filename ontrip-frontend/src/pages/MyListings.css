@@ -37,7 +37,6 @@
 
 .myListingsGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
 
@@ -110,11 +109,6 @@
   font-weight: 600;
 }
 
-.myListingsMeta {
-  color: rgba(11, 27, 42, 0.7);
-  font-weight: 700;
-}
-
 .myListingsActions {
   display: flex;
   gap: 10px;
@@ -138,12 +132,147 @@
   border: 1px solid rgba(255, 98, 98, 0.2);
 }
 
-@media (max-width: 980px) {
-  .myListingsGrid {
-    grid-template-columns: 1fr;
-  }
+.myListingsEditForm {
+  margin-top: 10px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(11, 27, 42, 0.08);
+  display: grid;
+  gap: 18px;
+}
 
-  .myListingsTop {
+.myListingsFormGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.myListingsEditForm label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: #12212f;
+}
+
+.myListingsEditForm input,
+.myListingsEditForm textarea,
+.myListingsEditForm input[type="file"] {
+  width: 100%;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  border-radius: 16px;
+  padding: 13px 14px;
+  font: inherit;
+  background: #fff;
+  outline: none;
+}
+
+.myListingsEditForm input:focus,
+.myListingsEditForm textarea:focus {
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+}
+
+.myListingsEditForm input[type="file"]::file-selector-button {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
+  font: inherit;
+  font-weight: 800;
+  padding: 10px 14px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+.myListingsBlock {
+  background: rgba(244, 251, 255, 0.95);
+  border: 1px solid rgba(11, 27, 42, 0.06);
+  border-radius: 20px;
+  padding: 16px;
+}
+
+.myListingsBlockHead,
+.myListingsVehicleTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.myListingsVehicleList {
+  display: grid;
+  gap: 14px;
+}
+
+.myListingsVehicleCard {
+  background: #fff;
+  border: 1px solid rgba(11, 27, 42, 0.06);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.myListingsCheckWrap {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+}
+
+.myListingsCheck {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.myListingsCheck input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #00b8f1;
+}
+
+.myListingsImageGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.myListingsThumb {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  min-height: 120px;
+  background: rgba(177, 227, 250, 0.18);
+}
+
+.myListingsThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.myListingsRemoveImage {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.fullSpan {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 980px) {
+  .myListingsTop,
+  .myListingsFormGrid,
+  .myListingsImageGrid {
+    grid-template-columns: 1fr;
     flex-direction: column;
     align-items: flex-start;
   }
