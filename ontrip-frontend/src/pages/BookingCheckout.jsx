@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
+import CustomSelect from "../components/CustomSelect";
 import "./BookingCheckout.css";
 
 export default function BookingCheckout() {
@@ -45,6 +46,14 @@ export default function BookingCheckout() {
     if (!provider || provider.listingType !== "vehicle") return null;
     return provider.vehicles?.find((v) => String(v._id) === String(form.selectedVehicleId));
   }, [provider, form.selectedVehicleId]);
+
+  const vehicleOptions = [
+    { label: "Choose vehicle", value: "" },
+    ...((provider?.vehicles || []).map((vehicle) => ({
+      label: `${vehicle.title || vehicle.vehicleType} — ₹${vehicle.price}`,
+      value: vehicle._id,
+    }))),
+  ];
 
   const pricePreview = useMemo(() => {
     if (!provider) return { total: 0, label: "" };
@@ -275,18 +284,12 @@ export default function BookingCheckout() {
 
                 <div className="fullSpan">
                   <label>Select Vehicle</label>
-                  <select
+                  <CustomSelect
                     value={form.selectedVehicleId}
                     onChange={(e) => setForm((s) => ({ ...s, selectedVehicleId: e.target.value }))}
-                    required
-                  >
-                    <option value="">Choose vehicle</option>
-                    {(provider.vehicles || []).map((vehicle) => (
-                      <option key={vehicle._id} value={vehicle._id}>
-                        {vehicle.title || vehicle.vehicleType} — ₹{vehicle.price}
-                      </option>
-                    ))}
-                  </select>
+                    options={vehicleOptions}
+                    placeholder="Choose vehicle"
+                  />
                 </div>
               </>
             )}
