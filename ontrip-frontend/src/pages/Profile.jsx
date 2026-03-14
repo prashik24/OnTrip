@@ -9,6 +9,7 @@ export default function Profile() {
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [hasProviderListings, setHasProviderListings] = useState(false);
   const [msg, setMsg] = useState({ text: "", type: "" });
 
   const [form, setForm] = useState({
@@ -36,7 +37,17 @@ export default function Profile() {
       }
     }
 
+    async function loadProviderStatus() {
+      try {
+        const data = await apiFetch("/api/providers/mine");
+        setHasProviderListings((data.providers || []).length > 0);
+      } catch {
+        setHasProviderListings(false);
+      }
+    }
+
     loadMe();
+    loadProviderStatus();
   }, []);
 
   function update(key, value) {
@@ -204,14 +215,6 @@ export default function Profile() {
 
             <div className="profileQuickGrid">
               <div className="profileQuickCard">
-                <h3>My Listings</h3>
-                <p>Manage your provider services in one place.</p>
-                <button className="profileGhostBtn" onClick={() => navigate("/profile/my-listings")}>
-                  Open My Listings
-                </button>
-              </div>
-
-              <div className="profileQuickCard">
                 <h3>Booking History</h3>
                 <p>Track bookings, payment state, and travel plans.</p>
                 <button className="profileGhostBtn" onClick={() => navigate("/profile/bookings")}>
@@ -219,13 +222,25 @@ export default function Profile() {
                 </button>
               </div>
 
-              <div className="profileQuickCard">
-                <h3>Provider Dashboard</h3>
-                <p>View customer bookings, statuses, and updates.</p>
-                <button className="profileGhostBtn" onClick={() => navigate("/provider/dashboard")}>
-                  Open Dashboard
-                </button>
-              </div>
+              {hasProviderListings && (
+                <>
+                  <div className="profileQuickCard">
+                    <h3>My Listings</h3>
+                    <p>View, update, and remove your registered provider services.</p>
+                    <button className="profileGhostBtn" onClick={() => navigate("/profile/my-listings")}>
+                      Open My Listings
+                    </button>
+                  </div>
+
+                  <div className="profileQuickCard">
+                    <h3>Provider Dashboard</h3>
+                    <p>View customer bookings, statuses, and updates.</p>
+                    <button className="profileGhostBtn" onClick={() => navigate("/provider/dashboard")}>
+                      Open Dashboard
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         ) : (
