@@ -121,7 +121,7 @@
 
 .myListingsBtn {
   min-height: 42px;
-  padding: 0 16px;
+  padding: 0 16px 10px;
   border: 1px solid rgba(11, 27, 42, 0.1);
   border-radius: 12px;
   font: inherit;
@@ -130,7 +130,7 @@
   background: #ffffff;
   color: var(--text);
   transition: 0.18s ease;
-  margin: 4px;
+
   
 }
 
