@@ -273,10 +273,3 @@
   }
 }
 
-.otFooter {
-  margin-top: auto;   /* ✅ pushes footer to bottom */
-
-  width: 100vw;
-  margin-left: calc(55% - 56vw);
-  overflow-x: hidden;
-}
