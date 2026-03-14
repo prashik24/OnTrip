@@ -152,7 +152,8 @@
   gap: 16px;
 }
 
-.myListingsEditForm label {
+.myListingsEditForm > .myListingsFormGrid label,
+.myListingsBlock label:not(.myListingsCheck) {
   display: block;
   margin-bottom: 8px;
   font-weight: 700;
@@ -274,7 +275,8 @@
   cursor: pointer;
   line-height: 1;
   color: #12212f;
-  margin: 0;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .myListingsCheck input[type="checkbox"] {
@@ -288,6 +290,8 @@
 .myListingsCheck span {
   line-height: 1;
   color: #12212f;
+  display: block;
+  margin: 0;
 }
 
 .myListingsImageGrid {
