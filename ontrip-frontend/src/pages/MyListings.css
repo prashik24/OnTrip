@@ -130,6 +130,7 @@
   background: #ffffff;
   color: var(--text);
   transition: 0.18s ease;
+  margin-top: -5px;
 }
 
 .myListingsBtn:hover {
@@ -335,4 +336,9 @@
   .myListingsImageGrid {
     grid-template-columns: 1fr;
   }
+}
+.myListingsBtn-1{
+
+  background-color:  #4ec9f5;
+  color: #ffffff;
 }

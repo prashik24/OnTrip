@@ -669,7 +669,7 @@ export default function MyListings() {
                     )}
 
                     <div className="myListingsActions">
-                      <button className="myListingsBtn" type="submit" disabled={saveLoading}>
+                      <button className="myListingsBtn myListingsBtn-1" type="submit" disabled={saveLoading}>
                         {saveLoading ? "Saving..." : "Save Changes"}
                       </button>
                       <button className="myListingsBtn" type="button" onClick={closeEdit}>
