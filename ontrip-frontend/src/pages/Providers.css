@@ -77,8 +77,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .providersMessage {
@@ -129,14 +129,11 @@
   gap: 16px;
 }
 
-.providersForm > .providersFormGrid > div > label,
-.providersForm .providersBlock .providersFormGrid > div > label,
-.providersForm .fullSpan > label {
+.providersForm label {
   display: block;
   margin-bottom: 8px;
   font-weight: 700;
   color: #12212f;
-  font-size: 15px;
 }
 
 .providersForm input,
@@ -146,9 +143,6 @@
   border-radius: 18px;
   padding: 14px 16px;
   font: inherit;
-  font-size: 16px;
-  font-weight: 700;
-  color: #0b1b2a;
   background: #fff;
   outline: none;
   min-height: 54px;
@@ -157,12 +151,6 @@
 .providersForm textarea {
   min-height: 120px;
   resize: vertical;
-}
-
-.providersForm input::placeholder,
-.providersForm textarea::placeholder {
-  color: rgba(11, 27, 42, 0.5);
-  font-weight: 500;
 }
 
 .providersForm input:focus,
@@ -210,7 +198,6 @@
   margin-bottom: 14px;
 }
 
-/* DRIVER FIELD FIX */
 .providersCheckField {
   min-height: 54px;
   border: 1px solid rgba(11, 27, 42, 0.12);
@@ -222,42 +209,30 @@
 }
 
 .providersCheck {
-  display: inline-flex !important;
+  display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
   gap: 12px;
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
   font-weight: 700;
-  font-size: 16px;
-  color: #0b1b2a;
+  font-size: 15px;
+  color: #12212f;
   cursor: pointer;
-  line-height: 1;
-  width: auto;
 }
 
 .providersCheck input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   margin: 0;
   accent-color: #00b8f1;
   box-shadow: none !important;
   outline: none;
   flex-shrink: 0;
-  display: block;
 }
 
 .providersCheck span {
-  display: inline-block;
-  margin: 0;
-  padding: 0;
   line-height: 1;
-  font-size: 16px;
-  font-weight: 700;
-  color: #0b1b2a;
 }
 
-/* FILE INPUT FIX */
 .providersForm input[type="file"] {
   width: 100%;
   min-height: 54px;
@@ -266,8 +241,6 @@
   background: #ffffff;
   padding: 10px 12px;
   font: inherit;
-  font-size: 15px;
-  font-weight: 600;
   color: rgba(11, 27, 42, 0.72);
   outline: none;
 }
@@ -289,7 +262,6 @@
   color: #06202e;
   font: inherit;
   font-weight: 800;
-  font-size: 15px;
   padding: 10px 14px;
   margin-right: 12px;
   cursor: pointer;
@@ -302,13 +274,11 @@
   color: #06202e;
   font: inherit;
   font-weight: 800;
-  font-size: 15px;
   padding: 10px 14px;
   margin-right: 12px;
   cursor: pointer;
 }
 
-/* SEARCH ROW */
 .providersSearchGrid {
   display: grid;
   grid-template-columns: 1.15fr 0.95fr 1fr 1fr auto;
@@ -321,25 +291,46 @@
   min-height: 54px;
   border: 1.5px solid rgba(11, 27, 42, 0.12);
   border-radius: 18px;
-  padding: 0 18px;
+  padding: 0 22px;
   background: #ffffff;
-  font: inherit;
-  font-size: 16px;
-  font-weight: 700;
-  color: #0b1b2a;
   outline: none;
-  line-height: 1;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  color: #12212f;
 }
 
 .providersSearchInput::placeholder {
-  color: rgba(11, 27, 42, 0.58);
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  color: rgba(18, 33, 47, 0.62);
 }
 
 .providersSearchInput:focus {
   border-color: #00b8f1;
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+}
+
+/* only search bar custom selects */
+.providersSearchSelect .customSelectTrigger {
+  min-height: 54px;
+  padding: 0 22px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  color: #12212f;
+}
+
+.providersSearchSelect .customSelectValue {
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  color: #12212f;
+}
+
+.providersSearchSelect .customSelectValue.placeholder {
+  color: rgba(18, 33, 47, 0.62);
 }
 
 .providersGrid {
