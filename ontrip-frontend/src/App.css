@@ -1,29 +1,31 @@
-/* ===== App shell ===== */
 .appShell {
   min-height: 100vh;
   padding-top: var(--navH);
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ✅ IMPORTANT: layout is NOT a grid anymore */
 .layout {
   position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ✅ Content always full width (same when sidebar open/closed) */
 .content {
   min-height: calc(100vh - var(--navH));
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
-/* Backdrop already used in App.jsx (keep this) */
+.routeArea {
+  flex: 1;
+}
+
 .backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.25);
   z-index: 55;
-}
-
-/* Optional: If you have any padding here that makes full-screen hero/foot look like it has gaps */
-.content {
-  padding: 0; /* ✅ makes hero truly full-width */
 }
