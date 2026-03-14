@@ -7,7 +7,7 @@
 .bookingHistoryHead h1 {
   margin: 0;
   font-size: 32px;
-  font-weight: 820;
+  font-weight: 760;
   color: var(--text);
 }
 
@@ -62,7 +62,7 @@
 .bookingHistoryTop h3 {
   margin: 0;
   font-size: 20px;
-  font-weight: 780;
+  font-weight: 740;
   color: var(--text);
 }
 
@@ -74,7 +74,7 @@
 
 .bookingHistoryPrice {
   font-size: 21px;
-  font-weight: 760;
+  font-weight: 740;
   color: #0369a1;
 }
 
@@ -88,10 +88,13 @@
 .bookingHistoryActions {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .bookingHistoryBtn,
-.bookingHistorySubmitBtn {
+.bookingHistorySubmitBtn,
+.bookingHistoryReviewBtn,
+.bookingHistoryEditBtn {
   min-height: 42px;
   padding: 0 16px;
   border-radius: 12px;
@@ -101,24 +104,26 @@
   transition: 0.18s ease;
 }
 
-.bookingHistoryBtn {
-  border: 1px solid rgba(11, 27, 42, 0.1);
-  background: #ffffff;
-  color: var(--text);
-}
-
-.bookingHistorySubmitBtn {
+.bookingHistoryBtn,
+.bookingHistorySubmitBtn,
+.bookingHistoryReviewBtn,
+.bookingHistoryEditBtn {
   border: 1px solid rgba(0, 184, 241, 0.32);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
 }
 
 .bookingHistoryBtn:hover,
-.bookingHistorySubmitBtn:hover {
+.bookingHistorySubmitBtn:hover,
+.bookingHistoryReviewBtn:hover,
+.bookingHistoryEditBtn:hover {
   box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
 }
 
-.bookingHistorySubmitBtn:disabled {
+.bookingHistorySubmitBtn:disabled,
+.bookingHistoryBtn:disabled,
+.bookingHistoryReviewBtn:disabled,
+.bookingHistoryEditBtn:disabled {
   opacity: 0.72;
   cursor: not-allowed;
 }
