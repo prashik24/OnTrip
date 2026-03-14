@@ -18,20 +18,56 @@ export async function createBookingOrder(req, res) {
       amount,
     } = req.body;
 
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      return res.status(500).json({
+        message: "Razorpay keys are missing on server.",
+      });
+    }
+
+    if (!providerId) {
+      return res.status(400).json({ message: "Provider id is required." });
+    }
+
+    if (!contactName?.trim()) {
+      return res.status(400).json({ message: "Contact name is required." });
+    }
+
+    if (!contactPhone?.trim()) {
+      return res.status(400).json({ message: "Contact phone is required." });
+    }
+
+    if (!bookingDate) {
+      return res.status(400).json({ message: "Booking date is required." });
+    }
+
+    const parsedBookingDate = new Date(bookingDate);
+    if (Number.isNaN(parsedBookingDate.getTime())) {
+      return res.status(400).json({ message: "Invalid booking date." });
+    }
+
+    const numericAmount = Number(amount);
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+      return res.status(400).json({ message: "Invalid booking amount." });
+    }
+
     const provider = await Provider.findById(providerId).populate("owner", "_id");
 
     if (!provider) {
       return res.status(404).json({ message: "Service not found." });
     }
 
+    if (!provider.owner?._id) {
+      return res.status(500).json({ message: "Provider owner not found." });
+    }
+
     if (String(provider.owner._id) === String(req.user._id)) {
       return res.status(403).json({ message: "You cannot book your own service." });
     }
 
-    const amountInPaise = Math.round(Number(amount) * 100);
+    const amountInPaise = Math.round(numericAmount * 100);
 
     if (!amountInPaise || amountInPaise < 100) {
-      return res.status(400).json({ message: "Invalid amount." });
+      return res.status(400).json({ message: "Minimum payable amount is ₹1." });
     }
 
     const order = await razorpay.orders.create({
@@ -51,14 +87,14 @@ export async function createBookingOrder(req, res) {
       providerOwner: provider.owner._id,
       serviceType: provider.listingType,
       serviceTitle,
-      contactName,
-      contactEmail: contactEmail || "",
-      contactPhone,
-      bookingDate,
+      contactName: contactName.trim(),
+      contactEmail: contactEmail?.trim() || "",
+      contactPhone: contactPhone.trim(),
+      bookingDate: parsedBookingDate,
       peopleCount: Number(peopleCount || 1),
-      destination: destination || "",
-      notes: notes || "",
-      amount: Number(amount),
+      destination: destination?.trim() || "",
+      notes: notes?.trim() || "",
+      amount: numericAmount,
       currency: "INR",
       paymentStatus: "created",
       bookingStatus: "pending",
@@ -72,8 +108,10 @@ export async function createBookingOrder(req, res) {
       razorpayKeyId: process.env.RAZORPAY_KEY_ID,
     });
   } catch (error) {
-    console.error("createBookingOrder error", error);
-    return res.status(500).json({ message: "Failed to create booking order." });
+    console.error("createBookingOrder error:", error);
+    return res.status(500).json({
+      message: error?.message || "Failed to create booking order.",
+    });
   }
 }
 
@@ -140,7 +178,8 @@ export async function getMyBookings(req, res) {
     );
 
     const hydrated = bookings.map((booking) => {
-      const existingReview = reviewMap.get(String(booking.provider?._id || booking.provider)) || null;
+      const existingReview =
+        reviewMap.get(String(booking.provider?._id || booking.provider)) || null;
 
       return {
         ...booking,
