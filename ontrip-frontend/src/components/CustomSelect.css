@@ -10,7 +10,7 @@
   border: 1.5px solid rgba(11, 27, 42, 0.12);
   border-radius: 18px;
   background: #ffffff;
-  color: #12212f;
+  color: #12212f; /* same color */
   font: inherit;
   font-size: 16px;
   font-weight: 700;
@@ -39,7 +39,7 @@
 .customSelectValue {
   flex: 1;
   text-align: left;
-  color: #12212f;
+  color: #12212f; /* same color */
   font-size: 16px;
   font-weight: 700;
   line-height: 1;
@@ -106,14 +106,14 @@
   font: inherit;
   font-size: 16px;
   font-weight: 700;
-  color: #203040;
+  color: #12212f;
   cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease;
 }
 
 .customSelectOption:hover {
   background: rgba(177, 227, 250, 0.28);
-  color: #0b1b2a;
+  color: #12212f;
 }
 
 .customSelectOption.selected {
