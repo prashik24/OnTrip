@@ -28,6 +28,11 @@
   color: #b42318;
 }
 
+.providerRegisterMessage.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #047857;
+}
+
 .providerRegisterForm {
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(11, 27, 42, 0.08);
@@ -69,6 +74,12 @@
 .providerRegisterForm textarea {
   min-height: 120px;
   resize: vertical;
+}
+
+.providerRegisterForm input:not([type="checkbox"]):not([type="file"]):focus,
+.providerRegisterForm textarea:focus {
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
 }
 
 .providerRegisterForm input[type="file"] {
@@ -147,6 +158,12 @@
   height: 20px;
   margin: 0;
   accent-color: #00b8f1;
+  flex-shrink: 0;
+}
+
+.providerRegisterCheck span {
+  line-height: 1;
+  color: #12212f;
 }
 
 .providerRegisterPrimaryBtn,
@@ -162,6 +179,11 @@
   padding: 12px 18px;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #06202e;
+}
+
+.providerRegisterPrimaryBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .providerRegisterGhostBtn {
