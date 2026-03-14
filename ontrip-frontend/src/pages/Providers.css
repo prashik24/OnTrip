@@ -2,17 +2,18 @@
   padding-bottom: 32px;
   display: grid;
   gap: 22px;
+  overflow: visible;
 }
 
 .providersHero,
 .providersFormWrap,
-.providersSearchBox,
-.providersOwned {
+.providersSearchBox {
   background: rgba(255, 255, 255, 0.88);
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 28px;
   box-shadow: 0 14px 40px rgba(10, 22, 35, 0.08);
   padding: 24px;
+  overflow: visible;
 }
 
 .providersHero {
@@ -91,8 +92,7 @@
   margin-bottom: 18px;
 }
 
-.providersFormHead h2,
-.providersOwned h2 {
+.providersFormHead h2 {
   margin: 0;
   font-size: 24px;
   font-weight: 900;
@@ -122,10 +122,7 @@
 }
 
 .providersForm input,
-.providersForm textarea,
-.providersForm select,
-.providersSearchGrid input,
-.providersSearchGrid select {
+.providersForm textarea {
   width: 100%;
   border: 1px solid rgba(11, 27, 42, 0.12);
   border-radius: 16px;
@@ -136,10 +133,7 @@
 }
 
 .providersForm input:focus,
-.providersForm textarea:focus,
-.providersForm select:focus,
-.providersSearchGrid input:focus,
-.providersSearchGrid select:focus {
+.providersForm textarea:focus {
   border-color: #00b8f1;
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
 }
@@ -183,10 +177,84 @@
   margin-bottom: 14px;
 }
 
+/* FIXED CHECKBOX AREA */
+.providersCheckWrap {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+}
+
 .providersCheck {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  font-weight: 700;
+  color: #12212f;
+  margin: 0;
+  cursor: pointer;
+  min-height: 20px;
+}
+
+.providersCheck input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #00b8f1;
+  box-shadow: none !important;
+  outline: none;
+  flex-shrink: 0;
+}
+
+.providersCheck span {
+  line-height: 1.2;
+}
+
+/* FILE INPUT */
+.providersForm input[type="file"] {
+  width: 100%;
+  min-height: 54px;
+  border: 1.5px solid rgba(11, 27, 42, 0.12);
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 10px 12px;
+  font: inherit;
+  color: rgba(11, 27, 42, 0.72);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.providersForm input[type="file"]:hover {
+  border-color: rgba(0, 184, 241, 0.42);
+  background: #fcfeff;
+}
+
+.providersForm input[type="file"]:focus {
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+}
+
+.providersForm input[type="file"]::file-selector-button {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
+  font: inherit;
+  font-weight: 800;
+  padding: 10px 14px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+.providersForm input[type="file"]::-webkit-file-upload-button {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #06202e;
+  font: inherit;
+  font-weight: 800;
+  padding: 10px 14px;
+  margin-right: 12px;
+  cursor: pointer;
 }
 
 .providersSearchGrid {
@@ -291,79 +359,4 @@
   .providersGrid {
     grid-template-columns: 1fr;
   }
-}
-.providersSearchBox,
-.providersFormWrap,
-.providersOwned,
-.providersHero {
-  overflow: visible;
-}
-
-.providersPage {
-  overflow: visible;
-}
-
-/* =========================
-   FILE INPUT STYLING
-========================= */
-
-.providersForm input[type="file"] {
-  width: 100%;
-  min-height: 54px;
-  border: 1.5px solid rgba(11, 27, 42, 0.12);
-  border-radius: 18px;
-  background: #ffffff;
-  padding: 10px 12px;
-  font: inherit;
-  color: rgba(11, 27, 42, 0.72);
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-
-.providersForm input[type="file"]:hover {
-  border-color: rgba(0, 184, 241, 0.42);
-  background: #fcfeff;
-}
-
-.providersForm input[type="file"]:focus {
-  border-color: #00b8f1;
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
-}
-
-.providersForm input[type="file"]::file-selector-button {
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #06202e;
-  font: inherit;
-  font-weight: 800;
-  padding: 10px 14px;
-  margin-right: 12px;
-  cursor: pointer;
-  transition: filter 0.2s ease, transform 0.2s ease;
-}
-
-.providersForm input[type="file"]::file-selector-button:hover {
-  filter: brightness(0.98);
-}
-
-.providersForm input[type="file"]::-webkit-file-upload-button {
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #06202e;
-  font: inherit;
-  font-weight: 800;
-  padding: 10px 14px;
-  margin-right: 12px;
-  cursor: pointer;
-}
-
-/* keep dropdown menus visible */
-.providersSearchBox,
-.providersFormWrap,
-.providersOwned,
-.providersHero,
-.providersPage {
-  overflow: visible;
 }
