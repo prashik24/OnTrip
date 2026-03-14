@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import PlaceCard from "../components/PlaceCard";
+import CustomSelect from "../components/CustomSelect";
 import { places } from "../data/places";
 import "./Explore.css";
 import { useNavigate } from "react-router-dom";
@@ -9,20 +10,29 @@ export default function Explore() {
   const [tag, setTag] = useState("All");
   const navigate = useNavigate();
 
-  const tags = useMemo(() => ["All", ...Array.from(new Set(places.map(p => p.tag)))], []);
+  const tags = useMemo(
+    () => ["All", ...Array.from(new Set(places.map((p) => p.tag)))],
+    []
+  );
+
+  const tagOptions = tags.map((t) => ({
+    label: t,
+    value: t,
+  }));
 
   const filtered = useMemo(() => {
     return places.filter((p) => {
       const okTag = tag === "All" || p.tag === tag;
       const okQ =
         q.trim() === "" ||
-        (p.name + " " + p.region + " " + p.short).toLowerCase().includes(q.toLowerCase());
+        (p.name + " " + p.region + " " + p.short)
+          .toLowerCase()
+          .includes(q.toLowerCase());
       return okTag && okQ;
     });
   }, [q, tag]);
 
   function onSelect(place) {
-    // for now, take user to planner with a “prefill” query param
     navigate(`/planner?place=${encodeURIComponent(place.name)}`);
   }
 
@@ -43,11 +53,12 @@ export default function Explore() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
-          <select className="select" value={tag} onChange={(e) => setTag(e.target.value)}>
-            {tags.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
+
+          <CustomSelect
+            value={tag}
+            onChange={(e) => setTag(e.target.value)}
+            options={tagOptions}
+          />
         </div>
       </div>
 
