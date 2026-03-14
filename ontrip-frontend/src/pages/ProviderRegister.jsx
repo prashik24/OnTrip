@@ -1,257 +1,459 @@
 import { useState } from "react";
-import { apiFetch } from "../lib/api";
-import "./Providers.css";
+import { useNavigate } from "react-router-dom";
+import { apiFetch, isLoggedIn } from "../lib/api";
+import CustomSelect from "../components/CustomSelect";
+import "./ProviderRegister.css";
+
+const vehicleTypes = ["car", "bike", "van", "truck", "jeep", "bus", "scooty", "cycle"];
+
+function emptyVehicle() {
+  return {
+    vehicleType: "car",
+    title: "",
+    price: "",
+    priceUnit: "per_day",
+    capacity: "",
+    fuelType: "",
+    withDriver: false,
+    images: null,
+  };
+}
 
 export default function ProviderRegister() {
-  const [providerType, setProviderType] = useState("vehicle");
-  const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
+  const [msg, setMsg] = useState({ text: "", type: "" });
 
   const [form, setForm] = useState({
     businessName: "",
+    listingType: "vehicle",
     city: "",
+    state: "",
     phone: "",
+    whatsapp: "",
     description: "",
-    price: "",
-    imageUrl: "",
-    vehicleType: "car",
-    capacity: 4,
-    fuelType: "",
-    withDriver: false,
-    tripMode: "customized_trip",
+    serviceImage: null,
+    vehicles: [emptyVehicle()],
+    plannerMode: "customized_trip",
+    packageTitle: "",
     durationText: "",
-    includes: "",
+    days: "",
+    priceFrom: "",
+    pricePerPerson: "",
+    placesCovered: "",
+    inclusions: "",
+    exclusions: "",
+    plannerImages: null,
   });
 
-  function update(key, value) {
-    setForm((s) => ({ ...s, [key]: value }));
+  const listingTypeOptions = [
+    { label: "Vehicle Service", value: "vehicle" },
+    { label: "Travel Planner", value: "travel_planner" },
+  ];
+
+  const plannerModeOptions = [
+    { label: "Customized Trip", value: "customized_trip" },
+    { label: "Self Customized Places", value: "self_customized_places" },
+    { label: "Day Package", value: "day_package" },
+    { label: "Multi Day Package", value: "multi_day_package" },
+    { label: "Group Trip", value: "group_trip" },
+  ];
+
+  const priceUnitOptions = [
+    { label: "Per Day", value: "per_day" },
+    { label: "Per Hour", value: "per_hour" },
+    { label: "Fixed", value: "fixed" },
+  ];
+
+  function addVehicle() {
+    setForm((prev) => ({
+      ...prev,
+      vehicles: [...prev.vehicles, emptyVehicle()],
+    }));
   }
 
-  async function submit(e) {
+  function removeVehicle(index) {
+    setForm((prev) => ({
+      ...prev,
+      vehicles: prev.vehicles.filter((_, i) => i !== index),
+    }));
+  }
+
+  function updateVehicle(index, key, value) {
+    setForm((prev) => ({
+      ...prev,
+      vehicles: prev.vehicles.map((item, i) =>
+        i === index ? { ...item, [key]: value } : item
+      ),
+    }));
+  }
+
+  async function submitProvider(e) {
     e.preventDefault();
 
+    if (!isLoggedIn()) {
+      navigate("/login");
+      return;
+    }
+
     try {
-      setMsg("");
+      const fd = new FormData();
+
+      fd.append("businessName", form.businessName);
+      fd.append("listingType", form.listingType);
+      fd.append("city", form.city);
+      fd.append("state", form.state);
+      fd.append("phone", form.phone);
+      fd.append("whatsapp", form.whatsapp);
+      fd.append("description", form.description);
+
+      if (form.serviceImage) fd.append("serviceImage", form.serviceImage);
+
+      if (form.listingType === "vehicle") {
+        fd.append(
+          "vehicles",
+          JSON.stringify(
+            form.vehicles.map((v) => ({
+              vehicleType: v.vehicleType,
+              title: v.title,
+              price: v.price,
+              priceUnit: v.priceUnit,
+              capacity: v.capacity,
+              fuelType: v.fuelType,
+              withDriver: v.withDriver,
+            }))
+          )
+        );
+
+        form.vehicles.forEach((v, index) => {
+          Array.from(v.images || []).forEach((file) => {
+            fd.append(`vehicleImages_${index}`, file);
+          });
+        });
+      }
+
+      if (form.listingType === "travel_planner") {
+        fd.append("plannerMode", form.plannerMode);
+        fd.append("packageTitle", form.packageTitle);
+        fd.append("durationText", form.durationText);
+        fd.append("days", form.days);
+        fd.append("priceFrom", form.priceFrom);
+        fd.append("pricePerPerson", form.pricePerPerson);
+        fd.append("placesCovered", form.placesCovered);
+        fd.append("inclusions", form.inclusions);
+        fd.append("exclusions", form.exclusions);
+
+        Array.from(form.plannerImages || []).forEach((file) => {
+          fd.append("plannerImages", file);
+        });
+      }
 
       const data = await apiFetch("/api/providers", {
         method: "POST",
-        body: JSON.stringify({
-          providerType,
-          businessName: form.businessName,
-          city: form.city,
-          phone: form.phone,
-          description: form.description,
-          price: Number(form.price),
-          imageUrl: form.imageUrl,
-          vehicleType: form.vehicleType,
-          capacity: Number(form.capacity),
-          fuelType: form.fuelType,
-          withDriver: form.withDriver,
-          tripMode: form.tripMode,
-          durationText: form.durationText,
-          includes: form.includes,
-        }),
+        body: fd,
       });
 
-      setMsg(data.message);
-
-      setForm({
-        businessName: "",
-        city: "",
-        phone: "",
-        description: "",
-        price: "",
-        imageUrl: "",
-        vehicleType: "car",
-        capacity: 4,
-        fuelType: "",
-        withDriver: false,
-        tripMode: "customized_trip",
-        durationText: "",
-        includes: "",
-      });
+      setMsg({ text: data.message, type: "success" });
+      navigate("/profile/my-listings");
     } catch (err) {
-      setMsg(err.message);
+      setMsg({ text: err.message, type: "error" });
     }
   }
 
   return (
-    <div className="container providerRegisterPage">
-      <div className="pageHead">
-        <div>
-          <h2 className="pageTitle">Register Your Service</h2>
-          <p className="pageSub">
-            Add your vehicle rental or tour planning business.
-          </p>
-        </div>
+    <div className="providerRegisterPage container">
+      <div className="providerRegisterHead">
+        <h1>Register as Provider</h1>
+        <p>Add your travel planner or vehicle rental service with full business details.</p>
       </div>
 
-      <div className="card providerRegisterCard">
-        <div className="tabs providerTabs">
-          <button
-            className={providerType === "vehicle" ? "tab active" : "tab"}
-            type="button"
-            onClick={() => setProviderType("vehicle")}
-          >
-            Vehicle Provider
-          </button>
+      {msg.text && (
+        <div className={`providerRegisterMessage ${msg.type}`}>
+          {msg.text}
+        </div>
+      )}
 
-          <button
-            className={providerType === "tour" ? "tab active" : "tab"}
-            type="button"
-            onClick={() => setProviderType("tour")}
-          >
-            Tour Planner
-          </button>
+      <form className="providerRegisterForm" onSubmit={submitProvider}>
+        <div className="providerRegisterGrid">
+          <div className="fullSpan">
+            <label>Business Name</label>
+            <input
+              value={form.businessName}
+              onChange={(e) => setForm((s) => ({ ...s, businessName: e.target.value }))}
+              required
+            />
+          </div>
+
+          <div>
+            <label>Listing Type</label>
+            <CustomSelect
+              value={form.listingType}
+              onChange={(e) => setForm((s) => ({ ...s, listingType: e.target.value }))}
+              options={listingTypeOptions}
+            />
+          </div>
+
+          <div>
+            <label>City</label>
+            <input
+              value={form.city}
+              onChange={(e) => setForm((s) => ({ ...s, city: e.target.value }))}
+              required
+            />
+          </div>
+
+          <div>
+            <label>State</label>
+            <input
+              value={form.state}
+              onChange={(e) => setForm((s) => ({ ...s, state: e.target.value }))}
+            />
+          </div>
+
+          <div>
+            <label>Phone</label>
+            <input
+              value={form.phone}
+              onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))}
+              required
+            />
+          </div>
+
+          <div>
+            <label>WhatsApp</label>
+            <input
+              value={form.whatsapp}
+              onChange={(e) => setForm((s) => ({ ...s, whatsapp: e.target.value }))}
+            />
+          </div>
+
+          <div className="fullSpan">
+            <label>Service Card Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setForm((s) => ({ ...s, serviceImage: e.target.files?.[0] || null }))
+              }
+            />
+          </div>
+
+          <div className="fullSpan">
+            <label>Description</label>
+            <textarea
+              rows={4}
+              value={form.description}
+              onChange={(e) => setForm((s) => ({ ...s, description: e.target.value }))}
+            />
+          </div>
         </div>
 
-        <form className="providerForm" onSubmit={submit}>
-          <label className="label">Business Name</label>
-          <input
-            className="input"
-            value={form.businessName}
-            onChange={(e) => update("businessName", e.target.value)}
-            required
-          />
-
-          <div className="row2">
-            <div>
-              <label className="label">City</label>
-              <input
-                className="input"
-                value={form.city}
-                onChange={(e) => update("city", e.target.value)}
-                required
-              />
+        {form.listingType === "vehicle" && (
+          <div className="providerRegisterBlock">
+            <div className="providerRegisterBlockHead">
+              <h3>Vehicles</h3>
+              <button className="providerRegisterGhostBtn" type="button" onClick={addVehicle}>
+                Add Vehicle
+              </button>
             </div>
 
-            <div>
-              <label className="label">Phone</label>
-              <input
-                className="input"
-                value={form.phone}
-                onChange={(e) => update("phone", e.target.value)}
-                required
-              />
+            <div className="providerRegisterVehicleList">
+              {form.vehicles.map((vehicle, index) => (
+                <div className="providerRegisterVehicleCard" key={index}>
+                  <div className="providerRegisterVehicleTop">
+                    <strong>Vehicle {index + 1}</strong>
+                    {form.vehicles.length > 1 && (
+                      <button
+                        className="providerRegisterDangerBtn"
+                        type="button"
+                        onClick={() => removeVehicle(index)}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="providerRegisterGrid">
+                    <div>
+                      <label>Vehicle Type</label>
+                      <CustomSelect
+                        value={vehicle.vehicleType}
+                        onChange={(e) => updateVehicle(index, "vehicleType", e.target.value)}
+                        options={vehicleTypes.map((type) => ({ label: type, value: type }))}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Title</label>
+                      <input
+                        value={vehicle.title}
+                        onChange={(e) => updateVehicle(index, "title", e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Price</label>
+                      <input
+                        type="number"
+                        value={vehicle.price}
+                        onChange={(e) => updateVehicle(index, "price", e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label>Price Unit</label>
+                      <CustomSelect
+                        value={vehicle.priceUnit}
+                        onChange={(e) => updateVehicle(index, "priceUnit", e.target.value)}
+                        options={priceUnitOptions}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Capacity</label>
+                      <input
+                        type="number"
+                        value={vehicle.capacity}
+                        onChange={(e) => updateVehicle(index, "capacity", e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Fuel Type</label>
+                      <input
+                        value={vehicle.fuelType}
+                        onChange={(e) => updateVehicle(index, "fuelType", e.target.value)}
+                      />
+                    </div>
+
+                    <div className="fullSpan">
+                      <label>Driver Option</label>
+                      <div className="providerRegisterCheckField">
+                        <label className="providerRegisterCheck">
+                          <input
+                            type="checkbox"
+                            checked={vehicle.withDriver}
+                            onChange={(e) => updateVehicle(index, "withDriver", e.target.checked)}
+                          />
+                          <span>With Driver</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="fullSpan">
+                      <label>Vehicle Images</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => updateVehicle(index, "images", e.target.files)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
+        )}
 
-          <label className="label">Description</label>
-          <textarea
-            className="textarea"
-            rows={4}
-            value={form.description}
-            onChange={(e) => update("description", e.target.value)}
-            placeholder="Tell users what you provide..."
-          />
+        {form.listingType === "travel_planner" && (
+          <div className="providerRegisterBlock">
+            <h3>Travel Planner Details</h3>
 
-          <div className="row2">
-            <div>
-              <label className="label">Price</label>
-              <input
-                className="input"
-                type="number"
-                value={form.price}
-                onChange={(e) => update("price", e.target.value)}
-                required
-              />
-            </div>
-
-            <div>
-              <label className="label">Image URL</label>
-              <input
-                className="input"
-                value={form.imageUrl}
-                onChange={(e) => update("imageUrl", e.target.value)}
-                placeholder="Optional"
-              />
-            </div>
-          </div>
-
-          {providerType === "vehicle" ? (
-            <>
-              <label className="label">Vehicle Type</label>
-              <select
-                className="select"
-                value={form.vehicleType}
-                onChange={(e) => update("vehicleType", e.target.value)}
-              >
-                <option value="bus">Bus</option>
-                <option value="jeep">Jeep</option>
-                <option value="car">Car</option>
-                <option value="bike">Bike</option>
-                <option value="scooty">Scooty</option>
-                <option value="cycle">Cycle</option>
-              </select>
-
-              <div className="row2">
-                <div>
-                  <label className="label">Capacity</label>
-                  <input
-                    className="input"
-                    type="number"
-                    value={form.capacity}
-                    onChange={(e) => update("capacity", e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <label className="label">Fuel Type</label>
-                  <input
-                    className="input"
-                    value={form.fuelType}
-                    onChange={(e) => update("fuelType", e.target.value)}
-                    placeholder="Petrol / Diesel / EV"
-                  />
-                </div>
+            <div className="providerRegisterGrid">
+              <div>
+                <label>Planner Type</label>
+                <CustomSelect
+                  value={form.plannerMode}
+                  onChange={(e) => setForm((s) => ({ ...s, plannerMode: e.target.value }))}
+                  options={plannerModeOptions}
+                />
               </div>
 
-              <label className="authCheck providerCheck">
+              <div>
+                <label>Package Title</label>
                 <input
-                  type="checkbox"
-                  checked={form.withDriver}
-                  onChange={(e) => update("withDriver", e.target.checked)}
+                  value={form.packageTitle}
+                  onChange={(e) => setForm((s) => ({ ...s, packageTitle: e.target.value }))}
                 />
-                <span>Available with driver</span>
-              </label>
-            </>
-          ) : (
-            <>
-              <label className="label">Trip Mode</label>
-              <select
-                className="select"
-                value={form.tripMode}
-                onChange={(e) => update("tripMode", e.target.value)}
-              >
-                <option value="own_trip">Own Trip</option>
-                <option value="without_car">Without Car</option>
-                <option value="customized_trip">Customized Trip</option>
-              </select>
+              </div>
 
-              <label className="label">Duration</label>
-              <input
-                className="input"
-                value={form.durationText}
-                onChange={(e) => update("durationText", e.target.value)}
-                placeholder="Example: 2 days / 3 nights"
-              />
+              <div>
+                <label>Duration Text</label>
+                <input
+                  value={form.durationText}
+                  onChange={(e) => setForm((s) => ({ ...s, durationText: e.target.value }))}
+                />
+              </div>
 
-              <label className="label">What you provide</label>
-              <input
-                className="input"
-                value={form.includes}
-                onChange={(e) => update("includes", e.target.value)}
-                placeholder="hotel, guide, food, sightseeing"
-              />
-            </>
-          )}
+              <div>
+                <label>Days</label>
+                <input
+                  type="number"
+                  value={form.days}
+                  onChange={(e) => setForm((s) => ({ ...s, days: e.target.value }))}
+                />
+              </div>
 
-          <button className="btn btnPrimary providerSubmitBtn" type="submit">
-            Save Service
-          </button>
+              <div>
+                <label>Price From</label>
+                <input
+                  type="number"
+                  value={form.priceFrom}
+                  onChange={(e) => setForm((s) => ({ ...s, priceFrom: e.target.value }))}
+                />
+              </div>
 
-          {msg && <div className="note">{msg}</div>}
-        </form>
-      </div>
+              <div>
+                <label>Price Per Person</label>
+                <input
+                  type="number"
+                  value={form.pricePerPerson}
+                  onChange={(e) => setForm((s) => ({ ...s, pricePerPerson: e.target.value }))}
+                />
+              </div>
+
+              <div className="fullSpan">
+                <label>Places Covered</label>
+                <input
+                  value={form.placesCovered}
+                  onChange={(e) => setForm((s) => ({ ...s, placesCovered: e.target.value }))}
+                />
+              </div>
+
+              <div className="fullSpan">
+                <label>Inclusions</label>
+                <input
+                  value={form.inclusions}
+                  onChange={(e) => setForm((s) => ({ ...s, inclusions: e.target.value }))}
+                />
+              </div>
+
+              <div className="fullSpan">
+                <label>Exclusions</label>
+                <input
+                  value={form.exclusions}
+                  onChange={(e) => setForm((s) => ({ ...s, exclusions: e.target.value }))}
+                />
+              </div>
+
+              <div className="fullSpan">
+                <label>Planner Images</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => setForm((s) => ({ ...s, plannerImages: e.target.files }))}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        <button className="providerRegisterPrimaryBtn" type="submit">
+          Create Listing
+        </button>
+      </form>
     </div>
   );
 }
