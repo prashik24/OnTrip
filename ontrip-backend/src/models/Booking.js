@@ -65,7 +65,7 @@ const bookingSchema = new mongoose.Schema(
       trim: true,
     },
 
-    travelDate: {
+    bookingDate: {
       type: Date,
       required: true,
     },
@@ -90,16 +90,18 @@ const bookingSchema = new mongoose.Schema(
     selectedVehicleTitle: {
       type: String,
       default: "",
+      trim: true,
     },
 
     selectedPackageTitle: {
       type: String,
       default: "",
+      trim: true,
     },
 
     unitPrice: {
       type: Number,
-      required: true,
+      default: 0,
       min: 0,
     },
 

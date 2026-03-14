@@ -14,6 +14,13 @@ export async function createBookingOrder(req, res) {
       bookingDate,
       peopleCount,
       destination,
+      place,
+      days,
+      selectedVehicleId,
+      selectedVehicleTitle,
+      selectedPackageTitle,
+      unitPrice,
+      pricingLabel,
       notes,
       amount,
     } = req.body;
@@ -49,6 +56,10 @@ export async function createBookingOrder(req, res) {
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       return res.status(400).json({ message: "Invalid booking amount." });
     }
+
+    const numericUnitPrice = Number(unitPrice || 0);
+    const numericPeopleCount = Number(peopleCount || 1);
+    const numericDays = Number(days || 1);
 
     const provider = await Provider.findById(providerId).populate("owner", "_id");
 
@@ -90,9 +101,16 @@ export async function createBookingOrder(req, res) {
       contactName: contactName.trim(),
       contactEmail: contactEmail?.trim() || "",
       contactPhone: contactPhone.trim(),
-      bookingDate: parsedBookingDate,
-      peopleCount: Number(peopleCount || 1),
       destination: destination?.trim() || "",
+      place: place?.trim() || "",
+      bookingDate: parsedBookingDate,
+      days: numericDays,
+      peopleCount: numericPeopleCount,
+      selectedVehicleId: selectedVehicleId || null,
+      selectedVehicleTitle: selectedVehicleTitle?.trim() || "",
+      selectedPackageTitle: selectedPackageTitle?.trim() || "",
+      unitPrice: numericUnitPrice,
+      pricingLabel: pricingLabel?.trim() || "",
       notes: notes?.trim() || "",
       amount: numericAmount,
       currency: "INR",
