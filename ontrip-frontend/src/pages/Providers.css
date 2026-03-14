@@ -297,7 +297,7 @@
   font-size: 15px;
   font-weight: 700;
   font-family: inherit;
-  color: #12212f;
+  color: rgba(18, 33, 47, 0.62);
 }
 
 .providersSearchInput::placeholder {
@@ -319,14 +319,14 @@
   font-size: 15px;
   font-weight: 700;
   font-family: inherit;
-  color: #12212f;
+  color: rgba(18, 33, 47, 0.62);
 }
 
 .providersSearchSelect .customSelectValue {
   font-size: 15px;
   font-weight: 700;
   font-family: inherit;
-  color: #12212f;
+  color: rgba(18, 33, 47, 0.62);
 }
 
 .providersSearchSelect .customSelectValue.placeholder {
