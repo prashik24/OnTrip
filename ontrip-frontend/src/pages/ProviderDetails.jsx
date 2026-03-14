@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
+import CustomSelect from "../components/CustomSelect";
 import "./ProviderDetails.css";
 
 export default function ProviderDetails() {
@@ -42,6 +43,14 @@ export default function ProviderDetails() {
     if (!provider || !user) return false;
     return String(provider.owner?._id || provider.owner) === String(user.id);
   }, [provider, user]);
+
+  const reviewRatingOptions = [
+    { label: "5 Stars", value: 5 },
+    { label: "4 Stars", value: 4 },
+    { label: "3 Stars", value: 3 },
+    { label: "2 Stars", value: 2 },
+    { label: "1 Star", value: 1 },
+  ];
 
   async function submitReview(e) {
     e.preventDefault();
@@ -110,7 +119,8 @@ export default function ProviderDetails() {
             <h1>{provider.businessName}</h1>
 
             <div className="providerDetailsMeta">
-              {provider.city}{provider.state ? `, ${provider.state}` : ""} • ⭐ {provider.ratingAverage || 0} • {provider.ratingCount || 0} reviews
+              {provider.city}
+              {provider.state ? `, ${provider.state}` : ""} • ⭐ {provider.ratingAverage || 0} • {provider.ratingCount || 0} reviews
             </div>
 
             <p className="providerDetailsDesc">
@@ -219,7 +229,12 @@ export default function ProviderDetails() {
                     </div>
 
                     <div className="providerDetailsVehiclePrice">
-                      ₹{vehicle.price} / {vehicle.priceUnit === "per_hour" ? "hour" : vehicle.priceUnit === "fixed" ? "fixed" : "day"}
+                      ₹{vehicle.price} /{" "}
+                      {vehicle.priceUnit === "per_hour"
+                        ? "hour"
+                        : vehicle.priceUnit === "fixed"
+                        ? "fixed"
+                        : "day"}
                     </div>
                   </div>
 
@@ -245,18 +260,13 @@ export default function ProviderDetails() {
             <div className="providerDetailsNote">You cannot review your own service.</div>
           ) : (
             <form className="providerDetailsReviewForm" onSubmit={submitReview}>
-              <select
+              <CustomSelect
                 value={reviewForm.rating}
                 onChange={(e) =>
                   setReviewForm((s) => ({ ...s, rating: e.target.value }))
                 }
-              >
-                <option value={5}>5 Stars</option>
-                <option value={4}>4 Stars</option>
-                <option value={3}>3 Stars</option>
-                <option value={2}>2 Stars</option>
-                <option value={1}>1 Star</option>
-              </select>
+                options={reviewRatingOptions}
+              />
 
               <textarea
                 rows={4}
