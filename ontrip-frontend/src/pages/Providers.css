@@ -159,44 +159,9 @@
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
 }
 
-.providersBlock {
-  background: rgba(244, 251, 255, 0.95);
-  border: 1px solid rgba(11, 27, 42, 0.06);
-  border-radius: 24px;
-  padding: 18px;
-}
-
-.providersBlock h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 900;
-}
-
-.providersBlockHead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.providersVehicleList {
-  display: grid;
-  gap: 16px;
-}
-
-.providersVehicleCard {
-  background: #fff;
-  border: 1px solid rgba(11, 27, 42, 0.06);
-  border-radius: 20px;
-  padding: 16px;
-}
-
-.providersVehicleCardTop {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
+/* ================================
+   DRIVER CHECKBOX FIX (ALIGNED)
+================================ */
 
 .providersCheckField {
   min-height: 54px;
@@ -204,34 +169,47 @@
   border-radius: 18px;
   background: #ffffff;
   padding: 0 16px;
+
   display: flex;
   align-items: center;
 }
 
 .providersCheck {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 12px;
-  margin: 0;
+
   font-weight: 700;
   font-size: 15px;
   color: #12212f;
+
+  height: 100%;
   cursor: pointer;
 }
 
 .providersCheck input[type="checkbox"] {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
+
   margin: 0;
   accent-color: #00b8f1;
-  box-shadow: none !important;
-  outline: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   flex-shrink: 0;
 }
 
 .providersCheck span {
+  display: flex;
+  align-items: center;
   line-height: 1;
 }
+
+/* ================================
+   FILE INPUT
+================================ */
 
 .providersForm input[type="file"] {
   width: 100%;
@@ -260,24 +238,15 @@
   border-radius: 12px;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #06202e;
-  font: inherit;
   font-weight: 800;
   padding: 10px 14px;
   margin-right: 12px;
   cursor: pointer;
 }
 
-.providersForm input[type="file"]::-webkit-file-upload-button {
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #06202e;
-  font: inherit;
-  font-weight: 800;
-  padding: 10px 14px;
-  margin-right: 12px;
-  cursor: pointer;
-}
+/* ================================
+   SEARCH BAR
+================================ */
 
 .providersSearchGrid {
   display: grid;
@@ -297,7 +266,7 @@
   font-size: 15px;
   font-weight: 700;
   font-family: inherit;
-  color: #12212f;
+  color: rgba(18, 33, 47, 0.62);
 }
 
 .providersSearchInput::placeholder {
@@ -307,26 +276,20 @@
   color: rgba(18, 33, 47, 0.62);
 }
 
-.providersSearchInput:focus {
-  border-color: #00b8f1;
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
-}
-
-/* only search bar custom selects */
 .providersSearchSelect .customSelectTrigger {
   min-height: 54px;
   padding: 0 22px;
   font-size: 15px;
   font-weight: 700;
   font-family: inherit;
-  color: #12212f;
+  color: rgba(18, 33, 47, 0.62);
 }
 
 .providersSearchSelect .customSelectValue {
   font-size: 15px;
   font-weight: 700;
   font-family: inherit;
-  color: #12212f;
+  color: rgba(18, 33, 47, 0.62);
 }
 
 .providersSearchSelect .customSelectValue.placeholder {
@@ -358,59 +321,10 @@
   object-fit: cover;
 }
 
-.providerCardMediaEmpty {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  color: rgba(11, 27, 42, 0.5);
-}
-
 .providerCardBody {
   padding: 18px;
   display: grid;
   gap: 14px;
-}
-
-.providerCardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.providerCardHeader h3 {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 900;
-}
-
-.providerCardHeader p {
-  margin: 6px 0 0;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.providerCardRating {
-  font-weight: 900;
-  white-space: nowrap;
-}
-
-.providerTypePill {
-  width: fit-content;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: rgba(0, 184, 241, 0.1);
-  border: 1px solid rgba(0, 184, 241, 0.18);
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.providerCardDesc {
-  color: rgba(11, 27, 42, 0.76);
-  line-height: 1.7;
-  font-weight: 600;
 }
 
 .fullSpan {
@@ -418,6 +332,7 @@
 }
 
 @media (max-width: 980px) {
+
   .providersHero,
   .providersFormHead {
     flex-direction: column;
@@ -429,4 +344,5 @@
   .providersGrid {
     grid-template-columns: 1fr;
   }
+
 }
