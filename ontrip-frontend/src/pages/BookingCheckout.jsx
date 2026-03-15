@@ -75,16 +75,18 @@ export default function BookingCheckout() {
     if (!provider) return "";
 
     if (provider.listingType === "travel_planner") {
-      if (provider.travelPlanner?.pricePerPerson) return "Per Person";
-      if (provider.travelPlanner?.priceFrom) return "Package Price";
-      return "Package Price";
+      return "Per Person";
     }
 
-    if (!selectedVehicle) return "";
-    if (selectedVehicle.priceUnit === "per_hour") return "Per Hour";
-    if (selectedVehicle.priceUnit === "fixed") return "Fixed Price";
-    return "Per Day";
+    return selectedVehicle?.priceUnit || "per_day";
   }, [provider, selectedVehicle]);
+
+  const pricingLabelText = useMemo(() => {
+    if (pricingLabel === "per_hour") return "Per Hour";
+    if (pricingLabel === "fixed") return "Fixed";
+    if (pricingLabel === "per_day") return "Per Day";
+    return "Per Person";
+  }, [pricingLabel]);
 
   const unitPrice = useMemo(() => {
     if (!provider) return 0;
@@ -172,7 +174,7 @@ export default function BookingCheckout() {
               ? form.selectedPackageTitle
               : "",
           unitPrice: Number(unitPrice),
-          pricingLabel,
+          pricingLabel: pricingLabelText,
           notes: form.notes.trim(),
           amount: Number(amount),
         }),
@@ -339,7 +341,7 @@ export default function BookingCheckout() {
 
               <div>
                 <label>Price Type</label>
-                <input value={pricingLabel || "Package"} readOnly />
+                <input value="Per Person" readOnly />
               </div>
             </>
           ) : (
@@ -392,7 +394,7 @@ export default function BookingCheckout() {
 
               <div>
                 <label>Price Type</label>
-                <input value={pricingLabel || "Per Day"} readOnly />
+                <input value={pricingLabelText} readOnly />
               </div>
             </>
           )}
