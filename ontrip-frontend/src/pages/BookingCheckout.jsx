@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { apiFetch, getUser } from "../lib/api";
+import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./BookingCheckout.css";
@@ -35,6 +35,11 @@ export default function BookingCheckout() {
   });
 
   useEffect(() => {
+    if (!isLoggedIn()) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
     async function loadProvider() {
       try {
         setLoading(true);
@@ -55,7 +60,7 @@ export default function BookingCheckout() {
     }
 
     loadProvider();
-  }, [id]);
+  }, [id, navigate]);
 
   const vehicleOptions = useMemo(() => {
     return (provider?.vehicles || []).map((vehicle) => ({
@@ -112,6 +117,11 @@ export default function BookingCheckout() {
 
   async function startPayment(e) {
     e.preventDefault();
+
+    if (!isLoggedIn()) {
+      navigate("/login");
+      return;
+    }
 
     if (form.contactPhone.length !== 10) {
       setMsg("Phone number must be 10 digits.");
