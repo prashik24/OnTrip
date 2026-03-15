@@ -2,14 +2,6 @@ import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
   {
-    bookingCode: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-      trim: true,
-    },
-
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -38,12 +30,6 @@ const bookingSchema = new mongoose.Schema(
     },
 
     serviceTitle: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-
-    bookingImage: {
       type: String,
       default: "",
       trim: true,
@@ -126,12 +112,6 @@ const bookingSchema = new mongoose.Schema(
     },
 
     notes: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-
-    statusReason: {
       type: String,
       default: "",
       trim: true,

@@ -3,28 +3,6 @@ import Booking from "../models/Booking.js";
 import Provider from "../models/Provider.js";
 import Review from "../models/Review.js";
 import razorpay from "../config/razorpay.js";
-import { generateBookingCode } from "../utils/generateBookingCode.js";
-import { buildInvoicePdfBuffer } from "../utils/invoicePdf.js";
-import {
-  sendBookingSuccessEmail,
-  sendBookingStatusEmail,
-} from "../config/mailer.js";
-
-function getBookingImage(provider, serviceType, selectedVehicleId) {
-  if (!provider) return "";
-
-  if (serviceType === "vehicle") {
-    const selected = (provider.vehicles || []).find(
-      (item) => String(item._id) === String(selectedVehicleId)
-    );
-
-    if (selected?.images?.[0]?.url) return selected.images[0].url;
-    if (provider.vehicles?.[0]?.images?.[0]?.url) return provider.vehicles[0].images[0].url;
-    return "";
-  }
-
-  return provider.travelPlanner?.images?.[0]?.url || "";
-}
 
 export async function createBookingOrder(req, res) {
   try {
@@ -75,13 +53,13 @@ export async function createBookingOrder(req, res) {
     }
 
     const numericAmount = Number(amount);
-    const numericUnitPrice = Number(unitPrice || 0);
-    const numericPeopleCount = Number(peopleCount || 1);
-    const numericDays = Number(days || 1);
-
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       return res.status(400).json({ message: "Invalid booking amount." });
     }
+
+    const numericUnitPrice = Number(unitPrice || 0);
+    const numericPeopleCount = Number(peopleCount || 1);
+    const numericDays = Number(days || 1);
 
     const provider = await Provider.findById(providerId).populate("owner", "_id");
 
@@ -115,13 +93,11 @@ export async function createBookingOrder(req, res) {
         : provider.travelPlanner?.packageTitle || provider.businessName;
 
     const booking = await Booking.create({
-      bookingCode: generateBookingCode(),
       user: req.user._id,
       provider: provider._id,
       providerOwner: provider.owner._id,
       serviceType: provider.listingType,
       serviceTitle,
-      bookingImage: getBookingImage(provider, provider.listingType, selectedVehicleId),
       contactName: contactName.trim(),
       contactEmail: contactEmail?.trim() || "",
       contactPhone: contactPhone.trim(),
@@ -146,7 +122,6 @@ export async function createBookingOrder(req, res) {
     return res.json({
       message: "Booking order created successfully.",
       bookingId: booking._id,
-      bookingCode: booking.bookingCode,
       order,
       razorpayKeyId: process.env.RAZORPAY_KEY_ID,
     });
@@ -160,11 +135,13 @@ export async function createBookingOrder(req, res) {
 
 export async function verifyBookingPayment(req, res) {
   try {
-    const { bookingId, razorpay_payment_id, razorpay_signature } = req.body;
+    const {
+      bookingId,
+      razorpay_payment_id,
+      razorpay_signature,
+    } = req.body;
 
-    const booking = await Booking.findById(bookingId)
-      .populate("user", "name email phone")
-      .populate("provider", "businessName listingType travelPlanner vehicles");
+    const booking = await Booking.findById(bookingId);
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found." });
@@ -190,32 +167,9 @@ export async function verifyBookingPayment(req, res) {
     booking.bookingStatus = "confirmed";
     await booking.save();
 
-    try {
-      const pdfBuffer = await buildInvoicePdfBuffer({
-        booking,
-        user: booking.user,
-        provider: booking.provider,
-      });
-
-      if (booking.contactEmail || booking.user?.email) {
-        await sendBookingSuccessEmail({
-          to: booking.contactEmail || booking.user.email,
-          booking,
-          provider: booking.provider,
-          user: booking.user,
-          pdfBuffer,
-        });
-      }
-    } catch (mailError) {
-      console.error("sendBookingSuccessEmail error:", mailError.message);
-    }
-
     return res.json({
       message: "Payment verified successfully.",
-      booking: {
-        _id: booking._id,
-        bookingCode: booking.bookingCode,
-      },
+      booking,
     });
   } catch (error) {
     console.error("verifyBookingPayment error", error);
@@ -275,11 +229,9 @@ export async function getProviderBookings(req, res) {
 
 export async function updateBookingStatus(req, res) {
   try {
-    const { bookingStatus, statusReason } = req.body;
+    const { bookingStatus } = req.body;
 
-    const booking = await Booking.findById(req.params.id)
-      .populate("user", "name email phone")
-      .populate("provider", "businessName listingType");
+    const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found." });
@@ -290,30 +242,7 @@ export async function updateBookingStatus(req, res) {
     }
 
     booking.bookingStatus = bookingStatus || booking.bookingStatus;
-    booking.statusReason = statusReason?.trim() || "";
     await booking.save();
-
-    if (["cancelled", "completed"].includes(booking.bookingStatus)) {
-      try {
-        const pdfBuffer = await buildInvoicePdfBuffer({
-          booking,
-          user: booking.user,
-          provider: booking.provider,
-        });
-
-        if (booking.contactEmail || booking.user?.email) {
-          await sendBookingStatusEmail({
-            to: booking.contactEmail || booking.user.email,
-            booking,
-            provider: booking.provider,
-            user: booking.user,
-            pdfBuffer,
-          });
-        }
-      } catch (mailError) {
-        console.error("sendBookingStatusEmail error:", mailError.message);
-      }
-    }
 
     return res.json({
       message: "Booking status updated successfully.",
@@ -322,67 +251,5 @@ export async function updateBookingStatus(req, res) {
   } catch (error) {
     console.error("updateBookingStatus error", error);
     return res.status(500).json({ message: "Failed to update booking status." });
-  }
-}
-
-export async function getBookingById(req, res) {
-  try {
-    const booking = await Booking.findById(req.params.id)
-      .populate("user", "name email phone")
-      .populate("provider", "businessName listingType city phone description");
-
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found." });
-    }
-
-    const allowed =
-      String(booking.user?._id || booking.user) === String(req.user._id) ||
-      String(booking.providerOwner) === String(req.user._id);
-
-    if (!allowed) {
-      return res.status(403).json({ message: "Not allowed." });
-    }
-
-    return res.json({ booking });
-  } catch (error) {
-    console.error("getBookingById error", error);
-    return res.status(500).json({ message: "Failed to fetch booking." });
-  }
-}
-
-export async function downloadInvoice(req, res) {
-  try {
-    const booking = await Booking.findById(req.params.id)
-      .populate("user", "name email phone")
-      .populate("provider", "businessName listingType city phone");
-
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found." });
-    }
-
-    const allowed =
-      String(booking.user?._id || booking.user) === String(req.user._id) ||
-      String(booking.providerOwner) === String(req.user._id);
-
-    if (!allowed) {
-      return res.status(403).json({ message: "Not allowed." });
-    }
-
-    const pdfBuffer = await buildInvoicePdfBuffer({
-      booking,
-      user: booking.user,
-      provider: booking.provider,
-    });
-
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      `inline; filename="OnTrip-Invoice-${booking.bookingCode}.pdf"`
-    );
-
-    return res.send(pdfBuffer);
-  } catch (error) {
-    console.error("downloadInvoice error", error);
-    return res.status(500).json({ message: "Failed to generate invoice." });
   }
 }
