@@ -10,7 +10,7 @@ function money(value) {
   return `₹${Number(value || 0).toFixed(2)}`;
 }
 
-function getProviderCardImage(provider, booking) {
+function getProviderCardImage(provider) {
   if (!provider) return "";
 
   return (
@@ -99,7 +99,7 @@ async function sendBookingEmail({
   if (!to) return;
 
   const pdfBuffer = await generateInvoicePdfBuffer({ booking, provider });
-  const imageUrl = getProviderCardImage(provider, booking);
+  const imageUrl = getProviderCardImage(provider);
 
   await sendTransactionalEmail({
     to,
@@ -177,13 +177,6 @@ export async function createBookingOrder(req, res) {
       return res.status(400).json({ message: "Invalid booking date." });
     }
 
-    const numericAmount = Number(amount);
-    const numericUnitPrice = Number(unitPrice || 0);
-
-    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      return res.status(400).json({ message: "Invalid booking amount." });
-    }
-
     const provider = await Provider.findById(providerId).populate("owner", "_id");
 
     if (!provider) {
@@ -192,6 +185,35 @@ export async function createBookingOrder(req, res) {
 
     if (String(provider.owner._id) === String(req.user._id)) {
       return res.status(403).json({ message: "You cannot book your own service." });
+    }
+
+    let numericUnitPrice = Number(unitPrice || 0);
+    let numericAmount = Number(amount || 0);
+
+    if (provider.listingType === "travel_planner") {
+      const actualPlannerPrice = Number(provider.travelPlanner?.priceFrom || 0);
+      const actualPeopleCount = Number(peopleCount || 1);
+
+      numericUnitPrice = actualPlannerPrice;
+      numericAmount = actualPlannerPrice * actualPeopleCount;
+    }
+
+    if (provider.listingType === "vehicle") {
+      const matchedVehicle = (provider.vehicles || []).find(
+        (v) => String(v._id) === String(selectedVehicleId)
+      );
+
+      if (!matchedVehicle) {
+        return res.status(400).json({ message: "Selected vehicle not found." });
+      }
+
+      const actualDays = Number(days || 1);
+      numericUnitPrice = Number(matchedVehicle.price || 0);
+      numericAmount = numericUnitPrice * actualDays;
+    }
+
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+      return res.status(400).json({ message: "Invalid booking amount." });
     }
 
     const amountInPaise = Math.round(numericAmount * 100);
@@ -223,7 +245,10 @@ export async function createBookingOrder(req, res) {
       peopleCount: Number(peopleCount || 1),
       selectedVehicleId: selectedVehicleId || null,
       selectedVehicleTitle: selectedVehicleTitle?.trim() || "",
-      selectedPackageTitle: selectedPackageTitle?.trim() || "",
+      selectedPackageTitle:
+        selectedPackageTitle?.trim() ||
+        provider.travelPlanner?.packageTitle ||
+        "",
       unitPrice: numericUnitPrice,
       pricingLabel: pricingLabel?.trim() || "",
       notes: notes?.trim() || "",
