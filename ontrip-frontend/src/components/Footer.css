@@ -273,3 +273,9 @@
   }
 }
 
+.otFooter {
+  margin-top: 40px;
+  width: 100vw;
+  margin-left: calc(55% - 56vw);
+  overflow-x: hidden;
+}
