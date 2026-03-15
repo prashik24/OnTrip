@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { apiFetch, getUser } from "../lib/api";
+import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDetails.css";
 
@@ -34,7 +34,9 @@ export default function ProviderDetails() {
 
         const similarData = await apiFetch(`/api/providers?${query.toString()}`);
         setSimilar(
-          (similarData.providers || []).filter((item) => item._id !== currentProvider._id).slice(0, 4)
+          (similarData.providers || [])
+            .filter((item) => item._id !== currentProvider._id)
+            .slice(0, 4)
         );
       } catch (err) {
         setMsg(err.message);
@@ -60,6 +62,14 @@ export default function ProviderDetails() {
     );
   }, [provider]);
 
+  function goToBooking() {
+    if (!isLoggedIn()) {
+      navigate("/login");
+      return;
+    }
+    navigate(`/providers/${provider._id}/book`);
+  }
+
   if (loading) {
     return <LoadingSpinner text="Loading provider details..." />;
   }
@@ -67,7 +77,9 @@ export default function ProviderDetails() {
   if (!provider) {
     return (
       <div className="providerDetailsPage container">
-        <div className="providerDetailsMessage error">{msg || "Provider not found."}</div>
+        <div className="providerDetailsMessage error">
+          {msg || "Provider not found."}
+        </div>
       </div>
     );
   }
@@ -92,8 +104,10 @@ export default function ProviderDetails() {
             </div>
 
             <h1>{provider.businessName}</h1>
+
             <div className="providerDetailsMeta">
-              {provider.city} • {provider.phone} • ⭐ {provider.ratingAverage || 0} ({provider.ratingCount || 0})
+              {provider.city} • {provider.phone} • ⭐ {provider.ratingAverage || 0} (
+              {provider.ratingCount || 0})
             </div>
 
             <p className="providerDetailsDesc">
@@ -107,16 +121,11 @@ export default function ProviderDetails() {
             </div>
 
             {!isOwner ? (
-              <button
-                className="providerDetailsPrimaryBtn"
-                onClick={() => navigate(`/providers/${provider._id}/book`)}
-              >
+              <button className="providerDetailsPrimaryBtn" onClick={goToBooking}>
                 Book Service
               </button>
             ) : (
-              <div className="providerDetailsNote">
-                This is your own listing.
-              </div>
+              <div className="providerDetailsNote">This is your own listing.</div>
             )}
           </div>
         </div>
@@ -124,6 +133,7 @@ export default function ProviderDetails() {
         {provider.listingType === "vehicle" ? (
           <div className="providerDetailsSection">
             <h2>Available Vehicles</h2>
+
             <div className="providerDetailsVehicleList">
               {(provider.vehicles || []).map((vehicle) => (
                 <div className="providerDetailsVehicleCard" key={vehicle._id}>
@@ -136,13 +146,17 @@ export default function ProviderDetails() {
                         {vehicle.withDriver ? "With Driver" : "Without Driver"}
                       </p>
                     </div>
+
                     <div className="providerDetailsVehiclePrice">₹{vehicle.price}</div>
                   </div>
 
                   <div className="providerDetailsGallery">
                     {(vehicle.images || []).map((img, index) => (
                       <div className="providerDetailsGalleryItem" key={index}>
-                        <img src={img.url} alt={vehicle.title || vehicle.vehicleType} />
+                        <img
+                          src={img.url}
+                          alt={vehicle.title || vehicle.vehicleType}
+                        />
                       </div>
                     ))}
                   </div>
@@ -159,10 +173,12 @@ export default function ProviderDetails() {
                 <strong>Package</strong>
                 <span>{provider.travelPlanner?.packageTitle || "Package"}</span>
               </div>
+
               <div className="providerDetailsDataBox">
                 <strong>Duration</strong>
                 <span>{provider.travelPlanner?.durationText || "-"}</span>
               </div>
+
               <div className="providerDetailsDataBox">
                 <strong>Price From</strong>
                 <span>₹{provider.travelPlanner?.priceFrom || 0}</span>
@@ -174,10 +190,12 @@ export default function ProviderDetails() {
                 <h3>Places Covered</h3>
                 <p>{(provider.travelPlanner?.placesCovered || []).join(", ") || "-"}</p>
               </div>
+
               <div className="providerDetailsInfoBlock">
                 <h3>Inclusions</h3>
                 <p>{(provider.travelPlanner?.inclusions || []).join(", ") || "-"}</p>
               </div>
+
               <div className="providerDetailsInfoBlock">
                 <h3>Exclusions</h3>
                 <p>{(provider.travelPlanner?.exclusions || []).join(", ") || "-"}</p>
@@ -207,7 +225,18 @@ export default function ProviderDetails() {
                     <strong>{review.user?.name || "User"}</strong>
                     <span>⭐ {review.rating}</span>
                   </div>
+
                   <p>{review.comment || "No comment"}</p>
+
+                  {review.images?.length > 0 && (
+                    <div className="providerDetailsReviewImageGrid">
+                      {review.images.map((img, index) => (
+                        <div className="providerDetailsReviewImageItem" key={index}>
+                          <img src={img.url} alt={`review-${index + 1}`} />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -225,7 +254,9 @@ export default function ProviderDetails() {
                 <div className="providerDetailsSimilarCard" key={item._id}>
                   <div>
                     <strong>{item.businessName}</strong>
-                    <p>{item.city} • ⭐ {item.ratingAverage || 0}</p>
+                    <p>
+                      {item.city} • ⭐ {item.ratingAverage || 0}
+                    </p>
                   </div>
 
                   <button
