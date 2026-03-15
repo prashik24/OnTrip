@@ -34,19 +34,12 @@ export default function BookingSuccess() {
   const heroImage = useMemo(() => {
     if (!booking?.provider) return "";
 
-    if (booking.serviceType === "vehicle") {
-      const matched = (booking.provider.vehicles || []).find(
-        (v) => String(v._id) === String(booking.selectedVehicleId)
-      );
-
-      return (
-        matched?.images?.[0]?.url ||
-        booking.provider?.vehicles?.[0]?.images?.[0]?.url ||
-        ""
-      );
-    }
-
-    return booking.provider?.travelPlanner?.images?.[0]?.url || "";
+    return (
+      booking.provider?.serviceImage?.url ||
+      booking.provider?.travelPlanner?.images?.[0]?.url ||
+      booking.provider?.vehicles?.[0]?.images?.[0]?.url ||
+      ""
+    );
   }, [booking]);
 
   async function downloadInvoice() {
@@ -93,15 +86,21 @@ export default function BookingSuccess() {
     );
   }
 
+  const isCancelled = booking.bookingStatus === "cancelled";
+
   return (
     <div className="bookingSuccessPage container">
       {msg && <div className="bookingSuccessMessage">{msg}</div>}
 
       <div className="bookingSuccessCard">
-        <div className="bookingSuccessBanner">
+        <div className={`bookingSuccessBanner ${isCancelled ? "cancelled" : ""}`}>
           <div>
-            <h1>Booking Placed Successfully</h1>
-            <p>Your payment was completed and your booking is confirmed.</p>
+            <h1>{isCancelled ? "Booking Cancelled" : "Booking Placed Successfully"}</h1>
+            <p>
+              {isCancelled
+                ? "Your provider cancelled this booking. They will refund your money soon."
+                : "Your payment was completed and your booking is confirmed."}
+            </p>
           </div>
           <div className="bookingSuccessRef">{booking.bookingRef}</div>
         </div>
@@ -129,6 +128,11 @@ export default function BookingSuccess() {
             </div>
 
             <div className="bookingSuccessAmount">Paid: ₹{booking.amount}</div>
+            {isCancelled && booking.cancellationReason ? (
+              <div className="bookingSuccessCancelReason">
+                Reason: {booking.cancellationReason}
+              </div>
+            ) : null}
           </div>
         </div>
 
