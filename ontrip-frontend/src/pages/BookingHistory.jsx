@@ -27,14 +27,16 @@ export default function BookingHistory() {
   async function loadBookings() {
     try {
       const data = await apiFetch("/api/bookings/mine");
-      setBookings(data.bookings || []);
+      const bookingList = data.bookings || [];
+      setBookings(bookingList);
 
       const nextForms = {};
-      (data.bookings || []).forEach((booking) => {
+      bookingList.forEach((booking) => {
         nextForms[booking._id] = {
           rating: booking.existingReview?.rating || 5,
           comment: booking.existingReview?.comment || "",
           image: null,
+          existingImages: booking.existingReview?.images || [],
         };
       });
       setReviewForms(nextForms);
@@ -59,14 +61,19 @@ export default function BookingHistory() {
       setMsg("");
 
       const form = reviewForms[booking._id];
+      const fd = new FormData();
 
-      await apiFetch("/api/reviews", {
+      fd.append("bookingId", booking._id);
+      fd.append("rating", String(form.rating));
+      fd.append("comment", form.comment || "");
+
+      if (form.image) {
+        fd.append("reviewImage", form.image);
+      }
+
+      await apiFetch("/api/reviews/booking", {
         method: "POST",
-        body: JSON.stringify({
-          providerId: booking.provider?._id || booking.provider,
-          rating: Number(form.rating),
-          comment: form.comment,
-        }),
+        body: fd,
       });
 
       await loadBookings();
@@ -96,6 +103,12 @@ export default function BookingHistory() {
         <div className="bookingHistoryGrid">
           {bookings.map((booking) => {
             const isCancelled = booking.bookingStatus === "cancelled";
+            const currentForm = reviewForms[booking._id] || {
+              rating: 5,
+              comment: "",
+              image: null,
+              existingImages: [],
+            };
 
             return (
               <div className="bookingHistoryCard" key={booking._id}>
@@ -141,9 +154,15 @@ export default function BookingHistory() {
 
                   {!isCancelled && booking.canReview && (
                     <button
-                      className={booking.existingReview ? "bookingHistoryEditBtn" : "bookingHistoryReviewBtn"}
+                      className={
+                        booking.existingReview
+                          ? "bookingHistoryEditBtn"
+                          : "bookingHistoryReviewBtn"
+                      }
                       onClick={() =>
-                        setOpenReviewId((prev) => (prev === booking._id ? "" : booking._id))
+                        setOpenReviewId((prev) =>
+                          prev === booking._id ? "" : booking._id
+                        )
                       }
                     >
                       {booking.existingReview ? "Edit Review" : "Write Review"}
@@ -156,7 +175,7 @@ export default function BookingHistory() {
                     <div>
                       <label>Rating</label>
                       <CustomSelect
-                        value={reviewForms[booking._id]?.rating || 5}
+                        value={currentForm.rating || 5}
                         onChange={(e) =>
                           updateReviewForm(booking._id, "rating", e.target.value)
                         }
@@ -168,7 +187,7 @@ export default function BookingHistory() {
                       <label>Comment</label>
                       <textarea
                         rows={4}
-                        value={reviewForms[booking._id]?.comment || ""}
+                        value={currentForm.comment || ""}
                         onChange={(e) =>
                           updateReviewForm(booking._id, "comment", e.target.value)
                         }
@@ -176,13 +195,34 @@ export default function BookingHistory() {
                       />
                     </div>
 
+                    {currentForm.existingImages?.length > 0 && (
+                      <div>
+                        <label>Current Review Image</label>
+                        <div className="bookingHistoryReviewImageGrid">
+                          {currentForm.existingImages.map((img, index) => (
+                            <div className="bookingHistoryReviewImageItem" key={index}>
+                              <img src={img.url} alt="review" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div>
-                      <label>Image (optional UI only)</label>
+                      <label>
+                        {currentForm.existingImages?.length > 0
+                          ? "Replace Image (optional)"
+                          : "Image (optional)"}
+                      </label>
                       <input
                         type="file"
                         accept="image/*"
                         onChange={(e) =>
-                          updateReviewForm(booking._id, "image", e.target.files?.[0] || null)
+                          updateReviewForm(
+                            booking._id,
+                            "image",
+                            e.target.files?.[0] || null
+                          )
                         }
                       />
                     </div>
