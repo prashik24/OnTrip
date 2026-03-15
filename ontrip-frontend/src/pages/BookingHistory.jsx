@@ -1,34 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
-import CustomSelect from "../components/CustomSelect";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./BookingHistory.css";
 
 export default function BookingHistory() {
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(true);
-  const [openReviewId, setOpenReviewId] = useState(null);
-  const [submitLoading, setSubmitLoading] = useState(false);
-  const [reviewForm, setReviewForm] = useState({
-    rating: 5,
-    comment: "",
-    images: null,
-  });
+  const [openReviewId, setOpenReviewId] = useState("");
+  const [savingReview, setSavingReview] = useState(false);
 
-  const ratingOptions = [
-    { label: "5 Stars", value: 5 },
-    { label: "4 Stars", value: 4 },
-    { label: "3 Stars", value: 3 },
-    { label: "2 Stars", value: 2 },
-    { label: "1 Star", value: 1 },
-  ];
+  const [reviewForms, setReviewForms] = useState({});
 
-  async function load() {
+  async function loadBookings() {
     try {
       setLoading(true);
       const data = await apiFetch("/api/bookings/mine");
-      setBookings(data.bookings || []);
+      const items = data.bookings || [];
+      setBookings(items);
+
+      const nextForms = {};
+      items.forEach((booking) => {
+        nextForms[booking._id] = {
+          rating: booking.existingReview?.rating || 5,
+          comment: booking.existingReview?.comment || "",
+        };
+      });
+      setReviewForms(nextForms);
     } catch (err) {
       setMsg(err.message);
     } finally {
@@ -37,49 +37,42 @@ export default function BookingHistory() {
   }
 
   useEffect(() => {
-    load();
+    loadBookings();
   }, []);
 
-  function openReview(booking) {
-    setOpenReviewId((prev) => (prev === booking._id ? null : booking._id));
-    setReviewForm({
-      rating: booking.existingReview?.rating || 5,
-      comment: booking.existingReview?.comment || "",
-      images: null,
-    });
+  function updateReviewForm(bookingId, key, value) {
+    setReviewForms((prev) => ({
+      ...prev,
+      [bookingId]: {
+        ...prev[bookingId],
+        [key]: value,
+      },
+    }));
   }
 
-  async function submitReview(e, bookingId) {
-    e.preventDefault();
-
+  async function submitReview(booking) {
     try {
-      setSubmitLoading(true);
-      const fd = new FormData();
-      fd.append("bookingId", bookingId);
-      fd.append("rating", reviewForm.rating);
-      fd.append("comment", reviewForm.comment);
+      setSavingReview(true);
+      setMsg("");
 
-      Array.from(reviewForm.images || []).forEach((file) => {
-        fd.append("images", file);
-      });
+      const form = reviewForms[booking._id];
 
-      await apiFetch("/api/reviews/from-booking", {
+      const data = await apiFetch("/api/reviews", {
         method: "POST",
-        body: fd,
+        body: JSON.stringify({
+          providerId: booking.provider?._id || booking.provider,
+          rating: Number(form.rating),
+          comment: form.comment,
+        }),
       });
 
-      setMsg("Review saved successfully.");
-      setOpenReviewId(null);
-      setReviewForm({
-        rating: 5,
-        comment: "",
-        images: null,
-      });
-      await load();
+      setOpenReviewId("");
+      await loadBookings();
+      setMsg(data.message || "Review saved successfully.");
     } catch (err) {
       setMsg(err.message);
     } finally {
-      setSubmitLoading(false);
+      setSavingReview(false);
     }
   }
 
@@ -91,93 +84,121 @@ export default function BookingHistory() {
     <div className="bookingHistoryPage container">
       <div className="bookingHistoryHead">
         <h1>Booking History</h1>
-        <p>Track your bookings, payments, status, and review only the services you actually booked.</p>
+        <p>See your confirmed bookings, invoices, status updates, and reviews.</p>
       </div>
 
       {msg && <div className="bookingHistoryMessage">{msg}</div>}
 
       {bookings.length === 0 ? (
-        <div className="bookingHistoryEmpty">You have not booked any service yet.</div>
+        <div className="bookingHistoryEmpty">
+          No bookings yet. Your confirmed bookings will appear here.
+        </div>
       ) : (
         <div className="bookingHistoryGrid">
-          {bookings.map((booking) => (
-            <article className="bookingHistoryCard" key={booking._id}>
-              <div className="bookingHistoryTop">
-                <div>
-                  <h3>{booking.serviceTitle}</h3>
-                  <p>
-                    {booking.provider?.businessName || "Service"} •{" "}
-                    {booking.provider?.city || "City not available"}
-                  </p>
+          {bookings.map((booking) => {
+            const form = reviewForms[booking._id] || { rating: 5, comment: "" };
+            const isEditing = openReviewId === booking._id;
+
+            return (
+              <div className="bookingHistoryCard" key={booking._id}>
+                <div className="bookingHistoryTop">
+                  <div>
+                    <h3>{booking.serviceTitle}</h3>
+                    <p>{booking.provider?.businessName || "Provider"}</p>
+                  </div>
+
+                  <div className="bookingHistoryPrice">₹{booking.amount}</div>
                 </div>
 
-                <div className="bookingHistoryPrice">₹{booking.amount}</div>
-              </div>
+                <div className="bookingHistoryInfo">
+                  <div><strong>Booking ID:</strong> {booking.bookingCode}</div>
+                  <div><strong>Date:</strong> {new Date(booking.bookingDate).toLocaleDateString()}</div>
+                  <div><strong>Status:</strong> {booking.bookingStatus}</div>
+                  <div><strong>Payment:</strong> {booking.paymentStatus}</div>
+                  <div><strong>Vehicle:</strong> {booking.selectedVehicleTitle || "-"}</div>
+                  <div><strong>Package:</strong> {booking.selectedPackageTitle || "-"}</div>
+                  <div><strong>Destination:</strong> {booking.destination || "-"}</div>
+                  <div><strong>Place:</strong> {booking.place || "-"}</div>
+                  {booking.statusReason ? (
+                    <div><strong>Reason:</strong> {booking.statusReason}</div>
+                  ) : null}
+                </div>
 
-              <div className="bookingHistoryInfo">
-                <div><strong>Date:</strong> {new Date(booking.bookingDate).toLocaleDateString()}</div>
-                <div><strong>People:</strong> {booking.peopleCount}</div>
-                <div><strong>Destination:</strong> {booking.destination || "N/A"}</div>
-                <div><strong>Payment:</strong> {booking.paymentStatus}</div>
-                <div><strong>Status:</strong> {booking.bookingStatus}</div>
-              </div>
-
-              {booking.canReview && (
                 <div className="bookingHistoryActions">
-                  <button className="bookingHistoryBtn" onClick={() => openReview(booking)}>
-                    {booking.existingReview ? "Edit Review" : "Write Review"}
+                  <button
+                    className="bookingHistoryBtn"
+                    onClick={() => navigate(`/booking-success/${booking._id}`)}
+                  >
+                    View Details
                   </button>
+
+                  <button
+                    className="bookingHistoryBtn"
+                    onClick={() => navigate(`/booking-invoice/${booking._id}`)}
+                  >
+                    View Invoice
+                  </button>
+
+                  {booking.canReview ? (
+                    <button
+                      className={
+                        booking.existingReview
+                          ? "bookingHistoryEditBtn"
+                          : "bookingHistoryReviewBtn"
+                      }
+                      onClick={() =>
+                        setOpenReviewId((prev) =>
+                          prev === booking._id ? "" : booking._id
+                        )
+                      }
+                    >
+                      {booking.existingReview ? "Edit Review" : "Write Review"}
+                    </button>
+                  ) : null}
                 </div>
-              )}
 
-              {openReviewId === booking._id && (
-                <form
-                  className="bookingHistoryReviewForm"
-                  onSubmit={(e) => submitReview(e, booking._id)}
-                >
-                  <div>
-                    <label>Rating</label>
-                    <CustomSelect
-                      value={reviewForm.rating}
-                      onChange={(e) =>
-                        setReviewForm((s) => ({ ...s, rating: e.target.value }))
-                      }
-                      options={ratingOptions}
-                    />
+                {isEditing ? (
+                  <div className="bookingHistoryReviewForm">
+                    <div>
+                      <label>Rating</label>
+                      <select
+                        value={form.rating}
+                        onChange={(e) =>
+                          updateReviewForm(booking._id, "rating", e.target.value)
+                        }
+                      >
+                        <option value={5}>5 Stars</option>
+                        <option value={4}>4 Stars</option>
+                        <option value={3}>3 Stars</option>
+                        <option value={2}>2 Stars</option>
+                        <option value={1}>1 Star</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label>Comment</label>
+                      <textarea
+                        rows={4}
+                        value={form.comment}
+                        onChange={(e) =>
+                          updateReviewForm(booking._id, "comment", e.target.value)
+                        }
+                        placeholder="Write your review here"
+                      />
+                    </div>
+
+                    <button
+                      className="bookingHistorySubmitBtn"
+                      onClick={() => submitReview(booking)}
+                      disabled={savingReview}
+                    >
+                      {savingReview ? "Saving..." : "Submit Review"}
+                    </button>
                   </div>
-
-                  <div>
-                    <label>Comment</label>
-                    <textarea
-                      rows={4}
-                      value={reviewForm.comment}
-                      onChange={(e) =>
-                        setReviewForm((s) => ({ ...s, comment: e.target.value }))
-                      }
-                      placeholder="Write your experience..."
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label>Review Images</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={(e) =>
-                        setReviewForm((s) => ({ ...s, images: e.target.files }))
-                      }
-                    />
-                  </div>
-
-                  <button className="bookingHistorySubmitBtn" type="submit" disabled={submitLoading}>
-                    {submitLoading ? "Saving..." : "Submit Review"}
-                  </button>
-                </form>
-              )}
-            </article>
-          ))}
+                ) : null}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
