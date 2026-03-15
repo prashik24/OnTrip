@@ -2,7 +2,6 @@ import crypto from "crypto";
 import Booking from "../models/Booking.js";
 import Provider from "../models/Provider.js";
 import Review from "../models/Review.js";
-import User from "../models/User.js";
 import razorpay from "../config/razorpay.js";
 import { sendTransactionalEmail } from "../config/mailer.js";
 import { generateInvoicePdfBuffer } from "../utils/generateInvoicePdf.js";
@@ -14,18 +13,12 @@ function money(value) {
 function getProviderCardImage(provider, booking) {
   if (!provider) return "";
 
-  if (booking?.serviceType === "vehicle") {
-    const matched = (provider.vehicles || []).find(
-      (v) => String(v._id) === String(booking.selectedVehicleId)
-    );
-    return (
-      matched?.images?.[0]?.url ||
-      provider.vehicles?.[0]?.images?.[0]?.url ||
-      ""
-    );
-  }
-
-  return provider.travelPlanner?.images?.[0]?.url || "";
+  return (
+    provider.serviceImage?.url ||
+    provider.travelPlanner?.images?.[0]?.url ||
+    provider.vehicles?.[0]?.images?.[0]?.url ||
+    ""
+  );
 }
 
 function bookingEmailHtml({
@@ -38,7 +31,11 @@ function bookingEmailHtml({
   return `
     <div style="margin:0;padding:24px;background:#f4fbff;font-family:Arial,Helvetica,sans-serif;color:#0b1b2a;">
       <div style="max-width:720px;margin:0 auto;background:#ffffff;border:1px solid rgba(0,184,241,0.16);border-radius:18px;overflow:hidden;">
-        <div style="background:linear-gradient(135deg,#4ec9f5,#00b8f1);padding:22px 26px;color:#ffffff;">
+        <div style="background:${
+          booking.bookingStatus === "cancelled"
+            ? "linear-gradient(135deg,#ef4444,#dc2626)"
+            : "linear-gradient(135deg,#4ec9f5,#00b8f1)"
+        };padding:22px 26px;color:#ffffff;">
           <div style="font-size:28px;font-weight:800;">OnTrip</div>
           <div style="font-size:22px;font-weight:700;margin-top:8px;">${heading}</div>
           <div style="font-size:14px;opacity:0.95;margin-top:6px;">${subtext}</div>
@@ -58,67 +55,26 @@ function bookingEmailHtml({
           </div>
 
           <table style="width:100%;border-collapse:collapse;font-size:14px;">
-            <tr>
-              <td style="padding:10px 0;color:#5b6570;">Customer</td>
-              <td style="padding:10px 0;font-weight:700;text-align:right;">${booking.contactName}</td>
-            </tr>
-            <tr>
-              <td style="padding:10px 0;color:#5b6570;">Phone</td>
-              <td style="padding:10px 0;font-weight:700;text-align:right;">${booking.contactPhone}</td>
-            </tr>
-            <tr>
-              <td style="padding:10px 0;color:#5b6570;">Travel Date</td>
-              <td style="padding:10px 0;font-weight:700;text-align:right;">${new Date(
-                booking.bookingDate
-              ).toLocaleDateString()}</td>
-            </tr>
-            ${
-              booking.destination
-                ? `<tr><td style="padding:10px 0;color:#5b6570;">Destination</td><td style="padding:10px 0;font-weight:700;text-align:right;">${booking.destination}</td></tr>`
-                : ""
-            }
-            ${
-              booking.place
-                ? `<tr><td style="padding:10px 0;color:#5b6570;">Place</td><td style="padding:10px 0;font-weight:700;text-align:right;">${booking.place}</td></tr>`
-                : ""
-            }
-            ${
-              booking.selectedVehicleTitle
-                ? `<tr><td style="padding:10px 0;color:#5b6570;">Vehicle</td><td style="padding:10px 0;font-weight:700;text-align:right;">${booking.selectedVehicleTitle}</td></tr>`
-                : ""
-            }
-            ${
-              booking.selectedPackageTitle
-                ? `<tr><td style="padding:10px 0;color:#5b6570;">Package</td><td style="padding:10px 0;font-weight:700;text-align:right;">${booking.selectedPackageTitle}</td></tr>`
-                : ""
-            }
-            <tr>
-              <td style="padding:10px 0;color:#5b6570;">People</td>
-              <td style="padding:10px 0;font-weight:700;text-align:right;">${booking.peopleCount}</td>
-            </tr>
-            <tr>
-              <td style="padding:10px 0;color:#5b6570;">Days</td>
-              <td style="padding:10px 0;font-weight:700;text-align:right;">${booking.days}</td>
-            </tr>
-            <tr>
-              <td style="padding:10px 0;color:#5b6570;">Unit Price</td>
-              <td style="padding:10px 0;font-weight:700;text-align:right;">${money(
-                booking.unitPrice
-              )}</td>
-            </tr>
-            <tr>
-              <td style="padding:14px 0 0;color:#0b1b2a;font-size:16px;font-weight:700;">Total Paid</td>
-              <td style="padding:14px 0 0;color:#00b8f1;font-size:18px;font-weight:800;text-align:right;">${money(
-                booking.amount
-              )}</td>
-            </tr>
+            <tr><td style="padding:10px 0;color:#5b6570;">Customer</td><td style="padding:10px 0;font-weight:700;text-align:right;">${booking.contactName}</td></tr>
+            <tr><td style="padding:10px 0;color:#5b6570;">Phone</td><td style="padding:10px 0;font-weight:700;text-align:right;">${booking.contactPhone}</td></tr>
+            <tr><td style="padding:10px 0;color:#5b6570;">Travel Date</td><td style="padding:10px 0;font-weight:700;text-align:right;">${new Date(
+              booking.bookingDate
+            ).toLocaleDateString()}</td></tr>
+            <tr><td style="padding:10px 0;color:#5b6570;">Total</td><td style="padding:10px 0;font-weight:700;text-align:right;">${money(
+              booking.amount
+            )}</td></tr>
           </table>
 
           ${
-            booking.cancellationReason
+            booking.bookingStatus === "cancelled"
               ? `<div style="margin-top:18px;padding:14px;border-radius:12px;background:#fff7f7;border:1px solid rgba(239,68,68,0.14);">
-                  <div style="font-weight:700;color:#b42318;margin-bottom:6px;">Cancellation Reason</div>
-                  <div style="color:#5b6570;">${booking.cancellationReason}</div>
+                  <div style="font-weight:700;color:#b42318;margin-bottom:6px;">Service Cancelled</div>
+                  <div style="color:#5b6570;">Your provider cancelled this booking. They will refund your money soon.</div>
+                  ${
+                    booking.cancellationReason
+                      ? `<div style="margin-top:10px;color:#5b6570;"><strong>Reason:</strong> ${booking.cancellationReason}</div>`
+                      : ""
+                  }
                 </div>`
               : ""
           }
@@ -374,7 +330,9 @@ export async function getMyBookings(req, res) {
 
       return {
         ...booking,
-        canReview: booking.paymentStatus === "paid",
+        canReview:
+          booking.paymentStatus === "paid" &&
+          booking.bookingStatus !== "cancelled",
         existingReview,
       };
     });
@@ -473,6 +431,10 @@ export async function updateBookingStatus(req, res) {
       return res.status(403).json({ message: "Not allowed." });
     }
 
+    if (booking.bookingStatus === "cancelled") {
+      return res.status(400).json({ message: "This service is already cancelled." });
+    }
+
     booking.bookingStatus = bookingStatus || booking.bookingStatus;
 
     if (bookingStatus === "cancelled") {
@@ -507,7 +469,7 @@ export async function updateBookingStatus(req, res) {
           to: emailTo,
           subject: `Booking Cancelled - ${hydrated.bookingRef}`,
           heading: "Booking Cancelled",
-          subtext: "Your booking has been cancelled by the provider.",
+          subtext: "Your provider cancelled this booking. They will refund your money soon.",
           booking: hydrated,
           provider: hydrated.provider,
         });
@@ -517,7 +479,10 @@ export async function updateBookingStatus(req, res) {
     }
 
     return res.json({
-      message: "Booking status updated successfully.",
+      message:
+        bookingStatus === "cancelled"
+          ? "Service cancelled successfully."
+          : "Booking status updated successfully.",
       booking: hydrated,
     });
   } catch (error) {
