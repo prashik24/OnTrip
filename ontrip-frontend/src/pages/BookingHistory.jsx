@@ -94,104 +94,111 @@ export default function BookingHistory() {
         </div>
       ) : (
         <div className="bookingHistoryGrid">
-          {bookings.map((booking) => (
-            <div className="bookingHistoryCard" key={booking._id}>
-              <div className="bookingHistoryTop">
-                <div>
-                  <h3>{booking.serviceTitle}</h3>
-                  <p>{booking.provider?.businessName || "Provider"}</p>
+          {bookings.map((booking) => {
+            const isCancelled = booking.bookingStatus === "cancelled";
+
+            return (
+              <div className="bookingHistoryCard" key={booking._id}>
+                <div className="bookingHistoryTop">
+                  <div>
+                    <h3>{booking.serviceTitle}</h3>
+                    <p>{booking.provider?.businessName || "Provider"}</p>
+                  </div>
+                  <div className="bookingHistoryPrice">₹{booking.amount}</div>
                 </div>
-                <div className="bookingHistoryPrice">₹{booking.amount}</div>
-              </div>
 
-              <div className="bookingHistoryInfo">
-                <div>Booking Ref: {booking.bookingRef}</div>
-                <div>Date: {new Date(booking.bookingDate).toLocaleDateString()}</div>
-                <div>Payment: {booking.paymentStatus}</div>
-                <div>Status: {booking.bookingStatus}</div>
-                <div>People: {booking.peopleCount}</div>
-                <div>Days: {booking.days}</div>
-                {booking.destination ? <div>Destination: {booking.destination}</div> : null}
-                {booking.place ? <div>Place: {booking.place}</div> : null}
-                {booking.cancellationReason ? (
-                  <div>Cancellation Reason: {booking.cancellationReason}</div>
-                ) : null}
-              </div>
+                <div className="bookingHistoryInfo">
+                  <div>Booking Ref: {booking.bookingRef}</div>
+                  <div>Date: {new Date(booking.bookingDate).toLocaleDateString()}</div>
+                  <div>Payment: {booking.paymentStatus}</div>
+                  <div>Status: {booking.bookingStatus}</div>
+                  <div>People: {booking.peopleCount}</div>
+                  <div>Days: {booking.days}</div>
+                  {booking.destination ? <div>Destination: {booking.destination}</div> : null}
+                  {booking.place ? <div>Place: {booking.place}</div> : null}
+                  {booking.cancellationReason ? (
+                    <div>Cancellation Reason: {booking.cancellationReason}</div>
+                  ) : null}
+                  {isCancelled ? (
+                    <div>Your provider cancelled this service. They will refund your money soon.</div>
+                  ) : null}
+                </div>
 
-              <div className="bookingHistoryActions">
-                <button
-                  className="bookingHistoryBtn"
-                  onClick={() => navigate(`/profile/bookings/${booking._id}`)}
-                >
-                  View Details
-                </button>
-
-                <button
-                  className="bookingHistoryBtn"
-                  onClick={() => navigate(`/profile/bookings/${booking._id}/invoice`)}
-                >
-                  View Invoice
-                </button>
-
-                {booking.canReview && (
+                <div className="bookingHistoryActions">
                   <button
-                    className={booking.existingReview ? "bookingHistoryEditBtn" : "bookingHistoryReviewBtn"}
-                    onClick={() =>
-                      setOpenReviewId((prev) => (prev === booking._id ? "" : booking._id))
-                    }
+                    className="bookingHistoryBtn"
+                    onClick={() => navigate(`/profile/bookings/${booking._id}`)}
                   >
-                    {booking.existingReview ? "Edit Review" : "Write Review"}
+                    View Details
                   </button>
+
+                  <button
+                    className="bookingHistoryBtn"
+                    onClick={() => navigate(`/profile/bookings/${booking._id}/invoice`)}
+                  >
+                    View Invoice
+                  </button>
+
+                  {!isCancelled && booking.canReview && (
+                    <button
+                      className={booking.existingReview ? "bookingHistoryEditBtn" : "bookingHistoryReviewBtn"}
+                      onClick={() =>
+                        setOpenReviewId((prev) => (prev === booking._id ? "" : booking._id))
+                      }
+                    >
+                      {booking.existingReview ? "Edit Review" : "Write Review"}
+                    </button>
+                  )}
+                </div>
+
+                {!isCancelled && openReviewId === booking._id && booking.canReview && (
+                  <div className="bookingHistoryReviewForm">
+                    <div>
+                      <label>Rating</label>
+                      <CustomSelect
+                        value={reviewForms[booking._id]?.rating || 5}
+                        onChange={(e) =>
+                          updateReviewForm(booking._id, "rating", e.target.value)
+                        }
+                        options={ratingOptions}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Comment</label>
+                      <textarea
+                        rows={4}
+                        value={reviewForms[booking._id]?.comment || ""}
+                        onChange={(e) =>
+                          updateReviewForm(booking._id, "comment", e.target.value)
+                        }
+                        placeholder="Write your review"
+                      />
+                    </div>
+
+                    <div>
+                      <label>Image (optional UI only)</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          updateReviewForm(booking._id, "image", e.target.files?.[0] || null)
+                        }
+                      />
+                    </div>
+
+                    <button
+                      className="bookingHistorySubmitBtn"
+                      onClick={() => submitReview(booking)}
+                      disabled={submittingId === booking._id}
+                    >
+                      {submittingId === booking._id ? "Saving..." : "Submit Review"}
+                    </button>
+                  </div>
                 )}
               </div>
-
-              {openReviewId === booking._id && booking.canReview && (
-                <div className="bookingHistoryReviewForm">
-                  <div>
-                    <label>Rating</label>
-                    <CustomSelect
-                      value={reviewForms[booking._id]?.rating || 5}
-                      onChange={(e) =>
-                        updateReviewForm(booking._id, "rating", e.target.value)
-                      }
-                      options={ratingOptions}
-                    />
-                  </div>
-
-                  <div>
-                    <label>Comment</label>
-                    <textarea
-                      rows={4}
-                      value={reviewForms[booking._id]?.comment || ""}
-                      onChange={(e) =>
-                        updateReviewForm(booking._id, "comment", e.target.value)
-                      }
-                      placeholder="Write your review"
-                    />
-                  </div>
-
-                  <div>
-                    <label>Image (optional UI only)</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        updateReviewForm(booking._id, "image", e.target.files?.[0] || null)
-                      }
-                    />
-                  </div>
-
-                  <button
-                    className="bookingHistorySubmitBtn"
-                    onClick={() => submitReview(booking)}
-                    disabled={submittingId === booking._id}
-                  >
-                    {submittingId === booking._id ? "Saving..." : "Submit Review"}
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
