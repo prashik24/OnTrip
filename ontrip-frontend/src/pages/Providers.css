@@ -132,10 +132,10 @@
 .providersSearchGrid .customSelectValue.placeholder {
   color: rgba(11, 27, 42, 0.56);
 }
-
+/*
 .providersSearchGrid .customSelectArrow {
   color: #00b8f1;
-}
+} */
 
 .providersGrid {
   display: grid;
