@@ -59,19 +59,23 @@ export default function BookingHistory() {
       setMsg("");
 
       const form = reviewForms[booking._id];
+      const fd = new FormData();
+      fd.append("bookingId", booking._id);
+      fd.append("rating", String(form.rating));
+      fd.append("comment", form.comment || "");
 
-      await apiFetch("/api/reviews", {
+      if (form.image) {
+        fd.append("reviewImage", form.image);
+      }
+
+      await apiFetch("/api/reviews/booking", {
         method: "POST",
-        body: JSON.stringify({
-          providerId: booking.provider?._id || booking.provider,
-          rating: Number(form.rating),
-          comment: form.comment,
-        }),
+        body: fd,
       });
 
       await loadBookings();
       setOpenReviewId("");
-      setMsg("Review saved successfully.");
+      setMsg("Your review has been saved successfully.");
     } catch (err) {
       setMsg(err.message);
     } finally {
@@ -120,7 +124,9 @@ export default function BookingHistory() {
                     <div>Cancellation Reason: {booking.cancellationReason}</div>
                   ) : null}
                   {isCancelled ? (
-                    <div>Your provider cancelled this service. They will refund your money soon.</div>
+                    <div className="bookingHistoryAlert">
+                      This booking was cancelled by the provider. Your refund will be processed soon.
+                    </div>
                   ) : null}
                 </div>
 
@@ -177,7 +183,7 @@ export default function BookingHistory() {
                     </div>
 
                     <div>
-                      <label>Image (optional UI only)</label>
+                      <label>Image (optional)</label>
                       <input
                         type="file"
                         accept="image/*"
