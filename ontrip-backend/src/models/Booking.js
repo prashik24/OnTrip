@@ -1,7 +1,21 @@
 import mongoose from "mongoose";
 
+function createBookingRef() {
+  const stamp = Date.now().toString().slice(-8);
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return `OT${stamp}${rand}`;
+}
+
 const bookingSchema = new mongoose.Schema(
   {
+    bookingRef: {
+      type: String,
+      default: createBookingRef,
+      unique: true,
+      index: true,
+      trim: true,
+    },
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -138,6 +152,12 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "confirmed", "completed", "cancelled"],
       default: "pending",
+    },
+
+    cancellationReason: {
+      type: String,
+      default: "",
+      trim: true,
     },
 
     razorpayOrderId: {

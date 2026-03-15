@@ -2,7 +2,182 @@ import crypto from "crypto";
 import Booking from "../models/Booking.js";
 import Provider from "../models/Provider.js";
 import Review from "../models/Review.js";
+import User from "../models/User.js";
 import razorpay from "../config/razorpay.js";
+import { sendTransactionalEmail } from "../config/mailer.js";
+import { generateInvoicePdfBuffer } from "../utils/generateInvoicePdf.js";
+
+function money(value) {
+  return `₹${Number(value || 0).toFixed(2)}`;
+}
+
+function getProviderCardImage(provider, booking) {
+  if (!provider) return "";
+
+  if (booking?.serviceType === "vehicle") {
+    const matched = (provider.vehicles || []).find(
+      (v) => String(v._id) === String(booking.selectedVehicleId)
+    );
+    return (
+      matched?.images?.[0]?.url ||
+      provider.vehicles?.[0]?.images?.[0]?.url ||
+      ""
+    );
+  }
+
+  return provider.travelPlanner?.images?.[0]?.url || "";
+}
+
+function bookingEmailHtml({
+  heading,
+  subtext,
+  booking,
+  provider,
+  imageUrl = "",
+}) {
+  return `
+    <div style="margin:0;padding:24px;background:#f4fbff;font-family:Arial,Helvetica,sans-serif;color:#0b1b2a;">
+      <div style="max-width:720px;margin:0 auto;background:#ffffff;border:1px solid rgba(0,184,241,0.16);border-radius:18px;overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#4ec9f5,#00b8f1);padding:22px 26px;color:#ffffff;">
+          <div style="font-size:28px;font-weight:800;">OnTrip</div>
+          <div style="font-size:22px;font-weight:700;margin-top:8px;">${heading}</div>
+          <div style="font-size:14px;opacity:0.95;margin-top:6px;">${subtext}</div>
+        </div>
+
+        ${
+          imageUrl
+            ? `<img src="${imageUrl}" alt="Service" style="display:block;width:100%;height:220px;object-fit:cover;" />`
+            : ""
+        }
+
+        <div style="padding:26px;">
+          <div style="border:1px solid rgba(0,184,241,0.14);background:#f8fbff;border-radius:14px;padding:16px;margin-bottom:18px;">
+            <div style="font-size:18px;font-weight:700;margin-bottom:8px;">${booking.serviceTitle}</div>
+            <div style="font-size:14px;color:#5b6570;">Booking Ref: <strong style="color:#0b1b2a;">${booking.bookingRef}</strong></div>
+            <div style="font-size:14px;color:#5b6570;margin-top:4px;">Provider: ${provider.businessName}</div>
+          </div>
+
+          <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <tr>
+              <td style="padding:10px 0;color:#5b6570;">Customer</td>
+              <td style="padding:10px 0;font-weight:700;text-align:right;">${booking.contactName}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 0;color:#5b6570;">Phone</td>
+              <td style="padding:10px 0;font-weight:700;text-align:right;">${booking.contactPhone}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 0;color:#5b6570;">Travel Date</td>
+              <td style="padding:10px 0;font-weight:700;text-align:right;">${new Date(
+                booking.bookingDate
+              ).toLocaleDateString()}</td>
+            </tr>
+            ${
+              booking.destination
+                ? `<tr><td style="padding:10px 0;color:#5b6570;">Destination</td><td style="padding:10px 0;font-weight:700;text-align:right;">${booking.destination}</td></tr>`
+                : ""
+            }
+            ${
+              booking.place
+                ? `<tr><td style="padding:10px 0;color:#5b6570;">Place</td><td style="padding:10px 0;font-weight:700;text-align:right;">${booking.place}</td></tr>`
+                : ""
+            }
+            ${
+              booking.selectedVehicleTitle
+                ? `<tr><td style="padding:10px 0;color:#5b6570;">Vehicle</td><td style="padding:10px 0;font-weight:700;text-align:right;">${booking.selectedVehicleTitle}</td></tr>`
+                : ""
+            }
+            ${
+              booking.selectedPackageTitle
+                ? `<tr><td style="padding:10px 0;color:#5b6570;">Package</td><td style="padding:10px 0;font-weight:700;text-align:right;">${booking.selectedPackageTitle}</td></tr>`
+                : ""
+            }
+            <tr>
+              <td style="padding:10px 0;color:#5b6570;">People</td>
+              <td style="padding:10px 0;font-weight:700;text-align:right;">${booking.peopleCount}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 0;color:#5b6570;">Days</td>
+              <td style="padding:10px 0;font-weight:700;text-align:right;">${booking.days}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 0;color:#5b6570;">Unit Price</td>
+              <td style="padding:10px 0;font-weight:700;text-align:right;">${money(
+                booking.unitPrice
+              )}</td>
+            </tr>
+            <tr>
+              <td style="padding:14px 0 0;color:#0b1b2a;font-size:16px;font-weight:700;">Total Paid</td>
+              <td style="padding:14px 0 0;color:#00b8f1;font-size:18px;font-weight:800;text-align:right;">${money(
+                booking.amount
+              )}</td>
+            </tr>
+          </table>
+
+          ${
+            booking.cancellationReason
+              ? `<div style="margin-top:18px;padding:14px;border-radius:12px;background:#fff7f7;border:1px solid rgba(239,68,68,0.14);">
+                  <div style="font-weight:700;color:#b42318;margin-bottom:6px;">Cancellation Reason</div>
+                  <div style="color:#5b6570;">${booking.cancellationReason}</div>
+                </div>`
+              : ""
+          }
+
+          <div style="margin-top:20px;color:#5b6570;font-size:13px;line-height:1.7;">
+            The invoice PDF is attached with this email.
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function sendBookingEmail({
+  to,
+  subject,
+  heading,
+  subtext,
+  booking,
+  provider,
+}) {
+  if (!to) return;
+
+  const pdfBuffer = await generateInvoicePdfBuffer({ booking, provider });
+  const imageUrl = getProviderCardImage(provider, booking);
+
+  await sendTransactionalEmail({
+    to,
+    subject,
+    htmlContent: bookingEmailHtml({
+      heading,
+      subtext,
+      booking,
+      provider,
+      imageUrl,
+    }),
+    attachments: [
+      {
+        name: `${booking.bookingRef}-invoice.pdf`,
+        contentBase64: pdfBuffer.toString("base64"),
+      },
+    ],
+  });
+}
+
+async function hydrateBookingForDetails(bookingId) {
+  return Booking.findById(bookingId)
+    .populate("user", "name email phone avatar")
+    .populate("providerOwner", "name email phone")
+    .populate("provider")
+    .lean();
+}
+
+function canAccessBooking(booking, userId) {
+  return (
+    String(booking.user?._id || booking.user) === String(userId) ||
+    String(booking.providerOwner?._id || booking.providerOwner) === String(userId)
+  );
+}
 
 export async function createBookingOrder(req, res) {
   try {
@@ -24,12 +199,6 @@ export async function createBookingOrder(req, res) {
       notes,
       amount,
     } = req.body;
-
-    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-      return res.status(500).json({
-        message: "Razorpay keys are missing on server.",
-      });
-    }
 
     if (!providerId) {
       return res.status(400).json({ message: "Provider id is required." });
@@ -53,13 +222,11 @@ export async function createBookingOrder(req, res) {
     }
 
     const numericAmount = Number(amount);
+    const numericUnitPrice = Number(unitPrice || 0);
+
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       return res.status(400).json({ message: "Invalid booking amount." });
     }
-
-    const numericUnitPrice = Number(unitPrice || 0);
-    const numericPeopleCount = Number(peopleCount || 1);
-    const numericDays = Number(days || 1);
 
     const provider = await Provider.findById(providerId).populate("owner", "_id");
 
@@ -67,19 +234,11 @@ export async function createBookingOrder(req, res) {
       return res.status(404).json({ message: "Service not found." });
     }
 
-    if (!provider.owner?._id) {
-      return res.status(500).json({ message: "Provider owner not found." });
-    }
-
     if (String(provider.owner._id) === String(req.user._id)) {
       return res.status(403).json({ message: "You cannot book your own service." });
     }
 
     const amountInPaise = Math.round(numericAmount * 100);
-
-    if (!amountInPaise || amountInPaise < 100) {
-      return res.status(400).json({ message: "Minimum payable amount is ₹1." });
-    }
 
     const order = await razorpay.orders.create({
       amount: amountInPaise,
@@ -104,8 +263,8 @@ export async function createBookingOrder(req, res) {
       destination: destination?.trim() || "",
       place: place?.trim() || "",
       bookingDate: parsedBookingDate,
-      days: numericDays,
-      peopleCount: numericPeopleCount,
+      days: Number(days || 1),
+      peopleCount: Number(peopleCount || 1),
       selectedVehicleId: selectedVehicleId || null,
       selectedVehicleTitle: selectedVehicleTitle?.trim() || "",
       selectedPackageTitle: selectedPackageTitle?.trim() || "",
@@ -122,6 +281,7 @@ export async function createBookingOrder(req, res) {
     return res.json({
       message: "Booking order created successfully.",
       bookingId: booking._id,
+      bookingRef: booking.bookingRef,
       order,
       razorpayKeyId: process.env.RAZORPAY_KEY_ID,
     });
@@ -135,11 +295,7 @@ export async function createBookingOrder(req, res) {
 
 export async function verifyBookingPayment(req, res) {
   try {
-    const {
-      bookingId,
-      razorpay_payment_id,
-      razorpay_signature,
-    } = req.body;
+    const { bookingId, razorpay_payment_id, razorpay_signature } = req.body;
 
     const booking = await Booking.findById(bookingId);
 
@@ -167,9 +323,26 @@ export async function verifyBookingPayment(req, res) {
     booking.bookingStatus = "confirmed";
     await booking.save();
 
+    const hydrated = await hydrateBookingForDetails(booking._id);
+    const emailTo = hydrated.contactEmail || hydrated.user?.email || "";
+
+    try {
+      await sendBookingEmail({
+        to: emailTo,
+        subject: `Booking Confirmed - ${hydrated.bookingRef}`,
+        heading: "Booking Placed Successfully",
+        subtext: "Your payment was received and your booking is confirmed.",
+        booking: hydrated,
+        provider: hydrated.provider,
+      });
+    } catch (mailError) {
+      console.error("booking confirmation email error:", mailError.message);
+    }
+
     return res.json({
       message: "Payment verified successfully.",
-      booking,
+      bookingId: booking._id,
+      bookingRef: booking.bookingRef,
     });
   } catch (error) {
     console.error("verifyBookingPayment error", error);
@@ -180,7 +353,7 @@ export async function verifyBookingPayment(req, res) {
 export async function getMyBookings(req, res) {
   try {
     const bookings = await Booking.find({ user: req.user._id })
-      .populate("provider", "businessName listingType city")
+      .populate("provider")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -217,7 +390,7 @@ export async function getProviderBookings(req, res) {
   try {
     const bookings = await Booking.find({ providerOwner: req.user._id })
       .populate("user", "name email phone avatar")
-      .populate("provider", "businessName listingType city")
+      .populate("provider")
       .sort({ createdAt: -1 });
 
     return res.json({ bookings });
@@ -227,9 +400,68 @@ export async function getProviderBookings(req, res) {
   }
 }
 
+export async function getBookingById(req, res) {
+  try {
+    const booking = await hydrateBookingForDetails(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
+
+    if (!canAccessBooking(booking, req.user._id)) {
+      return res.status(403).json({ message: "Not allowed." });
+    }
+
+    const reviews = await Review.find({
+      provider: booking.provider?._id,
+      user: booking.user?._id,
+    }).lean();
+
+    return res.json({
+      booking: {
+        ...booking,
+        existingReview: reviews[0] || null,
+      },
+    });
+  } catch (error) {
+    console.error("getBookingById error", error);
+    return res.status(500).json({ message: "Failed to fetch booking details." });
+  }
+}
+
+export async function downloadInvoice(req, res) {
+  try {
+    const booking = await hydrateBookingForDetails(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
+
+    if (!canAccessBooking(booking, req.user._id)) {
+      return res.status(403).json({ message: "Not allowed." });
+    }
+
+    const pdfBuffer = await generateInvoicePdfBuffer({
+      booking,
+      provider: booking.provider,
+    });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${booking.bookingRef}-invoice.pdf"`
+    );
+
+    return res.send(pdfBuffer);
+  } catch (error) {
+    console.error("downloadInvoice error", error);
+    return res.status(500).json({ message: "Failed to generate invoice." });
+  }
+}
+
 export async function updateBookingStatus(req, res) {
   try {
-    const { bookingStatus } = req.body;
+    const { bookingStatus, cancellationReason } = req.body;
 
     const booking = await Booking.findById(req.params.id);
 
@@ -242,11 +474,51 @@ export async function updateBookingStatus(req, res) {
     }
 
     booking.bookingStatus = bookingStatus || booking.bookingStatus;
+
+    if (bookingStatus === "cancelled") {
+      booking.cancellationReason = (cancellationReason || "").trim();
+    } else if (bookingStatus !== "cancelled") {
+      booking.cancellationReason = "";
+    }
+
     await booking.save();
+
+    const hydrated = await hydrateBookingForDetails(booking._id);
+    const emailTo = hydrated.contactEmail || hydrated.user?.email || "";
+
+    if (bookingStatus === "completed") {
+      try {
+        await sendBookingEmail({
+          to: emailTo,
+          subject: `Booking Completed - ${hydrated.bookingRef}`,
+          heading: "Booking Completed Successfully",
+          subtext: "Your booked service has been marked as completed.",
+          booking: hydrated,
+          provider: hydrated.provider,
+        });
+      } catch (mailError) {
+        console.error("completion email error:", mailError.message);
+      }
+    }
+
+    if (bookingStatus === "cancelled") {
+      try {
+        await sendBookingEmail({
+          to: emailTo,
+          subject: `Booking Cancelled - ${hydrated.bookingRef}`,
+          heading: "Booking Cancelled",
+          subtext: "Your booking has been cancelled by the provider.",
+          booking: hydrated,
+          provider: hydrated.provider,
+        });
+      } catch (mailError) {
+        console.error("cancellation email error:", mailError.message);
+      }
+    }
 
     return res.json({
       message: "Booking status updated successfully.",
-      booking,
+      booking: hydrated,
     });
   } catch (error) {
     console.error("updateBookingStatus error", error);

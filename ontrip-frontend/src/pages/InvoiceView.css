@@ -1,0 +1,181 @@
+.invoiceViewPage {
+  padding-bottom: 32px;
+  display: grid;
+  gap: 18px;
+}
+
+.invoiceViewMessage {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 98, 98, 0.08);
+  border: 1px solid rgba(255, 98, 98, 0.16);
+  color: #b42318;
+  font-weight: 650;
+}
+
+.invoiceViewCard {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  padding: 22px;
+  display: grid;
+  gap: 18px;
+}
+
+.invoiceViewHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.invoiceViewBrand {
+  font-size: 28px;
+  font-weight: 800;
+  color: #00b8f1;
+}
+
+.invoiceViewHeader h1 {
+  margin: 8px 0 6px;
+  font-size: 30px;
+  font-weight: 760;
+  color: var(--text);
+}
+
+.invoiceViewHeader p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.invoiceViewStatus {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.invoiceViewStatus span {
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: rgba(0, 184, 241, 0.1);
+  border: 1px solid rgba(0, 184, 241, 0.16);
+  color: #0369a1;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.invoiceViewGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.invoiceViewBox {
+  background: rgba(244, 251, 255, 0.94);
+  border-radius: 14px;
+  padding: 15px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid rgba(0, 184, 241, 0.1);
+}
+
+.invoiceViewBox strong {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: rgba(15, 23, 42, 0.46);
+}
+
+.invoiceViewBox span {
+  font-size: 15px;
+  font-weight: 650;
+  color: rgba(15, 23, 42, 0.9);
+}
+
+.invoiceTableWrap {
+  overflow-x: auto;
+}
+
+.invoiceTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoiceTable thead th {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.invoiceTable tbody td {
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(11, 27, 42, 0.08);
+  font-weight: 600;
+  color: rgba(11, 27, 42, 0.84);
+}
+
+.invoiceViewReason {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 247, 247, 1);
+  border: 1px solid rgba(239, 68, 68, 0.14);
+}
+
+.invoiceViewReason strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #b42318;
+}
+
+.invoiceViewReason p {
+  margin: 0;
+  color: rgba(11, 27, 42, 0.76);
+  line-height: 1.7;
+}
+
+.invoiceViewActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.invoiceViewPrimaryBtn,
+.invoiceViewGhostBtn {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  transition: 0.18s ease;
+}
+
+.invoiceViewPrimaryBtn {
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, var(--p2), var(--p3));
+  color: #ffffff;
+}
+
+.invoiceViewGhostBtn {
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #ffffff;
+  color: var(--text);
+}
+
+.invoiceViewPrimaryBtn:hover,
+.invoiceViewGhostBtn:hover {
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+}
+
+@media (max-width: 900px) {
+  .invoiceViewHeader,
+  .invoiceViewGrid {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+}

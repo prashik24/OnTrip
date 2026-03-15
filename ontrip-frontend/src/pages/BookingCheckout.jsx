@@ -26,8 +26,11 @@ export default function BookingCheckout() {
     bookingDate: "",
     peopleCount: 1,
     destination: "",
+    place: "",
     notes: "",
+    selectedVehicleId: "",
     selectedVehicleTitle: "",
+    selectedPackageTitle: "",
     days: 1,
   });
 
@@ -35,8 +38,15 @@ export default function BookingCheckout() {
     async function loadProvider() {
       try {
         setLoading(true);
+        setMsg("");
         const data = await apiFetch(`/api/providers/${id}`);
         setProvider(data.provider);
+
+        setForm((prev) => ({
+          ...prev,
+          selectedPackageTitle:
+            data.provider?.travelPlanner?.packageTitle || "",
+        }));
       } catch (err) {
         setMsg(err.message);
       } finally {
@@ -50,31 +60,56 @@ export default function BookingCheckout() {
   const vehicleOptions = useMemo(() => {
     return (provider?.vehicles || []).map((vehicle) => ({
       label: `${vehicle.title || vehicle.vehicleType} — ₹${vehicle.price}`,
-      value: vehicle.title || vehicle.vehicleType,
+      value: vehicle._id,
     }));
   }, [provider]);
+
+  const selectedVehicle = useMemo(() => {
+    if (!provider || !form.selectedVehicleId) return null;
+    return (provider.vehicles || []).find(
+      (vehicle) => String(vehicle._id) === String(form.selectedVehicleId)
+    );
+  }, [provider, form.selectedVehicleId]);
+
+  const pricingLabel = useMemo(() => {
+    if (!provider) return "";
+
+    if (provider.listingType === "travel_planner") {
+      if (provider.travelPlanner?.pricePerPerson) return "Per Person";
+      if (provider.travelPlanner?.priceFrom) return "Package Price";
+      return "Package Price";
+    }
+
+    if (!selectedVehicle) return "";
+    if (selectedVehicle.priceUnit === "per_hour") return "Per Hour";
+    if (selectedVehicle.priceUnit === "fixed") return "Fixed Price";
+    return "Per Day";
+  }, [provider, selectedVehicle]);
+
+  const unitPrice = useMemo(() => {
+    if (!provider) return 0;
+
+    if (provider.listingType === "travel_planner") {
+      return Number(
+        provider.travelPlanner?.pricePerPerson ||
+          provider.travelPlanner?.priceFrom ||
+          0
+      );
+    }
+
+    return Number(selectedVehicle?.price || 0);
+  }, [provider, selectedVehicle]);
 
   const amount = useMemo(() => {
     if (!provider) return 0;
 
     if (provider.listingType === "travel_planner") {
-      const base = Number(
-        provider.travelPlanner?.pricePerPerson ||
-        provider.travelPlanner?.priceFrom ||
-        0
-      );
-      return base * Number(form.peopleCount || 1);
+      return unitPrice * Number(form.peopleCount || 1);
     }
 
-    const selected = (provider.vehicles || []).find(
-      (v) => (v.title || v.vehicleType) === form.selectedVehicleTitle
-    );
-
-    if (!selected) return 0;
-
-    const multiplier = Number(form.days || 1);
-    return Number(selected.price || 0) * multiplier;
-  }, [provider, form]);
+    if (!selectedVehicle) return 0;
+    return unitPrice * Number(form.days || 1);
+  }, [provider, unitPrice, selectedVehicle, form.peopleCount, form.days]);
 
   async function startPayment(e) {
     e.preventDefault();
@@ -84,7 +119,17 @@ export default function BookingCheckout() {
       return;
     }
 
-    if (provider.listingType === "vehicle" && !form.selectedVehicleTitle) {
+    if (!form.bookingDate) {
+      setMsg("Please select booking date.");
+      return;
+    }
+
+    if (provider.listingType === "travel_planner" && !form.destination.trim()) {
+      setMsg("Please enter destination.");
+      return;
+    }
+
+    if (provider.listingType === "vehicle" && !form.selectedVehicleId) {
       setMsg("Please select a vehicle first.");
       return;
     }
@@ -106,15 +151,29 @@ export default function BookingCheckout() {
           contactEmail: form.contactEmail,
           contactPhone: form.contactPhone,
           bookingDate: form.bookingDate,
-          peopleCount: Number(form.peopleCount),
+          peopleCount: Number(form.peopleCount || 1),
           destination:
+            provider.listingType === "travel_planner"
+              ? form.destination.trim()
+              : "",
+          place:
             provider.listingType === "vehicle"
-              ? form.destination || form.selectedVehicleTitle
-              : form.destination,
-          notes:
+              ? form.place.trim()
+              : "",
+          days: Number(form.days || 1),
+          selectedVehicleId:
+            provider.listingType === "vehicle" ? form.selectedVehicleId : null,
+          selectedVehicleTitle:
             provider.listingType === "vehicle"
-              ? `${form.notes || ""} Vehicle: ${form.selectedVehicleTitle} Days: ${form.days}`.trim()
-              : form.notes,
+              ? form.selectedVehicleTitle
+              : "",
+          selectedPackageTitle:
+            provider.listingType === "travel_planner"
+              ? form.selectedPackageTitle
+              : "",
+          unitPrice: Number(unitPrice),
+          pricingLabel,
+          notes: form.notes.trim(),
           amount: Number(amount),
         }),
       });
@@ -128,7 +187,7 @@ export default function BookingCheckout() {
         order_id: data.order.id,
         handler: async function (response) {
           try {
-            await apiFetch("/api/bookings/verify-payment", {
+            const verify = await apiFetch("/api/bookings/verify-payment", {
               method: "POST",
               body: JSON.stringify({
                 bookingId: data.bookingId,
@@ -138,7 +197,7 @@ export default function BookingCheckout() {
               }),
             });
 
-            navigate("/profile/bookings");
+            navigate(`/profile/bookings/${verify.bookingId}`);
           } catch (err) {
             setMsg(err.message);
           } finally {
@@ -152,6 +211,11 @@ export default function BookingCheckout() {
         },
         theme: {
           color: "#00b8f1",
+        },
+        modal: {
+          ondismiss: function () {
+            setPayLoading(false);
+          },
         },
       };
 
@@ -170,7 +234,9 @@ export default function BookingCheckout() {
   if (!provider) {
     return (
       <div className="bookingCheckoutPage container">
-        <div className="bookingCheckoutMessage">{msg || "Provider not found."}</div>
+        <div className="bookingCheckoutMessage">
+          {msg || "Provider not found."}
+        </div>
       </div>
     );
   }
@@ -195,7 +261,9 @@ export default function BookingCheckout() {
             <label>Your Name</label>
             <input
               value={form.contactName}
-              onChange={(e) => setForm((s) => ({ ...s, contactName: e.target.value }))}
+              onChange={(e) =>
+                setForm((s) => ({ ...s, contactName: e.target.value }))
+              }
               required
             />
           </div>
@@ -204,7 +272,9 @@ export default function BookingCheckout() {
             <label>Email</label>
             <input
               value={form.contactEmail}
-              onChange={(e) => setForm((s) => ({ ...s, contactEmail: e.target.value }))}
+              onChange={(e) =>
+                setForm((s) => ({ ...s, contactEmail: e.target.value }))
+              }
             />
           </div>
 
@@ -213,7 +283,12 @@ export default function BookingCheckout() {
             <input
               inputMode="numeric"
               value={form.contactPhone}
-              onChange={(e) => setForm((s) => ({ ...s, contactPhone: onlyPhone(e.target.value) }))}
+              onChange={(e) =>
+                setForm((s) => ({
+                  ...s,
+                  contactPhone: onlyPhone(e.target.value),
+                }))
+              }
               required
             />
           </div>
@@ -223,7 +298,9 @@ export default function BookingCheckout() {
             <input
               type="date"
               value={form.bookingDate}
-              onChange={(e) => setForm((s) => ({ ...s, bookingDate: e.target.value }))}
+              onChange={(e) =>
+                setForm((s) => ({ ...s, bookingDate: e.target.value }))
+              }
               required
               className="bookingCheckoutDate"
             />
@@ -235,7 +312,9 @@ export default function BookingCheckout() {
                 <label>Destination</label>
                 <input
                   value={form.destination}
-                  onChange={(e) => setForm((s) => ({ ...s, destination: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, destination: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -246,9 +325,21 @@ export default function BookingCheckout() {
                   type="number"
                   min="1"
                   value={form.peopleCount}
-                  onChange={(e) => setForm((s) => ({ ...s, peopleCount: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, peopleCount: e.target.value }))
+                  }
                   required
                 />
+              </div>
+
+              <div>
+                <label>Package</label>
+                <input value={form.selectedPackageTitle} readOnly />
+              </div>
+
+              <div>
+                <label>Price Type</label>
+                <input value={pricingLabel || "Package"} readOnly />
               </div>
             </>
           ) : (
@@ -256,8 +347,19 @@ export default function BookingCheckout() {
               <div>
                 <label>Select Vehicle</label>
                 <CustomSelect
-                  value={form.selectedVehicleTitle}
-                  onChange={(e) => setForm((s) => ({ ...s, selectedVehicleTitle: e.target.value }))}
+                  value={form.selectedVehicleId}
+                  onChange={(e) => {
+                    const vehicle = (provider.vehicles || []).find(
+                      (v) => String(v._id) === String(e.target.value)
+                    );
+
+                    setForm((s) => ({
+                      ...s,
+                      selectedVehicleId: e.target.value,
+                      selectedVehicleTitle:
+                        vehicle?.title || vehicle?.vehicleType || "",
+                    }));
+                  }}
                   options={vehicleOptions}
                   placeholder="Choose vehicle"
                 />
@@ -269,9 +371,28 @@ export default function BookingCheckout() {
                   type="number"
                   min="1"
                   value={form.days}
-                  onChange={(e) => setForm((s) => ({ ...s, days: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, days: e.target.value }))
+                  }
                   required
                 />
+              </div>
+
+              <div>
+                <label>Place</label>
+                <input
+                  value={form.place}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, place: e.target.value }))
+                  }
+                  placeholder="Pickup / travel place"
+                  required
+                />
+              </div>
+
+              <div>
+                <label>Price Type</label>
+                <input value={pricingLabel || "Per Day"} readOnly />
               </div>
             </>
           )}
@@ -281,7 +402,9 @@ export default function BookingCheckout() {
             <textarea
               rows={4}
               value={form.notes}
-              onChange={(e) => setForm((s) => ({ ...s, notes: e.target.value }))}
+              onChange={(e) =>
+                setForm((s) => ({ ...s, notes: e.target.value }))
+              }
             />
           </div>
         </div>
@@ -290,7 +413,11 @@ export default function BookingCheckout() {
           Payable Amount: <strong>₹{amount}</strong>
         </div>
 
-        <button className="bookingCheckoutBtn" type="submit" disabled={payLoading}>
+        <button
+          className="bookingCheckoutBtn"
+          type="submit"
+          disabled={payLoading}
+        >
           {payLoading ? "Processing..." : "Proceed to Payment"}
         </button>
       </form>
