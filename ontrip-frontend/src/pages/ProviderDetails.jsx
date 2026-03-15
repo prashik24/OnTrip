@@ -52,11 +52,12 @@ export default function ProviderDetails() {
   const heroImage = useMemo(() => {
     if (!provider) return "";
 
-    if (provider.listingType === "vehicle") {
-      return provider.vehicles?.[0]?.images?.[0]?.url || "";
-    }
-
-    return provider.travelPlanner?.images?.[0]?.url || "";
+    return (
+      provider.serviceImage?.url ||
+      provider.travelPlanner?.images?.[0]?.url ||
+      provider.vehicles?.[0]?.images?.[0]?.url ||
+      ""
+    );
   }, [provider]);
 
   if (loading) {
@@ -227,12 +228,12 @@ export default function ProviderDetails() {
                     <p>{item.city} • ⭐ {item.ratingAverage || 0}</p>
                   </div>
 
-                    <button
-                      className="providerDetailsPrimaryBtn"
-                      onClick={() => navigate(`/providers/${item._id}`)}
-                    >
-                      View Details
-                    </button>
+                  <button
+                    className="providerDetailsPrimaryBtn"
+                    onClick={() => navigate(`/providers/${item._id}`)}
+                  >
+                    View Details
+                  </button>
                 </div>
               ))}
             </div>
