@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { apiFetch, getUser } from "../lib/api";
+import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDetails.css";
 
@@ -60,6 +60,14 @@ export default function ProviderDetails() {
     );
   }, [provider]);
 
+  function goToBooking() {
+    if (!isLoggedIn()) {
+      navigate("/login");
+      return;
+    }
+    navigate(`/providers/${provider._id}/book`);
+  }
+
   if (loading) {
     return <LoadingSpinner text="Loading provider details..." />;
   }
@@ -107,16 +115,11 @@ export default function ProviderDetails() {
             </div>
 
             {!isOwner ? (
-              <button
-                className="providerDetailsPrimaryBtn"
-                onClick={() => navigate(`/providers/${provider._id}/book`)}
-              >
+              <button className="providerDetailsPrimaryBtn" onClick={goToBooking}>
                 Book Service
               </button>
             ) : (
-              <div className="providerDetailsNote">
-                This is your own listing.
-              </div>
+              <div className="providerDetailsNote">This is your own listing.</div>
             )}
           </div>
         </div>
