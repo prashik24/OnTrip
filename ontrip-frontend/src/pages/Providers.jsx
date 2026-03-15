@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiFetch, getUser } from "../lib/api";
+import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./Providers.css";
@@ -66,6 +66,14 @@ export default function Providers() {
     });
   }, [providers, currentUser]);
 
+  function handleRegisterClick() {
+    if (!isLoggedIn()) {
+      navigate("/login");
+      return;
+    }
+    navigate("/provider-register");
+  }
+
   return (
     <div className="providersPage container">
       <section className="providersTopBar">
@@ -78,7 +86,7 @@ export default function Providers() {
 
         <button
           className="providersPrimaryBtn"
-          onClick={() => navigate("/provider-register")}
+          onClick={handleRegisterClick}
         >
           Register as Provider
         </button>
