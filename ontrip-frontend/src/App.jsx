@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 
 import Providers from "./pages/Providers";
 import ProviderDetails from "./pages/ProviderDetails";
+import ProviderRegister from "./pages/ProviderRegister";
 import MyListings from "./pages/MyListings";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import BookingHistory from "./pages/BookingHistory";
@@ -66,6 +67,7 @@ export default function App() {
             <Route path="/providers" element={<Providers />} />
             <Route path="/providers/:id" element={<ProviderDetails />} />
             <Route path="/providers/:id/book" element={<BookingCheckout />} />
+            <Route path="/provider-register" element={<ProviderRegister />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
 
