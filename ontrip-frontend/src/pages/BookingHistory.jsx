@@ -103,6 +103,7 @@ export default function BookingHistory() {
         <div className="bookingHistoryGrid">
           {bookings.map((booking) => {
             const isCancelled = booking.bookingStatus === "cancelled";
+            const isReviewOpen = openReviewId === booking._id;
             const currentForm = reviewForms[booking._id] || {
               rating: 5,
               comment: "",
@@ -111,7 +112,10 @@ export default function BookingHistory() {
             };
 
             return (
-              <div className="bookingHistoryCard" key={booking._id}>
+              <div
+                className={`bookingHistoryCard ${isReviewOpen ? "bookingHistoryCardExpanded" : ""}`}
+                key={booking._id}
+              >
                 <div className="bookingHistoryTop">
                   <div>
                     <h3>{booking.serviceTitle}</h3>
@@ -133,7 +137,9 @@ export default function BookingHistory() {
                     <div>Cancellation Reason: {booking.cancellationReason}</div>
                   ) : null}
                   {isCancelled ? (
-                    <div>Your provider cancelled this service. They will refund your money soon.</div>
+                    <div className="bookingHistoryAlert">
+                      Your provider cancelled this service. They will refund your money soon.
+                    </div>
                   ) : null}
                 </div>
 
@@ -170,70 +176,82 @@ export default function BookingHistory() {
                   )}
                 </div>
 
-                {!isCancelled && openReviewId === booking._id && booking.canReview && (
-                  <div className="bookingHistoryReviewForm">
-                    <div>
-                      <label>Rating</label>
-                      <CustomSelect
-                        value={currentForm.rating || 5}
-                        onChange={(e) =>
-                          updateReviewForm(booking._id, "rating", e.target.value)
-                        }
-                        options={ratingOptions}
-                      />
-                    </div>
-
-                    <div>
-                      <label>Comment</label>
-                      <textarea
-                        rows={4}
-                        value={currentForm.comment || ""}
-                        onChange={(e) =>
-                          updateReviewForm(booking._id, "comment", e.target.value)
-                        }
-                        placeholder="Write your review"
-                      />
-                    </div>
-
-                    {currentForm.existingImages?.length > 0 && (
+                {!isCancelled && isReviewOpen && booking.canReview && (
+                  <div className="bookingHistoryReviewWrap">
+                    <div className="bookingHistoryReviewForm">
                       <div>
-                        <label>Current Review Image</label>
-                        <div className="bookingHistoryReviewImageGrid">
-                          {currentForm.existingImages.map((img, index) => (
-                            <div className="bookingHistoryReviewImageItem" key={index}>
-                              <img src={img.url} alt="review" />
-                            </div>
-                          ))}
-                        </div>
+                        <label>Rating</label>
+                        <CustomSelect
+                          value={currentForm.rating || 5}
+                          onChange={(e) =>
+                            updateReviewForm(booking._id, "rating", e.target.value)
+                          }
+                          options={ratingOptions}
+                        />
                       </div>
-                    )}
 
-                    <div>
-                      <label>
-                        {currentForm.existingImages?.length > 0
-                          ? "Replace Image (optional)"
-                          : "Image (optional)"}
-                      </label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) =>
-                          updateReviewForm(
-                            booking._id,
-                            "image",
-                            e.target.files?.[0] || null
-                          )
-                        }
-                      />
+                      <div>
+                        <label>Comment</label>
+                        <textarea
+                          rows={4}
+                          value={currentForm.comment || ""}
+                          onChange={(e) =>
+                            updateReviewForm(booking._id, "comment", e.target.value)
+                          }
+                          placeholder="Write your review"
+                        />
+                      </div>
+
+                      {currentForm.existingImages?.length > 0 && (
+                        <div>
+                          <label>Current Review Image</label>
+                          <div className="bookingHistoryReviewImageGrid">
+                            {currentForm.existingImages.map((img, index) => (
+                              <div className="bookingHistoryReviewImageItem" key={index}>
+                                <img src={img.url} alt="review" />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div>
+                        <label>
+                          {currentForm.existingImages?.length > 0
+                            ? "Replace Image (optional)"
+                            : "Image (optional)"}
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            updateReviewForm(
+                              booking._id,
+                              "image",
+                              e.target.files?.[0] || null
+                            )
+                          }
+                        />
+                      </div>
+
+                      <div className="bookingHistoryReviewFormActions">
+                        <button
+                          className="bookingHistorySubmitBtn"
+                          onClick={() => submitReview(booking)}
+                          disabled={submittingId === booking._id}
+                        >
+                          {submittingId === booking._id ? "Saving..." : "Submit Review"}
+                        </button>
+
+                        <button
+                          type="button"
+                          className="bookingHistoryCloseBtn"
+                          onClick={() => setOpenReviewId("")}
+                        >
+                          Close
+                        </button>
+                      </div>
                     </div>
-
-                    <button
-                      className="bookingHistorySubmitBtn"
-                      onClick={() => submitReview(booking)}
-                      disabled={submittingId === booking._id}
-                    >
-                      {submittingId === booking._id ? "Saving..." : "Submit Review"}
-                    </button>
                   </div>
                 )}
               </div>
