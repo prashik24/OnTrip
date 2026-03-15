@@ -10,7 +10,7 @@ function money(value) {
   return `₹${Number(value || 0).toFixed(2)}`;
 }
 
-function getProviderCardImage(provider, booking) {
+function getProviderCardImage(provider) {
   if (!provider) return "";
 
   return (
@@ -99,7 +99,7 @@ async function sendBookingEmail({
   if (!to) return;
 
   const pdfBuffer = await generateInvoicePdfBuffer({ booking, provider });
-  const imageUrl = getProviderCardImage(provider, booking);
+  const imageUrl = getProviderCardImage(provider);
 
   await sendTransactionalEmail({
     to,
@@ -150,10 +150,8 @@ export async function createBookingOrder(req, res) {
       selectedVehicleId,
       selectedVehicleTitle,
       selectedPackageTitle,
-      unitPrice,
       pricingLabel,
       notes,
-      amount,
     } = req.body;
 
     if (!providerId) {
@@ -177,13 +175,6 @@ export async function createBookingOrder(req, res) {
       return res.status(400).json({ message: "Invalid booking date." });
     }
 
-    const numericAmount = Number(amount);
-    const numericUnitPrice = Number(unitPrice || 0);
-
-    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      return res.status(400).json({ message: "Invalid booking amount." });
-    }
-
     const provider = await Provider.findById(providerId).populate("owner", "_id");
 
     if (!provider) {
@@ -194,7 +185,59 @@ export async function createBookingOrder(req, res) {
       return res.status(403).json({ message: "You cannot book your own service." });
     }
 
-    const amountInPaise = Math.round(numericAmount * 100);
+    const numericPeopleCount = Math.max(1, Number(peopleCount || 1));
+    const numericDays = Math.max(1, Number(days || 1));
+
+    let finalUnitPrice = 0;
+    let finalAmount = 0;
+    let finalSelectedVehicleTitle = selectedVehicleTitle?.trim() || "";
+    let finalSelectedPackageTitle = selectedPackageTitle?.trim() || "";
+
+    if (provider.listingType === "travel_planner") {
+      finalUnitPrice = Number(provider.travelPlanner?.priceFrom || 0);
+      finalAmount = finalUnitPrice * numericPeopleCount;
+      finalSelectedPackageTitle =
+        finalSelectedPackageTitle ||
+        provider.travelPlanner?.packageTitle ||
+        provider.businessName;
+
+      if (finalUnitPrice <= 0) {
+        return res.status(400).json({
+          message: "Travel package price is not configured properly.",
+        });
+      }
+    }
+
+    if (provider.listingType === "vehicle") {
+      const matchedVehicle = (provider.vehicles || []).find(
+        (vehicle) => String(vehicle._id) === String(selectedVehicleId)
+      );
+
+      if (!matchedVehicle) {
+        return res.status(400).json({ message: "Please select a valid vehicle." });
+      }
+
+      finalUnitPrice = Number(matchedVehicle.price || 0);
+      finalAmount = finalUnitPrice * numericDays;
+      finalSelectedVehicleTitle =
+        matchedVehicle.title || matchedVehicle.vehicleType || "";
+
+      if (finalUnitPrice <= 0) {
+        return res.status(400).json({
+          message: "Selected vehicle price is not configured properly.",
+        });
+      }
+    }
+
+    if (!Number.isFinite(finalAmount) || finalAmount <= 0) {
+      return res.status(400).json({ message: "Invalid booking amount." });
+    }
+
+    const amountInPaise = Math.round(finalAmount * 100);
+
+    if (!amountInPaise || amountInPaise < 100) {
+      return res.status(400).json({ message: "Final payable amount is invalid." });
+    }
 
     const order = await razorpay.orders.create({
       amount: amountInPaise,
@@ -219,15 +262,18 @@ export async function createBookingOrder(req, res) {
       destination: destination?.trim() || "",
       place: place?.trim() || "",
       bookingDate: parsedBookingDate,
-      days: Number(days || 1),
-      peopleCount: Number(peopleCount || 1),
-      selectedVehicleId: selectedVehicleId || null,
-      selectedVehicleTitle: selectedVehicleTitle?.trim() || "",
-      selectedPackageTitle: selectedPackageTitle?.trim() || "",
-      unitPrice: numericUnitPrice,
+      days: numericDays,
+      peopleCount: numericPeopleCount,
+      selectedVehicleId:
+        provider.listingType === "vehicle" ? selectedVehicleId || null : null,
+      selectedVehicleTitle:
+        provider.listingType === "vehicle" ? finalSelectedVehicleTitle : "",
+      selectedPackageTitle:
+        provider.listingType === "travel_planner" ? finalSelectedPackageTitle : "",
+      unitPrice: finalUnitPrice,
       pricingLabel: pricingLabel?.trim() || "",
       notes: notes?.trim() || "",
-      amount: numericAmount,
+      amount: finalAmount,
       currency: "INR",
       paymentStatus: "created",
       bookingStatus: "pending",
@@ -240,6 +286,8 @@ export async function createBookingOrder(req, res) {
       bookingRef: booking.bookingRef,
       order,
       razorpayKeyId: process.env.RAZORPAY_KEY_ID,
+      finalAmount,
+      finalUnitPrice,
     });
   } catch (error) {
     console.error("createBookingOrder error:", error);

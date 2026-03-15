@@ -75,7 +75,7 @@ export default function BookingCheckout() {
     if (!provider) return "";
 
     if (provider.listingType === "travel_planner") {
-      return "Per Person";
+      return "per_person";
     }
 
     return selectedVehicle?.priceUnit || "per_day";
@@ -92,11 +92,7 @@ export default function BookingCheckout() {
     if (!provider) return 0;
 
     if (provider.listingType === "travel_planner") {
-      return Number(
-        provider.travelPlanner?.pricePerPerson ||
-          provider.travelPlanner?.priceFrom ||
-          0
-      );
+      return Number(provider.travelPlanner?.priceFrom || 0);
     }
 
     return Number(selectedVehicle?.price || 0);
@@ -106,11 +102,12 @@ export default function BookingCheckout() {
     if (!provider) return 0;
 
     if (provider.listingType === "travel_planner") {
-      return unitPrice * Number(form.peopleCount || 1);
+      return Number(unitPrice) * Number(form.peopleCount || 1);
     }
 
     if (!selectedVehicle) return 0;
-    return unitPrice * Number(form.days || 1);
+
+    return Number(unitPrice) * Number(form.days || 1);
   }, [provider, unitPrice, selectedVehicle, form.peopleCount, form.days]);
 
   async function startPayment(e) {
@@ -180,9 +177,17 @@ export default function BookingCheckout() {
         }),
       });
 
+      const payableAmount = Number(data?.order?.amount || 0);
+
+      if (!payableAmount || payableAmount <= 0) {
+        setMsg("Payment amount is invalid. Please try again.");
+        setPayLoading(false);
+        return;
+      }
+
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: data.order.amount,
+        amount: payableAmount,
         currency: data.order.currency,
         name: "OnTrip",
         description: provider.businessName,
