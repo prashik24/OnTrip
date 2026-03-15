@@ -16,12 +16,15 @@
   min-height: calc(100vh - var(--navH));
   display: flex;
   flex-direction: column;
-  flex: 1;
+  padding: 18px 0 0;
 }
 
-.routeArea {
-  flex: 1;
-  padding-top: 16px;
+.content > *:not(.otFooter) {
+  flex-shrink: 0;
+}
+
+.otFooter {
+  margin-top: auto;
 }
 
 .backdrop {
