@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch, isLoggedIn } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
@@ -49,6 +49,12 @@ export default function ProviderRegister() {
     exclusions: "",
     plannerImages: null,
   });
+
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
 
   const listingTypeOptions = [
     { label: "Vehicle Service", value: "vehicle" },
