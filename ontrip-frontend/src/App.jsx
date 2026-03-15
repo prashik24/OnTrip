@@ -17,11 +17,13 @@ import NotFound from "./pages/NotFound";
 
 import Providers from "./pages/Providers";
 import ProviderDetails from "./pages/ProviderDetails";
-import ProviderRegister from "./pages/ProviderRegister";
 import MyListings from "./pages/MyListings";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import BookingHistory from "./pages/BookingHistory";
 import BookingCheckout from "./pages/BookingCheckout";
+import BookingSuccess from "./pages/BookingSuccess";
+import BookingInvoice from "./pages/BookingInvoice";
+import ProviderRegister from "./pages/ProviderRegister";
 
 import "./App.css";
 
@@ -50,28 +52,28 @@ export default function App() {
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         <main className="content">
-          <div className="routeArea">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/explore" element={<Explore />} />
-              <Route path="/planner" element={<Planner />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/my-listings" element={<MyListings />} />
-              <Route path="/profile/bookings" element={<BookingHistory />} />
-              <Route path="/provider/dashboard" element={<ProviderDashboard />} />
-              <Route path="/provider-register" element={<ProviderRegister />} />
-              <Route path="/providers" element={<Providers />} />
-              <Route path="/providers/:id" element={<ProviderDetails />} />
-              <Route path="/providers/:id/book" element={<BookingCheckout />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/planner" element={<Planner />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/my-listings" element={<MyListings />} />
+            <Route path="/profile/bookings" element={<BookingHistory />} />
+            <Route path="/provider/dashboard" element={<ProviderDashboard />} />
+            <Route path="/provider-register" element={<ProviderRegister />} />
+            <Route path="/booking-checkout/:id" element={<BookingCheckout />} />
+            <Route path="/booking-success/:id" element={<BookingSuccess />} />
+            <Route path="/booking-invoice/:id" element={<BookingInvoice />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/providers" element={<Providers />} />
+            <Route path="/providers/:id" element={<ProviderDetails />} />
 
-              <Route path="/home" element={<Navigate to="/" replace />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
+            <Route path="/home" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
 
           <Footer />
         </main>
