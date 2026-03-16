@@ -25,6 +25,8 @@ function emptyTrip() {
     packageTitle: "",
     durationText: "",
     days: "",
+    priceFrom: "",
+    pricePerPerson: "",
     placesCovered: "",
     inclusions: "",
     exclusions: "",
@@ -189,6 +191,8 @@ export default function ProviderRegister() {
               packageTitle: trip.packageTitle,
               durationText: trip.durationText,
               days: trip.days,
+              priceFrom: trip.priceFrom,
+              pricePerPerson: trip.pricePerPerson,
               placesCovered: trip.placesCovered,
               inclusions: trip.inclusions,
               exclusions: trip.exclusions,
@@ -473,6 +477,24 @@ export default function ProviderRegister() {
                         type="number"
                         value={trip.days}
                         onChange={(e) => updateTrip(index, "days", e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Price From</label>
+                      <input
+                        type="number"
+                        value={trip.priceFrom}
+                        onChange={(e) => updateTrip(index, "priceFrom", e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Price Per Person</label>
+                      <input
+                        type="number"
+                        value={trip.pricePerPerson}
+                        onChange={(e) => updateTrip(index, "pricePerPerson", e.target.value)}
                       />
                     </div>
 

@@ -171,11 +171,8 @@ export default function ProviderDetails() {
               {provider.description || "No description provided."}
             </p>
 
-            <div className="providerDetailsOwnerLine">
-              <span>Owner: {provider.owner?.name || "Provider"}</span>
-            </div>
-
             <div className="providerDetailsInfoRow">
+              <span>Owner: {provider.owner?.name || "Provider"}</span>
               {provider.whatsapp ? <span>WhatsApp: {provider.whatsapp}</span> : null}
               {provider.state ? <span>State: {provider.state}</span> : null}
             </div>
@@ -227,40 +224,42 @@ export default function ProviderDetails() {
                     </div>
                   )}
 
-                  <div className="providerDetailsVehicleFullGrid">
-                    <div className="providerDetailsDataBox">
-                      <strong>Vehicle Type</strong>
-                      <span>{vehicle.vehicleType || "-"}</span>
-                    </div>
+                  <div className="providerDetailsVehicleSummary">
+                    <div className="providerDetailsVehicleMetaGrid">
+                      <div className="providerDetailsMiniInfo">
+                        <span className="providerDetailsMiniLabel">Vehicle Type</span>
+                        <strong>{vehicle.vehicleType || "-"}</strong>
+                      </div>
 
-                    <div className="providerDetailsDataBox">
-                      <strong>Title</strong>
-                      <span>{vehicle.title || "-"}</span>
-                    </div>
+                      <div className="providerDetailsMiniInfo">
+                        <span className="providerDetailsMiniLabel">Title</span>
+                        <strong>{vehicle.title || "-"}</strong>
+                      </div>
 
-                    <div className="providerDetailsDataBox">
-                      <strong>Price</strong>
-                      <span>₹{vehicle.price || 0}</span>
-                    </div>
+                      <div className="providerDetailsMiniInfo">
+                        <span className="providerDetailsMiniLabel">Price</span>
+                        <strong>₹{vehicle.price || 0}</strong>
+                      </div>
 
-                    <div className="providerDetailsDataBox">
-                      <strong>Price Unit</strong>
-                      <span>{vehicle.priceUnit || "-"}</span>
-                    </div>
+                      <div className="providerDetailsMiniInfo">
+                        <span className="providerDetailsMiniLabel">Price Unit</span>
+                        <strong>{vehicle.priceUnit || "-"}</strong>
+                      </div>
 
-                    <div className="providerDetailsDataBox">
-                      <strong>Capacity</strong>
-                      <span>{vehicle.capacity || 1}</span>
-                    </div>
+                      <div className="providerDetailsMiniInfo">
+                        <span className="providerDetailsMiniLabel">Capacity</span>
+                        <strong>{vehicle.capacity || 1}</strong>
+                      </div>
 
-                    <div className="providerDetailsDataBox">
-                      <strong>Fuel Type</strong>
-                      <span>{vehicle.fuelType || "N/A"}</span>
-                    </div>
+                      <div className="providerDetailsMiniInfo">
+                        <span className="providerDetailsMiniLabel">Fuel Type</span>
+                        <strong>{vehicle.fuelType || "N/A"}</strong>
+                      </div>
 
-                    <div className="providerDetailsDataBox">
-                      <strong>Driver Option</strong>
-                      <span>{vehicle.withDriver ? "With Driver" : "Without Driver"}</span>
+                      <div className="providerDetailsMiniInfo">
+                        <span className="providerDetailsMiniLabel">Driver Option</span>
+                        <strong>{vehicle.withDriver ? "With Driver" : "Without Driver"}</strong>
+                      </div>
                     </div>
                   </div>
                 </div>

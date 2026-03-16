@@ -29,27 +29,30 @@
 
 .providerDetailsTop {
   display: grid;
-  grid-template-columns: minmax(300px, 430px) 1fr;
+  grid-template-columns: minmax(280px, 380px) 1fr;
   gap: 22px;
   align-items: start;
 }
 
 .providerDetailsHeroImage {
   width: 100%;
+  aspect-ratio: 7 / 4;
   border-radius: 18px;
   overflow: hidden;
   background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .providerDetailsHeroImage img {
   width: 100%;
   height: 100%;
-  min-height: 300px;
-  max-height: 380px;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
+  background: #ffffff;
 }
 
 .providerDetailsImageEmpty {
@@ -109,17 +112,15 @@
   font-weight: 550;
 }
 
-.providerDetailsOwnerLine {
-  color: rgba(11, 27, 42, 0.82);
-  font-weight: 650;
-}
-
 .providerDetailsInfoRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
+  display: grid;
+  gap: 8px;
   color: rgba(11, 27, 42, 0.8);
   font-weight: 550;
+}
+
+.providerDetailsInfoRow span {
+  display: block;
 }
 
 .providerDetailsPrimaryBtn,
@@ -197,21 +198,24 @@
 .providerDetailsPackageHero,
 .providerDetailsVehicleHero {
   width: 100%;
+  aspect-ratio: 7 / 4;
   border-radius: 16px;
   overflow: hidden;
   background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .providerDetailsPackageHero img,
 .providerDetailsVehicleHero img {
   width: 100%;
   height: 100%;
-  min-height: 300px;
-  max-height: 380px;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
+  background: #ffffff;
 }
 
 .providerDetailsGallery {
@@ -239,12 +243,6 @@
 .providerDetailsDataGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.providerDetailsVehicleFullGrid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -292,6 +290,40 @@
   color: rgba(11, 27, 42, 0.76);
   line-height: 1.65;
   font-weight: 550;
+}
+
+.providerDetailsVehicleSummary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.providerDetailsVehicleMetaGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.providerDetailsMiniInfo {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 4px;
+}
+
+.providerDetailsMiniLabel {
+  font-size: 12px;
+  font-weight: 650;
+  color: rgba(11, 27, 42, 0.56);
+}
+
+.providerDetailsMiniInfo strong {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 760;
 }
 
 .providerDetailsReviewList,
@@ -418,8 +450,13 @@
   .providerDetailsTop,
   .providerDetailsDataGrid,
   .providerDetailsGallery,
-  .providerDetailsVehicleFullGrid {
+  .providerDetailsVehicleMetaGrid,
+  .providerDetailsVehicleSummary {
     grid-template-columns: 1fr;
+  }
+
+  .providerDetailsVehicleSummary {
+    display: grid;
   }
 
   .providerDetailsTopContent h1 {
