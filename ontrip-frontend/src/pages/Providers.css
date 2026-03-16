@@ -132,36 +132,49 @@
 .providersSearchGrid .customSelectValue.placeholder {
   color: rgba(11, 27, 42, 0.56);
 }
-/*
-.providersSearchGrid .customSelectArrow {
-  color: #00b8f1;
-} */
 
 .providersGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 18px;
 }
 
 .providerCard {
   overflow: hidden;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
   box-shadow: 0 10px 28px rgba(10, 22, 35, 0.06);
+  display: flex;
+  flex-direction: column;
 }
 
+/* main image container fixed for wide images like 1792 x 1024 */
 .providerCardMedia {
-  height: 220px;
-  background: rgba(177, 227, 250, 0.14);
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 240px;
+  max-height: 320px;
+  background: linear-gradient(180deg, rgba(240, 249, 255, 0.95), rgba(226, 244, 252, 0.95));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 10px;
 }
 
+/* show full image properly */
 .providerCardMedia img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   display: block;
+  border-radius: 14px;
+  background: #ffffff;
 }
+
+/* if you want image to cover instead of full fit, change contain to cover */
 
 .providerCardMediaEmpty {
   width: 100%;
@@ -170,12 +183,16 @@
   place-items: center;
   color: rgba(11, 27, 42, 0.5);
   font-weight: 650;
+  font-size: 15px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .providerCardBody {
   padding: 16px;
   display: grid;
   gap: 12px;
+  flex: 1;
 }
 
 .providerCardHeader {
@@ -190,18 +207,25 @@
   font-size: 20px;
   font-weight: 740;
   color: var(--text);
+  line-height: 1.3;
 }
 
 .providerCardHeader p {
   margin: 6px 0 0;
   color: var(--muted);
   font-weight: 550;
+  line-height: 1.5;
 }
 
 .providerCardRating {
   font-weight: 740;
   color: var(--text);
   white-space: nowrap;
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(0, 184, 241, 0.08);
+  border: 1px solid rgba(0, 184, 241, 0.14);
 }
 
 .providerTypePill {
@@ -219,9 +243,10 @@
   color: rgba(11, 27, 42, 0.75);
   line-height: 1.65;
   font-weight: 550;
+  word-break: break-word;
 }
 
-/* main buttons */
+/* buttons */
 .providersPrimaryBtn,
 .providersGhostBtn,
 .providersSearchBtn {
@@ -243,12 +268,11 @@
 }
 
 .providersGhostBtn {
-  border: 1px solid rgba(11, 27, 42, 0.1);
-  background: #ffffff;
-  color: var(--text);
+  border: 1px solid rgba(0, 184, 241, 0.38);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
 }
 
-/* ✅ View Details button blue */
 .providerCardBody .btn,
 .providerCardBody a.btn,
 .providerCardActions .btn,
@@ -277,6 +301,16 @@
   box-shadow: 0 8px 20px rgba(10, 22, 35, 0.08);
 }
 
+.providersPrimaryBtn:active,
+.providersGhostBtn:active,
+.providersSearchBtn:active,
+.providerCardBody .btn:active,
+.providerCardBody a.btn:active,
+.providerCardActions .btn:active,
+.providerCardActions a.btn:active {
+  transform: translateY(0);
+}
+
 @media (max-width: 980px) {
   .providersTopBar {
     flex-direction: column;
@@ -287,8 +321,37 @@
   .providersGrid {
     grid-template-columns: 1fr;
   }
+
+  .providerCardMedia {
+    min-height: 220px;
+    max-height: none;
+  }
 }
-.providersGhostBtn {
-  background-color: #4ec9f5;
-  color: #ffffff;
+
+@media (max-width: 640px) {
+  .providersPage {
+    gap: 16px;
+  }
+
+  .providersTitle {
+    font-size: 26px;
+  }
+
+  .providersSearchStrip {
+    padding: 14px;
+  }
+
+  .providerCardMedia {
+    min-height: 200px;
+    padding: 8px;
+  }
+
+  .providerCardBody {
+    padding: 14px;
+  }
+
+  .providerCardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
