@@ -171,10 +171,13 @@ export default function ProviderDetails() {
               {provider.description || "No description provided."}
             </p>
 
-            <div className="providerDetailsInfoColumn">
-              <div>Owner: {provider.owner?.name || "Provider"}</div>
-              {provider.whatsapp && <div>WhatsApp: {provider.whatsapp}</div>}
-              {provider.state && <div>State: {provider.state}</div>}
+            <div className="providerDetailsOwnerLine">
+              <span>Owner: {provider.owner?.name || "Provider"}</span>
+            </div>
+
+            <div className="providerDetailsInfoRow">
+              {provider.whatsapp ? <span>WhatsApp: {provider.whatsapp}</span> : null}
+              {provider.state ? <span>State: {provider.state}</span> : null}
             </div>
 
             {!isOwner ? (
@@ -224,40 +227,40 @@ export default function ProviderDetails() {
                     </div>
                   )}
 
-                  <div className="providerDetailsVehicleInfo">
-                    <div className="providerDetailsVehicleRow">
-                      <span>Vehicle Type</span>
-                      <strong>{vehicle.vehicleType || "-"}</strong>
+                  <div className="providerDetailsVehicleFullGrid">
+                    <div className="providerDetailsDataBox">
+                      <strong>Vehicle Type</strong>
+                      <span>{vehicle.vehicleType || "-"}</span>
                     </div>
 
-                    <div className="providerDetailsVehicleRow">
-                      <span>Title</span>
-                      <strong>{vehicle.title || "-"}</strong>
+                    <div className="providerDetailsDataBox">
+                      <strong>Title</strong>
+                      <span>{vehicle.title || "-"}</span>
                     </div>
 
-                    <div className="providerDetailsVehicleRow">
-                      <span>Price</span>
-                      <strong>₹{vehicle.price || 0}</strong>
+                    <div className="providerDetailsDataBox">
+                      <strong>Price</strong>
+                      <span>₹{vehicle.price || 0}</span>
                     </div>
 
-                    <div className="providerDetailsVehicleRow">
-                      <span>Price Unit</span>
-                      <strong>{vehicle.priceUnit || "Per Day"}</strong>
+                    <div className="providerDetailsDataBox">
+                      <strong>Price Unit</strong>
+                      <span>{vehicle.priceUnit || "-"}</span>
                     </div>
 
-                    <div className="providerDetailsVehicleRow">
-                      <span>Capacity</span>
-                      <strong>{vehicle.capacity || 1}</strong>
+                    <div className="providerDetailsDataBox">
+                      <strong>Capacity</strong>
+                      <span>{vehicle.capacity || 1}</span>
                     </div>
 
-                    <div className="providerDetailsVehicleRow">
-                      <span>Fuel Type</span>
-                      <strong>{vehicle.fuelType || "N/A"}</strong>
+                    <div className="providerDetailsDataBox">
+                      <strong>Fuel Type</strong>
+                      <span>{vehicle.fuelType || "N/A"}</span>
                     </div>
 
-                    <div className="providerDetailsVehicleRow">
-                      <span>Driver Option</span>
-                      <strong>{vehicle.withDriver ? "With Driver" : "Without Driver"}</strong>
+                    <div className="providerDetailsDataBox">
+                      <strong>Driver Option</strong>
+                      <span>{vehicle.withDriver ? "With Driver" : "Without Driver"}</span>
                     </div>
                   </div>
                 </div>
