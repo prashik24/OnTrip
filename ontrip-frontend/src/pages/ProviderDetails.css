@@ -44,11 +44,12 @@
 
 .providerDetailsHeroImage img {
   width: 100%;
-  height: 420px;
+  height: 100%;
+  min-height: 300px;
+  max-height: 380px;
   display: block;
   object-fit: cover;
   object-position: center;
-  border-radius: 18px;
 }
 
 .providerDetailsImageEmpty {
@@ -108,12 +109,17 @@
   font-weight: 550;
 }
 
-.providerDetailsInfoColumn {
+.providerDetailsOwnerLine {
+  color: rgba(11, 27, 42, 0.82);
+  font-weight: 650;
+}
+
+.providerDetailsInfoRow {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  color: rgba(11, 27, 42, 0.8);
   font-weight: 550;
-  color: rgba(11, 27, 42, 0.85);
 }
 
 .providerDetailsPrimaryBtn,
@@ -200,11 +206,12 @@
 .providerDetailsPackageHero img,
 .providerDetailsVehicleHero img {
   width: 100%;
-  height: 340px;
+  height: 100%;
+  min-height: 300px;
+  max-height: 380px;
   display: block;
   object-fit: cover;
   object-position: center;
-  border-radius: 16px;
 }
 
 .providerDetailsGallery {
@@ -232,6 +239,12 @@
 .providerDetailsDataGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.providerDetailsVehicleFullGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -279,35 +292,6 @@
   color: rgba(11, 27, 42, 0.76);
   line-height: 1.65;
   font-weight: 550;
-}
-
-.providerDetailsVehicleInfo {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px 18px;
-  margin-top: 6px;
-}
-
-.providerDetailsVehicleRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 10px;
-  background: #ffffff;
-  font-size: 14px;
-}
-
-.providerDetailsVehicleRow span {
-  color: rgba(11, 27, 42, 0.6);
-  font-weight: 600;
-}
-
-.providerDetailsVehicleRow strong {
-  color: var(--text);
-  font-weight: 700;
-  text-align: right;
 }
 
 .providerDetailsReviewList,
@@ -434,7 +418,7 @@
   .providerDetailsTop,
   .providerDetailsDataGrid,
   .providerDetailsGallery,
-  .providerDetailsVehicleInfo {
+  .providerDetailsVehicleFullGrid {
     grid-template-columns: 1fr;
   }
 
@@ -448,19 +432,8 @@
   }
 
   .providerDetailsSimilarCard,
-  .providerDetailsReviewTop,
-  .providerDetailsVehicleRow {
+  .providerDetailsReviewTop {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .providerDetailsHeroImage img,
-  .providerDetailsPackageHero img,
-  .providerDetailsVehicleHero img {
-    height: 260px;
-  }
-
-  .providerDetailsVehicleRow strong {
-    text-align: left;
   }
 }
