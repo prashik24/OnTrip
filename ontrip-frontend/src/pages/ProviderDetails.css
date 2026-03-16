@@ -29,34 +29,36 @@
 
 .providerDetailsTop {
   display: grid;
-  grid-template-columns: minmax(380px, 500px) 1fr;
-  gap: 24px;
+  grid-template-columns: minmax(360px, 460px) 1fr;
+  gap: 22px;
   align-items: start;
 }
 
 .providerDetailsHeroImage {
   width: 100%;
-  height: 280px;
+  height: 260px;
   border-radius: 28px;
   overflow: hidden;
   background: transparent;
   border: none;
   box-shadow: none;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .providerDetailsHeroImage img {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
-  object-position: center;
+  object-fit: contain;
+  object-position: left center;
   border-radius: 28px;
 }
 
 .providerDetailsImageEmpty {
   width: 100%;
-  height: 280px;
+  height: 260px;
   display: grid;
   place-items: center;
   color: rgba(11, 27, 42, 0.5);
@@ -197,13 +199,15 @@
 .providerDetailsPackageHero,
 .providerDetailsVehicleHero {
   width: 100%;
-  height: 280px;
+  height: 260px;
   border-radius: 28px;
   overflow: hidden;
   background: transparent;
   border: none;
   box-shadow: none;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .providerDetailsPackageHero img,
@@ -211,8 +215,8 @@
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
-  object-position: center;
+  object-fit: contain;
+  object-position: left center;
   border-radius: 28px;
 }
 
