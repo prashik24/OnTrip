@@ -130,12 +130,14 @@
   gap: 12px;
 }
 
-.providerRegisterVehicleList {
+.providerRegisterVehicleList,
+.providerRegisterTripList {
   display: grid;
   gap: 14px;
 }
 
-.providerRegisterVehicleCard {
+.providerRegisterVehicleCard,
+.providerRegisterTripCard {
   background: #fff;
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 14px;
