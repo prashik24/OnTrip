@@ -163,7 +163,7 @@ export default function ProviderDetails() {
                     <div className="providerDetailsVehiclePrice">₹{vehicle.price}</div>
                   </div>
 
-                  <div className="providerDetailsGallery">
+                  <div className="providerDetailsGallery providerDetailsGalleryGrid">
                     {(vehicle.images || []).map((img, index) => (
                       <div className="providerDetailsGalleryItem" key={index}>
                         <img
@@ -184,6 +184,27 @@ export default function ProviderDetails() {
             <div className="providerDetailsTravelList">
               {travelPlans.map((trip, index) => (
                 <div className="providerDetailsTravelCard" key={trip._id || index}>
+                  <div className="providerDetailsPackageHero">
+                    {trip.images?.length > 0 ? (
+                      <img
+                        src={trip.images[0].url}
+                        alt={trip.packageTitle || "package"}
+                      />
+                    ) : (
+                      <div className="providerDetailsImageEmpty">No Package Image</div>
+                    )}
+                  </div>
+
+                  {trip.images?.length > 1 && (
+                    <div className="providerDetailsGallery providerDetailsPackageThumbs">
+                      {trip.images.slice(1).map((img, imgIndex) => (
+                        <div className="providerDetailsGalleryItem" key={imgIndex}>
+                          <img src={img.url} alt={`planner-${imgIndex + 2}`} />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   <div className="providerDetailsDataGrid">
                     <div className="providerDetailsDataBox">
                       <strong>Package</strong>
@@ -216,14 +237,6 @@ export default function ProviderDetails() {
                       <h3>Exclusions</h3>
                       <p>{(trip.exclusions || []).join(", ") || "-"}</p>
                     </div>
-                  </div>
-
-                  <div className="providerDetailsGallery">
-                    {(trip.images || []).map((img, imgIndex) => (
-                      <div className="providerDetailsGalleryItem" key={imgIndex}>
-                        <img src={img.url} alt="planner" />
-                      </div>
-                    ))}
                   </div>
                 </div>
               ))}
