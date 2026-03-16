@@ -64,6 +64,63 @@ function groupFilesByField(files = []) {
   return grouped;
 }
 
+function buildLegacyTravelPlannerFromPlans(travelPlans = []) {
+  if (!Array.isArray(travelPlans) || travelPlans.length === 0) {
+    return {};
+  }
+  return travelPlans[0];
+}
+
+function getTravelPlansFromBody(body, groupedFiles) {
+  const rawTravelPlans = safeJsonParse(body.travelPlans, null);
+
+  if (Array.isArray(rawTravelPlans) && rawTravelPlans.length > 0) {
+    return Promise.all(
+      rawTravelPlans.map(async (item, index) => {
+        const images = await uploadMany(
+          groupedFiles[`plannerImages_${index}`] || [],
+          "ontrip/providers/planner"
+        );
+
+        return {
+          plannerMode: item.plannerMode || "customized_trip",
+          packageTitle: item.packageTitle || "",
+          durationText: item.durationText || "",
+          days: Number(item.days || 1),
+          priceFrom: Number(item.priceFrom || 0),
+          pricePerPerson: Number(item.pricePerPerson || 0),
+          placesCovered: splitTextList(item.placesCovered),
+          inclusions: splitTextList(item.inclusions),
+          exclusions: splitTextList(item.exclusions),
+          images,
+        };
+      })
+    );
+  }
+
+  return (async () => {
+    const plannerImages = await uploadMany(
+      groupedFiles["plannerImages"] || [],
+      "ontrip/providers/planner"
+    );
+
+    return [
+      {
+        plannerMode: body.plannerMode || "customized_trip",
+        packageTitle: body.packageTitle || "",
+        durationText: body.durationText || "",
+        days: Number(body.days || 1),
+        priceFrom: Number(body.priceFrom || 0),
+        pricePerPerson: Number(body.pricePerPerson || 0),
+        placesCovered: splitTextList(body.placesCovered),
+        inclusions: splitTextList(body.inclusions),
+        exclusions: splitTextList(body.exclusions),
+        images: plannerImages,
+      },
+    ];
+  })();
+}
+
 export async function createProvider(req, res) {
   try {
     const body = req.body || {};
@@ -91,6 +148,7 @@ export async function createProvider(req, res) {
     );
 
     let vehicles = [];
+    let travelPlans = [];
     let travelPlanner = {};
 
     if (listingType === "vehicle") {
@@ -125,23 +183,15 @@ export async function createProvider(req, res) {
     }
 
     if (listingType === "travel_planner") {
-      const plannerImages = await uploadMany(
-        groupedFiles["plannerImages"] || [],
-        "ontrip/providers/planner"
-      );
+      travelPlans = await getTravelPlansFromBody(body, groupedFiles);
 
-      travelPlanner = {
-        plannerMode: body.plannerMode || "customized_trip",
-        packageTitle: body.packageTitle || "",
-        durationText: body.durationText || "",
-        days: Number(body.days || 1),
-        priceFrom: Number(body.priceFrom || 0),
-        pricePerPerson: Number(body.pricePerPerson || 0),
-        placesCovered: splitTextList(body.placesCovered),
-        inclusions: splitTextList(body.inclusions),
-        exclusions: splitTextList(body.exclusions),
-        images: plannerImages,
-      };
+      if (!Array.isArray(travelPlans) || travelPlans.length === 0) {
+        return res.status(400).json({
+          message: "Please add at least one trip.",
+        });
+      }
+
+      travelPlanner = buildLegacyTravelPlannerFromPlans(travelPlans);
     }
 
     const provider = await Provider.create({
@@ -155,6 +205,7 @@ export async function createProvider(req, res) {
       description: description || "",
       serviceImage: serviceImageUpload[0] || null,
       vehicles,
+      travelPlans,
       travelPlanner,
     });
 
@@ -233,29 +284,63 @@ export async function updateProvider(req, res) {
       }
 
       provider.vehicles = updatedVehicles;
+      provider.travelPlans = [];
       provider.travelPlanner = {};
     }
 
     if (provider.listingType === "travel_planner") {
-      const existingPlannerImages = safeJsonParse(body.existingPlannerImages, []);
-      const newPlannerImages = await uploadMany(
-        groupedFiles["plannerImages"] || [],
-        "ontrip/providers/planner"
-      );
+      const rawTravelPlans = safeJsonParse(body.travelPlans, null);
+      const existingTravelPlans = safeJsonParse(body.existingTravelPlans, null);
+      let updatedTravelPlans = [];
+
+      if (Array.isArray(rawTravelPlans) && rawTravelPlans.length > 0) {
+        for (let i = 0; i < rawTravelPlans.length; i++) {
+          const item = rawTravelPlans[i];
+          const existingImages = existingTravelPlans?.[i]?.images || [];
+          const newImages = await uploadMany(
+            groupedFiles[`plannerImages_${i}`] || [],
+            "ontrip/providers/planner"
+          );
+
+          updatedTravelPlans.push({
+            plannerMode: item.plannerMode || "customized_trip",
+            packageTitle: item.packageTitle || "",
+            durationText: item.durationText || "",
+            days: Number(item.days || 1),
+            priceFrom: Number(item.priceFrom || 0),
+            pricePerPerson: Number(item.pricePerPerson || 0),
+            placesCovered: splitTextList(item.placesCovered),
+            inclusions: splitTextList(item.inclusions),
+            exclusions: splitTextList(item.exclusions),
+            images: [...existingImages, ...newImages],
+          });
+        }
+      } else {
+        const existingPlannerImages = safeJsonParse(body.existingPlannerImages, []);
+        const newPlannerImages = await uploadMany(
+          groupedFiles["plannerImages"] || [],
+          "ontrip/providers/planner"
+        );
+
+        updatedTravelPlans = [
+          {
+            plannerMode: body.plannerMode || "customized_trip",
+            packageTitle: body.packageTitle || "",
+            durationText: body.durationText || "",
+            days: Number(body.days || 1),
+            priceFrom: Number(body.priceFrom || 0),
+            pricePerPerson: Number(body.pricePerPerson || 0),
+            placesCovered: splitTextList(body.placesCovered),
+            inclusions: splitTextList(body.inclusions),
+            exclusions: splitTextList(body.exclusions),
+            images: [...existingPlannerImages, ...newPlannerImages],
+          },
+        ];
+      }
 
       provider.vehicles = [];
-      provider.travelPlanner = {
-        plannerMode: body.plannerMode || "customized_trip",
-        packageTitle: body.packageTitle || "",
-        durationText: body.durationText || "",
-        days: Number(body.days || 1),
-        priceFrom: Number(body.priceFrom || 0),
-        pricePerPerson: Number(body.pricePerPerson || 0),
-        placesCovered: splitTextList(body.placesCovered),
-        inclusions: splitTextList(body.inclusions),
-        exclusions: splitTextList(body.exclusions),
-        images: [...existingPlannerImages, ...newPlannerImages],
-      };
+      provider.travelPlans = updatedTravelPlans;
+      provider.travelPlanner = buildLegacyTravelPlannerFromPlans(updatedTravelPlans);
     }
 
     await provider.save();
@@ -317,6 +402,8 @@ export async function getProviders(req, res) {
         { description: new RegExp(q, "i") },
         { city: new RegExp(q, "i") },
         { "travelPlanner.packageTitle": new RegExp(q, "i") },
+        { "travelPlans.packageTitle": new RegExp(q, "i") },
+        { "travelPlans.placesCovered": new RegExp(q, "i") },
       ];
     }
 
