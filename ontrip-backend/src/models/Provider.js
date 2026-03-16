@@ -92,7 +92,7 @@ const travelPlannerSchema = new mongoose.Schema(
     exclusions: [{ type: String }],
     images: [imageSchema],
   },
-  { _id: false }
+  { _id: true }
 );
 
 const providerSchema = new mongoose.Schema(
@@ -153,9 +153,16 @@ const providerSchema = new mongoose.Schema(
 
     vehicles: [vehicleItemSchema],
 
+    // keep old single object for backward compatibility
     travelPlanner: {
       type: travelPlannerSchema,
       default: () => ({}),
+    },
+
+    // new multiple travel packages
+    travelPlans: {
+      type: [travelPlannerSchema],
+      default: [],
     },
 
     ratingAverage: {
