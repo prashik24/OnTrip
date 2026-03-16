@@ -8,6 +8,27 @@ const imageSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const reviewVoteSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
+    voteType: {
+      type: String,
+      enum: ["helpful", "not_helpful"],
+      required: true,
+    },
+    votedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
 const reviewSchema = new mongoose.Schema(
   {
     provider: {
@@ -40,6 +61,10 @@ const reviewSchema = new mongoose.Schema(
     },
     images: {
       type: [imageSchema],
+      default: [],
+    },
+    votes: {
+      type: [reviewVoteSchema],
       default: [],
     },
   },
