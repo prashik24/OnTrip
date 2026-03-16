@@ -10,15 +10,55 @@ function money(value) {
   return `₹${Number(value || 0).toFixed(2)}`;
 }
 
-function getProviderCardImage(provider) {
+function getProviderTravelPlans(provider) {
+  if (!provider) return [];
+
+  if (Array.isArray(provider.travelPlans) && provider.travelPlans.length > 0) {
+    return provider.travelPlans;
+  }
+
+  if (
+    provider.travelPlanner &&
+    (
+      provider.travelPlanner.packageTitle ||
+      provider.travelPlanner.durationText ||
+      (provider.travelPlanner.images || []).length > 0
+    )
+  ) {
+    return [provider.travelPlanner];
+  }
+
+  return [];
+}
+
+function getProviderCardImage(provider, booking = null) {
   if (!provider) return "";
 
-  return (
-    provider.serviceImage?.url ||
-    provider.travelPlanner?.images?.[0]?.url ||
-    provider.vehicles?.[0]?.images?.[0]?.url ||
-    ""
-  );
+  if (provider.serviceImage?.url) {
+    return provider.serviceImage.url;
+  }
+
+  if (provider.listingType === "travel_planner") {
+    const travelPlans = getProviderTravelPlans(provider);
+
+    if (booking?.selectedPackageTitle) {
+      const matchedPlan = travelPlans.find(
+        (plan) =>
+          String(plan.packageTitle || "").trim() ===
+          String(booking.selectedPackageTitle || "").trim()
+      );
+
+      if (matchedPlan?.images?.[0]?.url) {
+        return matchedPlan.images[0].url;
+      }
+    }
+
+    if (travelPlans[0]?.images?.[0]?.url) {
+      return travelPlans[0].images[0].url;
+    }
+  }
+
+  return provider.vehicles?.[0]?.images?.[0]?.url || "";
 }
 
 function bookingEmailHtml({
@@ -99,7 +139,7 @@ async function sendBookingEmail({
   if (!to) return;
 
   const pdfBuffer = await generateInvoicePdfBuffer({ booking, provider });
-  const imageUrl = getProviderCardImage(provider);
+  const imageUrl = getProviderCardImage(provider, booking);
 
   await sendTransactionalEmail({
     to,
@@ -194,12 +234,28 @@ export async function createBookingOrder(req, res) {
     let finalSelectedPackageTitle = selectedPackageTitle?.trim() || "";
 
     if (provider.listingType === "travel_planner") {
-      finalUnitPrice = Number(provider.travelPlanner?.priceFrom || 0);
+      const travelPlans = getProviderTravelPlans(provider);
+
+      if (!travelPlans.length) {
+        return res.status(400).json({
+          message: "Travel package is not configured properly.",
+        });
+      }
+
+      const matchedPlan =
+        travelPlans.find(
+          (plan) =>
+            String(plan.packageTitle || "").trim() ===
+            String(finalSelectedPackageTitle || "").trim()
+        ) || travelPlans[0];
+
+      finalUnitPrice = Number(
+        matchedPlan.pricePerPerson || matchedPlan.priceFrom || 0
+      );
+
       finalAmount = finalUnitPrice * numericPeopleCount;
       finalSelectedPackageTitle =
-        finalSelectedPackageTitle ||
-        provider.travelPlanner?.packageTitle ||
-        provider.businessName;
+        matchedPlan.packageTitle || provider.businessName;
 
       if (finalUnitPrice <= 0) {
         return res.status(400).json({
@@ -248,7 +304,7 @@ export async function createBookingOrder(req, res) {
     const serviceTitle =
       provider.listingType === "vehicle"
         ? provider.businessName
-        : provider.travelPlanner?.packageTitle || provider.businessName;
+        : finalSelectedPackageTitle || provider.businessName;
 
     const booking = await Booking.create({
       user: req.user._id,
