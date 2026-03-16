@@ -4,6 +4,16 @@ import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDetails.css";
 
+function formatReviewDateTime(value) {
+  if (!value) return "";
+  const date = new Date(value);
+
+  return `${date.toLocaleDateString()} • ${date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
+}
+
 export default function ProviderDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -14,6 +24,7 @@ export default function ProviderDetails() {
   const [similar, setSimilar] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
+  const [voteLoadingId, setVoteLoadingId] = useState("");
 
   useEffect(() => {
     async function loadData() {
@@ -30,7 +41,9 @@ export default function ProviderDetails() {
 
         const query = new URLSearchParams();
         if (currentProvider.city) query.set("city", currentProvider.city);
-        if (currentProvider.listingType) query.set("listingType", currentProvider.listingType);
+        if (currentProvider.listingType) {
+          query.set("listingType", currentProvider.listingType);
+        }
 
         const similarData = await apiFetch(`/api/providers?${query.toString()}`);
         setSimilar(
@@ -54,6 +67,7 @@ export default function ProviderDetails() {
   const travelPlans = useMemo(() => {
     if (!provider) return [];
     if (provider.travelPlans?.length > 0) return provider.travelPlans;
+
     if (
       provider.travelPlanner?.packageTitle ||
       provider.travelPlanner?.durationText ||
@@ -61,6 +75,7 @@ export default function ProviderDetails() {
     ) {
       return [provider.travelPlanner];
     }
+
     return [];
   }, [provider]);
 
@@ -81,6 +96,35 @@ export default function ProviderDetails() {
       return;
     }
     navigate(`/providers/${provider._id}/book`);
+  }
+
+  async function handleReviewVote(reviewId, voteType) {
+    if (!isLoggedIn()) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      setVoteLoadingId(reviewId);
+      setMsg("");
+
+      const data = await apiFetch(`/api/reviews/${reviewId}/vote`, {
+        method: "POST",
+        body: JSON.stringify({ voteType }),
+      });
+
+      setReviews((prev) =>
+        prev.map((review) =>
+          review._id === reviewId ? { ...review, ...data.review } : review
+        )
+      );
+
+      setMsg(data.message || "Review vote saved.");
+    } catch (err) {
+      setMsg(err.message);
+    } finally {
+      setVoteLoadingId("");
+    }
   }
 
   if (loading) {
@@ -254,7 +298,12 @@ export default function ProviderDetails() {
               {reviews.map((review) => (
                 <div className="providerDetailsReviewItem" key={review._id}>
                   <div className="providerDetailsReviewTop">
-                    <strong>{review.user?.name || "User"}</strong>
+                    <div className="providerDetailsReviewTopLeft">
+                      <strong>{review.user?.name || "User"}</strong>
+                      <div className="providerDetailsReviewDate">
+                        {formatReviewDateTime(review.createdAt)}
+                      </div>
+                    </div>
                     <span>⭐ {review.rating}</span>
                   </div>
 
@@ -269,6 +318,30 @@ export default function ProviderDetails() {
                       ))}
                     </div>
                   )}
+
+                  <div className="providerDetailsVoteRow">
+                    <button
+                      type="button"
+                      className={`providerDetailsVoteBtn ${
+                        review.currentUserVote === "helpful" ? "active" : ""
+                      }`}
+                      onClick={() => handleReviewVote(review._id, "helpful")}
+                      disabled={voteLoadingId === review._id}
+                    >
+                      👍 Helpful ({review.helpfulCount || 0})
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`providerDetailsVoteBtn providerDetailsVoteBtnAlt ${
+                        review.currentUserVote === "not_helpful" ? "active" : ""
+                      }`}
+                      onClick={() => handleReviewVote(review._id, "not_helpful")}
+                      disabled={voteLoadingId === review._id}
+                    >
+                      👎 Not Helpful ({review.notHelpfulCount || 0})
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
