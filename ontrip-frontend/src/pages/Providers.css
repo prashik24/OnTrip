@@ -141,58 +141,71 @@
 
 .providerCard {
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  box-shadow: 0 10px 28px rgba(10, 22, 35, 0.06);
-  display: flex;
-  flex-direction: column;
+  box-shadow: 0 12px 32px rgba(10, 22, 35, 0.07);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-/* main image container fixed for wide images like 1792 x 1024 */
+.providerCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(10, 22, 35, 0.1);
+}
+
 .providerCardMedia {
+  position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  min-height: 240px;
+  aspect-ratio: 1792 / 1024;
+  min-height: 220px;
   max-height: 320px;
-  background: linear-gradient(180deg, rgba(240, 249, 255, 0.95), rgba(226, 244, 252, 0.95));
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
-  padding: 10px;
+  background:
+    linear-gradient(180deg, rgba(177, 227, 250, 0.18), rgba(233, 248, 255, 0.92));
+  border-bottom: 1px solid rgba(0, 184, 241, 0.08);
 }
 
-/* show full image properly */
+.providerCardMedia::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.02) 0%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  pointer-events: none;
+}
+
 .providerCardMedia img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: center;
   display: block;
-  border-radius: 14px;
-  background: #ffffff;
+  object-fit: cover;
+  object-position: center center;
+  transition: transform 0.35s ease;
 }
 
-/* if you want image to cover instead of full fit, change contain to cover */
+.providerCard:hover .providerCardMedia img {
+  transform: scale(1.03);
+}
 
 .providerCardMediaEmpty {
   width: 100%;
   height: 100%;
   display: grid;
   place-items: center;
+  padding: 20px;
+  text-align: center;
   color: rgba(11, 27, 42, 0.5);
   font-weight: 650;
   font-size: 15px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
 }
 
 .providerCardBody {
   padding: 16px;
   display: grid;
   gap: 12px;
-  flex: 1;
 }
 
 .providerCardHeader {
@@ -221,11 +234,10 @@
   font-weight: 740;
   color: var(--text);
   white-space: nowrap;
-  font-size: 14px;
-  padding: 6px 10px;
+  padding: 7px 10px;
   border-radius: 10px;
-  background: rgba(0, 184, 241, 0.08);
-  border: 1px solid rgba(0, 184, 241, 0.14);
+  background: rgba(255, 199, 0, 0.12);
+  border: 1px solid rgba(255, 199, 0, 0.18);
 }
 
 .providerTypePill {
@@ -246,7 +258,6 @@
   word-break: break-word;
 }
 
-/* buttons */
 .providersPrimaryBtn,
 .providersGhostBtn,
 .providersSearchBtn {
@@ -268,7 +279,7 @@
 }
 
 .providersGhostBtn {
-  border: 1px solid rgba(0, 184, 241, 0.38);
+  border: 1px solid rgba(0, 184, 241, 0.34);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
 }
@@ -298,7 +309,7 @@
 .providerCardActions .btn:hover,
 .providerCardActions a.btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(10, 22, 35, 0.08);
+  box-shadow: 0 8px 20px rgba(10, 22, 35, 0.1);
 }
 
 .providersPrimaryBtn:active,
@@ -311,19 +322,27 @@
   transform: translateY(0);
 }
 
+@media (max-width: 1100px) {
+  .providersSearchGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .providersSearchBtn {
+    width: 100%;
+  }
+}
+
 @media (max-width: 980px) {
   .providersTopBar {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .providersSearchGrid,
   .providersGrid {
     grid-template-columns: 1fr;
   }
 
   .providerCardMedia {
-    min-height: 220px;
     max-height: none;
   }
 }
@@ -334,16 +353,24 @@
   }
 
   .providersTitle {
-    font-size: 26px;
+    font-size: 28px;
   }
 
   .providersSearchStrip {
     padding: 14px;
+    border-radius: 16px;
+  }
+
+  .providersSearchGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .providerCard {
+    border-radius: 18px;
   }
 
   .providerCardMedia {
-    min-height: 200px;
-    padding: 8px;
+    min-height: 190px;
   }
 
   .providerCardBody {
@@ -353,5 +380,9 @@
   .providerCardHeader {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .providerCardRating {
+    padding: 6px 10px;
   }
 }
