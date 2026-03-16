@@ -171,10 +171,10 @@ export default function ProviderDetails() {
               {provider.description || "No description provided."}
             </p>
 
-            <div className="providerDetailsInfoRow">
-              <span>Owner: {provider.owner?.name || "Provider"}</span>
-              {provider.whatsapp ? <span>WhatsApp: {provider.whatsapp}</span> : null}
-              {provider.state ? <span>State: {provider.state}</span> : null}
+            <div className="providerDetailsInfoColumn">
+              <div>Owner: {provider.owner?.name || "Provider"}</div>
+              {provider.whatsapp && <div>WhatsApp: {provider.whatsapp}</div>}
+              {provider.state && <div>State: {provider.state}</div>}
             </div>
 
             {!isOwner ? (
@@ -224,32 +224,40 @@ export default function ProviderDetails() {
                     </div>
                   )}
 
-                  <div className="providerDetailsVehicleSummary">
-                    <div className="providerDetailsVehicleMetaGrid">
-                      <div className="providerDetailsMiniInfo">
-                        <span className="providerDetailsMiniLabel">Type</span>
-                        <strong>{vehicle.vehicleType || "-"}</strong>
-                      </div>
-
-                      <div className="providerDetailsMiniInfo">
-                        <span className="providerDetailsMiniLabel">Capacity</span>
-                        <strong>{vehicle.capacity || 1}</strong>
-                      </div>
-
-                      <div className="providerDetailsMiniInfo">
-                        <span className="providerDetailsMiniLabel">Fuel</span>
-                        <strong>{vehicle.fuelType || "N/A"}</strong>
-                      </div>
-
-                      <div className="providerDetailsMiniInfo">
-                        <span className="providerDetailsMiniLabel">Mode</span>
-                        <strong>{vehicle.withDriver ? "With Driver" : "Without Driver"}</strong>
-                      </div>
+                  <div className="providerDetailsVehicleInfo">
+                    <div className="providerDetailsVehicleRow">
+                      <span>Vehicle Type</span>
+                      <strong>{vehicle.vehicleType || "-"}</strong>
                     </div>
 
-                    <div className="providerDetailsVehiclePriceCard">
-                      <span className="providerDetailsVehiclePriceLabel">Price</span>
-                      <div className="providerDetailsVehiclePrice">₹{vehicle.price || 0}</div>
+                    <div className="providerDetailsVehicleRow">
+                      <span>Title</span>
+                      <strong>{vehicle.title || "-"}</strong>
+                    </div>
+
+                    <div className="providerDetailsVehicleRow">
+                      <span>Price</span>
+                      <strong>₹{vehicle.price || 0}</strong>
+                    </div>
+
+                    <div className="providerDetailsVehicleRow">
+                      <span>Price Unit</span>
+                      <strong>{vehicle.priceUnit || "Per Day"}</strong>
+                    </div>
+
+                    <div className="providerDetailsVehicleRow">
+                      <span>Capacity</span>
+                      <strong>{vehicle.capacity || 1}</strong>
+                    </div>
+
+                    <div className="providerDetailsVehicleRow">
+                      <span>Fuel Type</span>
+                      <strong>{vehicle.fuelType || "N/A"}</strong>
+                    </div>
+
+                    <div className="providerDetailsVehicleRow">
+                      <span>Driver Option</span>
+                      <strong>{vehicle.withDriver ? "With Driver" : "Without Driver"}</strong>
                     </div>
                   </div>
                 </div>
