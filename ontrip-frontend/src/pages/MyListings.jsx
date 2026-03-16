@@ -20,6 +20,22 @@ function emptyVehicle() {
   };
 }
 
+function emptyTrip() {
+  return {
+    plannerMode: "customized_trip",
+    packageTitle: "",
+    durationText: "",
+    days: "",
+    priceFrom: "",
+    pricePerPerson: "",
+    placesCovered: "",
+    inclusions: "",
+    exclusions: "",
+    images: null,
+    existingImages: [],
+  };
+}
+
 function onlyPhone(value) {
   return value.replace(/\D/g, "").slice(0, 10);
 }
@@ -42,17 +58,7 @@ export default function MyListings() {
     description: "",
     serviceImage: null,
     vehicles: [emptyVehicle()],
-    plannerMode: "customized_trip",
-    packageTitle: "",
-    durationText: "",
-    days: "",
-    priceFrom: "",
-    pricePerPerson: "",
-    placesCovered: "",
-    inclusions: "",
-    exclusions: "",
-    plannerImages: null,
-    existingPlannerImages: [],
+    travelPlans: [emptyTrip()],
   });
 
   const listingTypeOptions = [
@@ -94,6 +100,15 @@ export default function MyListings() {
     setEditingId(item._id);
     setMsg("");
 
+    const plans =
+      item.travelPlans?.length > 0
+        ? item.travelPlans
+        : item.travelPlanner?.packageTitle ||
+          item.travelPlanner?.durationText ||
+          item.travelPlanner?.images?.length
+        ? [item.travelPlanner]
+        : [emptyTrip()];
+
     setForm({
       businessName: item.businessName || "",
       listingType: item.listingType || "vehicle",
@@ -117,17 +132,19 @@ export default function MyListings() {
               existingImages: v.images || [],
             }))
           : [emptyVehicle()],
-      plannerMode: item.travelPlanner?.plannerMode || "customized_trip",
-      packageTitle: item.travelPlanner?.packageTitle || "",
-      durationText: item.travelPlanner?.durationText || "",
-      days: item.travelPlanner?.days || "",
-      priceFrom: item.travelPlanner?.priceFrom || "",
-      pricePerPerson: item.travelPlanner?.pricePerPerson || "",
-      placesCovered: (item.travelPlanner?.placesCovered || []).join(", "),
-      inclusions: (item.travelPlanner?.inclusions || []).join(", "),
-      exclusions: (item.travelPlanner?.exclusions || []).join(", "),
-      plannerImages: null,
-      existingPlannerImages: item.travelPlanner?.images || [],
+      travelPlans: plans.map((trip) => ({
+        plannerMode: trip.plannerMode || "customized_trip",
+        packageTitle: trip.packageTitle || "",
+        durationText: trip.durationText || "",
+        days: trip.days || "",
+        priceFrom: trip.priceFrom || "",
+        pricePerPerson: trip.pricePerPerson || "",
+        placesCovered: (trip.placesCovered || []).join(", "),
+        inclusions: (trip.inclusions || []).join(", "),
+        exclusions: (trip.exclusions || []).join(", "),
+        images: null,
+        existingImages: trip.images || [],
+      })),
     });
   }
 
@@ -173,10 +190,40 @@ export default function MyListings() {
     }));
   }
 
-  function removePlannerExistingImage(index) {
+  function addTrip() {
     setForm((prev) => ({
       ...prev,
-      existingPlannerImages: prev.existingPlannerImages.filter((_, i) => i !== index),
+      travelPlans: [...prev.travelPlans, emptyTrip()],
+    }));
+  }
+
+  function removeTrip(index) {
+    setForm((prev) => ({
+      ...prev,
+      travelPlans: prev.travelPlans.filter((_, i) => i !== index),
+    }));
+  }
+
+  function updateTrip(index, key, value) {
+    setForm((prev) => ({
+      ...prev,
+      travelPlans: prev.travelPlans.map((item, i) =>
+        i === index ? { ...item, [key]: value } : item
+      ),
+    }));
+  }
+
+  function removeTripExistingImage(tripIndex, imageIndex) {
+    setForm((prev) => ({
+      ...prev,
+      travelPlans: prev.travelPlans.map((item, i) =>
+        i === tripIndex
+          ? {
+              ...item,
+              existingImages: item.existingImages.filter((_, idx) => idx !== imageIndex),
+            }
+          : item
+      ),
     }));
   }
 
@@ -242,22 +289,36 @@ export default function MyListings() {
       }
 
       if (form.listingType === "travel_planner") {
-        fd.append("plannerMode", form.plannerMode);
-        fd.append("packageTitle", form.packageTitle);
-        fd.append("durationText", form.durationText);
-        fd.append("days", form.days);
-        fd.append("priceFrom", form.priceFrom);
-        fd.append("pricePerPerson", form.pricePerPerson);
-        fd.append("placesCovered", form.placesCovered);
-        fd.append("inclusions", form.inclusions);
-        fd.append("exclusions", form.exclusions);
         fd.append(
-          "existingPlannerImages",
-          JSON.stringify(form.existingPlannerImages || [])
+          "travelPlans",
+          JSON.stringify(
+            form.travelPlans.map((trip) => ({
+              plannerMode: trip.plannerMode,
+              packageTitle: trip.packageTitle,
+              durationText: trip.durationText,
+              days: trip.days,
+              priceFrom: trip.priceFrom,
+              pricePerPerson: trip.pricePerPerson,
+              placesCovered: trip.placesCovered,
+              inclusions: trip.inclusions,
+              exclusions: trip.exclusions,
+            }))
+          )
         );
 
-        Array.from(form.plannerImages || []).forEach((file) => {
-          fd.append("plannerImages", file);
+        fd.append(
+          "existingTravelPlans",
+          JSON.stringify(
+            form.travelPlans.map((trip) => ({
+              images: trip.existingImages || [],
+            }))
+          )
+        );
+
+        form.travelPlans.forEach((trip, index) => {
+          Array.from(trip.images || []).forEach((file) => {
+            fd.append(`plannerImages_${index}`, file);
+          });
         });
       }
 
@@ -318,6 +379,8 @@ export default function MyListings() {
                   ) : (
                     <div className="myListingsMediaEmpty">No Image</div>
                   )
+                ) : item.travelPlans?.[0]?.images?.[0]?.url ? (
+                  <img src={item.travelPlans[0].images[0].url} alt={item.businessName} />
                 ) : item.travelPlanner?.images?.[0]?.url ? (
                   <img src={item.travelPlanner.images[0].url} alt={item.businessName} />
                 ) : (
@@ -559,111 +622,131 @@ export default function MyListings() {
 
                     {form.listingType === "travel_planner" && (
                       <div className="myListingsBlock">
-                        <h4>Travel Planner Details</h4>
+                        <div className="myListingsBlockHead">
+                          <h4>Travel Trips</h4>
+                          <button className="myListingsBtn" type="button" onClick={addTrip}>
+                            Add Trip
+                          </button>
+                        </div>
 
-                        <div className="myListingsFormGrid">
-                          <div>
-                            <label>Planner Type</label>
-                            <CustomSelect
-                              value={form.plannerMode}
-                              onChange={(e) => setForm((s) => ({ ...s, plannerMode: e.target.value }))}
-                              options={plannerModeOptions}
-                            />
-                          </div>
-
-                          <div>
-                            <label>Package Title</label>
-                            <input
-                              value={form.packageTitle}
-                              onChange={(e) => setForm((s) => ({ ...s, packageTitle: e.target.value }))}
-                            />
-                          </div>
-
-                          <div>
-                            <label>Duration Text</label>
-                            <input
-                              value={form.durationText}
-                              onChange={(e) => setForm((s) => ({ ...s, durationText: e.target.value }))}
-                            />
-                          </div>
-
-                          <div>
-                            <label>Days</label>
-                            <input
-                              type="number"
-                              value={form.days}
-                              onChange={(e) => setForm((s) => ({ ...s, days: e.target.value }))}
-                            />
-                          </div>
-
-                          <div>
-                            <label>Price From</label>
-                            <input
-                              type="number"
-                              value={form.priceFrom}
-                              onChange={(e) => setForm((s) => ({ ...s, priceFrom: e.target.value }))}
-                            />
-                          </div>
-
-                          <div>
-                            <label>Price Per Person</label>
-                            <input
-                              type="number"
-                              value={form.pricePerPerson}
-                              onChange={(e) => setForm((s) => ({ ...s, pricePerPerson: e.target.value }))}
-                            />
-                          </div>
-
-                          <div className="fullSpan">
-                            <label>Places Covered</label>
-                            <input
-                              value={form.placesCovered}
-                              onChange={(e) => setForm((s) => ({ ...s, placesCovered: e.target.value }))}
-                            />
-                          </div>
-
-                          <div className="fullSpan">
-                            <label>Inclusions</label>
-                            <input
-                              value={form.inclusions}
-                              onChange={(e) => setForm((s) => ({ ...s, inclusions: e.target.value }))}
-                            />
-                          </div>
-
-                          <div className="fullSpan">
-                            <label>Exclusions</label>
-                            <input
-                              value={form.exclusions}
-                              onChange={(e) => setForm((s) => ({ ...s, exclusions: e.target.value }))}
-                            />
-                          </div>
-
-                          <div className="fullSpan">
-                            <label>Planner Images</label>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              onChange={(e) => setForm((s) => ({ ...s, plannerImages: e.target.files }))}
-                            />
-                          </div>
-
-                          {form.existingPlannerImages?.length > 0 && (
-                            <div className="fullSpan myListingsImageGrid">
-                              {form.existingPlannerImages.map((img, index) => (
-                                <div className="myListingsThumb" key={index}>
-                                  <img src={img.url} alt="planner" />
-                                  <button
-                                    type="button"
-                                    className="myListingsRemoveImage"
-                                    onClick={() => removePlannerExistingImage(index)}
-                                  >
+                        <div className="myListingsTripList">
+                          {form.travelPlans.map((trip, index) => (
+                            <div className="myListingsTripCard" key={index}>
+                              <div className="myListingsVehicleTop">
+                                <strong>Trip {index + 1}</strong>
+                                {form.travelPlans.length > 1 && (
+                                  <button className="myListingsBtn danger" type="button" onClick={() => removeTrip(index)}>
                                     Remove
                                   </button>
+                                )}
+                              </div>
+
+                              <div className="myListingsFormGrid">
+                                <div>
+                                  <label>Planner Type</label>
+                                  <CustomSelect
+                                    value={trip.plannerMode}
+                                    onChange={(e) => updateTrip(index, "plannerMode", e.target.value)}
+                                    options={plannerModeOptions}
+                                  />
                                 </div>
-                              ))}
+
+                                <div>
+                                  <label>Package Title</label>
+                                  <input
+                                    value={trip.packageTitle}
+                                    onChange={(e) => updateTrip(index, "packageTitle", e.target.value)}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label>Duration Text</label>
+                                  <input
+                                    value={trip.durationText}
+                                    onChange={(e) => updateTrip(index, "durationText", e.target.value)}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label>Days</label>
+                                  <input
+                                    type="number"
+                                    value={trip.days}
+                                    onChange={(e) => updateTrip(index, "days", e.target.value)}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label>Price From</label>
+                                  <input
+                                    type="number"
+                                    value={trip.priceFrom}
+                                    onChange={(e) => updateTrip(index, "priceFrom", e.target.value)}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label>Price Per Person</label>
+                                  <input
+                                    type="number"
+                                    value={trip.pricePerPerson}
+                                    onChange={(e) => updateTrip(index, "pricePerPerson", e.target.value)}
+                                  />
+                                </div>
+
+                                <div className="fullSpan">
+                                  <label>Places Covered</label>
+                                  <input
+                                    value={trip.placesCovered}
+                                    onChange={(e) => updateTrip(index, "placesCovered", e.target.value)}
+                                  />
+                                </div>
+
+                                <div className="fullSpan">
+                                  <label>Inclusions</label>
+                                  <input
+                                    value={trip.inclusions}
+                                    onChange={(e) => updateTrip(index, "inclusions", e.target.value)}
+                                  />
+                                </div>
+
+                                <div className="fullSpan">
+                                  <label>Exclusions</label>
+                                  <input
+                                    value={trip.exclusions}
+                                    onChange={(e) => updateTrip(index, "exclusions", e.target.value)}
+                                  />
+                                </div>
+
+                                <div className="fullSpan">
+                                  <label>Trip Images</label>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={(e) => updateTrip(index, "images", e.target.files)}
+                                  />
+                                </div>
+
+                                {trip.existingImages?.length > 0 && (
+                                  <div className="fullSpan myListingsImageGrid">
+                                    {trip.existingImages.map((img, imgIndex) => (
+                                      <div className="myListingsThumb" key={imgIndex}>
+                                        <img src={img.url} alt="planner" />
+                                        <button
+                                          type="button"
+                                          className="myListingsRemoveImage"
+                                          onClick={() => removeTripExistingImage(index, imgIndex)}
+                                        >
+                                          Remove
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          )}
+                          ))}
                         </div>
                       </div>
                     )}
