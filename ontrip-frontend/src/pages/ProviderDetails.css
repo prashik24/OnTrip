@@ -158,23 +158,23 @@ display: grid;
 gap: 12px;
 }
 
-/* Smaller normal package image */
+/* SMALL PACKAGE IMAGE WITH FULL FIT */
 .providerDetailsPackageHero {
 width: 100%;
-aspect-ratio: 16 / 9;
-min-height: 180px;
-max-height: 240px;
+height: 180px;
 border-radius: 14px;
 overflow: hidden;
-background: rgba(177, 227, 250, 0.14);
+background: #ffffff;
 border: 1px solid rgba(0, 184, 241, 0.12);
+display: flex;
+align-items: center;
+justify-content: center;
 }
 
 .providerDetailsPackageHero img {
 width: 100%;
 height: 100%;
-object-fit: cover;
-object-position: center;
+object-fit: contain;
 }
 
 .providerDetailsDataGrid {
@@ -352,10 +352,5 @@ grid-template-columns: 1fr;
 .providerDetailsSimilarCard {
 flex-direction: column;
 align-items: flex-start;
-}
-
-.providerDetailsPackageHero {
-min-height: 150px;
-max-height: 200px;
 }
 }
