@@ -29,41 +29,43 @@
 
 .providerDetailsTop {
   display: grid;
-  grid-template-columns: minmax(320px, 420px) 1fr;
+  grid-template-columns: minmax(360px, 460px) 1fr;
   gap: 22px;
   align-items: start;
 }
 
 .providerDetailsHeroImage {
   width: 100%;
-  height: 240px;
-  border-radius: 22px;
+  height: 260px;
+  border-radius: 28px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(11, 27, 42, 0.08);
+  background: transparent;
+  border: none;
+  box-shadow: none;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .providerDetailsHeroImage img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: center;
   display: block;
+  object-fit: contain;
+  object-position: left center;
+  border-radius: 28px;
 }
 
 .providerDetailsImageEmpty {
   width: 100%;
-  height: 240px;
+  height: 260px;
   display: grid;
   place-items: center;
   color: rgba(11, 27, 42, 0.5);
   font-weight: 650;
-  border-radius: 16px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.9);
   border: 1px dashed rgba(11, 27, 42, 0.12);
-  background: #ffffff;
 }
 
 .providerDetailsTopContent {
@@ -197,14 +199,15 @@
 .providerDetailsPackageHero,
 .providerDetailsVehicleHero {
   width: 100%;
-  height: 240px;
-  border-radius: 18px;
+  height: 260px;
+  border-radius: 28px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(11, 27, 42, 0.08);
+  background: transparent;
+  border: none;
+  box-shadow: none;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .providerDetailsPackageHero img,
@@ -213,7 +216,8 @@
   height: 100%;
   display: block;
   object-fit: contain;
-  object-position: center;
+  object-position: left center;
+  border-radius: 28px;
 }
 
 .providerDetailsGallery {
@@ -223,7 +227,7 @@
 }
 
 .providerDetailsGalleryItem {
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
   background: #ffffff;
   min-height: 96px;
@@ -457,7 +461,7 @@
   .providerDetailsPackageHero,
   .providerDetailsVehicleHero,
   .providerDetailsImageEmpty {
-    height: 200px;
+    height: 220px;
   }
 
   .providerDetailsTopContent h1 {
