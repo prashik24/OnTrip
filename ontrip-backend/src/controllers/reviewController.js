@@ -49,6 +49,30 @@ async function refreshProviderRating(providerId) {
   });
 }
 
+function buildReviewPayload(review, currentUserId = null) {
+  const helpfulCount = (review.votes || []).filter(
+    (vote) => vote.voteType === "helpful"
+  ).length;
+
+  const notHelpfulCount = (review.votes || []).filter(
+    (vote) => vote.voteType === "not_helpful"
+  ).length;
+
+  const currentUserVote =
+    currentUserId && Array.isArray(review.votes)
+      ? review.votes.find(
+          (vote) => String(vote.user) === String(currentUserId)
+        )?.voteType || ""
+      : "";
+
+  return {
+    ...review.toObject ? review.toObject() : review,
+    helpfulCount,
+    notHelpfulCount,
+    currentUserVote,
+  };
+}
+
 export async function addReviewFromBooking(req, res) {
   try {
     const { bookingId, rating, comment } = req.body;
@@ -97,7 +121,6 @@ export async function addReviewFromBooking(req, res) {
       review.comment = comment || "";
       review.booking = booking._id;
 
-      // keep old images if no new image is uploaded
       if (uploadedImages.length > 0) {
         review.images = uploadedImages;
       }
@@ -111,6 +134,7 @@ export async function addReviewFromBooking(req, res) {
         rating: Number(rating),
         comment: comment || "",
         images: uploadedImages,
+        votes: [],
       });
     }
 
@@ -118,11 +142,65 @@ export async function addReviewFromBooking(req, res) {
 
     return res.json({
       message: "Review saved successfully.",
-      review,
+      review: buildReviewPayload(review, req.user._id),
     });
   } catch (error) {
     console.error("addReviewFromBooking error", error);
     return res.status(500).json({ message: "Failed to save review." });
+  }
+}
+
+export async function voteReview(req, res) {
+  try {
+    const { reviewId } = req.params;
+    const { voteType } = req.body;
+
+    if (!["helpful", "not_helpful"].includes(voteType)) {
+      return res.status(400).json({
+        message: "Vote type must be helpful or not_helpful.",
+      });
+    }
+
+    const review = await Review.findById(reviewId);
+
+    if (!review) {
+      return res.status(404).json({ message: "Review not found." });
+    }
+
+    if (String(review.user) === String(req.user._id)) {
+      return res.status(403).json({
+        message: "You cannot vote on your own review.",
+      });
+    }
+
+    const existingVote = (review.votes || []).find(
+      (vote) => String(vote.user) === String(req.user._id)
+    );
+
+    if (existingVote) {
+      return res.status(400).json({
+        message: "You have already voted on this review.",
+      });
+    }
+
+    review.votes.push({
+      user: req.user._id,
+      voteType,
+      votedAt: new Date(),
+    });
+
+    await review.save();
+
+    return res.json({
+      message:
+        voteType === "helpful"
+          ? "Marked as helpful."
+          : "Marked as not helpful.",
+      review: buildReviewPayload(review, req.user._id),
+    });
+  } catch (error) {
+    console.error("voteReview error", error);
+    return res.status(500).json({ message: "Failed to save review vote." });
   }
 }
 
@@ -132,7 +210,11 @@ export async function getReviewsByProvider(req, res) {
       .populate("user", "name avatar")
       .sort({ createdAt: -1 });
 
-    return res.json({ reviews });
+    const hydratedReviews = reviews.map((review) =>
+      buildReviewPayload(review, req.user?._id || null)
+    );
+
+    return res.json({ reviews: hydratedReviews });
   } catch (error) {
     console.error("getReviewsByProvider error", error);
     return res.status(500).json({ message: "Failed to fetch reviews." });
