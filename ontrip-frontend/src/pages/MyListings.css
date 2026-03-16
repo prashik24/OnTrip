@@ -121,7 +121,7 @@
 
 .myListingsBtn {
   min-height: 42px;
-  padding: 0 16px ;
+  padding: 0 16px;
   border: 1px solid rgba(11, 27, 42, 0.1);
   border-radius: 12px;
   font: inherit;
@@ -130,8 +130,6 @@
   background: #ffffff;
   color: var(--text);
   transition: 0.18s ease;
-
-  
 }
 
 .myListingsBtn:hover {
@@ -240,12 +238,14 @@
   gap: 12px;
 }
 
-.myListingsVehicleList {
+.myListingsVehicleList,
+.myListingsTripList {
   display: grid;
   gap: 14px;
 }
 
-.myListingsVehicleCard {
+.myListingsVehicleCard,
+.myListingsTripCard {
   background: #fff;
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 14px;
@@ -338,8 +338,8 @@
     grid-template-columns: 1fr;
   }
 }
-.myListingsBtn-1{
 
-  background-color:  #4ec9f5;
+.myListingsBtn-1 {
+  background-color: #4ec9f5;
   color: #ffffff;
 }
