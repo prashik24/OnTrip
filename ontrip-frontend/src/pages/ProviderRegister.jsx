@@ -19,6 +19,21 @@ function emptyVehicle() {
   };
 }
 
+function emptyTrip() {
+  return {
+    plannerMode: "customized_trip",
+    packageTitle: "",
+    durationText: "",
+    days: "",
+    priceFrom: "",
+    pricePerPerson: "",
+    placesCovered: "",
+    inclusions: "",
+    exclusions: "",
+    images: null,
+  };
+}
+
 function onlyPhone(value) {
   return value.replace(/\D/g, "").slice(0, 10);
 }
@@ -38,16 +53,7 @@ export default function ProviderRegister() {
     description: "",
     serviceImage: null,
     vehicles: [emptyVehicle()],
-    plannerMode: "customized_trip",
-    packageTitle: "",
-    durationText: "",
-    days: "",
-    priceFrom: "",
-    pricePerPerson: "",
-    placesCovered: "",
-    inclusions: "",
-    exclusions: "",
-    plannerImages: null,
+    travelPlans: [emptyTrip()],
   });
 
   useEffect(() => {
@@ -93,6 +99,29 @@ export default function ProviderRegister() {
     setForm((prev) => ({
       ...prev,
       vehicles: prev.vehicles.map((item, i) =>
+        i === index ? { ...item, [key]: value } : item
+      ),
+    }));
+  }
+
+  function addTrip() {
+    setForm((prev) => ({
+      ...prev,
+      travelPlans: [...prev.travelPlans, emptyTrip()],
+    }));
+  }
+
+  function removeTrip(index) {
+    setForm((prev) => ({
+      ...prev,
+      travelPlans: prev.travelPlans.filter((_, i) => i !== index),
+    }));
+  }
+
+  function updateTrip(index, key, value) {
+    setForm((prev) => ({
+      ...prev,
+      travelPlans: prev.travelPlans.map((item, i) =>
         i === index ? { ...item, [key]: value } : item
       ),
     }));
@@ -154,18 +183,27 @@ export default function ProviderRegister() {
       }
 
       if (form.listingType === "travel_planner") {
-        fd.append("plannerMode", form.plannerMode);
-        fd.append("packageTitle", form.packageTitle);
-        fd.append("durationText", form.durationText);
-        fd.append("days", form.days);
-        fd.append("priceFrom", form.priceFrom);
-        fd.append("pricePerPerson", form.pricePerPerson);
-        fd.append("placesCovered", form.placesCovered);
-        fd.append("inclusions", form.inclusions);
-        fd.append("exclusions", form.exclusions);
+        fd.append(
+          "travelPlans",
+          JSON.stringify(
+            form.travelPlans.map((trip) => ({
+              plannerMode: trip.plannerMode,
+              packageTitle: trip.packageTitle,
+              durationText: trip.durationText,
+              days: trip.days,
+              priceFrom: trip.priceFrom,
+              pricePerPerson: trip.pricePerPerson,
+              placesCovered: trip.placesCovered,
+              inclusions: trip.inclusions,
+              exclusions: trip.exclusions,
+            }))
+          )
+        );
 
-        Array.from(form.plannerImages || []).forEach((file) => {
-          fd.append("plannerImages", file);
+        form.travelPlans.forEach((trip, index) => {
+          Array.from(trip.images || []).forEach((file) => {
+            fd.append(`plannerImages_${index}`, file);
+          });
         });
       }
 
@@ -384,94 +422,118 @@ export default function ProviderRegister() {
 
         {form.listingType === "travel_planner" && (
           <div className="providerRegisterBlock">
-            <h3>Travel Planner Details</h3>
+            <div className="providerRegisterBlockHead">
+              <h3>Travel Trips</h3>
+              <button className="providerRegisterGhostBtn" type="button" onClick={addTrip}>
+                Add Trip
+              </button>
+            </div>
 
-            <div className="providerRegisterGrid">
-              <div>
-                <label>Planner Type</label>
-                <CustomSelect
-                  value={form.plannerMode}
-                  onChange={(e) => setForm((s) => ({ ...s, plannerMode: e.target.value }))}
-                  options={plannerModeOptions}
-                />
-              </div>
+            <div className="providerRegisterTripList">
+              {form.travelPlans.map((trip, index) => (
+                <div className="providerRegisterTripCard" key={index}>
+                  <div className="providerRegisterVehicleTop">
+                    <strong>Trip {index + 1}</strong>
+                    {form.travelPlans.length > 1 && (
+                      <button
+                        className="providerRegisterDangerBtn"
+                        type="button"
+                        onClick={() => removeTrip(index)}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
 
-              <div>
-                <label>Package Title</label>
-                <input
-                  value={form.packageTitle}
-                  onChange={(e) => setForm((s) => ({ ...s, packageTitle: e.target.value }))}
-                />
-              </div>
+                  <div className="providerRegisterGrid">
+                    <div>
+                      <label>Planner Type</label>
+                      <CustomSelect
+                        value={trip.plannerMode}
+                        onChange={(e) => updateTrip(index, "plannerMode", e.target.value)}
+                        options={plannerModeOptions}
+                      />
+                    </div>
 
-              <div>
-                <label>Duration Text</label>
-                <input
-                  value={form.durationText}
-                  onChange={(e) => setForm((s) => ({ ...s, durationText: e.target.value }))}
-                />
-              </div>
+                    <div>
+                      <label>Package Title</label>
+                      <input
+                        value={trip.packageTitle}
+                        onChange={(e) => updateTrip(index, "packageTitle", e.target.value)}
+                      />
+                    </div>
 
-              <div>
-                <label>Days</label>
-                <input
-                  type="number"
-                  value={form.days}
-                  onChange={(e) => setForm((s) => ({ ...s, days: e.target.value }))}
-                />
-              </div>
+                    <div>
+                      <label>Duration Text</label>
+                      <input
+                        value={trip.durationText}
+                        onChange={(e) => updateTrip(index, "durationText", e.target.value)}
+                      />
+                    </div>
 
-              <div>
-                <label>Price From</label>
-                <input
-                  type="number"
-                  value={form.priceFrom}
-                  onChange={(e) => setForm((s) => ({ ...s, priceFrom: e.target.value }))}
-                />
-              </div>
+                    <div>
+                      <label>Days</label>
+                      <input
+                        type="number"
+                        value={trip.days}
+                        onChange={(e) => updateTrip(index, "days", e.target.value)}
+                      />
+                    </div>
 
-              <div>
-                <label>Price Per Person</label>
-                <input
-                  type="number"
-                  value={form.pricePerPerson}
-                  onChange={(e) => setForm((s) => ({ ...s, pricePerPerson: e.target.value }))}
-                />
-              </div>
+                    <div>
+                      <label>Price From</label>
+                      <input
+                        type="number"
+                        value={trip.priceFrom}
+                        onChange={(e) => updateTrip(index, "priceFrom", e.target.value)}
+                      />
+                    </div>
 
-              <div className="fullSpan">
-                <label>Places Covered</label>
-                <input
-                  value={form.placesCovered}
-                  onChange={(e) => setForm((s) => ({ ...s, placesCovered: e.target.value }))}
-                />
-              </div>
+                    <div>
+                      <label>Price Per Person</label>
+                      <input
+                        type="number"
+                        value={trip.pricePerPerson}
+                        onChange={(e) => updateTrip(index, "pricePerPerson", e.target.value)}
+                      />
+                    </div>
 
-              <div className="fullSpan">
-                <label>Inclusions</label>
-                <input
-                  value={form.inclusions}
-                  onChange={(e) => setForm((s) => ({ ...s, inclusions: e.target.value }))}
-                />
-              </div>
+                    <div className="fullSpan">
+                      <label>Places Covered</label>
+                      <input
+                        value={trip.placesCovered}
+                        onChange={(e) => updateTrip(index, "placesCovered", e.target.value)}
+                      />
+                    </div>
 
-              <div className="fullSpan">
-                <label>Exclusions</label>
-                <input
-                  value={form.exclusions}
-                  onChange={(e) => setForm((s) => ({ ...s, exclusions: e.target.value }))}
-                />
-              </div>
+                    <div className="fullSpan">
+                      <label>Inclusions</label>
+                      <input
+                        value={trip.inclusions}
+                        onChange={(e) => updateTrip(index, "inclusions", e.target.value)}
+                      />
+                    </div>
 
-              <div className="fullSpan">
-                <label>Planner Images</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => setForm((s) => ({ ...s, plannerImages: e.target.files }))}
-                />
-              </div>
+                    <div className="fullSpan">
+                      <label>Exclusions</label>
+                      <input
+                        value={trip.exclusions}
+                        onChange={(e) => updateTrip(index, "exclusions", e.target.value)}
+                      />
+                    </div>
+
+                    <div className="fullSpan">
+                      <label>Trip Images</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => updateTrip(index, "images", e.target.files)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
