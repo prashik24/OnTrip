@@ -51,16 +51,29 @@ export default function ProviderDetails() {
   const isOwner =
     user && provider && String(provider.owner?._id || provider.owner) === String(user.id);
 
+  const travelPlans = useMemo(() => {
+    if (!provider) return [];
+    if (provider.travelPlans?.length > 0) return provider.travelPlans;
+    if (
+      provider.travelPlanner?.packageTitle ||
+      provider.travelPlanner?.durationText ||
+      provider.travelPlanner?.images?.length
+    ) {
+      return [provider.travelPlanner];
+    }
+    return [];
+  }, [provider]);
+
   const heroImage = useMemo(() => {
     if (!provider) return "";
 
     return (
       provider.serviceImage?.url ||
-      provider.travelPlanner?.images?.[0]?.url ||
+      travelPlans?.[0]?.images?.[0]?.url ||
       provider.vehicles?.[0]?.images?.[0]?.url ||
       ""
     );
-  }, [provider]);
+  }, [provider, travelPlans]);
 
   function goToBooking() {
     if (!isLoggedIn()) {
@@ -168,44 +181,50 @@ export default function ProviderDetails() {
           <div className="providerDetailsSection">
             <h2>Package Details</h2>
 
-            <div className="providerDetailsDataGrid">
-              <div className="providerDetailsDataBox">
-                <strong>Package</strong>
-                <span>{provider.travelPlanner?.packageTitle || "Package"}</span>
-              </div>
+            <div className="providerDetailsTravelList">
+              {travelPlans.map((trip, index) => (
+                <div className="providerDetailsTravelCard" key={trip._id || index}>
+                  <div className="providerDetailsDataGrid">
+                    <div className="providerDetailsDataBox">
+                      <strong>Package</strong>
+                      <span>{trip.packageTitle || "Package"}</span>
+                    </div>
 
-              <div className="providerDetailsDataBox">
-                <strong>Duration</strong>
-                <span>{provider.travelPlanner?.durationText || "-"}</span>
-              </div>
+                    <div className="providerDetailsDataBox">
+                      <strong>Duration</strong>
+                      <span>{trip.durationText || "-"}</span>
+                    </div>
 
-              <div className="providerDetailsDataBox">
-                <strong>Price From</strong>
-                <span>₹{provider.travelPlanner?.priceFrom || 0}</span>
-              </div>
-            </div>
+                    <div className="providerDetailsDataBox">
+                      <strong>Price From</strong>
+                      <span>₹{trip.priceFrom || 0}</span>
+                    </div>
+                  </div>
 
-            <div className="providerDetailsInfoBlocks">
-              <div className="providerDetailsInfoBlock">
-                <h3>Places Covered</h3>
-                <p>{(provider.travelPlanner?.placesCovered || []).join(", ") || "-"}</p>
-              </div>
+                  <div className="providerDetailsInfoBlocks">
+                    <div className="providerDetailsInfoBlock">
+                      <h3>Places Covered</h3>
+                      <p>{(trip.placesCovered || []).join(", ") || "-"}</p>
+                    </div>
 
-              <div className="providerDetailsInfoBlock">
-                <h3>Inclusions</h3>
-                <p>{(provider.travelPlanner?.inclusions || []).join(", ") || "-"}</p>
-              </div>
+                    <div className="providerDetailsInfoBlock">
+                      <h3>Inclusions</h3>
+                      <p>{(trip.inclusions || []).join(", ") || "-"}</p>
+                    </div>
 
-              <div className="providerDetailsInfoBlock">
-                <h3>Exclusions</h3>
-                <p>{(provider.travelPlanner?.exclusions || []).join(", ") || "-"}</p>
-              </div>
-            </div>
+                    <div className="providerDetailsInfoBlock">
+                      <h3>Exclusions</h3>
+                      <p>{(trip.exclusions || []).join(", ") || "-"}</p>
+                    </div>
+                  </div>
 
-            <div className="providerDetailsGallery">
-              {(provider.travelPlanner?.images || []).map((img, index) => (
-                <div className="providerDetailsGalleryItem" key={index}>
-                  <img src={img.url} alt="planner" />
+                  <div className="providerDetailsGallery">
+                    {(trip.images || []).map((img, imgIndex) => (
+                      <div className="providerDetailsGalleryItem" key={imgIndex}>
+                        <img src={img.url} alt="planner" />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
