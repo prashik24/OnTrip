@@ -29,32 +29,34 @@
 
 .providerDetailsTop {
   display: grid;
-  grid-template-columns: minmax(320px, 460px) 1fr;
+  grid-template-columns: minmax(320px, 420px) 1fr;
   gap: 22px;
   align-items: start;
 }
 
 .providerDetailsHeroImage {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  border-radius: 26px;
+  height: 240px;
+  border-radius: 22px;
   overflow: hidden;
   background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .providerDetailsHeroImage img {
   width: 100%;
   height: 100%;
-  display: block;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
+  display: block;
 }
 
 .providerDetailsImageEmpty {
   width: 100%;
-  height: 100%;
-  min-height: 240px;
+  height: 240px;
   display: grid;
   place-items: center;
   color: rgba(11, 27, 42, 0.5);
@@ -91,7 +93,7 @@
 .providerDetailsTopContent h1 {
   margin: 0;
   padding-right: 130px;
-  font-size: 30px;
+  font-size: 28px;
   line-height: 1.15;
   font-weight: 820;
   color: var(--text);
@@ -111,7 +113,7 @@
 
 .providerDetailsInfoRow {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   color: rgba(11, 27, 42, 0.8);
   font-weight: 550;
 }
@@ -186,7 +188,7 @@
 
 .providerDetailsItemTitle {
   margin: 0;
-  font-size: 21px;
+  font-size: 20px;
   line-height: 1.25;
   font-weight: 780;
   color: var(--text);
@@ -195,11 +197,14 @@
 .providerDetailsPackageHero,
 .providerDetailsVehicleHero {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 240px;
   border-radius: 18px;
   overflow: hidden;
   background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .providerDetailsPackageHero img,
@@ -207,7 +212,7 @@
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
 }
 
@@ -446,6 +451,13 @@
   .providerDetailsVehicleMetaGrid,
   .providerDetailsVehicleSummary {
     grid-template-columns: 1fr;
+  }
+
+  .providerDetailsHeroImage,
+  .providerDetailsPackageHero,
+  .providerDetailsVehicleHero,
+  .providerDetailsImageEmpty {
+    height: 200px;
   }
 
   .providerDetailsTopContent h1 {
