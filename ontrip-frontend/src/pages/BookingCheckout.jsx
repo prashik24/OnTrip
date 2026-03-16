@@ -45,12 +45,21 @@ export default function BookingCheckout() {
         setLoading(true);
         setMsg("");
         const data = await apiFetch(`/api/providers/${id}`);
-        setProvider(data.provider);
+        const currentProvider = data.provider;
+        setProvider(currentProvider);
+
+        const plans =
+          currentProvider?.travelPlans?.length > 0
+            ? currentProvider.travelPlans
+            : currentProvider?.travelPlanner?.packageTitle ||
+              currentProvider?.travelPlanner?.durationText ||
+              currentProvider?.travelPlanner?.images?.length
+            ? [currentProvider.travelPlanner]
+            : [];
 
         setForm((prev) => ({
           ...prev,
-          selectedPackageTitle:
-            data.provider?.travelPlanner?.packageTitle || "",
+          selectedPackageTitle: plans[0]?.packageTitle || "",
         }));
       } catch (err) {
         setMsg(err.message);
@@ -61,6 +70,45 @@ export default function BookingCheckout() {
 
     loadProvider();
   }, [id, navigate]);
+
+  const travelPlans = useMemo(() => {
+    if (!provider) return [];
+
+    if (provider.travelPlans?.length > 0) {
+      return provider.travelPlans;
+    }
+
+    if (
+      provider.travelPlanner?.packageTitle ||
+      provider.travelPlanner?.durationText ||
+      provider.travelPlanner?.images?.length
+    ) {
+      return [provider.travelPlanner];
+    }
+
+    return [];
+  }, [provider]);
+
+  const travelPackageOptions = useMemo(() => {
+    return travelPlans.map((trip, index) => ({
+      label: `${trip.packageTitle || `Package ${index + 1}`} — ₹${
+        Number(trip.pricePerPerson || trip.priceFrom || 0)
+      }`,
+      value: trip.packageTitle || `Package ${index + 1}`,
+    }));
+  }, [travelPlans]);
+
+  const selectedTravelPlan = useMemo(() => {
+    if (!travelPlans.length) return null;
+
+    return (
+      travelPlans.find(
+        (trip) =>
+          String(trip.packageTitle || "").trim() ===
+          String(form.selectedPackageTitle || "").trim()
+      ) || travelPlans[0]
+    );
+  }, [travelPlans, form.selectedPackageTitle]);
 
   const vehicleOptions = useMemo(() => {
     return (provider?.vehicles || []).map((vehicle) => ({
@@ -97,11 +145,15 @@ export default function BookingCheckout() {
     if (!provider) return 0;
 
     if (provider.listingType === "travel_planner") {
-      return Number(provider.travelPlanner?.priceFrom || 0);
+      return Number(
+        selectedTravelPlan?.pricePerPerson ||
+          selectedTravelPlan?.priceFrom ||
+          0
+      );
     }
 
     return Number(selectedVehicle?.price || 0);
-  }, [provider, selectedVehicle]);
+  }, [provider, selectedVehicle, selectedTravelPlan]);
 
   const amount = useMemo(() => {
     if (!provider) return 0;
@@ -135,6 +187,11 @@ export default function BookingCheckout() {
 
     if (provider.listingType === "travel_planner" && !form.destination.trim()) {
       setMsg("Please enter destination.");
+      return;
+    }
+
+    if (provider.listingType === "travel_planner" && !form.selectedPackageTitle.trim()) {
+      setMsg("Please select a package.");
       return;
     }
 
@@ -351,7 +408,17 @@ export default function BookingCheckout() {
 
               <div>
                 <label>Package</label>
-                <input value={form.selectedPackageTitle} readOnly />
+                <CustomSelect
+                  value={form.selectedPackageTitle}
+                  onChange={(e) =>
+                    setForm((s) => ({
+                      ...s,
+                      selectedPackageTitle: e.target.value,
+                    }))
+                  }
+                  options={travelPackageOptions}
+                  placeholder="Choose package"
+                />
               </div>
 
               <div>
