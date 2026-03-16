@@ -18,7 +18,7 @@
 }
 
 .providerDetailsCard {
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 18px;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
@@ -41,15 +41,15 @@
 .providerDetailsHeroImage img {
   width: 100%;
   height: auto;
+  max-height: 260px;
   display: block;
   border-radius: 16px;
-  object-fit: contain;
-  background: transparent;
+  object-fit: cover;
 }
 
 .providerDetailsImageEmpty {
   width: 100%;
-  min-height: 220px;
+  min-height: 180px;
   display: grid;
   place-items: center;
   color: rgba(11, 27, 42, 0.5);
@@ -154,7 +154,7 @@
 .providerDetailsVehicleCard {
   background: rgba(244, 251, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.1);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 14px;
   display: grid;
   gap: 12px;
@@ -162,17 +162,48 @@
 
 .providerDetailsPackageHero,
 .providerDetailsVehicleHero {
+  position: relative;
   width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
 }
 
 .providerDetailsPackageHero img,
 .providerDetailsVehicleHero img {
   width: 100%;
-  height: auto;
+  height: 220px;
   display: block;
+  object-fit: cover;
   border-radius: 14px;
-  object-fit: contain;
-  background: transparent;
+}
+
+.providerDetailsImageTitle {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  max-width: calc(100% - 120px);
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: rgba(11, 27, 42, 0.62);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  backdrop-filter: blur(4px);
+}
+
+.providerDetailsImageType {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 6px 14px rgba(0, 184, 241, 0.22);
 }
 
 .providerDetailsDataGrid {
@@ -182,7 +213,7 @@
 }
 
 .providerDetailsDataBox {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 12px;
   padding: 14px;
@@ -199,7 +230,7 @@
 .providerDetailsDataBox span {
   font-size: 15px;
   color: var(--text);
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .providerDetailsInfoBlocks {
@@ -208,7 +239,7 @@
 }
 
 .providerDetailsInfoBlock {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 12px;
   padding: 14px;
@@ -218,6 +249,7 @@
   margin: 0 0 8px;
   font-size: 16px;
   font-weight: 720;
+  color: var(--text);
 }
 
 .providerDetailsInfoBlock p {
@@ -230,20 +262,20 @@
 .providerDetailsGallery {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .providerDetailsGalleryItem {
   border-radius: 12px;
   overflow: hidden;
   background: #ffffff;
-  min-height: 90px;
+  min-height: 76px;
   border: 1px solid rgba(0, 184, 241, 0.1);
 }
 
 .providerDetailsGalleryItem img {
   width: 100%;
-  height: 100%;
+  height: 76px;
   display: block;
   object-fit: cover;
 }
@@ -281,7 +313,7 @@
 
 .providerDetailsReviewItem,
 .providerDetailsSimilarCard {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 12px;
   padding: 14px;
@@ -321,8 +353,8 @@
 }
 
 .providerDetailsReviewImageItem {
-  width: 88px;
-  height: 68px;
+  width: 82px;
+  height: 60px;
   border-radius: 10px;
   overflow: hidden;
   background: #ffffff;
@@ -395,9 +427,12 @@
 
 @media (max-width: 980px) {
   .providerDetailsTop,
-  .providerDetailsDataGrid,
-  .providerDetailsGallery {
+  .providerDetailsDataGrid {
     grid-template-columns: 1fr;
+  }
+
+  .providerDetailsGallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .providerDetailsVehicleHead,
@@ -405,5 +440,14 @@
   .providerDetailsReviewTop {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .providerDetailsPackageHero img,
+  .providerDetailsVehicleHero img {
+    height: 190px;
+  }
+
+  .providerDetailsImageTitle {
+    max-width: calc(100% - 24px);
   }
 }

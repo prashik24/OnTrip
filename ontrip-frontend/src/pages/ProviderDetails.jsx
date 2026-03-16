@@ -196,10 +196,16 @@ export default function ProviderDetails() {
                 <div className="providerDetailsVehicleCard" key={vehicle._id}>
                   <div className="providerDetailsVehicleHero">
                     {vehicle.images?.length > 0 ? (
-                      <img
-                        src={vehicle.images[0].url}
-                        alt={vehicle.title || vehicle.vehicleType}
-                      />
+                      <>
+                        <img
+                          src={vehicle.images[0].url}
+                          alt={vehicle.title || vehicle.vehicleType}
+                        />
+                        <div className="providerDetailsImageTitle">
+                          {vehicle.title || vehicle.vehicleType}
+                        </div>
+                        <div className="providerDetailsImageType">Vehicle Service</div>
+                      </>
                     ) : (
                       <div className="providerDetailsImageEmpty">No Vehicle Image</div>
                     )}
@@ -218,17 +224,31 @@ export default function ProviderDetails() {
                     </div>
                   )}
 
-                  <div className="providerDetailsVehicleHead">
-                    <div>
-                      <h3>{vehicle.title || vehicle.vehicleType}</h3>
+                  <div className="providerDetailsDataGrid">
+                    <div className="providerDetailsDataBox">
+                      <strong>Vehicle</strong>
+                      <span>{vehicle.title || vehicle.vehicleType || "-"}</span>
+                    </div>
+
+                    <div className="providerDetailsDataBox">
+                      <strong>Price</strong>
+                      <span>₹{vehicle.price || 0}</span>
+                    </div>
+
+                    <div className="providerDetailsDataBox">
+                      <strong>Capacity</strong>
+                      <span>{vehicle.capacity || 1} Person</span>
+                    </div>
+                  </div>
+
+                  <div className="providerDetailsInfoBlocks">
+                    <div className="providerDetailsInfoBlock">
+                      <h3>Vehicle Details</h3>
                       <p>
-                        {vehicle.vehicleType} • Capacity {vehicle.capacity || 1} •{" "}
-                        {vehicle.fuelType || "N/A"} •{" "}
+                        {vehicle.vehicleType || "-"} • {vehicle.fuelType || "N/A"} •{" "}
                         {vehicle.withDriver ? "With Driver" : "Without Driver"}
                       </p>
                     </div>
-
-                    <div className="providerDetailsVehiclePrice">₹{vehicle.price}</div>
                   </div>
                 </div>
               ))}
@@ -243,10 +263,16 @@ export default function ProviderDetails() {
                 <div className="providerDetailsTravelCard" key={trip._id || index}>
                   <div className="providerDetailsPackageHero">
                     {trip.images?.length > 0 ? (
-                      <img
-                        src={trip.images[0].url}
-                        alt={trip.packageTitle || "package"}
-                      />
+                      <>
+                        <img
+                          src={trip.images[0].url}
+                          alt={trip.packageTitle || "package"}
+                        />
+                        <div className="providerDetailsImageTitle">
+                          {trip.packageTitle || "Package"}
+                        </div>
+                        <div className="providerDetailsImageType">Travel Planner</div>
+                      </>
                     ) : (
                       <div className="providerDetailsImageEmpty">No Package Image</div>
                     )}
