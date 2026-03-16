@@ -36,30 +36,27 @@
 
 .providerDetailsHeroImage {
   width: 100%;
-  border-radius: 14px;
-  overflow: hidden;
-  background: rgba(177, 227, 250, 0.14);
-  border: 1px solid rgba(0, 184, 241, 0.1);
-  padding: 8px;
 }
 
 .providerDetailsHeroImage img {
   width: 100%;
   height: auto;
-  max-height: 420px;
-  object-fit: contain;
-  object-position: center;
   display: block;
-  border-radius: 10px;
+  border-radius: 16px;
+  object-fit: contain;
+  background: transparent;
 }
 
 .providerDetailsImageEmpty {
   width: 100%;
-  min-height: 320px;
+  min-height: 220px;
   display: grid;
   place-items: center;
   color: rgba(11, 27, 42, 0.5);
   font-weight: 650;
+  border-radius: 16px;
+  border: 1px dashed rgba(11, 27, 42, 0.12);
+  background: #ffffff;
 }
 
 .providerDetailsTopContent {
@@ -163,23 +160,19 @@
   gap: 12px;
 }
 
-.providerDetailsPackageHero {
+.providerDetailsPackageHero,
+.providerDetailsVehicleHero {
   width: 100%;
-  border-radius: 14px;
-  overflow: hidden;
-  background: rgba(177, 227, 250, 0.14);
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  padding: 8px;
 }
 
-.providerDetailsPackageHero img {
+.providerDetailsPackageHero img,
+.providerDetailsVehicleHero img {
   width: 100%;
   height: auto;
-  max-height: 320px;
-  object-fit: contain;
-  object-position: center;
   display: block;
-  border-radius: 10px;
+  border-radius: 14px;
+  object-fit: contain;
+  background: transparent;
 }
 
 .providerDetailsDataGrid {
@@ -243,19 +236,16 @@
 .providerDetailsGalleryItem {
   border-radius: 12px;
   overflow: hidden;
-  background: rgba(177, 227, 250, 0.14);
-  min-height: 95px;
-  max-height: 110px;
+  background: #ffffff;
+  min-height: 90px;
   border: 1px solid rgba(0, 184, 241, 0.1);
 }
 
 .providerDetailsGalleryItem img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: center;
   display: block;
-  padding: 4px;
+  object-fit: cover;
 }
 
 .providerDetailsVehicleHead {
@@ -324,29 +314,26 @@
 }
 
 .providerDetailsReviewImageGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 110px));
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 12px;
-  justify-content: start;
 }
 
 .providerDetailsReviewImageItem {
-  width: 110px;
-  height: 80px;
-  border-radius: 12px;
+  width: 88px;
+  height: 68px;
+  border-radius: 10px;
   overflow: hidden;
-  background: rgba(177, 227, 250, 0.18);
+  background: #ffffff;
   border: 1px solid rgba(0, 184, 241, 0.12);
 }
 
 .providerDetailsReviewImageItem img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: center;
+  object-fit: cover;
   display: block;
-  padding: 4px;
 }
 
 .providerDetailsVoteRow {
@@ -413,27 +400,10 @@
     grid-template-columns: 1fr;
   }
 
-  .providerDetailsReviewImageGrid {
-    grid-template-columns: repeat(2, minmax(0, 100px));
-  }
-
-  .providerDetailsReviewImageItem {
-    width: 100px;
-    height: 72px;
-  }
-
   .providerDetailsVehicleHead,
   .providerDetailsSimilarCard,
   .providerDetailsReviewTop {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .providerDetailsHeroImage img {
-    max-height: 320px;
-  }
-
-  .providerDetailsPackageHero img {
-    max-height: 240px;
   }
 }

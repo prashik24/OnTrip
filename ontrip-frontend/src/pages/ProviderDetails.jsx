@@ -194,6 +194,30 @@ export default function ProviderDetails() {
             <div className="providerDetailsVehicleList">
               {(provider.vehicles || []).map((vehicle) => (
                 <div className="providerDetailsVehicleCard" key={vehicle._id}>
+                  <div className="providerDetailsVehicleHero">
+                    {vehicle.images?.length > 0 ? (
+                      <img
+                        src={vehicle.images[0].url}
+                        alt={vehicle.title || vehicle.vehicleType}
+                      />
+                    ) : (
+                      <div className="providerDetailsImageEmpty">No Vehicle Image</div>
+                    )}
+                  </div>
+
+                  {vehicle.images?.length > 1 && (
+                    <div className="providerDetailsGallery providerDetailsVehicleThumbs">
+                      {vehicle.images.slice(1).map((img, index) => (
+                        <div className="providerDetailsGalleryItem" key={index}>
+                          <img
+                            src={img.url}
+                            alt={`${vehicle.title || vehicle.vehicleType}-${index + 2}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   <div className="providerDetailsVehicleHead">
                     <div>
                       <h3>{vehicle.title || vehicle.vehicleType}</h3>
@@ -205,17 +229,6 @@ export default function ProviderDetails() {
                     </div>
 
                     <div className="providerDetailsVehiclePrice">₹{vehicle.price}</div>
-                  </div>
-
-                  <div className="providerDetailsGallery providerDetailsGalleryGrid">
-                    {(vehicle.images || []).map((img, index) => (
-                      <div className="providerDetailsGalleryItem" key={index}>
-                        <img
-                          src={img.url}
-                          alt={vehicle.title || vehicle.vehicleType}
-                        />
-                      </div>
-                    ))}
                   </div>
                 </div>
               ))}
