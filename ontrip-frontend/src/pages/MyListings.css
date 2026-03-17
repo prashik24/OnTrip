@@ -1,14 +1,13 @@
 .myListingsPage {
-  padding-bottom: 32px;
+  padding-bottom: 48px;
   display: grid;
-  gap: 18px;
+  gap: 24px;
   width: 100%;
   max-width: 1380px;
   margin: 0 auto;
-}
-
-.myListingsHead {
-  width: 100%;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
 }
 
 .myListingsHead h1 {
@@ -39,7 +38,7 @@
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 18px;
-  padding: 24px;
+  padding: 28px;
   color: rgba(11, 27, 42, 0.72);
   font-weight: 650;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
@@ -47,26 +46,21 @@
 
 .myListingsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   gap: 22px;
-  width: 100%;
 }
 
 .myListingsCard {
   overflow: hidden;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.94);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
-  min-height: 100%;
+  box-shadow: 0 14px 32px rgba(10, 22, 35, 0.06);
 }
 
 .myListingsMedia {
-  height: 320px;
+  width: 100%;
+  height: 360px;
   background: rgba(177, 227, 250, 0.14);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
 }
 
@@ -75,7 +69,7 @@
   height: 100%;
   object-fit: contain;
   display: block;
-  background: #ffffff;
+  background: #f8fcff;
 }
 
 .myListingsMediaEmpty {
@@ -88,9 +82,9 @@
 }
 
 .myListingsBody {
-  padding: 18px;
+  padding: 22px;
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 
 .myListingsTop {
@@ -102,7 +96,7 @@
 
 .myListingsTop h3 {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 740;
 }
 
@@ -110,10 +104,11 @@
   margin: 6px 0 0;
   color: var(--muted);
   font-weight: 550;
+  font-size: 15px;
 }
 
 .myListingsType {
-  padding: 6px 10px;
+  padding: 7px 12px;
   border-radius: 10px;
   font-size: 12px;
   font-weight: 700;
@@ -125,8 +120,9 @@
 
 .myListingsDesc {
   color: rgba(11, 27, 42, 0.76);
-  line-height: 1.65;
+  line-height: 1.7;
   font-weight: 550;
+  font-size: 15px;
 }
 
 .myListingsActions {
@@ -136,8 +132,8 @@
 }
 
 .myListingsBtn {
-  min-height: 42px;
-  padding: 0 16px;
+  min-height: 44px;
+  padding: 0 18px;
   border: 1px solid rgba(11, 27, 42, 0.1);
   border-radius: 12px;
   font: inherit;
@@ -164,17 +160,17 @@
 }
 
 .myListingsEditForm {
-  margin-top: 10px;
-  padding-top: 18px;
+  margin-top: 12px;
+  padding-top: 22px;
   border-top: 1px solid rgba(11, 27, 42, 0.08);
   display: grid;
-  gap: 18px;
+  gap: 20px;
 }
 
 .myListingsFormGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 16px;
 }
 
 .myListingsEditForm > .myListingsFormGrid label,
@@ -198,6 +194,7 @@
   background: #fff;
   outline: none;
   min-height: 46px;
+  box-sizing: border-box;
 }
 
 .myListingsEditForm input:not([type="checkbox"]):not([type="file"]):focus,
@@ -219,6 +216,7 @@
   background: #ffffff;
   padding: 10px 12px;
   font: inherit;
+  box-sizing: border-box;
 }
 
 .myListingsEditForm input[type="file"]::file-selector-button {
@@ -236,8 +234,8 @@
 .myListingsBlock {
   background: rgba(244, 251, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.1);
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 18px;
 }
 
 .myListingsBlock h4 {
@@ -257,15 +255,15 @@
 .myListingsVehicleList,
 .myListingsTripList {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .myListingsVehicleCard,
 .myListingsTripCard {
   background: #fff;
   border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 14px;
-  padding: 14px;
+  border-radius: 16px;
+  padding: 16px;
 }
 
 .myListingsCheckField {
@@ -316,7 +314,7 @@
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  min-height: 120px;
+  min-height: 150px;
   background: rgba(177, 227, 250, 0.14);
 }
 
@@ -348,17 +346,15 @@
   color: #ffffff;
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1100px) {
   .myListingsPage {
-    max-width: 1100px;
-  }
-
-  .myListingsGrid {
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    max-width: 100%;
+    padding-left: 18px;
+    padding-right: 18px;
   }
 
   .myListingsMedia {
-    height: 280px;
+    height: 300px;
   }
 }
 
@@ -376,29 +372,35 @@
     grid-template-columns: 1fr;
   }
 
-  .myListingsGrid {
-    grid-template-columns: 1fr;
+  .myListingsMedia {
+    height: 260px;
   }
 
-  .myListingsMedia {
-    height: 250px;
+  .myListingsBody {
+    padding: 18px;
   }
 }
 
 @media (max-width: 640px) {
   .myListingsPage {
-    max-width: 100%;
-  }
-
-  .myListingsCard {
-    border-radius: 16px;
+    padding-left: 14px;
+    padding-right: 14px;
+    gap: 18px;
   }
 
   .myListingsMedia {
     height: 220px;
   }
 
+  .myListingsTop h3 {
+    font-size: 20px;
+  }
+
+  .myListingsCard {
+    border-radius: 18px;
+  }
+
   .myListingsBody {
-    padding: 14px;
+    padding: 16px;
   }
 }
