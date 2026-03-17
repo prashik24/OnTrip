@@ -201,15 +201,12 @@
 .providerDetailsPackageHero,
 .providerDetailsVehicleHero {
   width: 100%;
-  height: 340px;
-  border-radius: 20px;
+  height: 320px;
+  border-radius: 18px;
   overflow: hidden;
   background: #ffffff;
   border: 1px solid rgba(0, 184, 241, 0.1);
   box-shadow: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .providerDetailsPackageHero img,
@@ -217,9 +214,9 @@
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
-  border-radius: 20px;
+  border-radius: 18px;
 }
 
 .providerDetailsGallery {
