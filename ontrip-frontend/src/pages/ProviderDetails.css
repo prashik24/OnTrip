@@ -24,78 +24,61 @@
   box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
   padding: 20px;
   display: grid;
-  gap: 20px;
+  gap: 24px;
 }
 
 .providerDetailsTop {
   display: grid;
-  grid-template-columns: minmax(360px, 460px) 1fr;
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
   gap: 22px;
   align-items: start;
 }
 
 .providerDetailsHeroImage {
   width: 100%;
-  height: 320px;
-  border-radius: 20px;
+  height: 260px;
+  border-radius: 18px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(0, 184, 241, 0.1);
-  box-shadow: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: linear-gradient(135deg, #eef8ff, #f7fbff);
+  border: 1px solid rgba(0, 184, 241, 0.12);
 }
 
 .providerDetailsHeroImage img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
   display: block;
-  object-fit: contain;
-  object-position: center;
-  border-radius: 20px;
-}
-
-.providerDetailsImageEmpty {
-  width: 100%;
-  height: 320px;
-  display: grid;
-  place-items: center;
-  color: rgba(11, 27, 42, 0.5);
-  font-weight: 650;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px dashed rgba(11, 27, 42, 0.12);
 }
 
 .providerDetailsTopContent {
-  position: relative;
   display: grid;
-  gap: 12px;
-  padding-top: 4px;
+  gap: 14px;
+  align-content: start;
 }
 
 .providerDetailsType {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: fit-content;
-  padding: 6px 10px;
-  border-radius: 10px;
-  background: rgba(0, 184, 241, 0.1);
+  min-height: 34px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(0, 184, 241, 0.10);
+  color: #0077a6;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
   border: 1px solid rgba(0, 184, 241, 0.16);
-  font-size: 12px;
-  font-weight: 700;
-  color: #0369a1;
 }
 
 .providerDetailsTypeTop {
-  position: absolute;
-  top: 0;
-  right: 0;
+  margin-bottom: 2px;
 }
 
 .providerDetailsTopContent h1 {
   margin: 0;
-  padding-right: 130px;
-  font-size: 28px;
+  font-size: 32px;
   line-height: 1.15;
   font-weight: 820;
   color: var(--text);
@@ -103,145 +86,203 @@
 
 .providerDetailsMeta {
   color: var(--muted);
-  font-weight: 550;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 600;
 }
 
 .providerDetailsDesc {
   margin: 0;
-  color: rgba(11, 27, 42, 0.76);
+  color: var(--text);
   line-height: 1.7;
-  font-weight: 550;
+  font-size: 15px;
 }
 
 .providerDetailsInfoRow {
-  display: grid;
-  gap: 6px;
-  color: rgba(11, 27, 42, 0.8);
-  font-weight: 550;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
 }
 
 .providerDetailsInfoRow span {
-  display: block;
-}
-
-.providerDetailsPrimaryBtn,
-.providerDetailsGhostBtn {
-  min-height: 42px;
-  padding: 0 16px;
-  border-radius: 12px;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 700;
-  transition: 0.18s ease;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
 }
 
 .providerDetailsPrimaryBtn {
+  border: none;
+  outline: none;
+  cursor: pointer;
   width: fit-content;
-  border: 1px solid rgba(0, 184, 241, 0.32);
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #ffffff;
+  min-height: 44px;
+  padding: 11px 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #00b8f1, #0097d6);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 10px 22px rgba(0, 151, 214, 0.22);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
 }
 
-.providerDetailsGhostBtn {
-  border: 1px solid rgba(11, 27, 42, 0.1);
-  background: #ffffff;
-  color: var(--text);
+.providerDetailsPrimaryBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(0, 151, 214, 0.24);
 }
 
-.providerDetailsPrimaryBtn:hover,
-.providerDetailsGhostBtn:hover {
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+.providerDetailsPrimaryBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .providerDetailsSection {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .providerDetailsSection h2 {
   margin: 0;
-  font-size: 22px;
-  font-weight: 780;
+  font-size: 24px;
+  font-weight: 820;
   color: var(--text);
 }
 
-.providerDetailsTravelList,
-.providerDetailsVehicleList {
-  display: grid;
-  gap: 16px;
+.providerDetailsNote {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(0, 184, 241, 0.06);
+  color: #0f5f7a;
+  border: 1px solid rgba(0, 184, 241, 0.10);
+  font-weight: 650;
 }
 
-.providerDetailsTravelCard,
-.providerDetailsVehicleCard {
-  width: 100%;
-  background: rgba(244, 251, 255, 0.72);
-  border: 1px solid rgba(0, 184, 241, 0.1);
-  border-radius: 16px;
+.providerDetailsVehicleList,
+.providerDetailsTravelList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 20px;
+  align-items: stretch;
+}
+
+.providerDetailsVehicleCard,
+.providerDetailsTravelCard {
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
   padding: 16px;
   display: grid;
   gap: 14px;
-  box-sizing: border-box;
+  align-content: start;
+  height: 100%;
+  min-height: 100%;
 }
 
 .providerDetailsItemHeader {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .providerDetailsItemTitle {
   margin: 0;
   font-size: 20px;
-  line-height: 1.25;
-  font-weight: 780;
+  font-weight: 800;
   color: var(--text);
+  line-height: 1.25;
+  word-break: break-word;
 }
 
-.providerDetailsPackageHero,
-.providerDetailsVehicleHero {
+/* SAME SIZE IMAGE BOX FOR BOTH */
+.providerDetailsVehicleHero,
+.providerDetailsPackageHero {
   width: 100%;
-  height: 340px; /* same size for both */
-  border-radius: 20px;
+  height: 220px;
+  border-radius: 16px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(0, 184, 241, 0.1);
-  box-shadow: none;
-  display: block;
+  background: linear-gradient(135deg, #f3f8fc, #edf6fb);
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
-.providerDetailsPackageHero img,
-.providerDetailsVehicleHero img {
+.providerDetailsVehicleHero img,
+.providerDetailsPackageHero img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
   display: block;
-  object-fit: cover; /* same visual fill for both */
-  object-position: center;
-  border-radius: 20px;
 }
 
+/* THUMBNAILS */
 .providerDetailsGallery {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
+}
+
+.providerDetailsVehicleThumbs,
+.providerDetailsPackageThumbs {
+  grid-template-columns: repeat(auto-fit, minmax(82px, 1fr));
 }
 
 .providerDetailsGalleryItem {
-  border-radius: 14px;
+  height: 76px;
+  border-radius: 12px;
   overflow: hidden;
-  background: #ffffff;
-  min-height: 96px;
-  border: 1px solid rgba(0, 184, 241, 0.1);
+  background: #f3f6f9;
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .providerDetailsGalleryItem img {
   width: 100%;
   height: 100%;
-  display: block;
   object-fit: cover;
-  object-position: center;
+  display: block;
 }
 
+/* VEHICLE */
+.providerDetailsVehicleSummary {
+  display: grid;
+  gap: 12px;
+}
+
+.providerDetailsVehicleMetaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.providerDetailsMiniInfo {
+  background: rgba(248, 250, 252, 0.95);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  gap: 4px;
+  min-height: 72px;
+}
+
+.providerDetailsMiniLabel {
+  font-size: 12px;
+  font-weight: 750;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.providerDetailsMiniInfo strong {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+/* TRAVEL */
 .providerDetailsDataGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -249,24 +290,29 @@
 }
 
 .providerDetailsDataBox {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(0, 184, 241, 0.1);
-  border-radius: 12px;
-  padding: 14px;
+  background: rgba(248, 250, 252, 0.95);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 14px;
+  padding: 12px;
   display: grid;
-  gap: 6px;
+  gap: 4px;
+  min-height: 78px;
 }
 
 .providerDetailsDataBox strong {
-  font-size: 13px;
-  color: rgba(11, 27, 42, 0.55);
-  font-weight: 650;
+  font-size: 12px;
+  font-weight: 750;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .providerDetailsDataBox span {
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--text);
-  font-weight: 650;
+  line-height: 1.45;
+  word-break: break-word;
 }
 
 .providerDetailsInfoBlocks {
@@ -275,78 +321,63 @@
 }
 
 .providerDetailsInfoBlock {
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 12px;
+  background: rgba(248, 250, 252, 0.95);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 16px;
   padding: 14px;
+  display: grid;
+  gap: 8px;
 }
 
 .providerDetailsInfoBlock h3 {
-  margin: 0 0 8px;
-  font-size: 16px;
-  font-weight: 720;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 780;
+  color: var(--text);
 }
 
 .providerDetailsInfoBlock p {
   margin: 0;
-  color: rgba(11, 27, 42, 0.76);
-  line-height: 1.65;
-  font-weight: 550;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 14px;
+  word-break: break-word;
 }
 
-.providerDetailsVehicleSummary {
+/* EMPTY IMAGE */
+.providerDetailsImageEmpty {
+  width: 100%;
+  height: 100%;
   display: grid;
-  grid-template-columns: 1fr;
+  place-items: center;
+  text-align: center;
+  padding: 16px;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 14px;
+  background: linear-gradient(135deg, #f8fbfd, #eef5f9);
+}
+
+/* REVIEWS */
+.providerDetailsReviewList {
+  display: grid;
   gap: 14px;
-  align-items: start;
 }
 
-.providerDetailsVehicleMetaGrid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.providerDetailsMiniInfo {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 12px;
-  padding: 12px;
-  display: grid;
-  gap: 4px;
-}
-
-.providerDetailsMiniLabel {
-  font-size: 12px;
-  font-weight: 650;
-  color: rgba(11, 27, 42, 0.56);
-}
-
-.providerDetailsMiniInfo strong {
-  font-size: 15px;
-  color: var(--text);
-  font-weight: 760;
-}
-
-.providerDetailsReviewList,
-.providerDetailsSimilarList {
+.providerDetailsReviewItem {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  padding: 16px;
+  background: #fff;
   display: grid;
   gap: 12px;
-}
-
-.providerDetailsReviewItem,
-.providerDetailsSimilarCard {
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 12px;
-  padding: 14px;
 }
 
 .providerDetailsReviewTop {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
+  align-items: start;
+  gap: 12px;
 }
 
 .providerDetailsReviewTopLeft {
@@ -354,34 +385,35 @@
   gap: 4px;
 }
 
-.providerDetailsReviewDate {
-  font-size: 13px;
-  font-weight: 550;
-  color: rgba(11, 27, 42, 0.56);
+.providerDetailsReviewTopLeft strong {
+  color: var(--text);
+  font-size: 16px;
 }
 
-.providerDetailsReviewItem p,
-.providerDetailsSimilarCard p {
-  margin: 8px 0 0;
-  color: rgba(11, 27, 42, 0.76);
-  line-height: 1.65;
-  font-weight: 550;
+.providerDetailsReviewDate {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.providerDetailsReviewItem p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.7;
 }
 
 .providerDetailsReviewImageGrid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
   gap: 10px;
-  margin-top: 12px;
 }
 
 .providerDetailsReviewImageItem {
-  width: 88px;
-  height: 68px;
-  border-radius: 10px;
+  height: 90px;
+  border-radius: 12px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(0, 184, 241, 0.12);
+  background: #f3f6f9;
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .providerDetailsReviewImageItem img {
@@ -393,92 +425,157 @@
 
 .providerDetailsVoteRow {
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
-  margin-top: 12px;
+  gap: 10px;
 }
 
 .providerDetailsVoteBtn {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #fff;
+  color: var(--text);
   min-height: 40px;
-  padding: 0 14px;
+  padding: 9px 14px;
   border-radius: 12px;
-  border: 1px solid rgba(0, 184, 241, 0.18);
-  background: rgba(0, 184, 241, 0.08);
-  color: #0369a1;
-  font: inherit;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 750;
   cursor: pointer;
-  transition: 0.18s ease;
-}
-
-.providerDetailsVoteBtnAlt {
-  border-color: rgba(11, 27, 42, 0.12);
-  background: rgba(11, 27, 42, 0.04);
-  color: #12212f;
-}
-
-.providerDetailsVoteBtn.active {
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #ffffff;
-  border-color: rgba(0, 184, 241, 0.32);
+  transition: all 0.18s ease;
 }
 
 .providerDetailsVoteBtn:hover {
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
 }
 
-.providerDetailsVoteBtn:disabled {
-  opacity: 0.72;
-  cursor: not-allowed;
+.providerDetailsVoteBtn.active {
+  background: rgba(0, 184, 241, 0.10);
+  border-color: rgba(0, 184, 241, 0.18);
+  color: #0077a6;
+}
+
+.providerDetailsVoteBtnAlt.active {
+  background: rgba(255, 98, 98, 0.08);
+  border-color: rgba(255, 98, 98, 0.14);
+  color: #b42318;
+}
+
+/* SIMILAR */
+.providerDetailsSimilarList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
 }
 
 .providerDetailsSimilarCard {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  background: #fff;
+  padding: 16px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   gap: 12px;
+  align-items: center;
 }
 
-.providerDetailsNote {
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: rgba(177, 227, 250, 0.14);
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  color: rgba(11, 27, 42, 0.76);
-  font-weight: 600;
+.providerDetailsSimilarCard strong {
+  color: var(--text);
+  font-size: 16px;
 }
 
-@media (max-width: 980px) {
-  .providerDetailsTop,
-  .providerDetailsDataGrid,
-  .providerDetailsGallery,
-  .providerDetailsVehicleMetaGrid,
-  .providerDetailsVehicleSummary {
+.providerDetailsSimilarCard p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: 14px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .providerDetailsTop {
     grid-template-columns: 1fr;
   }
 
-  .providerDetailsHeroImage,
-  .providerDetailsImageEmpty {
+  .providerDetailsHeroImage {
     height: 240px;
   }
+}
 
-  .providerDetailsPackageHero,
-  .providerDetailsVehicleHero {
-    height: 260px;
+@media (max-width: 768px) {
+  .providerDetailsCard {
+    padding: 16px;
+    gap: 20px;
   }
 
   .providerDetailsTopContent h1 {
-    padding-right: 0;
+    font-size: 26px;
   }
 
-  .providerDetailsTypeTop {
-    position: static;
-    justify-self: start;
+  .providerDetailsVehicleList,
+  .providerDetailsTravelList {
+    grid-template-columns: 1fr;
   }
 
-  .providerDetailsSimilarCard,
-  .providerDetailsReviewTop {
+  .providerDetailsVehicleHero,
+  .providerDetailsPackageHero {
+    height: 200px;
+  }
+
+  .providerDetailsVehicleMetaGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .providerDetailsDataGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .providerDetailsSimilarCard {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+  }
+
+  .providerDetailsPrimaryBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 540px) {
+  .providerDetailsPage {
+    gap: 14px;
+  }
+
+  .providerDetailsCard {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .providerDetailsTopContent h1 {
+    font-size: 22px;
+  }
+
+  .providerDetailsHeroImage {
+    height: 210px;
+  }
+
+  .providerDetailsVehicleHero,
+  .providerDetailsPackageHero {
+    height: 180px;
+  }
+
+  .providerDetailsVehicleMetaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .providerDetailsInfoRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .providerDetailsVoteRow {
+    flex-direction: column;
+  }
+
+  .providerDetailsVoteBtn {
+    width: 100%;
   }
 }
