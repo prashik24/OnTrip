@@ -63,22 +63,22 @@ export default function ProviderRegister() {
   }, [navigate]);
 
   const listingTypeOptions = [
-    { label: "Vehicle Service", value: "Vehicle" },
-    { label: "Travel Planner", value: "Travel Planner" },
+    { label: "Vehicle Service", value: "vehicle" },
+    { label: "Travel Planner", value: "travel_planner" },
   ];
 
   const plannerModeOptions = [
-    { label: "Customized Trip", value: "Customized Trip" },
-    { label: "Self Customized Places", value: "Self Customized Places" },
-    { label: "Day Package", value: "Day Package" },
-    { label: "Multi Day Package", value: "Multi Day Package" },
-    { label: "Group Trip", value: "Group Trip" },
+    { label: "Customized Trip", value: "customized_trip" },
+    { label: "Self Customized Places", value: "self_customized_places" },
+    { label: "Day Package", value: "day_package" },
+    { label: "Multi Day Package", value: "multi_day_package" },
+    { label: "Group Trip", value: "group_trip" },
   ];
 
   const priceUnitOptions = [
-    { label: "Per Day", value: "Per Day" },
-    { label: "Per Hour", value: "Per Hour" },
-    { label: "Fixed", value: "Fixed" },
+    { label: "Per Day", value: "per_day" },
+    { label: "Per Hour", value: "per_hour" },
+    { label: "Fixed", value: "fixed" },
   ];
 
   function addVehicle() {
