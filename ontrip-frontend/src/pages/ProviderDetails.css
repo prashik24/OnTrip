@@ -241,8 +241,7 @@
   min-height: 100px;
   border-radius: 14px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(0, 184, 241, 0.1);
+ 
 }
 
 .providerDetailsGalleryItem img {
@@ -251,6 +250,7 @@
   display: block;
   object-fit: cover;
   object-position: center;
+  border-radius: 28px;
 }
 
 .providerDetailsDataGrid,
