@@ -1,4 +1,3 @@
-/* --- Page Layout --- */
 .providerDetailsPage {
   padding-bottom: 32px;
   display: grid;
@@ -28,7 +27,6 @@
   gap: 20px;
 }
 
-/* --- Top Header Section --- */
 .providerDetailsTop {
   display: grid;
   grid-template-columns: minmax(360px, 460px) 1fr;
@@ -43,6 +41,7 @@
   overflow: hidden;
   background: #ffffff;
   border: 1px solid rgba(0, 184, 241, 0.1);
+  box-shadow: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,6 +52,20 @@
   height: 100%;
   display: block;
   object-fit: contain;
+  object-position: center;
+  border-radius: 20px;
+}
+
+.providerDetailsImageEmpty {
+  width: 100%;
+  height: 320px;
+  display: grid;
+  place-items: center;
+  color: rgba(11, 27, 42, 0.5);
+  font-weight: 650;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px dashed rgba(11, 27, 42, 0.12);
 }
 
 .providerDetailsTopContent {
@@ -62,37 +75,143 @@
   padding-top: 4px;
 }
 
-/* --- Shared Card Structure (Crucial Fix) --- */
+.providerDetailsType {
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(0, 184, 241, 0.1);
+  border: 1px solid rgba(0, 184, 241, 0.16);
+  font-size: 12px;
+  font-weight: 700;
+  color: #0369a1;
+}
+
+.providerDetailsTypeTop {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.providerDetailsTopContent h1 {
+  margin: 0;
+  padding-right: 130px;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 820;
+  color: var(--text);
+}
+
+.providerDetailsMeta {
+  color: var(--muted);
+  font-weight: 550;
+}
+
+.providerDetailsDesc {
+  margin: 0;
+  color: rgba(11, 27, 42, 0.76);
+  line-height: 1.7;
+  font-weight: 550;
+}
+
+.providerDetailsInfoRow {
+  display: grid;
+  gap: 6px;
+  color: rgba(11, 27, 42, 0.8);
+  font-weight: 550;
+}
+
+.providerDetailsInfoRow span {
+  display: block;
+}
+
+.providerDetailsPrimaryBtn,
+.providerDetailsGhostBtn {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  transition: 0.18s ease;
+}
+
+.providerDetailsPrimaryBtn {
+  width: fit-content;
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+}
+
+.providerDetailsGhostBtn {
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  background: #ffffff;
+  color: var(--text);
+}
+
+.providerDetailsPrimaryBtn:hover,
+.providerDetailsGhostBtn:hover {
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+}
+
+.providerDetailsSection {
+  display: grid;
+  gap: 14px;
+}
+
+.providerDetailsSection h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 780;
+  color: var(--text);
+}
+
 .providerDetailsTravelList,
 .providerDetailsVehicleList {
   display: grid;
-  gap: 20px;
+  gap: 16px;
 }
 
+/* Unified Card Styles */
 .providerDetailsTravelCard,
 .providerDetailsVehicleCard {
   width: 100%;
+  min-height: 500px; /* Ensures vertical consistency */
   background: rgba(244, 251, 255, 0.72);
   border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 16px;
   padding: 20px;
-  display: flex; /* Changed from grid to flex for better height control */
-  flex-direction: column;
+  display: grid;
   gap: 16px;
   box-sizing: border-box;
-  min-height: 600px; /* Ensures vertical consistency */
+  align-content: start;
 }
 
-/* --- Image Heroes (Fixed size) --- */
+.providerDetailsItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.providerDetailsItemTitle {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 780;
+  color: var(--text);
+}
+
+/* Unified Hero Image Styles */
 .providerDetailsPackageHero,
 .providerDetailsVehicleHero {
   width: 100%;
-  height: 340px; /* Exact same height for both */
+  height: 340px;
   border-radius: 20px;
   overflow: hidden;
   background: #ffffff;
   border: 1px solid rgba(0, 184, 241, 0.1);
-  flex-shrink: 0; /* Prevents image from shrinking with long text */
+  box-shadow: none;
+  display: block;
 }
 
 .providerDetailsPackageHero img,
@@ -100,72 +219,62 @@
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover; /* Forces image to fill the 340px area without distortion */
+  object-fit: cover;
   object-position: center;
 }
 
-/* --- Gallery Thumbs --- */
 .providerDetailsGallery {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  flex-shrink: 0;
 }
 
 .providerDetailsGalleryItem {
-  height: 96px;
   border-radius: 14px;
   overflow: hidden;
   background: #ffffff;
+  min-height: 96px;
   border: 1px solid rgba(0, 184, 241, 0.1);
 }
 
 .providerDetailsGalleryItem img {
   width: 100%;
   height: 100%;
+  display: block;
   object-fit: cover;
+  object-position: center;
 }
 
-/* --- Info Grids & Boxes --- */
-.providerDetailsDataGrid,
-.providerDetailsVehicleMetaGrid {
+.providerDetailsDataGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
-.providerDetailsDataBox,
-.providerDetailsMiniInfo {
+.providerDetailsDataBox {
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 12px;
   padding: 14px;
   display: grid;
-  gap: 4px;
-  min-height: 60px;
+  gap: 6px;
 }
 
-.providerDetailsDataBox strong,
-.providerDetailsMiniLabel {
-  font-size: 12px;
+.providerDetailsDataBox strong {
+  font-size: 13px;
   color: rgba(11, 27, 42, 0.55);
   font-weight: 650;
-  text-transform: uppercase;
 }
 
-.providerDetailsDataBox span,
-.providerDetailsMiniInfo strong {
+.providerDetailsDataBox span {
   font-size: 15px;
   color: var(--text);
-  font-weight: 760;
+  font-weight: 650;
 }
 
-/* --- Content Content Blocks --- */
-.providerDetailsInfoBlocks,
-.providerDetailsVehicleSummary {
+.providerDetailsInfoBlocks {
   display: grid;
   gap: 12px;
-  flex-grow: 1; /* Pushes content to occupy equal space */
 }
 
 .providerDetailsInfoBlock {
@@ -175,35 +284,162 @@
   padding: 14px;
 }
 
+.providerDetailsInfoBlock h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 720;
+}
+
 .providerDetailsInfoBlock p {
   margin: 0;
   color: rgba(11, 27, 42, 0.76);
-  line-height: 1.6;
+  line-height: 1.65;
   font-weight: 550;
-  /* Optional: keeps height consistent by limiting lines */
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
-/* --- Buttons & UI --- */
-.providerDetailsPrimaryBtn {
-  width: fit-content;
-  min-height: 42px;
-  padding: 0 24px;
+.providerDetailsVehicleSummary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.providerDetailsVehicleMetaGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.providerDetailsMiniInfo {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 12px;
-  border: 1px solid rgba(0, 184, 241, 0.32);
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #ffffff;
+  padding: 12px;
+  display: grid;
+  gap: 4px;
+}
+
+.providerDetailsMiniLabel {
+  font-size: 12px;
+  font-weight: 650;
+  color: rgba(11, 27, 42, 0.56);
+}
+
+.providerDetailsMiniInfo strong {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 760;
+}
+
+.providerDetailsReviewList,
+.providerDetailsSimilarList {
+  display: grid;
+  gap: 12px;
+}
+
+.providerDetailsReviewItem,
+.providerDetailsSimilarCard {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.providerDetailsReviewTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.providerDetailsReviewTopLeft {
+  display: grid;
+  gap: 4px;
+}
+
+.providerDetailsReviewDate {
+  font-size: 13px;
+  font-weight: 550;
+  color: rgba(11, 27, 42, 0.56);
+}
+
+.providerDetailsReviewItem p,
+.providerDetailsSimilarCard p {
+  margin: 8px 0 0;
+  color: rgba(11, 27, 42, 0.76);
+  line-height: 1.65;
+  font-weight: 550;
+}
+
+.providerDetailsReviewImageGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.providerDetailsReviewImageItem {
+  width: 88px;
+  height: 68px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(0, 184, 241, 0.12);
+}
+
+.providerDetailsReviewImageItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.providerDetailsVoteRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.providerDetailsVoteBtn {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 184, 241, 0.18);
+  background: rgba(0, 184, 241, 0.08);
+  color: #0369a1;
+  font: inherit;
   font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
 }
 
-.providerDetailsPrimaryBtn:hover {
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.12);
-  transform: translateY(-1px);
+.providerDetailsVoteBtnAlt {
+  border-color: rgba(11, 27, 42, 0.12);
+  background: rgba(11, 27, 42, 0.04);
+  color: #12212f;
+}
+
+.providerDetailsVoteBtn.active {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+  border-color: rgba(0, 184, 241, 0.32);
+}
+
+.providerDetailsVoteBtn:hover {
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+}
+
+.providerDetailsVoteBtn:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.providerDetailsSimilarCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
 .providerDetailsNote {
@@ -215,15 +451,18 @@
   font-weight: 600;
 }
 
-/* --- Responsive Updates --- */
 @media (max-width: 980px) {
-  .providerDetailsTop {
+  .providerDetailsTop,
+  .providerDetailsDataGrid,
+  .providerDetailsGallery,
+  .providerDetailsVehicleMetaGrid,
+  .providerDetailsVehicleSummary {
     grid-template-columns: 1fr;
   }
 
-  .providerDetailsTravelCard,
-  .providerDetailsVehicleCard {
-    min-height: auto;
+  .providerDetailsHeroImage,
+  .providerDetailsImageEmpty {
+    height: 240px;
   }
 
   .providerDetailsPackageHero,
@@ -231,7 +470,23 @@
     height: 260px;
   }
 
-  .providerDetailsGallery {
-    grid-template-columns: repeat(2, 1fr);
+  .providerDetailsTopContent h1 {
+    padding-right: 0;
+  }
+
+  .providerDetailsTypeTop {
+    position: static;
+    justify-self: start;
+  }
+
+  .providerDetailsSimilarCard,
+  .providerDetailsReviewTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .providerDetailsTravelCard,
+  .providerDetailsVehicleCard {
+    min-height: auto;
   }
 }
