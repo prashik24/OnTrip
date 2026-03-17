@@ -27,7 +27,6 @@
   gap: 24px;
 }
 
-/* TOP SECTION */
 .providerDetailsTop {
   display: grid;
   grid-template-columns: 520px minmax(0, 1fr);
@@ -50,7 +49,7 @@
 .providerDetailsHeroImage img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 }
 
@@ -69,7 +68,7 @@
   min-height: 36px;
   padding: 8px 15px;
   border-radius: 14px;
-  background: rgba(0, 184, 241, 0.10);
+  background: rgba(0, 184, 241, 0.1);
   color: #0b77a5;
   font-size: 13px;
   font-weight: 800;
@@ -146,11 +145,10 @@
   border-radius: 14px;
   background: rgba(0, 184, 241, 0.06);
   color: #0f5f7a;
-  border: 1px solid rgba(0, 184, 241, 0.10);
+  border: 1px solid rgba(0, 184, 241, 0.1);
   font-weight: 650;
 }
 
-/* SECTION */
 .providerDetailsSection {
   display: grid;
   gap: 16px;
@@ -163,7 +161,7 @@
   color: #0b1b2a;
 }
 
-/* SAME GRID FOR BOTH */
+/* SAME LIST STYLE */
 .providerDetailsVehicleList,
 .providerDetailsTravelList {
   display: grid;
@@ -171,16 +169,20 @@
   gap: 20px;
 }
 
+/* SAME CARD SIZE */
 .providerDetailsVehicleCard,
 .providerDetailsTravelCard {
   background: #f8fbfd;
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 22px;
   padding: 20px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
   width: 100%;
   box-sizing: border-box;
+  min-height: 560px;
+  height: 560px;
 }
 
 .providerDetailsItemHeader {
@@ -188,7 +190,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 42px;
+  min-height: 44px;
+  flex-shrink: 0;
 }
 
 .providerDetailsItemTitle {
@@ -200,12 +203,12 @@
   word-break: break-word;
 }
 
-/* IMPORTANT: SAME IMAGE CONTAINER SIZE FOR BOTH */
+/* SAME IMAGE BOX */
 .providerDetailsVehicleHero,
 .providerDetailsPackageHero {
   width: 100%;
   max-width: 640px;
-  height: 280px;
+  height: 240px;
   border-radius: 18px;
   overflow: hidden;
   background: #ffffff;
@@ -213,20 +216,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .providerDetailsVehicleHero img,
 .providerDetailsPackageHero img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 }
 
-/* THUMBNAILS */
 .providerDetailsGallery {
   display: grid;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .providerDetailsVehicleThumbs,
@@ -250,11 +254,10 @@
 .providerDetailsGalleryItem img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 }
 
-/* EMPTY BOX */
 .providerDetailsImageEmpty {
   width: 100%;
   height: 100%;
@@ -268,16 +271,18 @@
   background: #f4f8fb;
 }
 
-/* VEHICLE DETAILS */
+/* VEHICLE CONTENT */
 .providerDetailsVehicleSummary {
-  display: grid;
-  gap: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .providerDetailsVehicleMetaGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+  height: 100%;
 }
 
 .providerDetailsMiniInfo {
@@ -288,6 +293,7 @@
   display: grid;
   gap: 4px;
   min-height: 76px;
+  align-content: start;
 }
 
 .providerDetailsMiniLabel {
@@ -305,11 +311,12 @@
   word-break: break-word;
 }
 
-/* TRAVEL DETAILS */
+/* TRAVEL CONTENT */
 .providerDetailsDataGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .providerDetailsDataBox {
@@ -339,8 +346,10 @@
 }
 
 .providerDetailsInfoBlocks {
+  flex: 1;
   display: grid;
   gap: 12px;
+  align-content: start;
 }
 
 .providerDetailsInfoBlock {
@@ -362,9 +371,13 @@
 .providerDetailsInfoBlock p {
   margin: 0;
   color: #516274;
-  line-height: 1.7;
+  line-height: 1.6;
   font-size: 14px;
   word-break: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 /* REVIEWS */
@@ -431,7 +444,7 @@
 .providerDetailsReviewImageItem img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 }
 
@@ -460,7 +473,7 @@
 }
 
 .providerDetailsVoteBtn.active {
-  background: rgba(0, 184, 241, 0.10);
+  background: rgba(0, 184, 241, 0.1);
   border-color: rgba(0, 184, 241, 0.18);
   color: #0077a6;
 }
@@ -534,9 +547,15 @@
     height: 240px;
   }
 
+  .providerDetailsVehicleCard,
+  .providerDetailsTravelCard {
+    min-height: auto;
+    height: auto;
+  }
+
   .providerDetailsVehicleHero,
   .providerDetailsPackageHero {
-    height: 230px;
+    height: 220px;
   }
 
   .providerDetailsVehicleMetaGrid,
