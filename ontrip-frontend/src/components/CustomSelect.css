@@ -7,7 +7,6 @@
 .customSelectTrigger {
   width: 100%;
   min-height: 54px;
-  height: 54px;
   border: 1.5px solid rgba(11, 27, 42, 0.12);
   border-radius: 18px;
   background: #ffffff;
@@ -35,7 +34,6 @@
 .customSelectTrigger:focus {
   border-color: #00b8f1;
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
-  background: #ffffff;
 }
 
 .customSelectValue {
@@ -48,8 +46,7 @@
 }
 
 .customSelectValue.placeholder {
-  color: #12212f;
-  font-size: 16px;
+  color: #12212f; /* same as inputs */
   font-weight: 700;
   opacity: 1;
 }
@@ -62,7 +59,6 @@
   justify-content: center;
   flex-shrink: 0;
   transition: transform 0.2s ease;
-  color: #12212f;
 }
 
 .customSelectArrow svg {
