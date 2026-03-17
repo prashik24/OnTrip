@@ -43,39 +43,42 @@
   gap: 16px;
 }
 
+/* ✅ FIXED CARD */
 .myListingsCard {
-  width: 100%;
-  min-width: 0;
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.12);
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  display: grid;
 }
 
-/* 🔥 FIXED HEADER IMAGE */
+/* 🔥 FIXED IMAGE CONTAINER */
 .myListingsMedia {
   width: 100%;
-  height: 280px;
+  height: 240px;
+  min-height: 240px;
 
-  border-radius: 24px;
+  border-radius: 20px;
   overflow: hidden;
 
   background: transparent;
+  border: none;
 
   display: block;
 }
 
+/* 🔥 FIXED IMAGE */
 .myListingsMedia img {
   width: 100%;
   height: 100%;
 
-  display: block;
-
-  object-fit: cover;   /* 🔥 fill properly */
+  object-fit: cover;   /* fills like provider page */
   object-position: center;
 
-  border-radius: inherit; /* 🔥 rounded edges visible */
+  display: block;
+
+  border-radius: inherit;
 }
 
 .myListingsMediaEmpty {
@@ -85,7 +88,6 @@
   place-items: center;
   font-weight: 650;
   color: rgba(11, 27, 42, 0.5);
-  background: rgba(177, 227, 250, 0.14);
 }
 
 .myListingsBody {
@@ -164,6 +166,12 @@
   border-color: rgba(255, 98, 98, 0.16);
 }
 
+.myListingsBtn-1 {
+  background-color: #4ec9f5;
+  color: #ffffff;
+}
+
+/* REST SAME */
 .myListingsEditForm {
   margin-top: 10px;
   padding-top: 18px;
@@ -178,17 +186,25 @@
   gap: 14px;
 }
 
-.myListingsEditForm input:not([type="checkbox"]):not([type="file"]),
-.myListingsEditForm textarea {
-  width: 100%;
-  border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 12px;
-  padding: 12px 14px;
-  font: inherit;
+.myListingsBlock {
+  background: rgba(244, 251, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 14px;
+  padding: 16px;
 }
 
-.myListingsEditForm textarea {
-  min-height: 110px;
+.myListingsVehicleList,
+.myListingsTripList {
+  display: grid;
+  gap: 14px;
+}
+
+.myListingsVehicleCard,
+.myListingsTripCard {
+  background: #fff;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 14px;
+  padding: 14px;
 }
 
 .myListingsImageGrid {
@@ -198,9 +214,11 @@
 }
 
 .myListingsThumb {
+  position: relative;
   border-radius: 12px;
   overflow: hidden;
   min-height: 120px;
+  background: rgba(177, 227, 250, 0.14);
 }
 
 .myListingsThumb img {
@@ -210,8 +228,9 @@
 }
 
 @media (max-width: 980px) {
-  .myListingsMedia {
-    height: 220px;
+  .myListingsTop {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .myListingsFormGrid,
