@@ -51,10 +51,10 @@
   min-height: 300px;
   max-width: 100%;
   box-sizing: border-box;
-  border-radius: 28px;
+  border-radius: 32px;
   overflow: hidden;
-  background: rgba(244, 251, 255, 0.9);
-  border: 1px solid rgba(0, 184, 241, 0.08);
+  background: transparent;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,7 +66,7 @@
   display: block;
   object-fit: cover;
   object-position: center;
-  border-radius: 28px;
+  border-radius: 32px;
 }
 
 .providerDetailsImageEmpty {
@@ -77,7 +77,7 @@
   place-items: center;
   color: rgba(11, 27, 42, 0.5);
   font-weight: 650;
-  border-radius: 28px;
+  border-radius: 32px;
   background: rgba(255, 255, 255, 0.9);
   border: 1px dashed rgba(11, 27, 42, 0.12);
 }
@@ -233,10 +233,10 @@
   min-height: 320px;
   max-width: 100%;
   box-sizing: border-box;
-  border-radius: 24px;
+  border-radius: 32px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(0, 184, 241, 0.08);
+  background: transparent;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -247,9 +247,9 @@
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
-  border-radius: 24px;
+  border-radius: 32px;
 }
 
 .providerDetailsGallery {
@@ -263,10 +263,10 @@
 .providerDetailsGalleryItem {
   width: 100%;
   height: 100px;
-  border-radius: 14px;
+  border-radius: 18px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(0, 184, 241, 0.1);
+  background: transparent;
+  border: none;
 }
 
 .providerDetailsGalleryItem img {
@@ -275,6 +275,7 @@
   display: block;
   object-fit: cover;
   object-position: center;
+  border-radius: 18px;
 }
 
 .providerDetailsDataGrid {
@@ -426,19 +427,24 @@
 }
 
 .providerDetailsReviewImageItem {
-  width: 88px;
-  height: 68px;
-  border-radius: 10px;
+  width: 100px;
+  height: 78px;
+  border-radius: 14px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(0, 184, 241, 0.12);
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .providerDetailsReviewImageItem img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   display: block;
+  border-radius: 14px;
 }
 
 .providerDetailsVoteRow {
