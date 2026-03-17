@@ -74,16 +74,6 @@ export default function Providers() {
     navigate("/provider-register");
   }
 
-  function getTravelPreview(item) {
-    const firstPlan =
-      item.travelPlans?.[0] ||
-      item.travelPlanner ||
-      null;
-
-    if (!firstPlan) return "No package available.";
-    return `${firstPlan.packageTitle || "Package"} — ₹${firstPlan.priceFrom || 0}`;
-  }
-
   return (
     <div className="providersPage container">
       <section className="providersTopBar">
@@ -193,10 +183,6 @@ export default function Providers() {
                 <div className="providerTypePill">
                   {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
                 </div>
-
-                {item.listingType === "travel_planner" && (
-                  <div className="providerCardDesc">{getTravelPreview(item)}</div>
-                )}
 
                 <div className="providerCardDesc">
                   {item.description || "No description available."}
