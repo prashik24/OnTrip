@@ -1,315 +1,233 @@
-.providersPage {
+.providerRegisterPage {
   padding-bottom: 32px;
   display: grid;
-  gap: 22px;
-  overflow: visible;
-}
-
-.providersHero,
-.providersFormWrap,
-.providersSearchBox {
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 28px;
-  box-shadow: 0 14px 40px rgba(10, 22, 35, 0.08);
-  padding: 24px;
-  overflow: visible;
-}
-
-.providersHero {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   gap: 18px;
 }
 
-.providersTitle {
+.providerRegisterHead h1 {
   margin: 0;
-  font-size: 34px;
-  font-weight: 900;
-  letter-spacing: -0.6px;
-}
-
-.providersSub {
-  margin: 8px 0 0;
-  color: var(--muted);
-  line-height: 1.7;
-  font-weight: 600;
-  max-width: 760px;
-}
-
-.providersPrimaryBtn,
-.providersGhostBtn,
-.providersDangerBtn {
-  min-height: 46px;
-  padding: 0 18px;
-  border-radius: 14px;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.providersPrimaryBtn {
-  border: 1px solid rgba(0, 184, 241, 0.28);
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #fff;
-}
-
-.providersPrimaryBtn:hover {
-  box-shadow: 0 10px 20px rgba(0, 184, 241, 0.18);
-}
-
-.providersGhostBtn {
-  border: 1px solid rgba(11, 27, 42, 0.1);
-  background: #fff;
+  font-size: 32px;
+  font-weight: 820;
   color: var(--text);
 }
 
-.providersDangerBtn {
+.providerRegisterHead p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+  font-weight: 550;
+}
+
+.providerRegisterMessage {
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 650;
+}
+
+.providerRegisterMessage.error {
+  background: rgba(255, 98, 98, 0.08);
+  color: #b42318;
+  border: 1px solid rgba(255, 98, 98, 0.16);
+}
+
+.providerRegisterMessage.success {
+  background: rgba(16, 185, 129, 0.08);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.16);
+}
+
+.providerRegisterForm {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  padding: 20px;
+  display: grid;
+  gap: 18px;
+}
+
+.providerRegisterGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.providerRegisterForm > .providerRegisterGrid label,
+.providerRegisterBlock label:not(.providerRegisterCheck) {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 650;
+  color: #12212f;
+}
+
+.providerRegisterForm input:not([type="checkbox"]):not([type="file"]),
+.providerRegisterForm textarea {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 550;
+  color: #12212f;
+  background: #fff;
+  outline: none;
+}
+
+.providerRegisterForm textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.providerRegisterForm input:not([type="checkbox"]):not([type="file"]):focus,
+.providerRegisterForm textarea:focus {
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
+}
+
+.providerRegisterForm input[type="file"] {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.providerRegisterForm input[type="file"]::file-selector-button {
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  padding: 10px 14px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+.providerRegisterBlock {
+  background: rgba(244, 251, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.providerRegisterBlock h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 760;
+}
+
+.providerRegisterBlockHead,
+.providerRegisterVehicleTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.providerRegisterVehicleList,
+.providerRegisterTripList {
+  display: grid;
+  gap: 14px;
+}
+
+.providerRegisterVehicleCard,
+.providerRegisterTripCard {
+  background: #fff;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.providerRegisterCheckField {
+  min-height: 46px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+}
+
+.providerRegisterCheck {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-weight: 650;
+  font-size: 15px;
+  color: #12212f;
+  cursor: pointer;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.providerRegisterCheck input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #00b8f1;
+  flex-shrink: 0;
+}
+
+.providerRegisterCheck span {
+  line-height: 1;
+  color: #12212f;
+  display: block;
+  margin: 0;
+}
+
+.providerRegisterPrimaryBtn,
+.providerRegisterGhostBtn,
+.providerRegisterDangerBtn {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.providerRegisterPrimaryBtn {
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+}
+
+.providerRegisterPrimaryBtn:hover {
+  box-shadow: 0 8px 18px rgba(0, 184, 241, 0.16);
+}
+
+.providerRegisterPrimaryBtn:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.providerRegisterGhostBtn {
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  background: #ffffff;
+  color: var(--text);
+}
+
+.providerRegisterDangerBtn {
   border: 1px solid rgba(255, 98, 98, 0.16);
   background: rgba(255, 98, 98, 0.08);
   color: #b42318;
 }
 
-/* SEARCH BOX */
-.providersSearchBox {
-  display: grid;
-  gap: 16px;
-  overflow: visible;
+.fullSpan {
+  grid-column: 1 / -1;
 }
 
-.providersSearchForm {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
-  gap: 14px;
-  align-items: end;
-  overflow: visible;
-}
-
-/* all labels same */
-.providersSearchForm label,
-.providersSearchBox label,
-.providersFormWrap label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #12212f;
-}
-
-/* all text inputs same */
-.providersSearchForm input,
-.providersSearchBox input,
-.providersFormWrap input {
-  width: 100%;
-  min-height: 48px;
-  border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 14px;
-  padding: 12px 14px;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  color: #12212f;
-  background: #ffffff;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-}
-
-.providersSearchForm input::placeholder,
-.providersSearchBox input::placeholder,
-.providersFormWrap input::placeholder {
-  color: #6b7b8a;
-  font-weight: 600;
-}
-
-/* focus same */
-.providersSearchForm input:focus,
-.providersSearchBox input:focus,
-.providersFormWrap input:focus {
-  border-color: #00b8f1;
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
-  background: #fff;
-}
-
-/* select wrapper area same height and style */
-.providersSearchForm .customSelect,
-.providersSearchBox .customSelect,
-.providersFormWrap .customSelect {
-  width: 100%;
-}
-
-/* main visible selected box */
-.providersSearchForm .customSelectTrigger,
-.providersSearchBox .customSelectTrigger,
-.providersFormWrap .customSelectTrigger,
-.providersSearchForm .customSelect__control,
-.providersSearchBox .customSelect__control,
-.providersFormWrap .customSelect__control {
-  width: 100%;
-  min-height: 48px;
-  border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 14px;
-  padding: 0 14px;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  color: #12212f;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-}
-
-/* focus state for custom selects */
-.providersSearchForm .customSelect.open .customSelectTrigger,
-.providersSearchBox .customSelect.open .customSelectTrigger,
-.providersFormWrap .customSelect.open .customSelectTrigger,
-.providersSearchForm .customSelectTrigger:focus,
-.providersSearchBox .customSelectTrigger:focus,
-.providersFormWrap .customSelectTrigger:focus,
-.providersSearchForm .customSelect__control--is-focused,
-.providersSearchBox .customSelect__control--is-focused,
-.providersFormWrap .customSelect__control--is-focused {
-  border-color: #00b8f1;
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
-  background: #ffffff;
-}
-
-/* selected text same color as inputs */
-.providersSearchForm .customSelectValue,
-.providersSearchBox .customSelectValue,
-.providersFormWrap .customSelectValue,
-.providersSearchForm .customSelect__single-value,
-.providersSearchBox .customSelect__single-value,
-.providersFormWrap .customSelect__single-value,
-.providersSearchForm .customSelectTrigger span,
-.providersSearchBox .customSelectTrigger span,
-.providersFormWrap .customSelectTrigger span {
-  color: #12212f;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-/* placeholder same style */
-.providersSearchForm .customSelectPlaceholder,
-.providersSearchBox .customSelectPlaceholder,
-.providersFormWrap .customSelectPlaceholder,
-.providersSearchForm .customSelect__placeholder,
-.providersSearchBox .customSelect__placeholder,
-.providersFormWrap .customSelect__placeholder {
-  color: #6b7b8a;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-/* dropdown menu */
-.providersSearchForm .customSelectMenu,
-.providersSearchBox .customSelectMenu,
-.providersFormWrap .customSelectMenu,
-.providersSearchForm .customSelect__menu,
-.providersSearchBox .customSelect__menu,
-.providersFormWrap .customSelect__menu {
-  margin-top: 8px;
-  border: 1px solid rgba(11, 27, 42, 0.1);
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 18px 34px rgba(10, 22, 35, 0.12);
-  overflow: hidden;
-  z-index: 30;
-}
-
-/* dropdown options */
-.providersSearchForm .customSelectOption,
-.providersSearchBox .customSelectOption,
-.providersFormWrap .customSelectOption,
-.providersSearchForm .customSelect__option,
-.providersSearchBox .customSelect__option,
-.providersFormWrap .customSelect__option {
-  padding: 12px 14px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #12212f;
-  background: #ffffff;
-  cursor: pointer;
-  transition: background 0.16s ease, color 0.16s ease;
-}
-
-.providersSearchForm .customSelectOption:hover,
-.providersSearchBox .customSelectOption:hover,
-.providersFormWrap .customSelectOption:hover,
-.providersSearchForm .customSelect__option:hover,
-.providersSearchBox .customSelect__option:hover,
-.providersFormWrap .customSelect__option:hover,
-.providersSearchForm .customSelect__option--is-focused,
-.providersSearchBox .customSelect__option--is-focused,
-.providersFormWrap .customSelect__option--is-focused {
-  background: rgba(0, 184, 241, 0.08);
-  color: #0f2233;
-}
-
-.providersSearchForm .customSelectOption.selected,
-.providersSearchBox .customSelectOption.selected,
-.providersFormWrap .customSelectOption.selected,
-.providersSearchForm .customSelect__option--is-selected,
-.providersSearchBox .customSelect__option--is-selected,
-.providersFormWrap .customSelect__option--is-selected {
-  background: rgba(0, 184, 241, 0.12);
-  color: #0098c9;
-}
-
-/* search action button alignment */
-.providersSearchActions {
-  display: flex;
-  align-items: end;
-  gap: 10px;
-}
-
-.providersSearchActions .providersPrimaryBtn,
-.providersSearchActions .providersGhostBtn {
-  min-height: 48px;
-}
-
-.providersGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
-}
-
-@media (max-width: 1100px) {
-  .providersSearchForm {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .providersGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 760px) {
-  .providersHero {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .providersSearchForm {
+@media (max-width: 980px) {
+  .providerRegisterGrid {
     grid-template-columns: 1fr;
-  }
-
-  .providersGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .providersHero,
-  .providersFormWrap,
-  .providersSearchBox {
-    padding: 18px;
-    border-radius: 22px;
-  }
-
-  .providersTitle {
-    font-size: 28px;
   }
 }
