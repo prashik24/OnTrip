@@ -59,8 +59,8 @@
 
 /* 🔥 IMAGE FULL SPACE + BIG */
 .myListingsMedia {
-  width: 680px;
-  height: 450px;
+  width: 790px;
+  height: 550px;
   background: #f8fcff;
   overflow: hidden;
   position: center;
@@ -78,6 +78,7 @@
   display: block;
   position: center;
   border-radius: 32px;
+  margin-top: 30px;
 }
 
 .myListingsMediaEmpty {
