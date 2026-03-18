@@ -40,7 +40,7 @@
 }
 
 .brandText {
-  font-family: var(--font-brand);
+ 
   font-size: 26px;
   font-weight: 900;
   letter-spacing: 0.4px;
@@ -88,12 +88,12 @@
 }
 
 .navTextBtn.signup {
-  font-weight: 700;
+  font-weight: 600;
   
 }
 
 .navTextBtn.signup:hover {
-  color: #009ed0;
+    color: var(--p3);
 }
 
 .navUserLink {
