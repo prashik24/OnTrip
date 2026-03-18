@@ -1,3 +1,4 @@
+/* ===== Sidebar ===== */
 .otSide {
   width: 300px;
   height: 100vh;
@@ -15,7 +16,7 @@
   overflow-x: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
 }
@@ -38,7 +39,7 @@
   box-sizing: border-box;
 }
 
-/* top */
+/* ===== Top ===== */
 .otSideTop {
   display: flex;
   align-items: center;
@@ -58,7 +59,7 @@
   height: 40px;
   border-radius: 14px;
   border: 1px solid rgba(0, 184, 241, 0.14);
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.92);
   color: #0f172a;
   cursor: pointer;
   display: inline-grid;
@@ -70,32 +71,27 @@
 
 .otSideClose:hover {
   background: rgba(0, 184, 241, 0.08);
-  border-color: rgba(0, 184, 241, 0.26);
+  border-color: rgba(0, 184, 241, 0.28);
   color: #0284c7;
 }
 
-/* search */
+/* ===== Search ===== */
 .otSearch {
   display: grid;
-  grid-template-columns: 38px 1fr 32px;
+  grid-template-columns: 38px 1fr;
   align-items: center;
-  gap: 8px;
-  padding: 10px 10px 10px 12px;
-  border-radius: 18px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.98),
-    rgba(244, 251, 255, 0.96)
-  );
-  border: 1px solid rgba(0, 184, 241, 0.14);
-  box-shadow: 0 8px 22px rgba(0, 184, 241, 0.06);
-  transition: 0.18s ease;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(240, 249, 255, 0.9);
+  border: 1px solid rgba(0, 184, 241, 0.25);
+  transition: 0.2s ease;
 }
 
 .otSearch:focus-within {
-  border-color: rgba(0, 184, 241, 0.3);
-  box-shadow: 0 10px 24px rgba(0, 184, 241, 0.12);
-  background: rgba(255, 255, 255, 0.99);
+  border-color: rgba(0, 184, 241, 0.6);
+  box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.12);
+  background: #ffffff;
 }
 
 .otSearchIcon {
@@ -104,8 +100,8 @@
   border-radius: 999px;
   display: grid;
   place-items: center;
-  background: rgba(0, 184, 241, 0.1);
-  border: 1px solid rgba(0, 184, 241, 0.14);
+  background: rgba(0, 184, 241, 0.12);
+  border: 1px solid rgba(0, 184, 241, 0.2);
   color: #0284c7;
   font-size: 14px;
   font-weight: 700;
@@ -125,84 +121,47 @@
 
 .otSearchInput::placeholder {
   color: rgba(15, 23, 42, 0.45);
-  font-weight: 500;
 }
 
-.otSearchClear {
-  width: 28px;
-  height: 28px;
-  border: none;
-  background: rgba(15, 23, 42, 0.05);
-  color: rgba(15, 23, 42, 0.65);
-  border-radius: 999px;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  transition: 0.18s ease;
-}
-
-.otSearchClear:hover {
-  background: rgba(0, 184, 241, 0.12);
-  color: #0284c7;
-}
-
-/* profile */
+/* ===== Logged in profile card ===== */
 .otProfileCard {
-  width: 100%;
-  border: 1px solid rgba(0, 184, 241, 0.14);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.98),
-    rgba(244, 251, 255, 0.95)
-  );
-  box-shadow: 0 12px 28px rgba(0, 184, 241, 0.06);
-  border-radius: 22px;
   padding: 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 184, 241, 0.18);
+  box-shadow: 0 10px 28px rgba(0, 184, 241, 0.06);
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) 18px;
-  align-items: center;
+  grid-template-columns: 54px 1fr auto;
   gap: 12px;
-  cursor: pointer;
-  text-align: left;
-  transition: 0.18s ease;
+  align-items: center;
+  transition: 0.2s ease;
 }
 
 .otProfileCard:hover {
-  border-color: rgba(0, 184, 241, 0.24);
-  box-shadow: 0 16px 32px rgba(0, 184, 241, 0.1);
-  transform: translateY(-1px);
-}
-
-.otProfileCardGuest {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.98),
-    rgba(238, 248, 255, 0.96)
-  );
+  border-color: rgba(0, 184, 241, 0.35);
 }
 
 .otAvatarWrap {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 54px;
+  height: 54px;
 }
 
 .otAvatar,
 .otAvatarImg {
-  width: 56px;
-  height: 56px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   overflow: hidden;
-  border: 1px solid rgba(0, 184, 241, 0.16);
+  border: 1px solid rgba(0, 184, 241, 0.18);
   background: linear-gradient(
     135deg,
-    rgba(191, 219, 254, 0.92),
-    rgba(125, 211, 252, 0.58)
+    rgba(191, 219, 254, 0.9),
+    rgba(125, 211, 252, 0.55)
   );
-  box-shadow: 0 8px 18px rgba(0, 184, 241, 0.1);
+  box-shadow: 0 8px 18px rgba(2, 132, 199, 0.12);
 }
 
 .otAvatar {
@@ -219,17 +178,6 @@
   background: #eef2f7;
 }
 
-.otAvatarGuest {
-  color: #0284c7;
-  font-size: 20px;
-  font-weight: 700;
-  background: linear-gradient(
-    135deg,
-    rgba(224, 242, 254, 1),
-    rgba(186, 230, 253, 0.8)
-  );
-}
-
 .otProfileStatus {
   position: absolute;
   right: 2px;
@@ -244,10 +192,6 @@
   background: #22c55e;
 }
 
-.otProfileStatus.guest {
-  background: #f59e0b;
-}
-
 .otProfileInfo {
   min-width: 0;
 }
@@ -255,7 +199,7 @@
 .otProfileName {
   font-size: 14px;
   line-height: 1.2;
-  font-weight: 800;
+  font-weight: 700;
   color: #0f172a;
   word-break: break-word;
 }
@@ -264,55 +208,81 @@
   margin-top: 4px;
   font-size: 12.5px;
   line-height: 1.45;
-  font-weight: 550;
-  color: rgba(15, 23, 42, 0.62);
+  font-weight: 500;
+  color: rgba(15, 23, 42, 0.6);
   word-break: break-word;
 }
 
-.otProfileArrow {
-  align-self: center;
-  justify-self: end;
-  color: rgba(2, 132, 199, 0.8);
-  font-size: 24px;
-  line-height: 1;
-  font-weight: 500;
+.otMiniLink {
+  border: 1px solid rgba(0, 184, 241, 0.25);
+  background: rgba(0, 184, 241, 0.08);
+  color: #0284c7;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 9px 12px;
+  transition: 0.2s ease;
 }
 
-/* sections */
-.otSection {
-  padding: 12px;
+.otMiniLink:hover {
+  background: rgba(0, 184, 241, 0.15);
+  border-color: rgba(0, 184, 241, 0.4);
+}
+
+/* ===== Guest card ===== */
+.otGuestCard {
+  padding: 15px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  box-shadow: 0 8px 18px rgba(0, 184, 241, 0.03);
-}
-
-.otSectionTitle {
-  margin-bottom: 10px;
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(15, 23, 42, 0.56);
-}
-
-.otUserQuickSection {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.98),
-    rgba(244, 251, 255, 0.96)
+    rgba(255, 255, 255, 0.99),
+    rgba(248, 250, 252, 0.98)
   );
+  border: 1px solid rgba(0, 184, 241, 0.18);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  display: grid;
+  gap: 12px;
 }
 
-.otGuestQuick {
+.otGuestIcon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.98),
-    rgba(248, 252, 255, 0.96)
+    rgba(125, 211, 252, 0.24),
+    rgba(224, 242, 254, 0.95)
   );
+  border: 1px solid rgba(0, 184, 241, 0.18);
+  color: #0284c7;
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.otGuestQuickActions {
+.otGuestContent {
+  display: grid;
+  gap: 5px;
+}
+
+.otGuestTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.otGuestText {
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 500;
+  color: rgba(15, 23, 42, 0.62);
+}
+
+.otGuestActions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
@@ -326,7 +296,7 @@
   font-family: inherit;
   font-size: 13px;
   font-weight: 700;
-  transition: 0.18s ease;
+  transition: all 0.18s ease;
 }
 
 .otGuestPrimary {
@@ -340,14 +310,39 @@
 }
 
 .otGuestSecondary {
-  border: 1px solid rgba(0, 184, 241, 0.14);
+  border: 1px solid rgba(0, 184, 241, 0.16);
   background: #ffffff;
   color: #0f172a;
 }
 
 .otGuestSecondary:hover {
   background: rgba(0, 184, 241, 0.06);
-  border-color: rgba(0, 184, 241, 0.18);
+  border-color: rgba(0, 184, 241, 0.24);
+}
+
+/* ===== Sections ===== */
+.otSection {
+  padding: 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 184, 241, 0.14);
+}
+
+.otSectionTitle {
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(15, 23, 42, 0.55);
+}
+
+.otUserQuickSection {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(244, 251, 255, 0.95)
+  );
 }
 
 .otMiniStats {
@@ -357,36 +352,36 @@
 }
 
 .otMiniStat {
-  border: 1px solid rgba(0, 184, 241, 0.12);
+  border: 1px solid rgba(0, 184, 241, 0.14);
   background: rgba(255, 255, 255, 0.98);
-  border-radius: 16px;
+  border-radius: 15px;
   padding: 11px 12px;
   cursor: pointer;
   text-align: left;
   display: grid;
   gap: 3px;
-  transition: 0.18s ease;
+  transition: all 0.18s ease;
 }
 
 .otMiniStat:hover {
   background: rgba(0, 184, 241, 0.08);
-  border-color: rgba(0, 184, 241, 0.18);
+  border-color: rgba(0, 184, 241, 0.24);
 }
 
 .otMiniStatValue {
   font-size: 13.5px;
-  font-weight: 750;
+  font-weight: 700;
   color: #0f172a;
 }
 
 .otMiniStatLabel {
   font-size: 12px;
-  font-weight: 550;
+  font-weight: 500;
   color: rgba(15, 23, 42, 0.56);
   line-height: 1.4;
 }
 
-/* nav */
+/* ===== Navigation ===== */
 .otNavList {
   display: grid;
   gap: 8px;
@@ -394,9 +389,9 @@
 
 .otNavItem {
   text-decoration: none;
-  color: rgba(15, 23, 42, 0.8);
+  color: rgba(15, 23, 42, 0.78);
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 600;
   padding: 11px 12px;
   border-radius: 16px;
   border: 1px solid transparent;
@@ -416,7 +411,7 @@
 
 .otNavItem:hover {
   background: rgba(0, 184, 241, 0.08);
-  border-color: rgba(0, 184, 241, 0.15);
+  border-color: rgba(0, 184, 241, 0.14);
   color: #0f172a;
 }
 
@@ -424,9 +419,9 @@
   background: linear-gradient(
     135deg,
     rgba(56, 189, 248, 0.12),
-    rgba(224, 242, 254, 0.95)
+    rgba(224, 242, 254, 0.92)
   );
-  border-color: rgba(0, 184, 241, 0.22);
+  border-color: rgba(0, 184, 241, 0.2);
   color: #0f172a;
 }
 
@@ -437,25 +432,25 @@
 .otEmpty {
   padding: 10px 12px;
   border-radius: 14px;
-  background: rgba(248, 250, 252, 0.96);
-  border: 1px solid rgba(0, 184, 241, 0.1);
+  background: rgba(248, 250, 252, 0.95);
+  border: 1px solid rgba(0, 184, 241, 0.12);
   color: rgba(15, 23, 42, 0.58);
   font-size: 13px;
   font-weight: 600;
 }
 
-/* buttons */
+/* ===== Quick actions ===== */
 .otActionBtn {
   width: 100%;
   text-align: left;
   padding: 12px;
   border-radius: 16px;
-  border: 1px solid rgba(0, 184, 241, 0.12);
+  border: 1px solid rgba(0, 184, 241, 0.14);
   background: rgba(255, 255, 255, 0.98);
   cursor: pointer;
   font-family: inherit;
   font-size: 13.5px;
-  font-weight: 650;
+  font-weight: 600;
   margin-bottom: 10px;
   color: #0f172a;
   transition: all 0.18s ease;
@@ -467,10 +462,10 @@
 
 .otActionBtn:hover {
   background: rgba(0, 184, 241, 0.08);
-  border-color: rgba(0, 184, 241, 0.18);
+  border-color: rgba(0, 184, 241, 0.24);
 }
 
-/* tags */
+/* ===== Tags ===== */
 .otTags {
   display: flex;
   flex-wrap: wrap;
@@ -478,30 +473,30 @@
 }
 
 .otTag {
-  border: 1px solid rgba(0, 184, 241, 0.12);
+  border: 1px solid rgba(0, 184, 241, 0.14);
   background: rgba(255, 255, 255, 0.96);
   border-radius: 999px;
   padding: 8px 12px;
   font-family: inherit;
   font-size: 12.5px;
-  font-weight: 650;
+  font-weight: 600;
   cursor: pointer;
-  color: rgba(15, 23, 42, 0.84);
+  color: rgba(15, 23, 42, 0.82);
   transition: all 0.18s ease;
 }
 
 .otTag:hover {
-  border-color: rgba(0, 184, 241, 0.2);
+  border-color: rgba(0, 184, 241, 0.24);
   background: rgba(0, 184, 241, 0.08);
   color: #0284c7;
 }
 
-/* bottom */
+/* ===== Bottom ===== */
 .otSideBottom {
   padding: 12px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(0, 184, 241, 0.12);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 184, 241, 0.14);
 }
 
 .otBottomBtn {
@@ -514,7 +509,7 @@
   color: #ffffff;
   font-family: inherit;
   font-size: 13.5px;
-  font-weight: 750;
+  font-weight: 700;
   transition: all 0.18s ease;
 }
 
@@ -525,7 +520,7 @@
 .otBottomBtnLogout {
   background: #ffffff;
   color: #0f172a;
-  border: 1px solid rgba(0, 184, 241, 0.12);
+  border: 1px solid rgba(0, 184, 241, 0.14);
 }
 
 .otBottomBtnLogout:hover {
@@ -535,6 +530,7 @@
   box-shadow: none;
 }
 
+/* ===== Mobile ===== */
 @media (max-width: 640px) {
   .otSide {
     width: min(88vw, 320px);
@@ -546,12 +542,16 @@
   }
 
   .otProfileCard {
-    grid-template-columns: 56px minmax(0, 1fr) 14px;
-    padding: 13px;
+    grid-template-columns: 54px 1fr;
+  }
+
+  .otMiniLink {
+    grid-column: 1 / -1;
+    justify-self: start;
   }
 
   .otMiniStats,
-  .otGuestQuickActions {
+  .otGuestActions {
     grid-template-columns: 1fr;
   }
 
@@ -559,9 +559,5 @@
   .otActionBtn,
   .otBottomBtn {
     font-size: 13px;
-  }
-
-  .otSearch {
-    grid-template-columns: 36px 1fr 30px;
   }
 }
