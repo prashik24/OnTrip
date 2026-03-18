@@ -229,10 +229,11 @@
 .providerDetailsPackageHero,
 .providerDetailsVehicleHero {
   width: 480px;
+  max-width: 100%;
   height: 320px;
   min-height: 320px;
-  max-width: 480px;
   box-sizing: border-box;
+  margin: 0 auto;
   border-radius: 32px;
   overflow: hidden;
   background: transparent;
@@ -241,7 +242,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position:center;
 }
 
 .providerDetailsPackageHero img,
@@ -503,17 +503,23 @@
 @media (max-width: 980px) {
   .providerDetailsTop,
   .providerDetailsDataGrid,
-  .providerDetailsVehicleMetaGrid,
-  .providerDetailsGallery {
+  .providerDetailsVehicleMetaGrid {
     grid-template-columns: 1fr;
+  }
+
+  .providerDetailsGallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .providerDetailsHeroImage,
   .providerDetailsPackageHero,
   .providerDetailsVehicleHero,
   .providerDetailsImageEmpty {
+    width: 100%;
+    max-width: 100%;
     height: 220px;
     min-height: 220px;
+    margin: 0 auto;
   }
 
   .providerDetailsTopContent h1 {
@@ -526,8 +532,58 @@
   }
 
   .providerDetailsSimilarCard,
-  .providerDetailsReviewTop {
+  .providerDetailsReviewTop,
+  .providerDetailsItemHeader {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .providerDetailsCard {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .providerDetailsTop {
+    gap: 16px;
+  }
+
+  .providerDetailsSection h2 {
+    font-size: 20px;
+  }
+
+  .providerDetailsTopContent h1 {
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  .providerDetailsItemTitle {
+    font-size: 18px;
+  }
+
+  .providerDetailsGallery {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .providerDetailsGalleryItem {
+    height: 90px;
+  }
+
+  .providerDetailsDataGrid,
+  .providerDetailsVehicleMetaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .providerDetailsPrimaryBtn,
+  .providerDetailsGhostBtn,
+  .providerDetailsVoteBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .providerDetailsVoteRow {
+    flex-direction: column;
   }
 }
