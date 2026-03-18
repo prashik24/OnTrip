@@ -624,7 +624,7 @@ export default function MyListings() {
                       <div className="myListingsBlock">
                         <div className="myListingsBlockHead">
                           <h4>Travel Trips</h4>
-                          <button className="myListingsBtn" type="button" onClick={addTrip}>
+                          <button className="myListingsBtn myListingsBtn-1" type="button" onClick={addTrip}>
                             Add Trip
                           </button>
                         </div>
