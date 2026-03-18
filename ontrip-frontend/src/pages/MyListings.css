@@ -59,10 +59,11 @@
 
 /* 🔥 IMAGE FULL SPACE + BIG */
 .myListingsMedia {
-  width: 480px;
+  width: 680px;
   height: 400px;
   background: #f8fcff;
   overflow: hidden;
+
 }
 
 .myListingsMedia img {
@@ -70,6 +71,7 @@
   height: 100%;
   object-fit:cover;
   display: block;
+  position: center;
 }
 
 .myListingsMediaEmpty {
