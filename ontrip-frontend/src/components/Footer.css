@@ -57,9 +57,9 @@
    BRAND
 ================================ */
 .otBrandName {
-
+  font-family: var(--font-brand);
   font-size: 30px;
-  font-weight: 700;
+  font-weight: 900;
   letter-spacing: 0.3px;
   color: rgba(11, 27, 42, 0.95);
 }
