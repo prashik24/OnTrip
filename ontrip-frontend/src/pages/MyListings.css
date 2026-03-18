@@ -340,25 +340,7 @@
   background-color: #4ec9f5;
   color: #ffffff;
 }
-/* ========================= */
-/* LAPTOP (1200px) */
-/* ========================= */
-@media (max-width: 1200px) {
-  .myListingsPage {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
 
-  .myListingsMedia {
-    max-width: 100%;
-    height: 620px;
-    margin-top: 0;
-  }
-
-  .myListingsTop h3 {
-    font-size: 22px;
-  }
-}
 
 /* ========================= */
 /* TABLET (980px) */
