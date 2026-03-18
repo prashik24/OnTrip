@@ -69,12 +69,14 @@
   align-items: center;
   justify-content: center;
 
+  background-color: #b42318;
+
 }
 
 .myListingsMedia img {
   width: 100%;
   height: 100%;
-  object-fit:cover;
+  object-fit:contain;
   display: block;
   position: center;
   border-radius: 32px;
