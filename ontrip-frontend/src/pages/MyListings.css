@@ -60,9 +60,10 @@
 /* 🔥 IMAGE FULL SPACE + BIG */
 .myListingsMedia {
   width: 680px;
-  height: 400px;
+  height: 450px;
   background: #f8fcff;
   overflow: hidden;
+  position: center;
 
 }
 
