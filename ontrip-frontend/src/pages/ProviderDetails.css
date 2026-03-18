@@ -228,10 +228,10 @@
 
 .providerDetailsPackageHero,
 .providerDetailsVehicleHero {
-  width: 420px;
+  width: 480px;
   height: 320px;
   min-height: 320px;
-  max-width: 420px;
+  max-width: 480px;
   box-sizing: border-box;
   border-radius: 32px;
   overflow: hidden;
@@ -241,6 +241,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 50%;
 }
 
 .providerDetailsPackageHero img,
