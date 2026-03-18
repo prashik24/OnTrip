@@ -61,7 +61,7 @@
 }
 
 .providerDetailsHeroImage img {
- width: 100%;
+  width: 100%;
   height: 320px;
   min-height: 320px;
   max-width: 100%;
@@ -72,9 +72,7 @@
   border: 1px solid rgba(0, 184, 241, 0.08);
   display: flex;
   align-items: center;
-  justify-content: center;
-  object-position: center;
-  
+  justify-content: center; background-color: #b42318;
 }
 
 .providerDetailsImageEmpty {
