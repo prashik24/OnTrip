@@ -503,7 +503,7 @@ export default function MyListings() {
                       <div className="myListingsBlock">
                         <div className="myListingsBlockHead">
                           <h4>Vehicles</h4>
-                          <button className="myListingsBtn" type="button" onClick={addVehicle}>
+                          <button className="myListingsBtn myListingsBtn-1" type="button" onClick={addVehicle}>
                             Add Vehicle
                           </button>
                         </div>

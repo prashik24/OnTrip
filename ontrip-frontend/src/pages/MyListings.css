@@ -59,7 +59,7 @@
 
 /* 🔥 IMAGE FULL SPACE + BIG */
 .myListingsMedia {
-  width: 1040px;
+  width: 1060px;
   height: 710px;
   background: #f8fcff;
   overflow: hidden;
@@ -151,6 +151,9 @@
   background: #ffffff;
   color: var(--text);
   transition: 0.18s ease;
+}
+.myListingsBtn-1{
+  margin-bottom: 10px;
 }
 
 .myListingsBtn:hover {
