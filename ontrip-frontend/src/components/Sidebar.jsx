@@ -49,6 +49,15 @@ export default function Sidebar({ open, onClose }) {
     navigate(path);
   }
 
+  function handleProfileClick() {
+    onClose?.();
+    if (!loggedIn) {
+      navigate("/login");
+      return;
+    }
+    navigate("/profile");
+  }
+
   function handleLogout() {
     clearAuth();
     onClose?.();
@@ -80,68 +89,58 @@ export default function Sidebar({ open, onClose }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="otSearchInput"
-            placeholder="Search menu…"
+            placeholder="Search pages..."
           />
+          {query && (
+            <button
+              type="button"
+              className="otSearchClear"
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
-        {loggedIn ? (
-          <div className="otProfileCard">
-            <div className="otAvatarWrap">
-              {avatar ? (
+        <button
+          type="button"
+          className={loggedIn ? "otProfileCard" : "otProfileCard otProfileCardGuest"}
+          onClick={handleProfileClick}
+        >
+          <div className="otAvatarWrap">
+            {loggedIn ? (
+              avatar ? (
                 <img src={avatar} alt={userName} className="otAvatarImg" />
               ) : (
                 <div className="otAvatar" aria-hidden="true">
                   {initial}
                 </div>
-              )}
-              <span className="otProfileStatus online" />
-            </div>
-
-            <div className="otProfileInfo">
-              <div className="otProfileName">{userName}</div>
-              <div className="otProfileSub">{userEmail}</div>
-            </div>
-
-            <button
-              className="otMiniLink"
-              type="button"
-              onClick={() => goWithClose("/profile")}
-            >
-              View Profile
-            </button>
-          </div>
-        ) : (
-          <div className="otGuestCard">
-            <div className="otGuestIcon" aria-hidden="true">
-              ✦
-            </div>
-
-            <div className="otGuestContent">
-              <div className="otGuestTitle">Welcome to OnTrip</div>
-              <div className="otGuestText">
-                Login to plan trips, manage bookings, chat, and add your travel services.
+              )
+            ) : (
+              <div className="otAvatar otAvatarGuest" aria-hidden="true">
+                <span>👤</span>
               </div>
+            )}
+
+            <span className={`otProfileStatus ${loggedIn ? "online" : "guest"}`} />
+          </div>
+
+          <div className="otProfileInfo">
+            <div className="otProfileName">
+              {loggedIn ? userName : "Login to your account"}
             </div>
-
-            <div className="otGuestActions">
-              <button
-                className="otGuestPrimary"
-                type="button"
-                onClick={() => goWithClose("/login")}
-              >
-                Login
-              </button>
-
-              <button
-                className="otGuestSecondary"
-                type="button"
-                onClick={() => goWithClose("/signup")}
-              >
-                Create account
-              </button>
+            <div className="otProfileSub">
+              {loggedIn
+                ? userEmail
+                : "Access profile, bookings, chat and service features"}
             </div>
           </div>
-        )}
+
+          <div className="otProfileArrow" aria-hidden="true">
+            ›
+          </div>
+        </button>
 
         {loggedIn && (
           <div className="otSection otUserQuickSection">
@@ -169,6 +168,28 @@ export default function Sidebar({ open, onClose }) {
           </div>
         )}
 
+        {!loggedIn && (
+          <div className="otSection otGuestQuick">
+            <div className="otSectionTitle">Get started</div>
+            <div className="otGuestQuickActions">
+              <button
+                className="otGuestPrimary"
+                type="button"
+                onClick={() => goWithClose("/login")}
+              >
+                Login
+              </button>
+              <button
+                className="otGuestSecondary"
+                type="button"
+                onClick={() => goWithClose("/signup")}
+              >
+                Create account
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="otSection">
           <div className="otSectionTitle">Navigation</div>
 
@@ -181,14 +202,21 @@ export default function Sidebar({ open, onClose }) {
                 className={({ isActive }) =>
                   isActive ? "otNavItem active" : "otNavItem"
                 }
-                onClick={onClose}
+                onClick={(e) => {
+                  if (item.to === "/profile" && !loggedIn) {
+                    e.preventDefault();
+                    handleProtectedRoute("/profile");
+                    return;
+                  }
+                  onClose?.();
+                }}
               >
                 <span className="dot" aria-hidden="true" />
                 <span>{item.label}</span>
               </NavLink>
             ))}
 
-            {filtered.length === 0 && <div className="otEmpty">No results</div>}
+            {filtered.length === 0 && <div className="otEmpty">No results found</div>}
           </div>
         </div>
 
