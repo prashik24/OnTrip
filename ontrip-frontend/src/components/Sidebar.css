@@ -32,6 +32,7 @@
   gap: 12px;
   min-height: 100%;
   align-content: start;
+  box-sizing: border-box;
 }
 
 /* ===== Top row ===== */
@@ -98,9 +99,14 @@
   font-weight: 700;
   color: rgba(11, 27, 42, 0.85);
   font-size: 14px;
+  min-width: 0;
 }
 
-/* ===== Profile card ===== */
+.otSearchInput::placeholder {
+  color: rgba(11, 27, 42, 0.48);
+}
+
+/* ===== Logged in profile card ===== */
 .otProfileCard {
   padding: 12px;
   border-radius: 22px;
@@ -160,10 +166,6 @@
   background: #10b981;
 }
 
-.otProfileStatus.guest {
-  background: #f59e0b;
-}
-
 .otProfileInfo {
   min-width: 0;
 }
@@ -185,11 +187,106 @@
 
 .otMiniLink {
   border: none;
-  background: none;
+  background: rgba(0, 184, 241, 0.08);
+  border: 1px solid rgba(0, 184, 241, 0.16);
   cursor: pointer;
   font-weight: 800;
   color: rgba(0, 184, 241, 1);
+  font-size: 12.5px;
+  border-radius: 12px;
+  padding: 9px 12px;
+  transition: 0.18s ease;
+}
+
+.otMiniLink:hover {
+  background: rgba(0, 184, 241, 0.14);
+}
+
+/* ===== Guest card ===== */
+.otGuestCard {
+  padding: 14px;
+  border-radius: 22px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(244, 251, 255, 0.95)
+  );
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  display: grid;
+  gap: 12px;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.06);
+}
+
+.otGuestIcon {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: rgba(11, 27, 42, 0.9);
+  background: linear-gradient(
+    135deg,
+    rgba(78, 201, 245, 0.22),
+    rgba(225, 255, 248, 0.78)
+  );
+  border: 1px solid rgba(0, 184, 241, 0.16);
+}
+
+.otGuestContent {
+  display: grid;
+  gap: 5px;
+}
+
+.otGuestTitle {
+  font-size: 16px;
+  font-weight: 900;
+  color: rgba(11, 27, 42, 0.94);
+}
+
+.otGuestText {
   font-size: 13px;
+  line-height: 1.6;
+  font-weight: 600;
+  color: rgba(11, 27, 42, 0.65);
+}
+
+.otGuestActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.otGuestPrimary,
+.otGuestSecondary {
+  min-height: 42px;
+  border-radius: 14px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  transition: 0.18s ease;
+}
+
+.otGuestPrimary {
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+}
+
+.otGuestPrimary:hover {
+  box-shadow: 0 10px 20px rgba(0, 184, 241, 0.18);
+}
+
+.otGuestSecondary {
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  background: #ffffff;
+  color: rgba(11, 27, 42, 0.88);
+}
+
+.otGuestSecondary:hover {
+  background: rgba(0, 184, 241, 0.06);
+  border-color: rgba(0, 184, 241, 0.14);
 }
 
 /* ===== Sections ===== */
@@ -274,6 +371,7 @@
   height: 8px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.2);
+  flex: 0 0 auto;
 }
 
 .otNavItem:hover {
@@ -401,10 +499,13 @@
   .otMiniLink {
     grid-column: 1 / -1;
     justify-self: start;
-    padding-left: 64px;
   }
 
   .otMiniStats {
+    grid-template-columns: 1fr;
+  }
+
+  .otGuestActions {
     grid-template-columns: 1fr;
   }
 }
