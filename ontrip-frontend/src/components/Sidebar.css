@@ -639,3 +639,32 @@
     font-size: 13px;
   }
 }
+
+/* ===== Quick Access Row Fix ===== */
+.otMiniStats {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.otMiniStats::-webkit-scrollbar {
+  height: 6px;
+}
+
+.otMiniStats::-webkit-scrollbar-thumb {
+  background: rgba(0, 184, 241, 0.3);
+  border-radius: 10px;
+}
+
+/* Each card same size */
+.otMiniStat {
+  flex: 0 0 140px;   /* fixed width */
+  min-height: 130px;
+  border-radius: 18px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: flex-start;
+}
