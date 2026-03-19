@@ -15,6 +15,14 @@ export default function Sidebar({ open, onClose }) {
   const avatar = user?.avatar?.trim() || "";
   const initial = userName?.charAt(0)?.toUpperCase() || "U";
 
+  const hasListingDashboard = Boolean(
+    user?.providerId ||
+      user?.isProvider ||
+      user?.hasListings ||
+      user?.hasServices ||
+      user?.role === "provider"
+  );
+
   const navItems = useMemo(
     () => [
       { to: "/", label: "Home" },
@@ -32,7 +40,7 @@ export default function Sidebar({ open, onClose }) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return navItems;
-    return navItems.filter((x) => x.label.toLowerCase().includes(q));
+    return navItems.filter((item) => item.label.toLowerCase().includes(q));
   }, [query, navItems]);
 
   function goWithClose(path) {
@@ -83,13 +91,28 @@ export default function Sidebar({ open, onClose }) {
 
         <div className="otSearch">
           <span className="otSearchIcon" aria-hidden="true">
-            ⌕
+            <svg viewBox="0 0 24 24" fill="none" className="otSearchSvg">
+              <circle
+                cx="11"
+                cy="11"
+                r="6.5"
+                stroke="currentColor"
+                strokeWidth="2"
+              />
+              <path
+                d="M16 16L20 20"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
           </span>
+
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="otSearchInput"
-            placeholder="Search menu…"
+            placeholder="Search menu..."
           />
         </div>
 
@@ -107,7 +130,13 @@ export default function Sidebar({ open, onClose }) {
             </div>
 
             <div className="otProfileInfo">
-              <div className="otProfileName">{userName}</div>
+              <button
+                className="otProfileName otProfileNameBtn"
+                type="button"
+                onClick={handleProfileClick}
+              >
+                {userName}
+              </button>
               <div className="otProfileSub">{userEmail}</div>
             </div>
 
@@ -116,7 +145,7 @@ export default function Sidebar({ open, onClose }) {
               type="button"
               onClick={handleProfileClick}
             >
-              View Profile
+              Profile
             </button>
           </div>
         ) : (
@@ -155,26 +184,28 @@ export default function Sidebar({ open, onClose }) {
 
         {loggedIn && (
           <div className="otSection otUserQuickSection">
-            <div className="otSectionTitle">Your account</div>
+            <div className="otSectionTitle">Quick access</div>
 
             <div className="otMiniStats">
               <button
                 className="otMiniStat"
                 type="button"
-                onClick={handleProfileClick}
-              >
-                <span className="otMiniStatValue">Profile</span>
-                <span className="otMiniStatLabel">Manage account</span>
-              </button>
-
-              <button
-                className="otMiniStat"
-                type="button"
                 onClick={() => goWithClose("/profile/bookings")}
               >
-                <span className="otMiniStatValue">Bookings</span>
-                <span className="otMiniStatLabel">Your trips</span>
+                <span className="otMiniStatValue">My Bookings</span>
+                <span className="otMiniStatLabel">Trips and reservations</span>
               </button>
+
+              {hasListingDashboard && (
+                <button
+                  className="otMiniStat"
+                  type="button"
+                  onClick={() => goWithClose("/provider-dashboard")}
+                >
+                  <span className="otMiniStatValue">Listing Dashboard</span>
+                  <span className="otMiniStatLabel">Manage services</span>
+                </button>
+              )}
             </div>
           </div>
         )}
