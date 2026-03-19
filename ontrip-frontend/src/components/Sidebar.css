@@ -90,7 +90,7 @@
 }
 
 .otSearch:focus-within {
-  background: #ffffff;
+  background: #eef8fd;
   border-color: rgba(0, 184, 241, 0.5);
   box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.1);
 }
@@ -226,16 +226,6 @@
 
 .otProfileNameBtn:hover {
   color: #0284c7;
-}
-
-.otProfileSub {
-  margin-top: 4px;
-  font-size: 12.5px;
-  line-height: 1.45;
-  font-weight: 500;
-  color: rgba(15, 23, 42, 0.62);
-  word-break: break-word;
-  overflow-wrap: anywhere;
 }
 
 .otMiniLink {

@@ -1,34 +1,37 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useMemo, useState } from "react";
-import { clearAuth, getUser, isLoggedIn } from "../lib/api";
+import { useEffect, useMemo, useState } from "react";
+import { apiFetch, clearAuth, getUser, isLoggedIn } from "../lib/api";
 import "./Sidebar.css";
 
 export default function Sidebar({ open, onClose }) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
+  const [hasProviderListings, setHasProviderListings] = useState(false);
 
   const user = getUser();
   const loggedIn = isLoggedIn();
 
   const userName = user?.name?.trim() || "";
-  const userEmail = user?.email?.trim() || "";
   const avatar = user?.avatar?.trim() || "";
   const initial = userName?.charAt(0)?.toUpperCase() || "U";
 
-  const hasListingDashboard = Boolean(
-    user?.providerId ||
-      user?.isProvider ||
-      user?.hasListings ||
-      user?.hasServices ||
-      user?.role === "provider"
-  );
+  useEffect(() => {
+    async function loadProviderStatus() {
+      if (!loggedIn) {
+        setHasProviderListings(false);
+        return;
+      }
 
-  const hasPersonalDashboard = Boolean(
-    user?.hasPersonalDashboard ||
-      user?.dashboardAccess ||
-      user?.role === "user" ||
-      loggedIn
-  );
+      try {
+        const data = await apiFetch("/api/providers/mine");
+        setHasProviderListings((data.providers || []).length > 0);
+      } catch {
+        setHasProviderListings(false);
+      }
+    }
+
+    loadProviderStatus();
+  }, [loggedIn]);
 
   const navItems = useMemo(
     () => [
@@ -144,7 +147,6 @@ export default function Sidebar({ open, onClose }) {
               >
                 {userName}
               </button>
-              <div className="otProfileSub">{userEmail}</div>
             </div>
 
             <button
@@ -195,11 +197,7 @@ export default function Sidebar({ open, onClose }) {
 
             <div
               className={`otMiniStats ${
-                hasListingDashboard && hasPersonalDashboard
-                  ? "threeCol"
-                  : hasListingDashboard || hasPersonalDashboard
-                  ? "twoCol"
-                  : "oneCol"
+                hasProviderListings ? "threeCol" : "oneCol"
               }`}
             >
               <button
@@ -211,25 +209,25 @@ export default function Sidebar({ open, onClose }) {
                 <span className="otMiniStatLabel">Trips and reservations</span>
               </button>
 
-              {hasListingDashboard && (
+              {hasProviderListings && (
                 <button
                   className="otMiniStat"
                   type="button"
-                  onClick={() => goWithClose("/provider-dashboard")}
+                  onClick={() => goWithClose("/profile/my-listings")}
                 >
                   <span className="otMiniStatValue">My Listings</span>
-                  <span className="otMiniStatLabel">Manage your services</span>
+                  <span className="otMiniStatLabel">View and manage services</span>
                 </button>
               )}
 
-              {hasPersonalDashboard && (
+              {hasProviderListings && (
                 <button
                   className="otMiniStat"
                   type="button"
-                  onClick={() => goWithClose("/dashboard")}
+                  onClick={() => goWithClose("/provider/dashboard")}
                 >
-                  <span className="otMiniStatValue">Personal Dashboard</span>
-                  <span className="otMiniStatLabel">Your account overview</span>
+                  <span className="otMiniStatValue">Provider Dashboard</span>
+                  <span className="otMiniStatLabel">Bookings and updates</span>
                 </button>
               )}
             </div>
