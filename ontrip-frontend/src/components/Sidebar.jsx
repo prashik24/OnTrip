@@ -23,6 +23,13 @@ export default function Sidebar({ open, onClose }) {
       user?.role === "provider"
   );
 
+  const hasPersonalDashboard = Boolean(
+    user?.hasPersonalDashboard ||
+      user?.dashboardAccess ||
+      user?.role === "user" ||
+      loggedIn
+  );
+
   const navItems = useMemo(
     () => [
       { to: "/", label: "Home" },
@@ -184,9 +191,17 @@ export default function Sidebar({ open, onClose }) {
 
         {loggedIn && (
           <div className="otSection otUserQuickSection">
-            <div className="otSectionTitle">Quick access</div>
+            <div className="otSectionTitle">Quick Access</div>
 
-            <div className="otMiniStats">
+            <div
+              className={`otMiniStats ${
+                hasListingDashboard && hasPersonalDashboard
+                  ? "threeCol"
+                  : hasListingDashboard || hasPersonalDashboard
+                  ? "twoCol"
+                  : "oneCol"
+              }`}
+            >
               <button
                 className="otMiniStat"
                 type="button"
@@ -202,8 +217,19 @@ export default function Sidebar({ open, onClose }) {
                   type="button"
                   onClick={() => goWithClose("/provider-dashboard")}
                 >
-                  <span className="otMiniStatValue">Listing Dashboard</span>
-                  <span className="otMiniStatLabel">Manage services</span>
+                  <span className="otMiniStatValue">My Listings</span>
+                  <span className="otMiniStatLabel">Manage your services</span>
+                </button>
+              )}
+
+              {hasPersonalDashboard && (
+                <button
+                  className="otMiniStat"
+                  type="button"
+                  onClick={() => goWithClose("/dashboard")}
+                >
+                  <span className="otMiniStatValue">Personal Dashboard</span>
+                  <span className="otMiniStatLabel">Your account overview</span>
                 </button>
               )}
             </div>
