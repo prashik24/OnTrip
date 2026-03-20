@@ -14,6 +14,7 @@ export async function generateAiTripPlan(req, res) {
       peopleCount = 1,
       travelStyle = "Balanced",
       startCity = "",
+      interestFocus = [],
     } = req.body || {};
 
     if (!destination?.trim()) {
@@ -30,6 +31,7 @@ export async function generateAiTripPlan(req, res) {
       budget: Number(budget),
       peopleCount: Number(peopleCount),
       travelStyle,
+      interestFocus: Array.isArray(interestFocus) ? interestFocus : [],
       providersNormalized: normalizedProviders,
     });
 
