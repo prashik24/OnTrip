@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { apiFetch, isLoggedIn } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
+import CustomSelect from "../components/CustomSelect";
 import "./Planner.css";
 
 export default function Planner() {
@@ -21,6 +22,13 @@ export default function Planner() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
   const [result, setResult] = useState(null);
+
+  const travelStyleOptions = [
+    { label: "Budget", value: "Budget" },
+    { label: "Balanced", value: "Balanced" },
+    { label: "Comfort", value: "Comfort" },
+    { label: "Luxury", value: "Luxury" },
+  ];
 
   function update(key, value) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -66,35 +74,38 @@ export default function Planner() {
   }
 
   return (
-    <div className="container planner">
-      <div className="pageHead">
+    <div className="container plannerPage">
+      <div className="plannerHead">
         <div>
-          <h2 className="pageTitle">AI Trip Planner</h2>
-          <p className="pageSub">
-            Generate itinerary, travel suggestions, and provider recommendations based on your destination.
+          <h1>AI Trip Planner</h1>
+          <p>
+            Generate itinerary, travel suggestions, and provider
+            recommendations based on your destination.
           </p>
         </div>
       </div>
 
       {msg && <div className="plannerMessage">{msg}</div>}
 
-      <div className="grid2">
-        <div className="card formCard">
-          <div className="sectionTitle">Trip Inputs</div>
+      <div className="plannerGrid">
+        <div className="plannerFormCard">
+          <div className="plannerSectionTitle">Trip Inputs</div>
 
-          <label className="label">Destination</label>
-          <input
-            className="input"
-            value={form.destination}
-            onChange={(e) => update("destination", e.target.value)}
-            placeholder="e.g., Jaipur"
-          />
+          <div className="plannerField">
+            <label>Destination</label>
+            <input
+              className="plannerInput"
+              value={form.destination}
+              onChange={(e) => update("destination", e.target.value)}
+              placeholder="e.g., Jaipur"
+            />
+          </div>
 
-          <div className="row2">
-            <div>
-              <label className="label">Days</label>
+          <div className="plannerRow">
+            <div className="plannerField">
+              <label>Days</label>
               <input
-                className="input"
+                className="plannerInput"
                 type="number"
                 min="1"
                 value={form.days}
@@ -102,10 +113,10 @@ export default function Planner() {
               />
             </div>
 
-            <div>
-              <label className="label">Budget (₹)</label>
+            <div className="plannerField">
+              <label>Budget (₹)</label>
               <input
-                className="input"
+                className="plannerInput"
                 type="number"
                 min="1000"
                 value={form.budget}
@@ -114,11 +125,11 @@ export default function Planner() {
             </div>
           </div>
 
-          <div className="row2">
-            <div>
-              <label className="label">People</label>
+          <div className="plannerRow">
+            <div className="plannerField">
+              <label>People</label>
               <input
-                className="input"
+                className="plannerInput"
                 type="number"
                 min="1"
                 value={form.peopleCount}
@@ -126,64 +137,65 @@ export default function Planner() {
               />
             </div>
 
-            <div>
-              <label className="label">Travel Style</label>
-              <select
-                className="select"
+            <div className="plannerField">
+              <label>Travel Style</label>
+              <CustomSelect
                 value={form.travelStyle}
                 onChange={(e) => update("travelStyle", e.target.value)}
-              >
-                <option>Budget</option>
-                <option>Balanced</option>
-                <option>Comfort</option>
-                <option>Luxury</option>
-              </select>
+                options={travelStyleOptions}
+                placeholder="Select style"
+              />
             </div>
           </div>
 
-          <label className="label">Start City (optional)</label>
-          <input
-            className="input"
-            value={form.startCity}
-            onChange={(e) => update("startCity", e.target.value)}
-            placeholder="e.g., Delhi"
-          />
+          <div className="plannerField">
+            <label>Start City (optional)</label>
+            <input
+              className="plannerInput"
+              value={form.startCity}
+              onChange={(e) => update("startCity", e.target.value)}
+              placeholder="e.g., Delhi"
+            />
+          </div>
 
-          <button className="btn btnPrimary planBtn" onClick={generatePlan}>
+          <button className="plannerPrimaryBtn" onClick={generatePlan}>
             Generate AI Plan
           </button>
         </div>
 
-        <div className="card planCard">
-          <div className="sectionTitle">Generated Plan</div>
+        <div className="plannerResultCard">
+          <div className="plannerSectionTitle">Generated Plan</div>
 
           {!result?.plan ? (
-            <div className="empty">
-              Enter trip details and generate a plan to see AI itinerary and provider recommendations.
+            <div className="plannerEmpty">
+              Enter trip details and generate a plan to see AI itinerary and
+              provider recommendations.
             </div>
           ) : (
             <>
-              <div className="planTitle">{result.plan.title}</div>
+              <div className="plannerPlanTitle">{result.plan.title}</div>
 
-              <div className="planBlock">
-                <div className="blockTitle">Trip Summary</div>
-                <div className="mutedBox">{result.plan.summary}</div>
+              <div className="plannerBlock">
+                <div className="plannerBlockTitle">Trip Summary</div>
+                <div className="plannerMutedBox">{result.plan.summary}</div>
               </div>
 
-              <div className="planBlock">
-                <div className="blockTitle">Why this plan</div>
-                <div className="mutedBox">{result.plan.whyRecommended}</div>
+              <div className="plannerBlock">
+                <div className="plannerBlockTitle">Why this plan</div>
+                <div className="plannerMutedBox">
+                  {result.plan.whyRecommended}
+                </div>
               </div>
 
-              <div className="planBlock">
-                <div className="blockTitle">Day-wise itinerary</div>
+              <div className="plannerBlock">
+                <div className="plannerBlockTitle">Day-wise itinerary</div>
                 <div className="plannerDayList">
                   {(result.plan.itinerary || []).map((day) => (
                     <div className="plannerDayItem" key={day.day}>
                       <div className="plannerDayHeading">
                         Day {day.day}: {day.title}
                       </div>
-                      <ul className="list">
+                      <ul className="plannerList">
                         {(day.items || []).map((item, idx) => (
                           <li key={idx}>{item}</li>
                         ))}
@@ -193,9 +205,9 @@ export default function Planner() {
                 </div>
               </div>
 
-              <div className="planBlock">
-                <div className="blockTitle">Budget breakdown</div>
-                <ul className="list">
+              <div className="plannerBlock">
+                <div className="plannerBlockTitle">Budget breakdown</div>
+                <ul className="plannerList">
                   {(result.plan.budgetBreakdown || []).map((item, idx) => (
                     <li key={idx}>
                       {item.label}: ₹{item.amount}
@@ -204,26 +216,34 @@ export default function Planner() {
                 </ul>
               </div>
 
-              <div className="planBlock">
-                <div className="blockTitle">Transport advice</div>
-                <div className="mutedBox">{result.plan.transportAdvice}</div>
+              <div className="plannerBlock">
+                <div className="plannerBlockTitle">Transport advice</div>
+                <div className="plannerMutedBox">
+                  {result.plan.transportAdvice}
+                </div>
               </div>
 
-              <div className="planBlock">
-                <div className="blockTitle">Recommended Travel Planners</div>
+              <div className="plannerBlock">
+                <div className="plannerBlockTitle">
+                  Recommended Travel Planners
+                </div>
                 {result.recommendedTravelProviders?.length ? (
                   <div className="plannerProviderGrid">
                     {result.recommendedTravelProviders.map((item) => (
                       <div className="plannerProviderCard" key={item._id}>
-                        <div className="plannerProviderTitle">{item.businessName}</div>
+                        <div className="plannerProviderTitle">
+                          {item.businessName}
+                        </div>
                         <div className="plannerProviderMeta">
                           {item.city} • ⭐ {item.ratingAverage || 0}
                         </div>
                         <div className="plannerProviderText">
-                          {item.travelPlanner?.packageTitle || item.description || "Travel planner"}
+                          {item.travelPlanner?.packageTitle ||
+                            item.description ||
+                            "Travel planner"}
                         </div>
                         <button
-                          className="btn"
+                          className="plannerProviderBtn"
                           onClick={() => navigate(`/providers/${item._id}`)}
                         >
                           View Planner
@@ -232,28 +252,39 @@ export default function Planner() {
                     ))}
                   </div>
                 ) : (
-                  <div className="mutedBox">No matching travel planners found.</div>
+                  <div className="plannerMutedBox">
+                    No matching travel planners found.
+                  </div>
                 )}
               </div>
 
-              <div className="planBlock">
-                <div className="blockTitle">Recommended Vehicle Services</div>
+              <div className="plannerBlock">
+                <div className="plannerBlockTitle">
+                  Recommended Vehicle Services
+                </div>
                 {result.recommendedVehicleProviders?.length ? (
                   <div className="plannerProviderGrid">
                     {result.recommendedVehicleProviders.map((item) => (
                       <div className="plannerProviderCard" key={item._id}>
-                        <div className="plannerProviderTitle">{item.businessName}</div>
+                        <div className="plannerProviderTitle">
+                          {item.businessName}
+                        </div>
                         <div className="plannerProviderMeta">
                           {item.city} • ⭐ {item.ratingAverage || 0}
                         </div>
                         <div className="plannerProviderText">
                           {(item.vehicles || [])
                             .slice(0, 2)
-                            .map((vehicle) => `${vehicle.title || vehicle.vehicleType} - ₹${vehicle.price}`)
+                            .map(
+                              (vehicle) =>
+                                `${vehicle.title || vehicle.vehicleType} - ₹${
+                                  vehicle.price
+                                }`
+                            )
                             .join(", ") || "Vehicle service"}
                         </div>
                         <button
-                          className="btn"
+                          className="plannerProviderBtn"
                           onClick={() => navigate(`/providers/${item._id}`)}
                         >
                           View Vehicles
@@ -262,13 +293,15 @@ export default function Planner() {
                     ))}
                   </div>
                 ) : (
-                  <div className="mutedBox">No matching vehicle providers found.</div>
+                  <div className="plannerMutedBox">
+                    No matching vehicle providers found.
+                  </div>
                 )}
               </div>
 
-              <div className="planBlock">
-                <div className="blockTitle">Extra Tips</div>
-                <ul className="list">
+              <div className="plannerBlock">
+                <div className="plannerBlockTitle">Extra Tips</div>
+                <ul className="plannerList">
                   {(result.plan.tips || []).map((tip, idx) => (
                     <li key={idx}>{tip}</li>
                   ))}
