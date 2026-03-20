@@ -1,67 +1,82 @@
-import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import CustomSelect from "../components/CustomSelect";
+import { useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { apiFetch, isLoggedIn } from "../lib/api";
+import LoadingSpinner from "../components/LoadingSpinner";
 import "./Planner.css";
 
 export default function Planner() {
   const [params] = useSearchParams();
+  const navigate = useNavigate();
   const prefillPlace = params.get("place") || "";
 
   const [form, setForm] = useState({
     destination: prefillPlace,
     days: 4,
-    budget: 8000,
+    budget: 12000,
+    peopleCount: 2,
     travelStyle: "Balanced",
     startCity: "",
   });
 
-  const travelStyleOptions = [
-    { label: "Budget", value: "Budget" },
-    { label: "Balanced", value: "Balanced" },
-    { label: "Comfort", value: "Comfort" },
-    { label: "Luxury", value: "Luxury" },
-  ];
-
-  const mockPlan = useMemo(() => {
-    if (!form.destination.trim()) return null;
-
-    return {
-      title: `AI Trip Plan for ${form.destination}`,
-      routeOrder: [
-        "Day 1: Main city highlights + evening market",
-        "Day 2: Fort/Monuments + hidden street food lane",
-        "Day 3: Nature/Day-trip spot + sunset viewpoint",
-        "Day 4: Cultural spots + shopping + return",
-      ],
-      transport: [
-        "Within city: metro / shared auto / local cab",
-        "Intercity: train preferred for budget; flight for time",
-        "Local day trips: shared cab or bus",
-      ],
-      whyFamous:
-        "History, architecture, culture, local crafts, food and a few hidden gems curated by AI.",
-      safetyTips: [
-        "Verify local taxi prices with community posts",
-        "Prefer prepaid counters at stations",
-        "Avoid unknown agents for hotel/hostel deals",
-      ],
-    };
-  }, [form.destination]);
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [result, setResult] = useState(null);
 
   function update(key, value) {
-    setForm((s) => ({ ...s, [key]: value }));
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  async function generatePlan() {
+    if (!isLoggedIn()) {
+      navigate("/login");
+      return;
+    }
+
+    if (!form.destination.trim()) {
+      setMsg("Please enter destination.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setMsg("");
+
+      const data = await apiFetch("/api/ai-planner/generate", {
+        method: "POST",
+        body: JSON.stringify({
+          destination: form.destination,
+          days: Number(form.days),
+          budget: Number(form.budget),
+          peopleCount: Number(form.peopleCount),
+          travelStyle: form.travelStyle,
+          startCity: form.startCity,
+        }),
+      });
+
+      setResult(data);
+    } catch (err) {
+      setMsg(err.message || "Failed to generate plan.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return <LoadingSpinner text="Generating AI trip plan..." />;
   }
 
   return (
     <div className="container planner">
       <div className="pageHead">
         <div>
-          <h2 className="pageTitle">AI Trip Planner (Frontend Prototype)</h2>
+          <h2 className="pageTitle">AI Trip Planner</h2>
           <p className="pageSub">
-            Later we’ll connect GPT to generate real itineraries + travel options + hidden places + history.
+            Generate itinerary, travel suggestions, and provider recommendations based on your destination.
           </p>
         </div>
       </div>
+
+      {msg && <div className="plannerMessage">{msg}</div>}
 
       <div className="grid2">
         <div className="card formCard">
@@ -83,9 +98,10 @@ export default function Planner() {
                 type="number"
                 min="1"
                 value={form.days}
-                onChange={(e) => update("days", Number(e.target.value))}
+                onChange={(e) => update("days", e.target.value)}
               />
             </div>
+
             <div>
               <label className="label">Budget (₹)</label>
               <input
@@ -93,8 +109,35 @@ export default function Planner() {
                 type="number"
                 min="1000"
                 value={form.budget}
-                onChange={(e) => update("budget", Number(e.target.value))}
+                onChange={(e) => update("budget", e.target.value)}
               />
+            </div>
+          </div>
+
+          <div className="row2">
+            <div>
+              <label className="label">People</label>
+              <input
+                className="input"
+                type="number"
+                min="1"
+                value={form.peopleCount}
+                onChange={(e) => update("peopleCount", e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="label">Travel Style</label>
+              <select
+                className="select"
+                value={form.travelStyle}
+                onChange={(e) => update("travelStyle", e.target.value)}
+              >
+                <option>Budget</option>
+                <option>Balanced</option>
+                <option>Comfort</option>
+                <option>Luxury</option>
+              </select>
             </div>
           </div>
 
@@ -106,63 +149,130 @@ export default function Planner() {
             placeholder="e.g., Delhi"
           />
 
-          <label className="label">Travel Style</label>
-          <CustomSelect
-            value={form.travelStyle}
-            onChange={(e) => update("travelStyle", e.target.value)}
-            options={travelStyleOptions}
-          />
-
-          <button className="btn btnPrimary planBtn">
-            Generate Plan (connect GPT later)
+          <button className="btn btnPrimary planBtn" onClick={generatePlan}>
+            Generate AI Plan
           </button>
         </div>
 
         <div className="card planCard">
           <div className="sectionTitle">Generated Plan</div>
 
-          {!mockPlan ? (
+          {!result?.plan ? (
             <div className="empty">
-              Enter a destination to see a sample plan layout.
+              Enter trip details and generate a plan to see AI itinerary and provider recommendations.
             </div>
           ) : (
             <>
-              <div className="planTitle">{mockPlan.title}</div>
+              <div className="planTitle">{result.plan.title}</div>
 
               <div className="planBlock">
-                <div className="blockTitle">Best travel order</div>
+                <div className="blockTitle">Trip Summary</div>
+                <div className="mutedBox">{result.plan.summary}</div>
+              </div>
+
+              <div className="planBlock">
+                <div className="blockTitle">Why this plan</div>
+                <div className="mutedBox">{result.plan.whyRecommended}</div>
+              </div>
+
+              <div className="planBlock">
+                <div className="blockTitle">Day-wise itinerary</div>
+                <div className="plannerDayList">
+                  {(result.plan.itinerary || []).map((day) => (
+                    <div className="plannerDayItem" key={day.day}>
+                      <div className="plannerDayHeading">
+                        Day {day.day}: {day.title}
+                      </div>
+                      <ul className="list">
+                        {(day.items || []).map((item, idx) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="planBlock">
+                <div className="blockTitle">Budget breakdown</div>
                 <ul className="list">
-                  {mockPlan.routeOrder.map((x) => (
-                    <li key={x}>{x}</li>
+                  {(result.plan.budgetBreakdown || []).map((item, idx) => (
+                    <li key={idx}>
+                      {item.label}: ₹{item.amount}
+                    </li>
                   ))}
                 </ul>
               </div>
 
               <div className="planBlock">
-                <div className="blockTitle">Transport options</div>
-                <ul className="list">
-                  {mockPlan.transport.map((x) => (
-                    <li key={x}>{x}</li>
-                  ))}
-                </ul>
+                <div className="blockTitle">Transport advice</div>
+                <div className="mutedBox">{result.plan.transportAdvice}</div>
               </div>
 
               <div className="planBlock">
-                <div className="blockTitle">Why it’s famous</div>
-                <div className="mutedBox">{mockPlan.whyFamous}</div>
+                <div className="blockTitle">Recommended Travel Planners</div>
+                {result.recommendedTravelProviders?.length ? (
+                  <div className="plannerProviderGrid">
+                    {result.recommendedTravelProviders.map((item) => (
+                      <div className="plannerProviderCard" key={item._id}>
+                        <div className="plannerProviderTitle">{item.businessName}</div>
+                        <div className="plannerProviderMeta">
+                          {item.city} • ⭐ {item.ratingAverage || 0}
+                        </div>
+                        <div className="plannerProviderText">
+                          {item.travelPlanner?.packageTitle || item.description || "Travel planner"}
+                        </div>
+                        <button
+                          className="btn"
+                          onClick={() => navigate(`/providers/${item._id}`)}
+                        >
+                          View Planner
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mutedBox">No matching travel planners found.</div>
+                )}
               </div>
 
               <div className="planBlock">
-                <div className="blockTitle">Anti-cheat tips</div>
-                <ul className="list">
-                  {mockPlan.safetyTips.map((x) => (
-                    <li key={x}>{x}</li>
-                  ))}
-                </ul>
+                <div className="blockTitle">Recommended Vehicle Services</div>
+                {result.recommendedVehicleProviders?.length ? (
+                  <div className="plannerProviderGrid">
+                    {result.recommendedVehicleProviders.map((item) => (
+                      <div className="plannerProviderCard" key={item._id}>
+                        <div className="plannerProviderTitle">{item.businessName}</div>
+                        <div className="plannerProviderMeta">
+                          {item.city} • ⭐ {item.ratingAverage || 0}
+                        </div>
+                        <div className="plannerProviderText">
+                          {(item.vehicles || [])
+                            .slice(0, 2)
+                            .map((vehicle) => `${vehicle.title || vehicle.vehicleType} - ₹${vehicle.price}`)
+                            .join(", ") || "Vehicle service"}
+                        </div>
+                        <button
+                          className="btn"
+                          onClick={() => navigate(`/providers/${item._id}`)}
+                        >
+                          View Vehicles
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mutedBox">No matching vehicle providers found.</div>
+                )}
               </div>
 
-              <div className="note">
-                Next step: backend + GPT call + save plan + share plan in community.
+              <div className="planBlock">
+                <div className="blockTitle">Extra Tips</div>
+                <ul className="list">
+                  {(result.plan.tips || []).map((tip, idx) => (
+                    <li key={idx}>{tip}</li>
+                  ))}
+                </ul>
               </div>
             </>
           )}
