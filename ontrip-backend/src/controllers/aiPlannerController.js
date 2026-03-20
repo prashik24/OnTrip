@@ -1,9 +1,7 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import Provider from "../models/Provider.js";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 function normalizeText(value = "") {
   return String(value || "").trim().toLowerCase();
@@ -37,7 +35,9 @@ function extractUsefulProviders(providers = []) {
             placesCovered: safeArray(provider.travelPlanner?.placesCovered),
             inclusions: safeArray(provider.travelPlanner?.inclusions),
             exclusions: safeArray(provider.travelPlanner?.exclusions),
-            images: safeArray(provider.travelPlanner?.images).map((img) => img?.url).filter(Boolean),
+            images: safeArray(provider.travelPlanner?.images)
+              .map((img) => img?.url)
+              .filter(Boolean),
           }
         : null,
     vehicles:
@@ -122,7 +122,6 @@ export async function generateAiTripPlan(req, res) {
     }
 
     const cleanDestination = String(destination).trim();
-    const cleanDestinationLower = normalizeText(cleanDestination);
 
     const providers = await Provider.find({
       isActive: true,
@@ -159,102 +158,44 @@ export async function generateAiTripPlan(req, res) {
       vehicleProviders,
     });
 
-    if (!process.env.OPENAI_API_KEY) {
+    // ✅ FREE AI CHECK
+    if (!process.env.GEMINI_API_KEY) {
       return res.json({
-        message: "AI key not configured. Showing provider-based fallback plan.",
+        message: "AI key not configured. Showing fallback plan.",
         plan: fallback,
         recommendedTravelProviders: travelProviders.slice(0, 4),
         recommendedVehicleProviders: vehicleProviders.slice(0, 4),
       });
     }
 
-    const prompt = `
-You are a travel planning assistant for a platform called OnTrip.
+    const prompt = `You are a travel planning assistant.
 
-Create a smart, practical trip plan in JSON only.
+Return ONLY JSON.
 
-User request:
-- Destination: ${cleanDestination}
-- Days: ${Number(days)}
-- Budget: ${Number(budget)}
-- People: ${Number(peopleCount)}
-- Travel style: ${travelStyle}
-- Start city: ${startCity || "Not provided"}
+Destination: ${cleanDestination}
+Days: ${days}
+Budget: ${budget}
+People: ${peopleCount}
+Style: ${travelStyle}
 
-Available providers on the platform:
-${JSON.stringify(
-  {
-    travelProviders,
-    vehicleProviders,
-  },
-  null,
-  2
-)}
+Return JSON with itinerary, budget, tips.`;
 
-Return ONLY valid JSON in this exact shape:
-{
-  "title": "string",
-  "summary": "string",
-  "whyRecommended": "string",
-  "itinerary": [
-    {
-      "day": 1,
-      "title": "string",
-      "items": ["string", "string", "string"]
-    }
-  ],
-  "budgetBreakdown": [
-    { "label": "Stay", "amount": 0 }
-  ],
-  "transportAdvice": "string",
-  "travelProviderIds": ["providerId"],
-  "vehicleProviderIds": ["providerId"],
-  "tips": ["string", "string", "string"]
-}
-
-Rules:
-- Prefer provider recommendations matching the destination.
-- Recommend travel planners if they fit sightseeing/package needs.
-- Recommend vehicle providers if local transport or day trips make sense.
-- Keep itinerary realistic and easy to understand.
-- Amount values must be numbers.
-- travelProviderIds and vehicleProviderIds must come only from provided providers.
-- Do not include markdown.
-`;
-
-    const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You generate structured travel planning JSON for a marketplace app.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      temperature: 0.7,
-      response_format: { type: "json_object" },
+    // ✅ GEMINI API CALL (FREE)
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
     });
 
-    const raw = completion.choices?.[0]?.message?.content || "{}";
+    const resultAI = await model.generateContent(prompt);
+    const raw = resultAI.response.text() || "{}";
+
     let parsed;
 
     try {
-      parsed = JSON.parse(raw);
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : fallback;
     } catch {
       parsed = fallback;
     }
-
-    const selectedTravelProviders = travelProviders.filter((item) =>
-      safeArray(parsed.travelProviderIds).includes(String(item._id))
-    );
-
-    const selectedVehicleProviders = vehicleProviders.filter((item) =>
-      safeArray(parsed.vehicleProviderIds).includes(String(item._id))
-    );
 
     return res.json({
       message: "AI trip plan generated successfully.",
@@ -262,14 +203,8 @@ Rules:
         ...fallback,
         ...parsed,
       },
-      recommendedTravelProviders:
-        selectedTravelProviders.length > 0
-          ? selectedTravelProviders
-          : travelProviders.slice(0, 4),
-      recommendedVehicleProviders:
-        selectedVehicleProviders.length > 0
-          ? selectedVehicleProviders
-          : vehicleProviders.slice(0, 4),
+      recommendedTravelProviders: travelProviders.slice(0, 4),
+      recommendedVehicleProviders: vehicleProviders.slice(0, 4),
     });
   } catch (error) {
     console.error("generateAiTripPlan error", error);
