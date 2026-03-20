@@ -132,38 +132,93 @@ async function geocodeLocation(cityName) {
   };
 }
 
+/**
+ * FREE WEATHER VERSION
+ * Uses:
+ * - Current Weather API
+ * - 5 day / 3 hour forecast API
+ * Avoids paid One Call 3.0
+ */
 async function getWeatherForCoords(lat, lon) {
   if (!OPENWEATHER_API_KEY || lat == null || lon == null) return null;
 
-  const url =
-    `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}` +
-    `&exclude=minutely,alerts&appid=${OPENWEATHER_API_KEY}&units=metric`;
+  try {
+    const currentUrl =
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}` +
+      `&appid=${OPENWEATHER_API_KEY}&units=metric`;
 
-  const data = await fetchJson(url);
+    const forecastUrl =
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}` +
+      `&appid=${OPENWEATHER_API_KEY}&units=metric`;
 
-  return {
-    current: {
-      temp: data?.current?.temp ?? null,
-      feelsLike: data?.current?.feels_like ?? null,
-      humidity: data?.current?.humidity ?? null,
-      windSpeed: data?.current?.wind_speed ?? null,
-      main: data?.current?.weather?.[0]?.main || "",
-      description: data?.current?.weather?.[0]?.description || "",
-    },
-    hourly: safeArray(data?.hourly).slice(0, 8).map((h) => ({
-      dt: h.dt,
-      temp: h.temp,
-      weather: h?.weather?.[0]?.main || "",
-      description: h?.weather?.[0]?.description || "",
-    })),
-    daily: safeArray(data?.daily).slice(0, 5).map((d) => ({
-      dt: d.dt,
-      min: d?.temp?.min,
-      max: d?.temp?.max,
-      weather: d?.weather?.[0]?.main || "",
-      description: d?.weather?.[0]?.description || "",
-    })),
-  };
+    const [currentData, forecastData] = await Promise.all([
+      fetchJson(currentUrl),
+      fetchJson(forecastUrl),
+    ]);
+
+    return {
+      current: {
+        temp: currentData?.main?.temp ?? null,
+        feelsLike: currentData?.main?.feels_like ?? null,
+        humidity: currentData?.main?.humidity ?? null,
+        windSpeed: currentData?.wind?.speed ?? null,
+        main: currentData?.weather?.[0]?.main || "",
+        description: currentData?.weather?.[0]?.description || "",
+      },
+      hourly: safeArray(forecastData?.list)
+        .slice(0, 8)
+        .map((item) => ({
+          dt: item.dt,
+          temp: item?.main?.temp ?? null,
+          weather: item?.weather?.[0]?.main || "",
+          description: item?.weather?.[0]?.description || "",
+        })),
+      daily: buildDailyFromForecastList(forecastData?.list || []),
+    };
+  } catch (error) {
+    console.error("getWeatherForCoords error:", error.message);
+    return null;
+  }
+}
+
+function buildDailyFromForecastList(list = []) {
+  const grouped = {};
+
+  for (const item of list) {
+    const date = item?.dt_txt?.split(" ")?.[0];
+    if (!date) continue;
+
+    if (!grouped[date]) {
+      grouped[date] = {
+        min: Infinity,
+        max: -Infinity,
+        weather: item?.weather?.[0]?.main || "",
+        description: item?.weather?.[0]?.description || "",
+        dt: item?.dt,
+      };
+    }
+
+    const tempMin = item?.main?.temp_min;
+    const tempMax = item?.main?.temp_max;
+
+    if (typeof tempMin === "number") {
+      grouped[date].min = Math.min(grouped[date].min, tempMin);
+    }
+
+    if (typeof tempMax === "number") {
+      grouped[date].max = Math.max(grouped[date].max, tempMax);
+    }
+  }
+
+  return Object.values(grouped)
+    .slice(0, 5)
+    .map((day) => ({
+      dt: day.dt,
+      min: Number.isFinite(day.min) ? day.min : null,
+      max: Number.isFinite(day.max) ? day.max : null,
+      weather: day.weather,
+      description: day.description,
+    }));
 }
 
 async function generateFamousPlacesWithAI(destination) {
@@ -297,7 +352,7 @@ function buildFallbackPlan({
     destinationWhyFamous: `${destination} is famous for its culture, food, sightseeing spots, and visitor experiences.`,
     bestTimeToVisit: weather?.current?.description
       ? `Current weather is ${weather.current.description}, so plan outdoor visits accordingly.`
-      : `Check local seasonal weather before departure.`,
+      : `Weather details are unavailable right now, so keep a flexible sightseeing plan.`,
     reachOptions: buildReachOptions(startCity, destination),
     itinerary,
     budgetBreakdown: [
@@ -506,10 +561,11 @@ export async function buildTripIntelligence({
   providersNormalized,
 }) {
   const destinationGeo = await geocodeLocation(destination);
-  const weather =
-    destinationGeo?.lat != null && destinationGeo?.lon != null
-      ? await getWeatherForCoords(destinationGeo.lat, destinationGeo.lon)
-      : null;
+
+  let weather = null;
+  if (destinationGeo?.lat != null && destinationGeo?.lon != null) {
+    weather = await getWeatherForCoords(destinationGeo.lat, destinationGeo.lon);
+  }
 
   const rawPlaces = await generateFamousPlacesWithAI(destination);
   const famousPlaces = enrichPlaces(rawPlaces, weather?.current?.main || "");
