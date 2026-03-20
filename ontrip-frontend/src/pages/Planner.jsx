@@ -33,7 +33,7 @@ export default function Planner() {
   const [chatMessages, setChatMessages] = useState([
     {
       role: "assistant",
-      text: "Ask me anything about this trip: best route, best day order, weather, budget, which place to visit first, or what to skip.",
+      text: "Ask me anything about this trip: weather, route order, budget, place timing, what to carry, or what to visit first.",
     },
   ]);
 
@@ -80,7 +80,7 @@ export default function Planner() {
       setChatMessages([
         {
           role: "assistant",
-          text: `Your ${form.destination} trip is ready. You can now ask: which place should I visit first, what should I pack, what if it rains, or how to reduce cost?`,
+          text: `Your ${form.destination} trip is ready. Ask anything about weather, route order, budget, or what place to visit first.`,
         },
       ]);
     } catch (err) {
@@ -132,10 +132,12 @@ export default function Planner() {
 
   const famousPlaces = result?.famousPlaces || [];
   const weather = result?.weather;
-  const route = result?.startToDestinationRoad;
 
   const totalSightCost = useMemo(() => {
-    return famousPlaces.reduce((sum, item) => sum + (item?.estimatedCostINR?.total || 0), 0);
+    return famousPlaces.reduce(
+      (sum, item) => sum + (item?.estimatedCostINR?.total || 0),
+      0
+    );
   }, [famousPlaces]);
 
   if (loading) {
@@ -148,8 +150,8 @@ export default function Planner() {
         <div>
           <h1>AI Smart Trip Planner</h1>
           <p>
-            Famous places, route order, travel time, weather insight, local cost,
-            Google Maps route, and live AI trip chat — all in one planner.
+            Famous places, weather insight, price estimation, smart recommendations,
+            and live AI chat — all in one planner.
           </p>
         </div>
       </div>
@@ -232,14 +234,14 @@ export default function Planner() {
           </button>
 
           <div className="plannerMiniCard">
-            <div className="plannerMiniTitle">What this planner now gives</div>
+            <div className="plannerMiniTitle">Included now</div>
             <ul className="plannerList">
+              <li>Famous places of destination</li>
               <li>Why destination is famous</li>
-              <li>How to reach by air, rail, road</li>
-              <li>Travel time from start city</li>
-              <li>Famous places with estimated cost</li>
-              <li>Route order to save time</li>
-              <li>Live AI question support</li>
+              <li>Air, rail, road travel guidance</li>
+              <li>Estimated cost per place</li>
+              <li>Weather-based suggestions</li>
+              <li>Live AI trip chat</li>
             </ul>
           </div>
         </div>
@@ -249,7 +251,7 @@ export default function Planner() {
 
           {!result?.plan ? (
             <div className="plannerEmpty">
-              Enter destination and start city to generate a detailed travel plan.
+              Enter destination and generate a detailed travel plan.
             </div>
           ) : (
             <>
@@ -308,50 +310,18 @@ export default function Planner() {
                 </div>
               </div>
 
-              {!!route && (
-                <div className="plannerBlock">
-                  <div className="plannerBlockTitle">Start City → Destination</div>
-                  <div className="plannerInfoRow">
-                    <span>Distance: {route.distanceText}</span>
-                    <span>Road Travel Time: {route.durationText}</span>
-                  </div>
-                </div>
-              )}
-
               {!!weather && (
                 <div className="plannerBlock">
-                  <div className="plannerBlockTitle">Smart Recommendations</div>
+                  <div className="plannerBlockTitle">Weather & Smart Recommendations</div>
                   <div className="plannerInfoRow">
                     <span>Weather: {weather.current?.description || "N/A"}</span>
                     <span>Temp: {weather.current?.temp ?? "N/A"}°C</span>
+                    <span>Feels Like: {weather.current?.feelsLike ?? "N/A"}°C</span>
                     <span>Humidity: {weather.current?.humidity ?? "N/A"}%</span>
                   </div>
                   <div className="plannerMutedBox">
                     {result.plan.bestTimeToVisit}
                   </div>
-                </div>
-              )}
-
-              {!!result.mapEmbedUrl && (
-                <div className="plannerBlock">
-                  <div className="plannerBlockTitle">Google Maps Route</div>
-                  <div className="plannerMapWrap">
-                    <iframe
-                      title="Trip route map"
-                      src={result.mapEmbedUrl}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                    />
-                  </div>
-                  <a
-                    className="plannerLinkBtn"
-                    href={result.directionsUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Open full route in Google Maps
-                  </a>
                 </div>
               )}
 
@@ -374,27 +344,27 @@ export default function Planner() {
               </div>
 
               <div className="plannerBlock">
-                <div className="plannerBlockTitle">Famous Places with Route Order</div>
+                <div className="plannerBlockTitle">Famous Places</div>
                 <div className="plannerPlacesGrid">
                   {famousPlaces.map((place, index) => (
                     <div className="plannerPlaceCard" key={`${place.name}-${index}`}>
                       <div className="plannerPlaceTop">
-                        <div className="plannerPlaceIndex">{index + 1}</div>
+                        <div className="plannerPlaceIndex">{place.order}</div>
                         <div>
                           <div className="plannerProviderTitle">{place.name}</div>
                           <div className="plannerProviderMeta">
-                            {place.primaryType || "Tourist place"} • ⭐ {place.rating || 0}
+                            Stop order for easy travel flow
                           </div>
                         </div>
                       </div>
 
-                      <div className="plannerMutedBox">
-                        Address: {place.address || "N/A"}
-                      </div>
+                      <div className="plannerMutedBox">{place.reason}</div>
 
                       <div className="plannerPlaceFacts">
-                        <span>From previous: {place.routeFromPrevious?.distanceText}</span>
-                        <span>Time: {place.routeFromPrevious?.durationText}</span>
+                        <span>
+                          From previous: {place.fromPreviousDistanceKm} km
+                        </span>
+                        <span>Time: {place.fromPreviousDurationText}</span>
                       </div>
 
                       <div className="plannerPlaceFacts">
@@ -404,18 +374,13 @@ export default function Planner() {
 
                       <div className="plannerCostBox">
                         <div>Entry: {money(place.estimatedCostINR?.entryFee)}</div>
-                        <div>Food/Local: {money(place.estimatedCostINR?.foodAndLocalTravel)}</div>
-                        <div>Total stop cost: {money(place.estimatedCostINR?.total)}</div>
+                        <div>
+                          Food/Local: {money(place.estimatedCostINR?.foodAndLocalTravel)}
+                        </div>
+                        <div>
+                          Total stop cost: {money(place.estimatedCostINR?.total)}
+                        </div>
                       </div>
-
-                      <a
-                        className="plannerLinkBtn"
-                        href={place.googleMapsUri}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        View on Google Maps
-                      </a>
                     </div>
                   ))}
                 </div>
@@ -484,7 +449,10 @@ export default function Planner() {
                         <div className="plannerProviderText">
                           {(item.vehicles || [])
                             .slice(0, 2)
-                            .map((vehicle) => `${vehicle.title || vehicle.vehicleType} - ${money(vehicle.price)}`)
+                            .map(
+                              (vehicle) =>
+                                `${vehicle.title || vehicle.vehicleType} - ${money(vehicle.price)}`
+                            )
                             .join(", ") || "Vehicle service"}
                         </div>
                         <button
@@ -517,7 +485,9 @@ export default function Planner() {
                     {chatMessages.map((m, idx) => (
                       <div
                         key={idx}
-                        className={`plannerChatBubble ${m.role === "user" ? "isUser" : "isBot"}`}
+                        className={`plannerChatBubble ${
+                          m.role === "user" ? "isUser" : "isBot"
+                        }`}
                       >
                         {m.text}
                       </div>
@@ -529,7 +499,7 @@ export default function Planner() {
                       className="plannerInput"
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
-                      placeholder="Ask about route, place order, weather, budget, what to carry..."
+                      placeholder="Ask about weather, budget, place order, timing, what to carry..."
                       onKeyDown={(e) => {
                         if (e.key === "Enter") sendChat();
                       }}
