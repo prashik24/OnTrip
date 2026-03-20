@@ -1,354 +1,387 @@
-.profilePage {
+.plannerPage {
   padding-bottom: 32px;
-}
-
-.profileCard {
-  max-width: 980px;
-  margin: 0 auto;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 18px;
-  padding: 24px;
-  box-shadow: 0 10px 28px rgba(10, 22, 35, 0.06);
-  border: 1px solid rgba(0, 184, 241, 0.12);
-}
-
-.profileHeader {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 24px;
-  align-items: center;
+  gap: 18px;
 }
 
-.profileAvatarArea {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.profileAvatar {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  background: #eef2f7;
-  box-shadow: 0 8px 20px rgba(10, 22, 35, 0.08);
-}
-
-.profileAvatarFallback {
-  display: grid;
-  place-items: center;
-  font-size: 34px;
-  font-weight: 800;
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--p2), var(--p3));
-}
-
-.profilePhotoChange {
-  color: #00b8f1;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.18s ease;
-}
-
-.profilePhotoChange:hover {
-  color: #009fd0;
-}
-
-.profileMain {
-  min-width: 0;
-  display: grid;
-  gap: 12px;
-}
-
-.profileIdentity h1 {
+.plannerHead h1 {
   margin: 0;
-  font-size: 30px;
-  line-height: 1.1;
-  font-weight: 780;
-  letter-spacing: -0.3px;
+  font-size: 32px;
+  font-weight: 760;
   color: var(--text);
 }
 
-.profileIdentity p {
+.plannerHead p {
   margin: 8px 0 0;
-  font-size: 15px;
-  font-weight: 500;
-  color: rgba(15, 23, 42, 0.58);
-  word-break: break-word;
+  color: var(--muted);
+  line-height: 1.65;
+  font-weight: 550;
+  max-width: 860px;
 }
 
-.profileMiniInfo {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
+.plannerMessage {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 98, 98, 0.08);
+  border: 1px solid rgba(255, 98, 98, 0.16);
+  color: #b42318;
+  font-weight: 650;
 }
 
-.profileMiniInfo span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 34px;
-  padding: 0 12px;
-  border-radius: 10px;
-  background: rgba(244, 251, 255, 0.94);
-  border: 1px solid rgba(0, 184, 241, 0.1);
-  color: rgba(15, 23, 42, 0.78);
+.plannerGrid {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.plannerFormCard,
+.plannerResultCard {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  padding: 20px;
+  display: grid;
+  gap: 18px;
+}
+
+.plannerSectionTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 760;
+  color: var(--text);
+}
+
+.plannerField {
+  display: grid;
+  gap: 8px;
+}
+
+.plannerField label {
+  display: block;
+  margin: 0;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 650;
+  color: #12212f;
 }
 
-.profileActions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+.plannerRow,
+.plannerTwoCol,
+.plannerThreeCol {
+  display: grid;
+  gap: 14px;
 }
 
-.profilePrimaryBtn,
-.profileGhostBtn {
-  min-height: 42px;
+.plannerRow,
+.plannerTwoCol {
+  grid-template-columns: 1fr 1fr;
+}
+
+.plannerThreeCol {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.plannerInput {
+  width: 100%;
+  min-height: 52px;
+  border: 1.5px solid rgba(11, 27, 42, 0.12);
+  border-radius: 18px;
   padding: 0 16px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #12212f;
+  background: #ffffff;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.plannerInput::placeholder {
+  color: rgba(11, 27, 42, 0.46);
+  font-weight: 550;
+}
+
+.plannerInput:focus {
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
+}
+
+.plannerPrimaryBtn,
+.plannerProviderBtn,
+.plannerLinkBtn {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 184, 241, 0.32);
   border-radius: 12px;
-  cursor: pointer;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
   font: inherit;
   font-weight: 700;
+  cursor: pointer;
   transition: 0.18s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.profilePrimaryBtn {
-  border: 1px solid rgba(0, 184, 241, 0.32);
-  background: linear-gradient(135deg, var(--p2), var(--p3));
-  color: #ffffff;
+.plannerPrimaryBtn:hover,
+.plannerProviderBtn:hover,
+.plannerLinkBtn:hover {
+  box-shadow: 0 8px 18px rgba(0, 184, 241, 0.16);
 }
 
-.profileGhostBtn {
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #ffffff;
-  color: var(--text);
-}
-
-.profilePrimaryBtn:hover,
-.profileGhostBtn:hover {
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
-}
-
-.profilePrimaryBtn:disabled,
-.profileGhostBtn:disabled {
+.plannerPrimaryBtn:disabled {
   opacity: 0.72;
   cursor: not-allowed;
 }
 
-.profileQuickCard button {
-  margin-top: 8px;
-  min-height: 40px;
-  border-radius: 10px;
-  border: 1px solid rgba(0, 184, 241, 0.35);
-  background: linear-gradient(135deg, var(--p2), var(--p3));
-  color: #ffffff;
-  font-weight: 650;
-  cursor: pointer;
-  transition: 0.18s ease;
-}
-
-.profileQuickCard button:hover {
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
-}
-
-.profileMessage {
-  margin-top: 18px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  font-size: 14px;
-  font-weight: 650;
-  border: 1px solid rgba(11, 27, 42, 0.08);
-}
-
-.profileMessage.success {
-  background: rgba(34, 197, 94, 0.08);
-  color: #15803d;
-  border-color: rgba(34, 197, 94, 0.14);
-}
-
-.profileMessage.error {
-  background: rgba(239, 68, 68, 0.08);
-  color: #b42318;
-  border-color: rgba(239, 68, 68, 0.14);
-}
-
-.profileContent,
-.profileForm {
-  margin-top: 24px;
-}
-
-.profileSection + .profileSection {
-  margin-top: 22px;
-}
-
-.profileSection h2,
-.profileForm h2 {
-  margin: 0 0 12px;
-  font-size: 20px;
-  font-weight: 720;
-  color: var(--text);
-}
-
-.profileSection p {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.75;
-  color: rgba(15, 23, 42, 0.8);
-}
-
-.profileInfoGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.profileInfoItem {
-  background: rgba(244, 251, 255, 0.94);
-  border-radius: 14px;
-  padding: 15px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  border: 1px solid rgba(0, 184, 241, 0.1);
-}
-
-.profileInfoItem strong {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: rgba(15, 23, 42, 0.46);
-}
-
-.profileInfoItem span {
-  font-size: 15px;
-  font-weight: 650;
-  color: rgba(15, 23, 42, 0.9);
-  word-break: break-word;
-}
-
-.profileQuickGrid {
-  margin-top: 22px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.profileQuickCard {
-  padding: 18px;
-  border-radius: 14px;
-  border: 1px solid rgba(0, 184, 241, 0.12);
+.plannerMiniCard,
+.plannerEmpty {
   background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  padding: 18px;
+  color: rgba(11, 27, 42, 0.72);
+  font-weight: 650;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+}
+
+.plannerMiniTitle {
+  font-size: 16px;
+  font-weight: 750;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.plannerPlanTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 760;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.plannerBlock {
+  background: rgba(244, 251, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 14px;
+  padding: 16px;
   display: grid;
   gap: 10px;
 }
 
-.profileQuickCard h3 {
+.plannerBlockTitle {
   margin: 0;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 720;
   color: var(--text);
 }
 
-.profileQuickCard p {
+.plannerList {
   margin: 0;
-  color: var(--muted);
-  line-height: 1.6;
+  padding-left: 18px;
+  color: rgba(11, 27, 42, 0.8);
   font-weight: 550;
+  line-height: 1.7;
 }
 
-.profileFormGrid {
+.plannerList li + li {
+  margin-top: 6px;
+}
+
+.plannerMutedBox {
+  color: rgba(11, 27, 42, 0.78);
+  font-weight: 550;
+  line-height: 1.7;
+}
+
+.plannerMetaStrong {
+  color: #0f5c79;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.plannerInfoRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: rgba(11, 27, 42, 0.82);
+  font-weight: 650;
+}
+
+.plannerMapWrap {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  background: #fff;
+}
+
+.plannerMapWrap iframe {
+  width: 100%;
+  height: 360px;
+  border: 0;
+  display: block;
+}
+
+.plannerDayList {
+  display: grid;
+  gap: 12px;
+}
+
+.plannerDayItem {
+  background: #ffffff;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.plannerDayHeading {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.plannerProviderGrid,
+.plannerPlacesGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
-.profileForm label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 650;
-  color: var(--text);
-}
-
-.profileForm input,
-.profileForm textarea {
-  width: 100%;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  border-radius: 12px;
+.plannerProviderCard,
+.plannerPlaceCard {
   background: #ffffff;
-  padding: 12px 14px;
-  font-size: 15px;
-  font-weight: 550;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 14px;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+  box-shadow: 0 8px 20px rgba(10, 22, 35, 0.04);
+}
+
+.plannerProviderTitle {
+  font-size: 17px;
+  font-weight: 720;
   color: var(--text);
-  outline: none;
-  transition: 0.18s ease;
 }
 
-.profileForm input {
-  min-height: 46px;
+.plannerProviderMeta {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 550;
 }
 
-.profileForm textarea {
-  min-height: 120px;
-  resize: vertical;
+.plannerProviderText {
+  color: rgba(11, 27, 42, 0.78);
+  font-weight: 550;
+  line-height: 1.65;
 }
 
-.profileForm input:focus,
-.profileForm textarea:focus {
-  border-color: var(--p2);
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
+.plannerPlaceTop {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
 }
 
-.fullSpan {
-  grid-column: 1 / -1;
+.plannerPlaceIndex {
+  min-width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.plannerPlaceFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 13px;
+  color: rgba(11, 27, 42, 0.78);
+  font-weight: 650;
+}
+
+.plannerCostBox {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0, 184, 241, 0.06);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  color: rgba(11, 27, 42, 0.84);
+  font-weight: 650;
+}
+
+.plannerChatBox {
+  display: grid;
+  gap: 12px;
+}
+
+.plannerChatMessages {
+  display: grid;
+  gap: 10px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.plannerChatBubble {
+  max-width: 82%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  line-height: 1.6;
+  font-weight: 550;
+  font-size: 14px;
+}
+
+.plannerChatBubble.isUser {
+  margin-left: auto;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+
+.plannerChatBubble.isBot {
+  margin-right: auto;
+  background: #fff;
+  color: rgba(11, 27, 42, 0.86);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-bottom-left-radius: 6px;
+}
+
+.plannerChatComposer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+}
+
+@media (max-width: 1100px) {
+  .plannerGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 980px) {
-  .profileCard {
-    padding: 20px 16px;
-  }
-
-  .profileHeader {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-
-  .profileActions {
-    justify-content: flex-start;
-  }
-
-  .profileIdentity h1 {
-    font-size: 26px;
-  }
-
-  .profileQuickGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px) {
-  .profileAvatar {
-    width: 104px;
-    height: 104px;
-  }
-
-  .profileIdentity h1 {
-    font-size: 24px;
-  }
-
-  .profileInfoGrid,
-  .profileFormGrid {
+  .plannerThreeCol,
+  .plannerTwoCol,
+  .plannerRow,
+  .plannerProviderGrid,
+  .plannerPlacesGrid {
     grid-template-columns: 1fr;
   }
 
-  .profileMiniInfo {
-    gap: 8px 12px;
+  .plannerChatComposer {
+    grid-template-columns: 1fr;
+  }
+
+  .plannerMapWrap iframe {
+    height: 300px;
   }
 }
