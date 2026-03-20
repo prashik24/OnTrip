@@ -15,91 +15,8 @@ function num(val, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
-function formatDurationFromKm(distanceKm = 0, avgSpeedKmH = 45) {
-  if (!distanceKm || !avgSpeedKmH) return "N/A";
-  const totalHours = distanceKm / avgSpeedKmH;
-  const hrs = Math.floor(totalHours);
-  const mins = Math.round((totalHours - hrs) * 60);
-
-  if (hrs <= 0) return `${mins} min`;
-  if (mins === 0) return `${hrs} hr`;
-  return `${hrs} hr ${mins} min`;
-}
-
-function estimateDistanceKm(index) {
-  const base = [4, 7, 11, 6, 9, 13, 5, 8];
-  return base[index % base.length];
-}
-
-function estimatePlaceCostINR(placeName = "", primaryType = "", rating = 0) {
-  const text = `${placeName} ${primaryType}`.toLowerCase();
-
-  if (
-    text.includes("fort") ||
-    text.includes("museum") ||
-    text.includes("palace") ||
-    text.includes("monument")
-  ) {
-    return { entryFee: 150, foodAndLocalTravel: 350, total: 500 };
-  }
-
-  if (
-    text.includes("temple") ||
-    text.includes("ghat") ||
-    text.includes("lake") ||
-    text.includes("beach")
-  ) {
-    return { entryFee: 0, foodAndLocalTravel: 300, total: 300 };
-  }
-
-  if (
-    text.includes("park") ||
-    text.includes("garden") ||
-    text.includes("zoo")
-  ) {
-    return { entryFee: 80, foodAndLocalTravel: 300, total: 380 };
-  }
-
-  if (rating >= 4.5) {
-    return { entryFee: 100, foodAndLocalTravel: 400, total: 500 };
-  }
-
-  return { entryFee: 50, foodAndLocalTravel: 300, total: 350 };
-}
-
-function estimateCrowdLabel({ userRatingCount = 0, now = new Date() }) {
-  const day = now.getDay();
-  const hour = now.getHours();
-
-  let score = 0;
-
-  if (userRatingCount > 5000) score += 3;
-  else if (userRatingCount > 1000) score += 2;
-  else if (userRatingCount > 300) score += 1;
-
-  if (day === 0 || day === 6) score += 2;
-  if (hour >= 11 && hour <= 17) score += 1;
-
-  if (score >= 5) return "High";
-  if (score >= 3) return "Moderate";
-  return "Low";
-}
-
-function weatherSuitabilityLabel(weatherMain = "") {
-  const text = String(weatherMain).toLowerCase();
-  if (text.includes("rain") || text.includes("storm")) {
-    return "Carry umbrella or rain protection";
-  }
-  if (text.includes("snow")) {
-    return "Cold weather caution";
-  }
-  if (text.includes("clear")) {
-    return "Great for sightseeing";
-  }
-  if (text.includes("cloud")) {
-    return "Good for outdoor visits";
-  }
-  return "Check local conditions";
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function fetchJson(url, options = {}) {
@@ -111,35 +28,41 @@ async function fetchJson(url, options = {}) {
   return response.json();
 }
 
-async function geocodeLocation(cityName) {
-  if (!OPENWEATHER_API_KEY || !cityName) return null;
+async function geocodeLocation(query) {
+  if (!query) return null;
 
-  const url = `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
-    cityName
-  )}&limit=1&appid=${OPENWEATHER_API_KEY}`;
+  await sleep(1100);
 
-  const data = await fetchJson(url);
+  const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(
+    query
+  )}`;
+
+  const data = await fetchJson(url, {
+    headers: {
+      "User-Agent": "ontrip-ai-planner/1.0",
+      "Accept-Language": "en",
+    },
+  });
+
   const item = data?.[0];
-
   if (!item) return null;
 
   return {
-    name: item.name || cityName,
-    state: item.state || "",
-    country: item.country || "",
-    lat: item.lat,
-    lon: item.lon,
+    name: item.display_name || query,
+    lat: Number(item.lat),
+    lon: Number(item.lon),
   };
 }
 
 /**
- * FREE WEATHER VERSION
+ * OpenWeather FREE-ENDPOINT VERSION
  * Uses:
- * - Current Weather API
- * - 5 day / 3 hour forecast API
- * Avoids paid One Call 3.0
+ * - Current weather: /data/2.5/weather
+ * - 5 day / 3 hour forecast: /data/2.5/forecast
+ *
+ * Avoids One Call 3.0 subscription requirement.
  */
-async function getWeatherForCoords(lat, lon) {
+async function getWeather(lat, lon) {
   if (!OPENWEATHER_API_KEY || lat == null || lon == null) return null;
 
   try {
@@ -162,21 +85,21 @@ async function getWeatherForCoords(lat, lon) {
         feelsLike: currentData?.main?.feels_like ?? null,
         humidity: currentData?.main?.humidity ?? null,
         windSpeed: currentData?.wind?.speed ?? null,
-        main: currentData?.weather?.[0]?.main || "",
         description: currentData?.weather?.[0]?.description || "",
+        main: currentData?.weather?.[0]?.main || "",
       },
       hourly: safeArray(forecastData?.list)
         .slice(0, 8)
         .map((item) => ({
-          dt: item.dt,
+          dt: item?.dt ?? null,
           temp: item?.main?.temp ?? null,
-          weather: item?.weather?.[0]?.main || "",
           description: item?.weather?.[0]?.description || "",
+          main: item?.weather?.[0]?.main || "",
         })),
       daily: buildDailyFromForecastList(forecastData?.list || []),
     };
   } catch (error) {
-    console.error("getWeatherForCoords error:", error.message);
+    console.error("getWeather error:", error.message);
     return null;
   }
 }
@@ -190,11 +113,11 @@ function buildDailyFromForecastList(list = []) {
 
     if (!grouped[date]) {
       grouped[date] = {
+        dt: item?.dt ?? null,
         min: Infinity,
         max: -Infinity,
-        weather: item?.weather?.[0]?.main || "",
         description: item?.weather?.[0]?.description || "",
-        dt: item?.dt,
+        main: item?.weather?.[0]?.main || "",
       };
     }
 
@@ -216,32 +139,178 @@ function buildDailyFromForecastList(list = []) {
       dt: day.dt,
       min: Number.isFinite(day.min) ? day.min : null,
       max: Number.isFinite(day.max) ? day.max : null,
-      weather: day.weather,
       description: day.description,
+      main: day.main,
     }));
 }
 
-async function generateFamousPlacesWithAI(destination) {
+function weatherSuitabilityLabel(description = "") {
+  const text = String(description).toLowerCase();
+  if (text.includes("rain") || text.includes("storm")) {
+    return "Carry umbrella and keep indoor backup";
+  }
+  if (text.includes("fog")) {
+    return "Start later in the morning if visibility is low";
+  }
+  if (text.includes("clear")) {
+    return "Good for outdoor sightseeing";
+  }
+  if (text.includes("cloud")) {
+    return "Comfortable for outdoor visits";
+  }
+  return "Check local conditions before long outdoor visits";
+}
+
+function estimatePlaceCostINR(placeName = "", type = "") {
+  const text = `${placeName} ${type}`.toLowerCase();
+
+  if (text.includes("fort") || text.includes("palace") || text.includes("museum")) {
+    return { entryFee: 150, foodAndLocalTravel: 350, total: 500 };
+  }
+  if (text.includes("temple") || text.includes("ghat") || text.includes("church")) {
+    return { entryFee: 0, foodAndLocalTravel: 250, total: 250 };
+  }
+  if (text.includes("garden") || text.includes("park") || text.includes("lake")) {
+    return { entryFee: 80, foodAndLocalTravel: 300, total: 380 };
+  }
+
+  return { entryFee: 100, foodAndLocalTravel: 300, total: 400 };
+}
+
+function estimateCrowdLabel(index = 0) {
+  if (index <= 1) return "High";
+  if (index <= 3) return "Moderate";
+  return "Low to Moderate";
+}
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const toRad = (x) => (x * Math.PI) / 180;
+
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) ** 2;
+
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function formatDistance(km = 0) {
+  return `${km.toFixed(km >= 10 ? 0 : 1)} km`;
+}
+
+function formatDurationFromKm(distanceKm = 0, avgSpeedKmH = 28) {
+  if (!distanceKm) return "0 min";
+  const totalHours = distanceKm / avgSpeedKmH;
+  const hrs = Math.floor(totalHours);
+  const mins = Math.round((totalHours - hrs) * 60);
+
+  if (hrs <= 0) return `${mins} min`;
+  if (mins === 0) return `${hrs} hr`;
+  return `${hrs} hr ${mins} min`;
+}
+
+function optimizePlaceOrder(startPoint, places) {
+  if (!places.length) return places;
+
+  const remaining = [...places];
+  const ordered = [];
+
+  let current = startPoint || remaining[0];
+
+  while (remaining.length) {
+    let bestIndex = 0;
+    let bestDistance = Infinity;
+
+    remaining.forEach((place, index) => {
+      const d = haversineKm(
+        current.lat,
+        current.lon,
+        place.lat,
+        place.lon
+      );
+      if (d < bestDistance) {
+        bestDistance = d;
+        bestIndex = index;
+      }
+    });
+
+    const next = remaining.splice(bestIndex, 1)[0];
+    ordered.push(next);
+    current = next;
+  }
+
+  return ordered.map((place, index) => {
+    const prev = index === 0 ? startPoint : ordered[index - 1];
+    const legKm = prev
+      ? haversineKm(prev.lat, prev.lon, place.lat, place.lon)
+      : 0;
+
+    return {
+      ...place,
+      order: index + 1,
+      fromPreviousDistanceKm: Number(legKm.toFixed(1)),
+      fromPreviousDistanceText: formatDistance(legKm),
+      fromPreviousDurationText: formatDurationFromKm(legKm),
+    };
+  });
+}
+
+async function generateFamousPlacesWithAI(destination, interestFocus = []) {
+  const focusText = interestFocus.length
+    ? interestFocus.join(", ")
+    : "general sightseeing";
+
   if (!process.env.GEMINI_API_KEY) {
     return [
-      { name: `${destination} Main Landmark`, reason: "Popular tourist attraction" },
-      { name: `${destination} City Market`, reason: "Known for local shopping and food" },
-      { name: `${destination} Cultural Spot`, reason: "Represents local heritage" },
-      { name: `${destination} Famous Temple`, reason: "Important spiritual place" },
-      { name: `${destination} Sunset Point`, reason: "Good scenic view" },
+      {
+        name: `${destination} Main Landmark`,
+        reason: "Popular and important sightseeing place",
+        category: focusText,
+        exploreTimeText: "1 to 2 hours",
+      },
+      {
+        name: `${destination} Old City Area`,
+        reason: "Good for local culture and food",
+        category: focusText,
+        exploreTimeText: "2 to 3 hours",
+      },
+      {
+        name: `${destination} Famous Temple`,
+        reason: "Important spiritual place",
+        category: "temple",
+        exploreTimeText: "1 to 1.5 hours",
+      },
+      {
+        name: `${destination} Nature Point`,
+        reason: "Relaxing outdoor experience",
+        category: "nature",
+        exploreTimeText: "1.5 to 2 hours",
+      },
     ];
   }
 
   const prompt = `
 Return JSON only.
-Give 6 famous tourist places for ${destination}.
+
+Destination: ${destination}
+User interest focus: ${focusText}
+
+Generate 6 famous subplaces.
+Prioritize the user's focus strongly.
 
 Format:
 {
   "places": [
     {
       "name": "",
-      "reason": ""
+      "reason": "",
+      "category": "",
+      "exploreTimeText": ""
     }
   ]
 }
@@ -260,101 +329,194 @@ Format:
     return safeArray(parsed?.places).slice(0, 6);
   } catch {
     return [
-      { name: `${destination} Main Landmark`, reason: "Popular tourist attraction" },
-      { name: `${destination} City Market`, reason: "Known for local shopping and food" },
-      { name: `${destination} Cultural Spot`, reason: "Represents local heritage" },
-      { name: `${destination} Famous Temple`, reason: "Important spiritual place" },
-      { name: `${destination} Sunset Point`, reason: "Good scenic view" },
+      {
+        name: `${destination} Main Landmark`,
+        reason: "Popular and important sightseeing place",
+        category: focusText,
+        exploreTimeText: "1 to 2 hours",
+      },
+      {
+        name: `${destination} Old City Area`,
+        reason: "Good for local culture and food",
+        category: focusText,
+        exploreTimeText: "2 to 3 hours",
+      },
+      {
+        name: `${destination} Famous Temple`,
+        reason: "Important spiritual place",
+        category: "temple",
+        exploreTimeText: "1 to 1.5 hours",
+      },
+      {
+        name: `${destination} Nature Point`,
+        reason: "Relaxing outdoor experience",
+        category: "nature",
+        exploreTimeText: "1.5 to 2 hours",
+      },
     ];
   }
 }
 
-function enrichPlaces(famousPlaces = [], weatherMain = "") {
-  return famousPlaces.map((place, index) => {
-    const distanceKm = index === 0 ? 5 : estimateDistanceKm(index);
-    const cost = estimatePlaceCostINR(place.name, "", 4.3);
+async function enrichPlaces(destination, places, weatherDescription = "") {
+  const enriched = [];
 
-    return {
+  for (const place of places) {
+    const geo = await geocodeLocation(`${place.name}, ${destination}`);
+    enriched.push({
       ...place,
-      order: index + 1,
-      fromPreviousDistanceKm: distanceKm,
-      fromPreviousDurationText: formatDurationFromKm(distanceKm, 30),
-      crowdLabel: estimateCrowdLabel({
-        userRatingCount: 500 + index * 400,
-      }),
-      weatherSuitability: weatherSuitabilityLabel(weatherMain),
-      estimatedCostINR: cost,
-    };
-  });
+      lat: geo?.lat ?? null,
+      lon: geo?.lon ?? null,
+      estimatedCostINR: estimatePlaceCostINR(place.name, place.category),
+      weatherSuitability: weatherSuitabilityLabel(weatherDescription),
+    });
+  }
+
+  return enriched.filter((p) => p.lat != null && p.lon != null);
 }
 
-function buildReachOptions(startCity, destination) {
+async function buildTravelModesWithAI(startCity, destination) {
+  const fallback = {
+    airplane: {
+      title: "Airplane",
+      optionName: `${startCity || "Nearest city"} to ${destination} flight`,
+      estimatedTime: "Usually fastest for long-distance travel",
+      details: "Use nearest airport, then take city cab or local transfer.",
+      note: "Estimated guidance, not a live flight schedule.",
+    },
+    railway: {
+      title: "Railway",
+      optionName: `${startCity || "Nearest city"} to ${destination} train route`,
+      estimatedTime: "Depends on direct train availability",
+      details: "Check major express or overnight train options for better comfort.",
+      note: "Estimated guidance, not a live railway timetable.",
+    },
+    road: {
+      title: "Road",
+      optionName: `${startCity || "Nearest city"} to ${destination} road trip / bus`,
+      estimatedTime: "Depends on road distance and traffic",
+      details: "Useful when rail or flight access is weak, or for flexible stops.",
+      note: "Estimated guidance, not a live bus timetable.",
+    },
+  };
+
+  if (!process.env.GEMINI_API_KEY) return fallback;
+
+  const prompt = `
+Return JSON only.
+
+Start city: ${startCity || "Not provided"}
+Destination: ${destination}
+
+I need practical but non-live travel suggestions.
+Do NOT pretend these are live schedules.
+Give likely route names and approximate times.
+
+Format:
+{
+  "airplane": {
+    "title": "Airplane",
+    "optionName": "",
+    "estimatedTime": "",
+    "details": "",
+    "note": "Estimated guidance, not a live flight schedule."
+  },
+  "railway": {
+    "title": "Railway",
+    "optionName": "",
+    "estimatedTime": "",
+    "details": "",
+    "note": "Estimated guidance, not a live railway timetable."
+  },
+  "road": {
+    "title": "Road",
+    "optionName": "",
+    "estimatedTime": "",
+    "details": "",
+    "note": "Estimated guidance, not a live bus timetable."
+  }
+}
+`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+      },
+    });
+
+    return {
+      ...fallback,
+      ...JSON.parse(response.text || "{}"),
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+function buildRouteSummary(startName, orderedPlaces) {
+  let totalKm = 0;
+  const routeOrder = [];
+
+  orderedPlaces.forEach((place) => {
+    totalKm += num(place.fromPreviousDistanceKm, 0);
+    routeOrder.push(place.name);
+  });
+
   return {
-    byAir: {
-      summary: startCity
-        ? `Fastest option from ${startCity} to ${destination} is usually by flight, then local city transfer.`
-        : `Flight is usually the fastest option for long-distance travel to ${destination}.`,
-      estimatedTime: "Depends on sector and airport connectivity",
-    },
-    byRail: {
-      summary: startCity
-        ? `Rail can be a good budget-friendly option from ${startCity} if direct train connectivity is available.`
-        : `Rail can be a practical option depending on route connectivity.`,
-      estimatedTime: "Depends on train route",
-    },
-    byRoad: {
-      summary: startCity
-        ? `Road travel from ${startCity} to ${destination} depends on road distance and traffic.`
-        : `Road travel depends on exact origin and highway route.`,
-      estimatedTime: "Depends on road distance",
-    },
+    startLabel: startName,
+    routeOrder,
+    totalDistanceText: formatDistance(totalKm),
+    totalDurationText: formatDurationFromKm(totalKm),
   };
 }
 
-function buildFallbackPlan({
-  destination,
-  startCity,
-  days,
-  budget,
-  peopleCount,
-  travelStyle,
-  weather,
-  places,
-}) {
+function buildItinerary(days, destination, orderedPlaces) {
   const totalDays = Math.max(1, Number(days || 1));
+  const placesPerDay = Math.max(1, Math.ceil(orderedPlaces.length / totalDays));
 
-  const itinerary = Array.from({ length: totalDays }).map((_, index) => {
-    const dayPlaces = places.slice(index * 2, index * 2 + 2);
+  return Array.from({ length: totalDays }).map((_, index) => {
+    const dayPlaces = orderedPlaces.slice(
+      index * placesPerDay,
+      index * placesPerDay + placesPerDay
+    );
 
     return {
       day: index + 1,
       title:
         index === 0
-          ? `Arrival and introduction to ${destination}`
+          ? `Arrival and first exploration in ${destination}`
           : index === totalDays - 1
-          ? `Relaxed finish and final sightseeing in ${destination}`
-          : `Explore major attractions in ${destination}`,
-      items:
-        dayPlaces.length > 0
-          ? dayPlaces.map(
-              (p) =>
-                `Visit ${p.name} • ${p.reason} • ${p.fromPreviousDurationText} from previous stop`
-            )
-          : ["Explore local area", "Try local food", "Relax or shopping"],
+          ? `Final sightseeing and relaxed finish in ${destination}`
+          : `Focused sightseeing circuit in ${destination}`,
+      items: dayPlaces.map(
+        (place) =>
+          `${place.name} • explore ${place.exploreTimeText} • from previous stop ${place.fromPreviousDurationText}`
+      ),
     };
   });
+}
 
+function buildFallbackPlan({
+  destination,
+  days,
+  budget,
+  peopleCount,
+  travelStyle,
+  weather,
+  orderedPlaces,
+  travelModes,
+}) {
   return {
     title: `${destination} Smart Trip Plan`,
-    summary: `${destination} trip for ${peopleCount} people over ${totalDays} days with ₹${budget} budget in ${travelStyle} style.`,
-    whyRecommended:
-      "This plan is arranged to reduce travel fatigue, cover famous places, and keep your visit practical and easy.",
-    destinationWhyFamous: `${destination} is famous for its culture, food, sightseeing spots, and visitor experiences.`,
+    summary: `${destination} trip for ${peopleCount} people over ${days} days with ₹${budget} budget in ${travelStyle} style.`,
+    destinationWhyFamous: `${destination} is known for popular sightseeing, local culture, food, and memorable visitor experiences.`,
     bestTimeToVisit: weather?.current?.description
-      ? `Current weather is ${weather.current.description}, so plan outdoor visits accordingly.`
-      : `Weather details are unavailable right now, so keep a flexible sightseeing plan.`,
-    reachOptions: buildReachOptions(startCity, destination),
-    itinerary,
+      ? `Current weather: ${weather.current.description}. Plan outdoor visits accordingly.`
+      : `Keep weather flexibility during your sightseeing plan.`,
+    travelModes,
+    itinerary: buildItinerary(days, destination, orderedPlaces),
     budgetBreakdown: [
       { label: "Stay", amount: Math.round(budget * 0.35) },
       { label: "Food", amount: Math.round(budget * 0.2) },
@@ -363,13 +525,81 @@ function buildFallbackPlan({
       { label: "Buffer", amount: Math.round(budget * 0.1) },
     ],
     transportAdvice:
-      "Keep nearby places together on the same day, start early, and visit crowded places in the morning when possible.",
+      "Follow the shown route order to reduce backtracking. Visit crowded places early and keep nearby stops on the same day.",
     tips: [
-      "Start sightseeing early in the morning.",
-      "Keep buffer budget for local transport and food.",
-      "Check weather before full-day outdoor plans.",
+      "Start early for popular places.",
+      "Keep buffer time for traffic and queues.",
+      "Carry water and weather-appropriate essentials.",
     ],
   };
+}
+
+async function generateStructuredTripPlan({
+  destination,
+  days,
+  budget,
+  peopleCount,
+  travelStyle,
+  weather,
+  orderedPlaces,
+  travelModes,
+  interestFocus,
+}) {
+  if (!process.env.GEMINI_API_KEY) return null;
+
+  const prompt = `
+Return JSON only.
+
+Destination: ${destination}
+Days: ${days}
+Budget INR: ${budget}
+People count: ${peopleCount}
+Travel style: ${travelStyle}
+User interest focus: ${interestFocus.join(", ") || "general"}
+
+Travel modes:
+${JSON.stringify(travelModes, null, 2)}
+
+Weather:
+${JSON.stringify(weather || {}, null, 2)}
+
+Ordered places:
+${JSON.stringify(orderedPlaces, null, 2)}
+
+Format:
+{
+  "title": "",
+  "summary": "",
+  "destinationWhyFamous": "",
+  "bestTimeToVisit": "",
+  "travelModes": {},
+  "itinerary": [],
+  "budgetBreakdown": [],
+  "transportAdvice": "",
+  "tips": []
+}
+
+Rules:
+- focus strongly on user's selected interests
+- keep route order practical
+- include place explore times naturally
+- do not include a "why this plan" section
+- keep airplane, railway, and road wording clean
+`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+      },
+    });
+
+    return JSON.parse(response.text || "{}");
+  } catch {
+    return null;
+  }
 }
 
 export function extractUsefulProviders(providers = []) {
@@ -396,9 +626,6 @@ export function extractUsefulProviders(providers = []) {
             placesCovered: safeArray(provider.travelPlanner?.placesCovered),
             inclusions: safeArray(provider.travelPlanner?.inclusions),
             exclusions: safeArray(provider.travelPlanner?.exclusions),
-            images: safeArray(provider.travelPlanner?.images)
-              .map((img) => img?.url)
-              .filter(Boolean),
           }
         : null,
     vehicles:
@@ -412,7 +639,6 @@ export function extractUsefulProviders(providers = []) {
             capacity: vehicle.capacity || 1,
             fuelType: vehicle.fuelType || "",
             withDriver: !!vehicle.withDriver,
-            image: vehicle.images?.[0]?.url || "",
           }))
         : [],
   }));
@@ -441,92 +667,13 @@ function providerMatchScore(provider, destination) {
   return score;
 }
 
-async function generateStructuredTripPlan({
-  destination,
-  startCity,
-  days,
-  budget,
-  peopleCount,
-  travelStyle,
-  places,
-  weather,
-}) {
-  if (!process.env.GEMINI_API_KEY) return null;
-
-  const prompt = `
-You are an expert travel planner.
-Return JSON only.
-
-User input:
-- destination: ${destination}
-- startCity: ${startCity || "Not provided"}
-- days: ${days}
-- budgetINR: ${budget}
-- peopleCount: ${peopleCount}
-- travelStyle: ${travelStyle}
-
-Famous places:
-${JSON.stringify(places, null, 2)}
-
-Weather:
-${JSON.stringify(weather || {}, null, 2)}
-
-Return this JSON shape:
-{
-  "title": "",
-  "summary": "",
-  "whyRecommended": "",
-  "destinationWhyFamous": "",
-  "bestTimeToVisit": "",
-  "reachOptions": {
-    "byAir": { "summary": "", "estimatedTime": "" },
-    "byRail": { "summary": "", "estimatedTime": "" },
-    "byRoad": { "summary": "", "estimatedTime": "" }
-  },
-  "itinerary": [
-    {
-      "day": 1,
-      "title": "",
-      "items": ["", ""]
-    }
-  ],
-  "budgetBreakdown": [
-    { "label": "Stay", "amount": 0 }
-  ],
-  "transportAdvice": "",
-  "tips": ["", ""]
-}
-
-Rules:
-- mention why destination is famous
-- mention air, rail, road guidance
-- use nearby places together
-- keep plan practical and easy
-- short and useful
-`;
-
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      },
-    });
-
-    return JSON.parse(response.text || "{}");
-  } catch {
-    return null;
-  }
-}
-
 export async function answerTripChat({ message, plan, history = [] }) {
   if (!process.env.GEMINI_API_KEY) {
     return "AI chat is unavailable because GEMINI_API_KEY is missing.";
   }
 
   const prompt = `
-You are a helpful travel assistant inside a trip planner.
+You are a helpful travel assistant.
 
 Trip context:
 ${JSON.stringify(plan || {}, null, 2)}
@@ -538,9 +685,9 @@ User message:
 ${message}
 
 Instructions:
-- answer only in context of this trip
-- help with weather, budget, place order, timing, transport, packing
-- keep answer short, clear, practical
+- answer only in this trip context
+- help with route order, timing, weather, packing, local transport, and budgeting
+- keep reply practical and short
 `;
 
   const response = await ai.models.generateContent({
@@ -558,38 +705,53 @@ export async function buildTripIntelligence({
   budget,
   peopleCount,
   travelStyle,
+  interestFocus = [],
   providersNormalized,
 }) {
   const destinationGeo = await geocodeLocation(destination);
+  const startGeo = startCity ? await geocodeLocation(startCity) : destinationGeo;
 
-  let weather = null;
-  if (destinationGeo?.lat != null && destinationGeo?.lon != null) {
-    weather = await getWeatherForCoords(destinationGeo.lat, destinationGeo.lon);
-  }
+  const weather =
+    destinationGeo?.lat != null && destinationGeo?.lon != null
+      ? await getWeather(destinationGeo.lat, destinationGeo.lon)
+      : null;
 
-  const rawPlaces = await generateFamousPlacesWithAI(destination);
-  const famousPlaces = enrichPlaces(rawPlaces, weather?.current?.main || "");
+  const rawPlaces = await generateFamousPlacesWithAI(destination, interestFocus);
+  const enrichedPlaces = await enrichPlaces(
+    destination,
+    rawPlaces,
+    weather?.current?.description || ""
+  );
+
+  const orderedPlaces = optimizePlaceOrder(startGeo, enrichedPlaces).map((p, index) => ({
+    ...p,
+    crowdLabel: estimateCrowdLabel(index),
+  }));
+
+  const travelModes = await buildTravelModesWithAI(startCity, destination);
+  const routeSummary = buildRouteSummary(startCity || destination, orderedPlaces);
 
   const aiPlan = await generateStructuredTripPlan({
     destination,
-    startCity,
     days,
     budget,
     peopleCount,
     travelStyle,
-    places: famousPlaces,
     weather,
+    orderedPlaces,
+    travelModes,
+    interestFocus,
   });
 
   const fallback = buildFallbackPlan({
     destination,
-    startCity,
     days,
     budget,
     peopleCount,
     travelStyle,
     weather,
-    places: famousPlaces,
+    orderedPlaces,
+    travelModes,
   });
 
   const plan = {
@@ -614,7 +776,24 @@ export async function buildTripIntelligence({
   return {
     plan,
     weather,
-    famousPlaces,
+    famousPlaces: orderedPlaces,
+    routeSummary,
+    mapData: {
+      center: destinationGeo
+        ? [destinationGeo.lat, destinationGeo.lon]
+        : orderedPlaces[0]
+        ? [orderedPlaces[0].lat, orderedPlaces[0].lon]
+        : [20.5937, 78.9629],
+      routeCoords: orderedPlaces.map((p) => [p.lat, p.lon]),
+      markers: orderedPlaces.map((p) => ({
+        name: p.name,
+        reason: p.reason,
+        order: p.order,
+        lat: p.lat,
+        lon: p.lon,
+        exploreTimeText: p.exploreTimeText,
+      })),
+    },
     recommendedTravelProviders,
     recommendedVehicleProviders,
   };
