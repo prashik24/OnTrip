@@ -1,11 +1,9 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import Provider from "../models/Provider.js";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-function normalizeText(value = "") {
-  return String(value || "").trim().toLowerCase();
-}
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 function safeArray(value) {
   return Array.isArray(value) ? value : [];
@@ -75,34 +73,28 @@ function buildLocalFallback({
         ? `Relaxed finish and departure from ${destination}`
         : `Explore major attractions and local experiences in ${destination}`,
     items: [
-      "Start early and visit a major landmark",
-      "Try local food at a popular market area",
-      "Keep one flexible slot for shopping or rest",
+      "Visit a major landmark",
+      "Try local food",
+      "Explore market or relax",
     ],
   }));
 
   return {
     title: `${destination} AI Trip Plan`,
-    summary: `${destination} trip for ${peopleCount} traveler(s), ${days} day(s), ${travelStyle} style, estimated budget around ₹${budget}.`,
-    whyRecommended:
-      "This plan uses your selected inputs and available providers from the platform to suggest practical travel and transport options.",
+    summary: `${destination} trip for ${peopleCount} people, ${days} days, ₹${budget} budget.`,
+    whyRecommended: "Balanced plan using your inputs and providers.",
     itinerary: dayPlan,
     budgetBreakdown: [
-      { label: "Stay", amount: Math.round(Number(budget || 0) * 0.35) },
-      { label: "Food", amount: Math.round(Number(budget || 0) * 0.2) },
-      { label: "Transport", amount: Math.round(Number(budget || 0) * 0.2) },
-      { label: "Activities", amount: Math.round(Number(budget || 0) * 0.15) },
-      { label: "Buffer", amount: Math.round(Number(budget || 0) * 0.1) },
+      { label: "Stay", amount: Math.round(budget * 0.35) },
+      { label: "Food", amount: Math.round(budget * 0.2) },
+      { label: "Transport", amount: Math.round(budget * 0.2) },
+      { label: "Activities", amount: Math.round(budget * 0.15) },
+      { label: "Buffer", amount: Math.round(budget * 0.1) },
     ],
-    transportAdvice:
-      "Use provider recommendations below for easier local transport and package support.",
-    travelProviderIds: travelProviders.slice(0, 3).map((item) => String(item._id)),
-    vehicleProviderIds: vehicleProviders.slice(0, 3).map((item) => String(item._id)),
-    tips: [
-      "Book early for better availability.",
-      "Compare vehicle and travel planner options before paying.",
-      "Keep buffer budget for local travel and entry tickets.",
-    ],
+    transportAdvice: "Use local providers.",
+    travelProviderIds: travelProviders.slice(0, 3).map((i) => String(i._id)),
+    vehicleProviderIds: vehicleProviders.slice(0, 3).map((i) => String(i._id)),
+    tips: ["Book early", "Compare options", "Keep extra budget"],
   };
 }
 
@@ -114,42 +106,25 @@ export async function generateAiTripPlan(req, res) {
       budget = 10000,
       peopleCount = 1,
       travelStyle = "Balanced",
-      startCity = "",
     } = req.body || {};
 
-    if (!destination || !String(destination).trim()) {
-      return res.status(400).json({ message: "Destination is required." });
+    if (!destination) {
+      return res.status(400).json({ message: "Destination required" });
     }
 
-    const cleanDestination = String(destination).trim();
+    const providers = await Provider.find({ isActive: true }).limit(20);
 
-    const providers = await Provider.find({
-      isActive: true,
-      $or: [
-        { city: new RegExp(cleanDestination, "i") },
-        { state: new RegExp(cleanDestination, "i") },
-        { businessName: new RegExp(cleanDestination, "i") },
-        { description: new RegExp(cleanDestination, "i") },
-        { "travelPlanner.packageTitle": new RegExp(cleanDestination, "i") },
-        { "travelPlanner.placesCovered": new RegExp(cleanDestination, "i") },
-      ],
-    })
-      .populate("owner", "name")
-      .sort({ ratingAverage: -1, ratingCount: -1, createdAt: -1 })
-      .limit(20);
+    const normalized = extractUsefulProviders(providers);
 
-    const normalizedProviders = extractUsefulProviders(providers);
-
-    const travelProviders = normalizedProviders.filter(
-      (item) => item.listingType === "travel_planner"
+    const travelProviders = normalized.filter(
+      (i) => i.listingType === "travel_planner"
     );
-
-    const vehicleProviders = normalizedProviders.filter(
-      (item) => item.listingType === "vehicle"
+    const vehicleProviders = normalized.filter(
+      (i) => i.listingType === "vehicle"
     );
 
     const fallback = buildLocalFallback({
-      destination: cleanDestination,
+      destination,
       days,
       budget,
       peopleCount,
@@ -158,60 +133,54 @@ export async function generateAiTripPlan(req, res) {
       vehicleProviders,
     });
 
-    // ✅ if no API key → fallback
+    // ✅ NO KEY → fallback
     if (!process.env.GEMINI_API_KEY) {
-      return res.json({
-        message: "AI key not configured. Showing fallback plan.",
-        plan: fallback,
-        recommendedTravelProviders: travelProviders.slice(0, 4),
-        recommendedVehicleProviders: vehicleProviders.slice(0, 4),
-      });
+      return res.json({ plan: fallback });
     }
 
     const prompt = `
-You are a travel planner.
-
-Return ONLY JSON.
-
-Destination: ${cleanDestination}
+Return JSON only.
+Destination: ${destination}
 Days: ${days}
 Budget: ${budget}
 People: ${peopleCount}
 Style: ${travelStyle}
-
-Return structured JSON with itinerary, budgetBreakdown, tips.
 `;
 
-    // ✅ WORKING FREE MODEL
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-    });
+    let raw = "{}";
 
-    const resultAI = await model.generateContent(prompt);
-    const raw = resultAI.response.text() || "{}";
+    try {
+      console.log("🔥 Using Gemini 3");
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.1-flash", // ✅ latest working
+        contents: prompt,
+      });
+
+      raw = response.text || "{}";
+
+    } catch (err) {
+      console.error("❌ AI Failed:", err.message);
+      raw = JSON.stringify(fallback);
+    }
 
     let parsed;
 
     try {
-      const jsonMatch = raw.match(/\{[\s\S]*\}/);
-      parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : fallback;
+      const match = raw.match(/\{[\s\S]*\}/);
+      parsed = match ? JSON.parse(match[0]) : fallback;
     } catch {
       parsed = fallback;
     }
 
     return res.json({
-      message: "AI trip plan generated successfully.",
-      plan: {
-        ...fallback,
-        ...parsed,
-      },
+      plan: { ...fallback, ...parsed },
       recommendedTravelProviders: travelProviders.slice(0, 4),
       recommendedVehicleProviders: vehicleProviders.slice(0, 4),
     });
+
   } catch (error) {
-    console.error("generateAiTripPlan error", error);
-    return res.status(500).json({
-      message: error?.message || "Failed to generate AI trip plan.",
-    });
+    console.error("🔥 ERROR:", error);
+    return res.status(500).json({ message: "Failed" });
   }
 }
