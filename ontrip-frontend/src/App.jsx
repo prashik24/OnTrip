@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
 import Planner from "./pages/Planner";
+import PlannerResult from "./pages/PlannerResult";
 import Community from "./pages/Community";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
@@ -56,6 +57,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/planner" element={<Planner />} />
+            <Route path="/planner/result" element={<PlannerResult />} />
             <Route path="/community" element={<Community />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
