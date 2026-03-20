@@ -184,7 +184,7 @@ Return structured JSON with itinerary, budgetBreakdown, tips.
 
     // ✅ WORKING FREE MODEL
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-pro",
     });
 
     const resultAI = await model.generateContent(prompt);
