@@ -4,15 +4,10 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 
 function safeArray(value) {
   return Array.isArray(value) ? value : [];
-}
-
-function cleanText(value = "") {
-  return String(value || "").trim();
 }
 
 function num(val, fallback = 0) {
@@ -20,48 +15,48 @@ function num(val, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
-function formatDuration(seconds = 0) {
-  const totalMins = Math.round(seconds / 60);
-  const hrs = Math.floor(totalMins / 60);
-  const mins = totalMins % 60;
+function formatDurationFromKm(distanceKm = 0, avgSpeedKmH = 45) {
+  if (!distanceKm || !avgSpeedKmH) return "N/A";
+  const totalHours = distanceKm / avgSpeedKmH;
+  const hrs = Math.floor(totalHours);
+  const mins = Math.round((totalHours - hrs) * 60);
+
   if (hrs <= 0) return `${mins} min`;
   if (mins === 0) return `${hrs} hr`;
   return `${hrs} hr ${mins} min`;
 }
 
-function formatDistance(meters = 0) {
-  const km = meters / 1000;
-  if (km < 1) return `${Math.round(meters)} m`;
-  return `${km.toFixed(km >= 10 ? 0 : 1)} km`;
-}
-
-function googleMapsPlaceUrl(query) {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-}
-
-function googleMapsDirectionsUrl(origin, destination, waypoints = []) {
-  const parts = [
-    `https://www.google.com/maps/dir/?api=1`,
-    `origin=${encodeURIComponent(origin)}`,
-    `destination=${encodeURIComponent(destination)}`,
-    `travelmode=driving`,
-  ];
-  if (waypoints.length) {
-    parts.push(`waypoints=${encodeURIComponent(waypoints.join("|"))}`);
-  }
-  return parts.join("&");
+function estimateDistanceKm(index) {
+  const base = [4, 7, 11, 6, 9, 13, 5, 8];
+  return base[index % base.length];
 }
 
 function estimatePlaceCostINR(placeName = "", primaryType = "", rating = 0) {
   const text = `${placeName} ${primaryType}`.toLowerCase();
 
-  if (text.includes("fort") || text.includes("museum") || text.includes("palace") || text.includes("monument")) {
+  if (
+    text.includes("fort") ||
+    text.includes("museum") ||
+    text.includes("palace") ||
+    text.includes("monument")
+  ) {
     return { entryFee: 150, foodAndLocalTravel: 350, total: 500 };
   }
-  if (text.includes("temple") || text.includes("ghat") || text.includes("lake") || text.includes("beach")) {
+
+  if (
+    text.includes("temple") ||
+    text.includes("ghat") ||
+    text.includes("lake") ||
+    text.includes("beach")
+  ) {
     return { entryFee: 0, foodAndLocalTravel: 300, total: 300 };
   }
-  if (text.includes("park") || text.includes("garden") || text.includes("zoo")) {
+
+  if (
+    text.includes("park") ||
+    text.includes("garden") ||
+    text.includes("zoo")
+  ) {
     return { entryFee: 80, foodAndLocalTravel: 300, total: 380 };
   }
 
@@ -73,16 +68,17 @@ function estimatePlaceCostINR(placeName = "", primaryType = "", rating = 0) {
 }
 
 function estimateCrowdLabel({ userRatingCount = 0, now = new Date() }) {
-  const day = now.getDay(); // 0 Sunday
+  const day = now.getDay();
   const hour = now.getHours();
 
   let score = 0;
+
   if (userRatingCount > 5000) score += 3;
   else if (userRatingCount > 1000) score += 2;
   else if (userRatingCount > 300) score += 1;
 
-  if (day === 0 || day === 6) score += 2; // weekend
-  if (hour >= 11 && hour <= 17) score += 1; // daytime rush
+  if (day === 0 || day === 6) score += 2;
+  if (hour >= 11 && hour <= 17) score += 1;
 
   if (score >= 5) return "High";
   if (score >= 3) return "Moderate";
@@ -91,10 +87,18 @@ function estimateCrowdLabel({ userRatingCount = 0, now = new Date() }) {
 
 function weatherSuitabilityLabel(weatherMain = "") {
   const text = String(weatherMain).toLowerCase();
-  if (text.includes("rain") || text.includes("storm")) return "Carry rain protection";
-  if (text.includes("snow")) return "Cold weather caution";
-  if (text.includes("clear")) return "Great for sightseeing";
-  if (text.includes("cloud")) return "Good for outdoor visits";
+  if (text.includes("rain") || text.includes("storm")) {
+    return "Carry umbrella or rain protection";
+  }
+  if (text.includes("snow")) {
+    return "Cold weather caution";
+  }
+  if (text.includes("clear")) {
+    return "Great for sightseeing";
+  }
+  if (text.includes("cloud")) {
+    return "Good for outdoor visits";
+  }
   return "Check local conditions";
 }
 
@@ -107,93 +111,32 @@ async function fetchJson(url, options = {}) {
   return response.json();
 }
 
-export async function searchPlaceByText(text) {
-  if (!GOOGLE_MAPS_API_KEY) return null;
+async function geocodeLocation(cityName) {
+  if (!OPENWEATHER_API_KEY || !cityName) return null;
 
-  const body = {
-    textQuery: text,
-    languageCode: "en",
-    maxResultCount: 1,
-  };
+  const url = `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
+    cityName
+  )}&limit=1&appid=${OPENWEATHER_API_KEY}`;
 
-  const data = await fetchJson(
-    "https://places.googleapis.com/v1/places:searchText",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY,
-        "X-Goog-FieldMask":
-          "places.id,places.displayName,places.formattedAddress,places.location,places.googleMapsUri,places.rating,places.userRatingCount,places.primaryTypeDisplayName",
-      },
-      body: JSON.stringify(body),
-    }
-  );
+  const data = await fetchJson(url);
+  const item = data?.[0];
 
-  const place = data?.places?.[0];
-  if (!place) return null;
+  if (!item) return null;
 
   return {
-    placeId: place.id,
-    name: place.displayName?.text || text,
-    address: place.formattedAddress || text,
-    lat: place.location?.latitude || null,
-    lng: place.location?.longitude || null,
-    googleMapsUri: place.googleMapsUri || googleMapsPlaceUrl(text),
-    rating: num(place.rating),
-    userRatingCount: num(place.userRatingCount),
-    primaryType: place.primaryTypeDisplayName?.text || "",
+    name: item.name || cityName,
+    state: item.state || "",
+    country: item.country || "",
+    lat: item.lat,
+    lon: item.lon,
   };
 }
 
-export async function searchTopPlaces(destination) {
-  if (!GOOGLE_MAPS_API_KEY) return [];
-
-  const body = {
-    textQuery: `top tourist attractions in ${destination}`,
-    languageCode: "en",
-    maxResultCount: 8,
-  };
-
-  const data = await fetchJson(
-    "https://places.googleapis.com/v1/places:searchText",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY,
-        "X-Goog-FieldMask":
-          "places.id,places.displayName,places.formattedAddress,places.location,places.googleMapsUri,places.rating,places.userRatingCount,places.primaryTypeDisplayName",
-      },
-      body: JSON.stringify(body),
-    }
-  );
-
-  return safeArray(data?.places).map((place) => {
-    const name = place.displayName?.text || "Place";
-    const primaryType = place.primaryTypeDisplayName?.text || "";
-    const cost = estimatePlaceCostINR(name, primaryType, num(place.rating));
-
-    return {
-      placeId: place.id,
-      name,
-      address: place.formattedAddress || "",
-      lat: place.location?.latitude || null,
-      lng: place.location?.longitude || null,
-      googleMapsUri: place.googleMapsUri || googleMapsPlaceUrl(name),
-      rating: num(place.rating),
-      userRatingCount: num(place.userRatingCount),
-      primaryType,
-      estimatedCostINR: cost,
-    };
-  });
-}
-
-export async function getWeatherForCoords(lat, lng) {
-  if (!OPENWEATHER_API_KEY || lat == null || lng == null) return null;
+async function getWeatherForCoords(lat, lon) {
+  if (!OPENWEATHER_API_KEY || lat == null || lon == null) return null;
 
   const url =
-    `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lng}` +
+    `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}` +
     `&exclude=minutely,alerts&appid=${OPENWEATHER_API_KEY}&units=metric`;
 
   const data = await fetchJson(url);
@@ -223,164 +166,155 @@ export async function getWeatherForCoords(lat, lng) {
   };
 }
 
-export async function computeRoadRoute(origin, destination, opts = {}) {
-  if (!GOOGLE_MAPS_API_KEY || !origin || !destination) return null;
-
-  const body = {
-    origin: {
-      address: origin,
-    },
-    destination: {
-      address: destination,
-    },
-    travelMode: opts.travelMode || "DRIVE",
-    routingPreference: "TRAFFIC_AWARE",
-    computeAlternativeRoutes: false,
-    languageCode: "en-US",
-    units: "METRIC",
-  };
-
-  const data = await fetchJson(
-    "https://routes.googleapis.com/directions/v2:computeRoutes",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY,
-        "X-Goog-FieldMask":
-          "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.localizedValues,routes.legs",
-      },
-      body: JSON.stringify(body),
-    }
-  );
-
-  const route = data?.routes?.[0];
-  if (!route) return null;
-
-  const durationSeconds = parseDurationToSeconds(route.duration);
-
-  return {
-    distanceMeters: route.distanceMeters || 0,
-    durationSeconds,
-    distanceText: formatDistance(route.distanceMeters || 0),
-    durationText: formatDuration(durationSeconds),
-    polyline: route?.polyline?.encodedPolyline || "",
-  };
-}
-
-export async function computeOptimizedCityRoute(originText, places) {
-  if (!GOOGLE_MAPS_API_KEY || !originText || !places?.length) {
-    return { optimizedPlaces: places || [], routeSummary: null };
+async function generateFamousPlacesWithAI(destination) {
+  if (!process.env.GEMINI_API_KEY) {
+    return [
+      { name: `${destination} Main Landmark`, reason: "Popular tourist attraction" },
+      { name: `${destination} City Market`, reason: "Known for local shopping and food" },
+      { name: `${destination} Cultural Spot`, reason: "Represents local heritage" },
+      { name: `${destination} Famous Temple`, reason: "Important spiritual place" },
+      { name: `${destination} Sunset Point`, reason: "Good scenic view" },
+    ];
   }
 
-  const limited = places.slice(0, 6);
+  const prompt = `
+Return JSON only.
+Give 6 famous tourist places for ${destination}.
 
-  const body = {
-    origin: { address: originText },
-    destination: { address: originText },
-    intermediates: limited.map((p) => ({
-      address: p.address || p.name,
-    })),
-    travelMode: "DRIVE",
-    routingPreference: "TRAFFIC_AWARE",
-    optimizeWaypointOrder: true,
-    languageCode: "en-US",
-    units: "METRIC",
-  };
+Format:
+{
+  "places": [
+    {
+      "name": "",
+      "reason": ""
+    }
+  ]
+}
+`;
 
   try {
-    const data = await fetchJson(
-      "https://routes.googleapis.com/directions/v2:computeRoutes",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY,
-          "X-Goog-FieldMask":
-            "routes.distanceMeters,routes.duration,routes.optimizedIntermediateWaypointIndex,routes.polyline.encodedPolyline",
-        },
-        body: JSON.stringify(body),
-      }
-    );
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+      },
+    });
 
-    const route = data?.routes?.[0];
-    if (!route) {
-      return { optimizedPlaces: limited, routeSummary: null };
-    }
+    const parsed = JSON.parse(response.text || "{}");
+    return safeArray(parsed?.places).slice(0, 6);
+  } catch {
+    return [
+      { name: `${destination} Main Landmark`, reason: "Popular tourist attraction" },
+      { name: `${destination} City Market`, reason: "Known for local shopping and food" },
+      { name: `${destination} Cultural Spot`, reason: "Represents local heritage" },
+      { name: `${destination} Famous Temple`, reason: "Important spiritual place" },
+      { name: `${destination} Sunset Point`, reason: "Good scenic view" },
+    ];
+  }
+}
 
-    const order = safeArray(route.optimizedIntermediateWaypointIndex);
-    const optimizedPlaces =
-      order.length === limited.length ? order.map((i) => limited[i]) : limited;
-
-    const durationSeconds = parseDurationToSeconds(route.duration);
+function enrichPlaces(famousPlaces = [], weatherMain = "") {
+  return famousPlaces.map((place, index) => {
+    const distanceKm = index === 0 ? 5 : estimateDistanceKm(index);
+    const cost = estimatePlaceCostINR(place.name, "", 4.3);
 
     return {
-      optimizedPlaces,
-      routeSummary: {
-        distanceMeters: route.distanceMeters || 0,
-        durationSeconds,
-        distanceText: formatDistance(route.distanceMeters || 0),
-        durationText: formatDuration(durationSeconds),
-        polyline: route?.polyline?.encodedPolyline || "",
-      },
-    };
-  } catch {
-    return { optimizedPlaces: limited, routeSummary: null };
-  }
-}
-
-function parseDurationToSeconds(durationString = "0s") {
-  const match = String(durationString).match(/^(\d+)(?:\.(\d+))?s$/);
-  if (!match) return 0;
-  return Number(match[1] || 0);
-}
-
-export async function enrichPlacesWithLegs(originText, places) {
-  const enriched = [];
-  let previous = originText;
-
-  for (const place of places) {
-    const leg = await computeRoadRoute(previous, place.address || place.name);
-    enriched.push({
       ...place,
-      routeFromPrevious: leg || {
-        distanceText: "N/A",
-        durationText: "N/A",
-        distanceMeters: 0,
-        durationSeconds: 0,
-        polyline: "",
-      },
-      mapQuery: place.address || place.name,
+      order: index + 1,
+      fromPreviousDistanceKm: distanceKm,
+      fromPreviousDurationText: formatDurationFromKm(distanceKm, 30),
       crowdLabel: estimateCrowdLabel({
-        userRatingCount: place.userRatingCount,
+        userRatingCount: 500 + index * 400,
       }),
-    });
-    previous = place.address || place.name;
-  }
-
-  return enriched;
+      weatherSuitability: weatherSuitabilityLabel(weatherMain),
+      estimatedCostINR: cost,
+    };
+  });
 }
 
-function providerMatchScore(provider, destination) {
-  const text = [
-    provider.businessName,
-    provider.city,
-    provider.state,
-    provider.description,
-    provider.travelPlanner?.packageTitle,
-    ...(provider.travelPlanner?.placesCovered || []),
-  ]
-    .join(" ")
-    .toLowerCase();
+function buildReachOptions(startCity, destination) {
+  return {
+    byAir: {
+      summary: startCity
+        ? `Fastest option from ${startCity} to ${destination} is usually by flight, then local city transfer.`
+        : `Flight is usually the fastest option for long-distance travel to ${destination}.`,
+      estimatedTime: "Depends on sector and airport connectivity",
+    },
+    byRail: {
+      summary: startCity
+        ? `Rail can be a good budget-friendly option from ${startCity} if direct train connectivity is available.`
+        : `Rail can be a practical option depending on route connectivity.`,
+      estimatedTime: "Depends on train route",
+    },
+    byRoad: {
+      summary: startCity
+        ? `Road travel from ${startCity} to ${destination} depends on road distance and traffic.`
+        : `Road travel depends on exact origin and highway route.`,
+      estimatedTime: "Depends on road distance",
+    },
+  };
+}
 
-  const dest = String(destination || "").toLowerCase();
+function buildFallbackPlan({
+  destination,
+  startCity,
+  days,
+  budget,
+  peopleCount,
+  travelStyle,
+  weather,
+  places,
+}) {
+  const totalDays = Math.max(1, Number(days || 1));
 
-  let score = 0;
-  if (text.includes(dest)) score += 5;
-  if (provider.city?.toLowerCase() === dest) score += 5;
-  score += num(provider.ratingAverage);
-  score += Math.min(num(provider.ratingCount) / 100, 2);
-  return score;
+  const itinerary = Array.from({ length: totalDays }).map((_, index) => {
+    const dayPlaces = places.slice(index * 2, index * 2 + 2);
+
+    return {
+      day: index + 1,
+      title:
+        index === 0
+          ? `Arrival and introduction to ${destination}`
+          : index === totalDays - 1
+          ? `Relaxed finish and final sightseeing in ${destination}`
+          : `Explore major attractions in ${destination}`,
+      items:
+        dayPlaces.length > 0
+          ? dayPlaces.map(
+              (p) =>
+                `Visit ${p.name} • ${p.reason} • ${p.fromPreviousDurationText} from previous stop`
+            )
+          : ["Explore local area", "Try local food", "Relax or shopping"],
+    };
+  });
+
+  return {
+    title: `${destination} Smart Trip Plan`,
+    summary: `${destination} trip for ${peopleCount} people over ${totalDays} days with ₹${budget} budget in ${travelStyle} style.`,
+    whyRecommended:
+      "This plan is arranged to reduce travel fatigue, cover famous places, and keep your visit practical and easy.",
+    destinationWhyFamous: `${destination} is famous for its culture, food, sightseeing spots, and visitor experiences.`,
+    bestTimeToVisit: weather?.current?.description
+      ? `Current weather is ${weather.current.description}, so plan outdoor visits accordingly.`
+      : `Check local seasonal weather before departure.`,
+    reachOptions: buildReachOptions(startCity, destination),
+    itinerary,
+    budgetBreakdown: [
+      { label: "Stay", amount: Math.round(budget * 0.35) },
+      { label: "Food", amount: Math.round(budget * 0.2) },
+      { label: "Local Transport", amount: Math.round(budget * 0.18) },
+      { label: "Sightseeing", amount: Math.round(budget * 0.17) },
+      { label: "Buffer", amount: Math.round(budget * 0.1) },
+    ],
+    transportAdvice:
+      "Keep nearby places together on the same day, start early, and visit crowded places in the morning when possible.",
+    tips: [
+      "Start sightseeing early in the morning.",
+      "Keep buffer budget for local transport and food.",
+      "Check weather before full-day outdoor plans.",
+    ],
+  };
 }
 
 export function extractUsefulProviders(providers = []) {
@@ -429,102 +363,44 @@ export function extractUsefulProviders(providers = []) {
   }));
 }
 
-function buildFallbackPlan({
-  destination,
-  startCity,
-  days,
-  budget,
-  peopleCount,
-  travelStyle,
-  weather,
-  optimizedPlaces,
-  startToDestinationRoad,
-}) {
-  const dayCount = Math.max(1, num(days, 3));
-  const itinerary = Array.from({ length: dayCount }).map((_, index) => {
-    const slice = optimizedPlaces.slice(index * 2, index * 2 + 2);
+function providerMatchScore(provider, destination) {
+  const text = [
+    provider.businessName,
+    provider.city,
+    provider.state,
+    provider.description,
+    provider.travelPlanner?.packageTitle,
+    ...(provider.travelPlanner?.placesCovered || []),
+  ]
+    .join(" ")
+    .toLowerCase();
 
-    return {
-      day: index + 1,
-      title:
-        index === 0
-          ? `Arrival and introduction to ${destination}`
-          : index === dayCount - 1
-          ? `Relaxed final experiences in ${destination}`
-          : `Major sightseeing in ${destination}`,
-      items:
-        slice.length > 0
-          ? slice.map((p) => `Visit ${p.name} • ${p.routeFromPrevious?.durationText || "N/A"} from previous stop`)
-          : ["Local sightseeing", "Food break", "Leisure time"],
-    };
-  });
+  const dest = String(destination || "").toLowerCase();
 
-  return {
-    title: `${destination} Smart Trip Plan`,
-    summary: `${destination} trip for ${peopleCount} people over ${dayCount} days with a ₹${budget} budget and ${travelStyle} style.`,
-    whyRecommended:
-      "This plan balances travel time, popular attractions, route flow, weather suitability, and local provider availability.",
-    destinationWhyFamous: `${destination} is known for its important landmarks, local culture, food, and visitor-friendly sightseeing circuits.`,
-    bestTimeToVisit:
-      weather?.current?.description
-        ? `Current condition: ${weather.current.description}.`
-        : "Check season and local weather before departure.",
-    reachOptions: {
-      byAir: {
-        summary: startCity
-          ? `Fastest option from ${startCity} to ${destination} is usually by flight, then local transfer to hotel/city center.`
-          : `Flights are usually the fastest option for long-distance travel to ${destination}.`,
-        estimatedTime: "Varies by sector",
-      },
-      byRail: {
-        summary: startCity
-          ? `Rail is often a practical budget-friendly option from ${startCity} depending on direct connectivity.`
-          : `Rail can be a good option depending on city connectivity.`,
-        estimatedTime: "Varies by route",
-      },
-      byRoad: {
-        summary: startToDestinationRoad
-          ? `${startToDestinationRoad.distanceText} by road`
-          : "Road travel depends on exact origin and route conditions.",
-        estimatedTime: startToDestinationRoad?.durationText || "N/A",
-      },
-    },
-    itinerary,
-    budgetBreakdown: [
-      { label: "Stay", amount: Math.round(budget * 0.35) },
-      { label: "Food", amount: Math.round(budget * 0.2) },
-      { label: "Local Transport", amount: Math.round(budget * 0.18) },
-      { label: "Sightseeing", amount: Math.round(budget * 0.17) },
-      { label: "Buffer", amount: Math.round(budget * 0.1) },
-    ],
-    transportAdvice:
-      "Keep nearby attractions in the same block/day, start early for popular places, and reserve evening slots for markets or food streets.",
-    tips: [
-      "Start early to avoid crowd at top-rated places.",
-      "Keep 10–15% budget buffer.",
-      "Prefer grouped nearby attractions on the same day.",
-    ],
-  };
+  let score = 0;
+  if (text.includes(dest)) score += 5;
+  if (provider.city?.toLowerCase() === dest) score += 5;
+  score += num(provider.ratingAverage);
+  score += Math.min(num(provider.ratingCount) / 100, 2);
+
+  return score;
 }
 
-export async function generateStructuredTripPlan({
+async function generateStructuredTripPlan({
   destination,
   startCity,
   days,
   budget,
   peopleCount,
   travelStyle,
-  topPlaces,
+  places,
   weather,
-  startToDestinationRoad,
 }) {
   if (!process.env.GEMINI_API_KEY) return null;
 
   const prompt = `
-You are an expert India travel planner.
+You are an expert travel planner.
 Return JSON only.
-
-Create a practical trip plan.
 
 User input:
 - destination: ${destination}
@@ -534,16 +410,13 @@ User input:
 - peopleCount: ${peopleCount}
 - travelStyle: ${travelStyle}
 
-Known places:
-${JSON.stringify(topPlaces, null, 2)}
-
-Road route from start city to destination:
-${JSON.stringify(startToDestinationRoad || {}, null, 2)}
+Famous places:
+${JSON.stringify(places, null, 2)}
 
 Weather:
 ${JSON.stringify(weather || {}, null, 2)}
 
-Required JSON shape:
+Return this JSON shape:
 {
   "title": "",
   "summary": "",
@@ -571,11 +444,10 @@ Required JSON shape:
 
 Rules:
 - mention why destination is famous
-- mention practical air, rail, road advice
-- itinerary must minimize travel fatigue
-- use nearby places together on the same day
-- stay within budget
-- keep answer short and useful
+- mention air, rail, road guidance
+- use nearby places together
+- keep plan practical and easy
+- short and useful
 `;
 
   try {
@@ -587,8 +459,7 @@ Rules:
       },
     });
 
-    const text = response.text || "{}";
-    return JSON.parse(text);
+    return JSON.parse(response.text || "{}");
   } catch {
     return null;
   }
@@ -601,7 +472,6 @@ export async function answerTripChat({ message, plan, history = [] }) {
 
   const prompt = `
 You are a helpful travel assistant inside a trip planner.
-Only answer about this trip and nearby travel decisions.
 
 Trip context:
 ${JSON.stringify(plan || {}, null, 2)}
@@ -613,10 +483,9 @@ User message:
 ${message}
 
 Instructions:
-- answer in simple language
-- help with route order, costs, weather, packing, timing, and which place to visit first
-- if user asks outside this trip, redirect back to trip context
-- keep it short, practical, and clear
+- answer only in context of this trip
+- help with weather, budget, place order, timing, transport, packing
+- keep answer short, clear, practical
 `;
 
   const response = await ai.models.generateContent({
@@ -624,24 +493,7 @@ Instructions:
     contents: prompt,
   });
 
-  return response.text || "Sorry, I could not answer that right now.";
-}
-
-export function buildMapsEmbedDirections({ origin, destination, waypoints = [] }) {
-  const key = process.env.GOOGLE_MAPS_API_KEY || "";
-  if (!key || !origin || !destination) return "";
-
-  let url =
-    `https://www.google.com/maps/embed/v1/directions?key=${encodeURIComponent(key)}` +
-    `&origin=${encodeURIComponent(origin)}` +
-    `&destination=${encodeURIComponent(destination)}` +
-    `&mode=driving`;
-
-  if (waypoints.length) {
-    url += `&waypoints=${encodeURIComponent(waypoints.join("|"))}`;
-  }
-
-  return url;
+  return response.text || "Sorry, I could not answer right now.";
 }
 
 export async function buildTripIntelligence({
@@ -653,24 +505,14 @@ export async function buildTripIntelligence({
   travelStyle,
   providersNormalized,
 }) {
-  const destinationPlace = await searchPlaceByText(destination);
-  const startPlace = startCity ? await searchPlaceByText(startCity) : null;
-  const rawTopPlaces = await searchTopPlaces(destination);
+  const destinationGeo = await geocodeLocation(destination);
   const weather =
-    destinationPlace?.lat != null && destinationPlace?.lng != null
-      ? await getWeatherForCoords(destinationPlace.lat, destinationPlace.lng)
+    destinationGeo?.lat != null && destinationGeo?.lon != null
+      ? await getWeatherForCoords(destinationGeo.lat, destinationGeo.lon)
       : null;
 
-  const routeToDestination =
-    startCity && destination
-      ? await computeRoadRoute(startCity, destination)
-      : null;
-
-  const optimized = await computeOptimizedCityRoute(destination, rawTopPlaces);
-  const optimizedPlaces = await enrichPlacesWithLegs(
-    destination,
-    optimized.optimizedPlaces
-  );
+  const rawPlaces = await generateFamousPlacesWithAI(destination);
+  const famousPlaces = enrichPlaces(rawPlaces, weather?.current?.main || "");
 
   const aiPlan = await generateStructuredTripPlan({
     destination,
@@ -679,9 +521,8 @@ export async function buildTripIntelligence({
     budget,
     peopleCount,
     travelStyle,
-    topPlaces: optimizedPlaces,
+    places: famousPlaces,
     weather,
-    startToDestinationRoad: routeToDestination,
   });
 
   const fallback = buildFallbackPlan({
@@ -692,8 +533,7 @@ export async function buildTripIntelligence({
     peopleCount,
     travelStyle,
     weather,
-    optimizedPlaces,
-    startToDestinationRoad: routeToDestination,
+    places: famousPlaces,
   });
 
   const plan = {
@@ -701,45 +541,25 @@ export async function buildTripIntelligence({
     ...(aiPlan || {}),
   };
 
-  const travelProviders = providersNormalized
+  const recommendedTravelProviders = providersNormalized
     .filter((p) => p.listingType === "travel_planner")
-    .sort((a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination))
+    .sort(
+      (a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination)
+    )
     .slice(0, 4);
 
-  const vehicleProviders = providersNormalized
+  const recommendedVehicleProviders = providersNormalized
     .filter((p) => p.listingType === "vehicle")
-    .sort((a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination))
+    .sort(
+      (a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination)
+    )
     .slice(0, 4);
-
-  const startLabel = startCity || destination;
-  const mapEmbedUrl = buildMapsEmbedDirections({
-    origin: startLabel,
-    destination,
-    waypoints: optimizedPlaces.slice(0, 4).map((p) => p.address || p.name),
-  });
-
-  const directionsUrl = googleMapsDirectionsUrl(
-    startLabel,
-    destination,
-    optimizedPlaces.slice(0, 4).map((p) => p.address || p.name)
-  );
-
-  const enrichedPlaces = optimizedPlaces.map((p) => ({
-    ...p,
-    weatherSuitability: weatherSuitabilityLabel(weather?.current?.main || ""),
-  }));
 
   return {
     plan,
-    destinationMeta: destinationPlace,
-    startMeta: startPlace,
     weather,
-    startToDestinationRoad: routeToDestination,
-    cityCircuitRoute: optimized.routeSummary,
-    famousPlaces: enrichedPlaces,
-    mapEmbedUrl,
-    directionsUrl,
-    recommendedTravelProviders: travelProviders,
-    recommendedVehicleProviders: vehicleProviders,
+    famousPlaces,
+    recommendedTravelProviders,
+    recommendedVehicleProviders,
   };
 }
