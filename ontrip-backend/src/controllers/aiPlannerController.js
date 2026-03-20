@@ -158,7 +158,7 @@ export async function generateAiTripPlan(req, res) {
       vehicleProviders,
     });
 
-    // ✅ FREE AI CHECK
+    // ✅ if no API key → fallback
     if (!process.env.GEMINI_API_KEY) {
       return res.json({
         message: "AI key not configured. Showing fallback plan.",
@@ -168,7 +168,8 @@ export async function generateAiTripPlan(req, res) {
       });
     }
 
-    const prompt = `You are a travel planning assistant.
+    const prompt = `
+You are a travel planner.
 
 Return ONLY JSON.
 
@@ -178,11 +179,12 @@ Budget: ${budget}
 People: ${peopleCount}
 Style: ${travelStyle}
 
-Return JSON with itinerary, budget, tips.`;
+Return structured JSON with itinerary, budgetBreakdown, tips.
+`;
 
-    // ✅ GEMINI API CALL (FREE)
+    // ✅ WORKING FREE MODEL
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.0-flash",
     });
 
     const resultAI = await model.generateContent(prompt);
