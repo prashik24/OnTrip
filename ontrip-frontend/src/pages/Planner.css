@@ -1,86 +1,122 @@
 .planner {
-  padding-bottom: 10px;
+  padding-bottom: 32px;
+  display: grid;
+  gap: 18px;
 }
 
 .formCard,
 .planCard {
-  padding: 14px;
-  border-radius: var(--radius2);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  padding: 20px;
+  display: grid;
+  gap: 18px;
 }
 
 .sectionTitle {
-  font-weight: 900;
-  margin-bottom: 12px;
-  font-size: 16px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 760;
+  color: var(--text);
 }
 
 .label {
   display: block;
-  font-weight: 800;
-  margin: 10px 0 6px;
-  color: rgba(11, 27, 42, 0.8);
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 650;
+  color: #12212f;
 }
 
 .row2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 14px;
 }
 
 .planBtn {
-  margin-top: 12px;
-  width: 100%;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.planBtn:hover {
+  box-shadow: 0 8px 18px rgba(0, 184, 241, 0.16);
+}
+
+.planBtn:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
 }
 
 .empty {
-  padding: 16px;
-  border-radius: 16px;
-  background: rgba(177, 227, 250, 0.25);
-  border: 1px solid rgba(177, 227, 250, 0.45);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  padding: 24px;
   color: rgba(11, 27, 42, 0.72);
-  font-weight: 700;
+  font-weight: 650;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
 }
 
 .planTitle {
-  font-weight: 900;
-  font-size: 18px;
-  margin-bottom: 10px;
+  margin: 0;
+  font-size: 24px;
+  font-weight: 760;
+  color: var(--text);
+  line-height: 1.25;
 }
 
 .planBlock {
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  background: rgba(225, 255, 248, 0.6);
+  background: rgba(244, 251, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 14px;
+  padding: 16px;
+  display: grid;
+  gap: 10px;
 }
 
 .blockTitle {
-  font-weight: 900;
-  margin-bottom: 8px;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 720;
+  color: var(--text);
 }
 
 .list {
   margin: 0;
   padding-left: 18px;
-  color: rgba(11, 27, 42, 0.78);
-  font-weight: 600;
-  line-height: 1.5;
+  color: rgba(11, 27, 42, 0.8);
+  font-weight: 550;
+  line-height: 1.7;
+}
+
+.list li + li {
+  margin-top: 6px;
 }
 
 .mutedBox {
-  color: rgba(11, 27, 42, 0.75);
-  font-weight: 600;
-  line-height: 1.5;
+  color: rgba(11, 27, 42, 0.78);
+  font-weight: 550;
+  line-height: 1.7;
 }
 
 .plannerMessage {
   padding: 12px 14px;
-  border-radius: 16px;
+  border-radius: 14px;
   background: rgba(255, 98, 98, 0.08);
-  border: 1px solid rgba(255, 98, 98, 0.18);
+  border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
-  font-weight: 700;
+  font-weight: 650;
 }
 
 .plannerDayList {
@@ -89,47 +125,66 @@
 }
 
 .plannerDayItem {
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 12px;
+  padding: 14px;
 }
 
 .plannerDayHeading {
-  font-weight: 800;
-  margin-bottom: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
 }
 
 .plannerProviderGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 14px;
 }
 
 .plannerProviderCard {
-  padding: 12px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 14px;
+  padding: 14px;
   display: grid;
-  gap: 8px;
+  gap: 10px;
+  box-shadow: 0 8px 20px rgba(10, 22, 35, 0.04);
 }
 
 .plannerProviderTitle {
-  font-weight: 800;
+  font-size: 17px;
+  font-weight: 720;
   color: var(--text);
 }
 
 .plannerProviderMeta {
   color: var(--muted);
-  font-weight: 600;
   font-size: 14px;
+  font-weight: 550;
 }
 
 .plannerProviderText {
   color: rgba(11, 27, 42, 0.78);
-  font-weight: 600;
-  line-height: 1.5;
+  font-weight: 550;
+  line-height: 1.65;
+}
+
+.plannerProviderCard .btn {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+}
+
+.plannerProviderCard .btn:hover {
+  box-shadow: 0 8px 18px rgba(0, 184, 241, 0.16);
 }
 
 @media (max-width: 900px) {
