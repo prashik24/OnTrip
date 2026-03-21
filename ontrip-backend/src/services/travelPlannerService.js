@@ -10,10 +10,7 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const GEMINI_MODEL = "gemini-2.5-flash";
 
 /**
- * Use OpenRouter's free router first, with a small list of candidate free models.
- * OpenRouter supports:
- * - model: "openrouter/free"
- * - models: [...] fallback list
+ * Updated OpenRouter fallback from file 2
  */
 const OPENROUTER_PRIMARY_MODEL = "openrouter/free";
 const OPENROUTER_FALLBACK_MODELS = [
