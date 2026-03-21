@@ -19,6 +19,14 @@
   max-width: 860px;
 }
 
+.plannerHeadRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
 .plannerMessage {
   padding: 12px 14px;
   border-radius: 14px;
@@ -33,6 +41,21 @@
   grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
   gap: 18px;
   align-items: start;
+}
+
+.plannerSingleWrap {
+  display: grid;
+  justify-content: center;
+}
+
+.plannerSingleWrap .plannerFormCard {
+  width: 100%;
+  max-width: 760px;
+}
+
+.plannerResultOnly {
+  display: grid;
+  gap: 18px;
 }
 
 .plannerFormCard,
@@ -56,6 +79,7 @@
 .plannerField {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 
 .plannerField label {
@@ -71,6 +95,7 @@
 .plannerThreeCol {
   display: grid;
   gap: 14px;
+  min-width: 0;
 }
 
 .plannerRow,
@@ -79,7 +104,7 @@
 }
 
 .plannerThreeCol {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .plannerInput {
@@ -108,27 +133,70 @@
 }
 
 .plannerPrimaryBtn,
-.plannerProviderBtn {
+.plannerProviderBtn,
+.plannerSecondaryBtn {
   min-height: 44px;
   padding: 0 16px;
-  border: 1px solid rgba(0, 184, 241, 0.32);
   border-radius: 12px;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #ffffff;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
 }
 
-.plannerPrimaryBtn:hover,
-.plannerProviderBtn:hover {
-  box-shadow: 0 8px 18px rgba(0, 184, 241, 0.16);
+.plannerPrimaryBtn,
+.plannerProviderBtn {
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
 }
 
-.plannerPrimaryBtn:disabled {
+.plannerSecondaryBtn {
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  background: #ffffff;
+  color: var(--text);
+}
+
+.plannerPrimaryBtn:hover,
+.plannerProviderBtn:hover,
+.plannerSecondaryBtn:hover {
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+}
+
+.plannerPrimaryBtn:disabled,
+.plannerProviderBtn:disabled,
+.plannerSecondaryBtn:disabled {
   opacity: 0.72;
   cursor: not-allowed;
+}
+
+.plannerChipWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.plannerChip {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 184, 241, 0.18);
+  background: rgba(0, 184, 241, 0.08);
+  color: #0369a1;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.plannerChip:hover {
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+}
+
+.plannerChip.isActive {
+  border-color: rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
 }
 
 .plannerMiniCard,
@@ -197,12 +265,54 @@
   font-size: 14px;
 }
 
+.plannerTravelNote {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 184, 241, 0.06);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  color: rgba(11, 27, 42, 0.8);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
 .plannerInfoRow {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   color: rgba(11, 27, 42, 0.82);
   font-weight: 650;
+}
+
+.plannerInfoRow span {
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 184, 241, 0.08);
+}
+
+.plannerRouteChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.plannerRouteChip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(0, 184, 241, 0.08);
+  border: 1px solid rgba(0, 184, 241, 0.16);
+  color: #0369a1;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.plannerLeafletMap {
+  width: 100%;
+  height: 360px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .plannerDayList {
@@ -339,6 +449,7 @@
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 12px;
+  align-items: center;
 }
 
 @media (max-width: 1100px) {
@@ -358,5 +469,10 @@
 
   .plannerChatComposer {
     grid-template-columns: 1fr;
+  }
+
+  .plannerHeadRow {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
