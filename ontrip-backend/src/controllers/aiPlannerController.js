@@ -59,6 +59,10 @@ export async function chatAiTripPlan(req, res) {
     return res.json({ reply });
   } catch (error) {
     console.error("chatAiTripPlan error:", error);
-    return res.status(500).json({ message: "Failed to answer chat" });
+
+    return res.json({
+      reply:
+        "AI service is busy right now. Please try again in a moment. Meanwhile, follow the route order shown in your plan and visit crowded places earlier in the day.",
+    });
   }
 }
