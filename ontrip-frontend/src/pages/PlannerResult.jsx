@@ -4,7 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { apiFetch } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
-import "./Planner.css";
+import "./PlannerResult.css";
 
 function money(value) {
   const n = Number(value || 0);
@@ -89,7 +89,7 @@ export default function PlannerResult() {
   const [chatMessages, setChatMessages] = useState([
     {
       role: "assistant",
-      text: "Ask about route order, weather, best visiting time, budget, or what to pack.",
+      text: "Ask about route order, weather, best visiting time, or what to pack.",
     },
   ]);
 
@@ -178,300 +178,257 @@ export default function PlannerResult() {
   }
 
   return (
-    <div className="container plannerPage">
-      <div className="plannerHead plannerHeadRow">
-        <div>
-          <h1>{result?.plan?.title || "Generated Trip Plan"}</h1>
-          <p>Clean result page with route order, map, weather, and live AI help.</p>
+    <div className="container plannerResultPage">
+      <div className="plannerResultOuter">
+        <div className="plannerResultHead plannerResultHeadRow">
+          <div>
+            <h1>{result?.plan?.title || "Generated Trip Plan"}</h1>
+            <p>Clean result page with route order, map, weather, and live AI help.</p>
+          </div>
+
+          <button className="plannerResultSecondaryBtn" onClick={() => navigate("/planner")}>
+            Edit Inputs
+          </button>
         </div>
 
-        <button className="plannerSecondaryBtn" onClick={() => navigate("/planner")}>
-          Edit Inputs
-        </button>
-      </div>
+        {msg && <div className="plannerResultMessage">{msg}</div>}
 
-      {msg && <div className="plannerMessage">{msg}</div>}
-
-      {!result?.plan ? (
-        <div className="plannerEmpty">No plan available.</div>
-      ) : (
-        <div className="plannerResultOnly">
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">Trip Summary</div>
-            <div className="plannerMutedBox">{result.plan.summary}</div>
-          </div>
-
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">Why this place is famous</div>
-            <div className="plannerMutedBox">{result.plan.destinationWhyFamous}</div>
-          </div>
-
-          <div className="plannerThreeCol">
-            <div className="plannerBlock">
-              <div className="plannerBlockTitle">Airplane</div>
-              <div className="plannerProviderTitle">
-                {result.plan.travelModes?.airplane?.optionName}
-              </div>
-              <div className="plannerMetaStrong">
-                Time: {result.plan.travelModes?.airplane?.estimatedTime}
-              </div>
-              <div className="plannerMutedBox">
-                {result.plan.travelModes?.airplane?.details}
-              </div>
-              <div className="plannerTravelNote">
-                {result.plan.travelModes?.airplane?.note}
-              </div>
+        {!result?.plan ? (
+          <div className="plannerResultEmpty">No plan available.</div>
+        ) : (
+          <div className="plannerResultOnly">
+            <div className="plannerResultBlock">
+              <div className="plannerResultBlockTitle">Trip Summary</div>
+              <div className="plannerResultMutedBox">{result.plan.summary}</div>
             </div>
 
-            <div className="plannerBlock">
-              <div className="plannerBlockTitle">Railway</div>
-              <div className="plannerProviderTitle">
-                {result.plan.travelModes?.railway?.optionName}
-              </div>
-              <div className="plannerMetaStrong">
-                Time: {result.plan.travelModes?.railway?.estimatedTime}
-              </div>
-              <div className="plannerMutedBox">
-                {result.plan.travelModes?.railway?.details}
-              </div>
-              <div className="plannerTravelNote">
-                {result.plan.travelModes?.railway?.note}
-              </div>
+            <div className="plannerResultBlock">
+              <div className="plannerResultBlockTitle">Why this place is famous</div>
+              <div className="plannerResultMutedBox">{result.plan.destinationWhyFamous}</div>
             </div>
 
-            <div className="plannerBlock">
-              <div className="plannerBlockTitle">Road</div>
-              <div className="plannerProviderTitle">
-                {result.plan.travelModes?.road?.optionName}
-              </div>
-              <div className="plannerMetaStrong">
-                Time: {result.plan.travelModes?.road?.estimatedTime}
-              </div>
-              <div className="plannerMutedBox">
-                {result.plan.travelModes?.road?.details}
-              </div>
-              <div className="plannerTravelNote">
-                {result.plan.travelModes?.road?.note}
-              </div>
-            </div>
-          </div>
-
-          {!!result.weather && (
-            <div className="plannerBlock">
-              <div className="plannerBlockTitle">Weather & Smart Suggestions</div>
-              <div className="plannerInfoRow">
-                <span>Weather: {result.weather.current?.description}</span>
-                <span>Temp: {result.weather.current?.temp}°C</span>
-                <span>Feels Like: {result.weather.current?.feelsLike}°C</span>
-                <span>Humidity: {result.weather.current?.humidity}%</span>
-                <span>Wind: {result.weather.current?.windSpeed} km/h</span>
-              </div>
-              <div className="plannerMutedBox">{result.plan.bestTimeToVisit}</div>
-            </div>
-          )}
-
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">Trip Route Order</div>
-            <div className="plannerInfoRow">
-              <span>Start: {result.routeSummary?.startLabel}</span>
-              <span>Total Distance: {result.routeSummary?.totalDistanceText}</span>
-              <span>Total Estimated City Travel: {result.routeSummary?.totalDurationText}</span>
-            </div>
-            <div className="plannerRouteChips">
-              {(result.routeSummary?.routeOrder || []).map((item, index) => (
-                <div className="plannerRouteChip" key={`${item}-${index}`}>
-                  {index + 1}. {item}
+            <div className="plannerResultThreeCol">
+              <div className="plannerResultBlock">
+                <div className="plannerResultBlockTitle">Airplane</div>
+                <div className="plannerResultProviderTitle">
+                  {result.plan.travelModes?.airplane?.optionName}
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">Map Route</div>
-            <PlannerMap mapData={result.mapData} />
-          </div>
-
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">Day-wise itinerary</div>
-            <div className="plannerDayList">
-              {(result.plan.itinerary || []).map((day) => (
-                <div className="plannerDayItem" key={day.day}>
-                  <div className="plannerDayHeading">
-                    Day {day.day}: {day.title}
-                  </div>
-                  <ul className="plannerList">
-                    {(day.items || []).map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
+                <div className="plannerResultMetaStrong">
+                  Time: {result.plan.travelModes?.airplane?.estimatedTime}
                 </div>
-              ))}
-            </div>
-          </div>
+                <div className="plannerResultMutedBox">
+                  {result.plan.travelModes?.airplane?.details}
+                </div>
+                <div className="plannerResultTravelNote">
+                  {result.plan.travelModes?.airplane?.note}
+                </div>
+              </div>
 
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">Subplaces with explore time</div>
-            <div className="plannerPlacesGrid">
-              {(result.famousPlaces || []).map((place, index) => (
-                <div className="plannerPlaceCard" key={`${place.name}-${index}`}>
-                  <div className="plannerPlaceTop">
-                    <div className="plannerPlaceIndex">{place.order}</div>
-                    <div>
-                      <div className="plannerProviderTitle">{place.name}</div>
-                      <div className="plannerProviderMeta">
-                        {place.category || "Sightseeing"}
+              <div className="plannerResultBlock">
+                <div className="plannerResultBlockTitle">Railway</div>
+                <div className="plannerResultProviderTitle">
+                  {result.plan.travelModes?.railway?.optionName}
+                </div>
+                <div className="plannerResultMetaStrong">
+                  Time: {result.plan.travelModes?.railway?.estimatedTime}
+                </div>
+                <div className="plannerResultMutedBox">
+                  {result.plan.travelModes?.railway?.details}
+                </div>
+                <div className="plannerResultTravelNote">
+                  {result.plan.travelModes?.railway?.note}
+                </div>
+              </div>
+
+              <div className="plannerResultBlock">
+                <div className="plannerResultBlockTitle">Road</div>
+                <div className="plannerResultProviderTitle">
+                  {result.plan.travelModes?.road?.optionName}
+                </div>
+                <div className="plannerResultMetaStrong">
+                  Time: {result.plan.travelModes?.road?.estimatedTime}
+                </div>
+                <div className="plannerResultMutedBox">
+                  {result.plan.travelModes?.road?.details}
+                </div>
+                <div className="plannerResultTravelNote">
+                  {result.plan.travelModes?.road?.note}
+                </div>
+              </div>
+            </div>
+
+            {result?.mapData ? (
+              <div className="plannerResultBlock">
+                <div className="plannerResultBlockTitle">Route Map</div>
+                <PlannerMap mapData={result.mapData} />
+              </div>
+            ) : null}
+
+            <div className="plannerResultBlock">
+              <div className="plannerResultBlockTitle">Places to Explore</div>
+              {result.famousPlaces?.length ? (
+                <div className="plannerResultPlacesGrid">
+                  {result.famousPlaces.map((place, index) => {
+                    const crowdLabel =
+                      place.crowdLevel === "low"
+                        ? "Low crowd"
+                        : place.crowdLevel === "high"
+                        ? "High crowd"
+                        : "Moderate crowd";
+
+                    return (
+                      <div className="plannerResultPlaceCard" key={`${place.name}-${index}`}>
+                        <div className="plannerResultPlaceTop">
+                          <div className="plannerResultPlaceIndex">{place.order || index + 1}</div>
+
+                          <div>
+                            <div className="plannerResultProviderTitle">{place.name}</div>
+                            <div className="plannerResultMutedBox">{place.reason}</div>
+                          </div>
+                        </div>
+
+                        <div className="plannerResultPlaceFacts">
+                          <span>Time: {place.exploreTimeText}</span>
+                          <span>{crowdLabel}</span>
+                          <span>Weather fit: {place.weatherSuitability}</span>
+                        </div>
+
+                        <div className="plannerResultCostBox">
+                          <div>Entry: {money(place.estimatedCostINR?.entryFee)}</div>
+                          <div>Food/Local: {money(place.estimatedCostINR?.foodAndLocalTravel)}</div>
+                          <div>Total stop cost: {money(place.estimatedCostINR?.total)}</div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="plannerMutedBox">{place.reason}</div>
-
-                  <div className="plannerPlaceFacts">
-                    <span>Explore time: {place.exploreTimeText}</span>
-                    <span>From previous: {place.fromPreviousDistanceText}</span>
-                    <span>Travel time: {place.fromPreviousDurationText}</span>
-                  </div>
-
-                  <div className="plannerPlaceFacts">
-                    <span>Crowd: {place.crowdLabel}</span>
-                    <span>Weather fit: {place.weatherSuitability}</span>
-                  </div>
-
-                  <div className="plannerCostBox">
-                    <div>Entry: {money(place.estimatedCostINR?.entryFee)}</div>
-                    <div>Food/Local: {money(place.estimatedCostINR?.foodAndLocalTravel)}</div>
-                    <div>Total stop cost: {money(place.estimatedCostINR?.total)}</div>
-                  </div>
+                    );
+                  })}
                 </div>
-              ))}
+              ) : (
+                <div className="plannerResultMutedBox">No places available.</div>
+              )}
+
+              <div className="plannerResultMutedBox">
+                Total estimated sightseeing spend for listed places:{" "}
+                <strong>{money(totalSightCost)}</strong>
+              </div>
             </div>
 
-            <div className="plannerMutedBox">
-              Total estimated sightseeing spend for listed places:{" "}
-              <strong>{money(totalSightCost)}</strong>
+            <div className="plannerResultBlock">
+              <div className="plannerResultBlockTitle">Budget breakdown</div>
+              <ul className="plannerResultList">
+                {(result.plan.budgetBreakdown || []).map((item, idx) => (
+                  <li key={idx}>
+                    {item.label}: {money(item.amount)}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
 
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">Budget breakdown</div>
-            <ul className="plannerList">
-              {(result.plan.budgetBreakdown || []).map((item, idx) => (
-                <li key={idx}>
-                  {item.label}: {money(item.amount)}
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div className="plannerResultBlock">
+              <div className="plannerResultBlockTitle">Transport advice</div>
+              <div className="plannerResultMutedBox">{result.plan.transportAdvice}</div>
+            </div>
 
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">Transport advice</div>
-            <div className="plannerMutedBox">{result.plan.transportAdvice}</div>
-          </div>
-
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">Recommended Travel Planners</div>
-            {result.recommendedTravelProviders?.length ? (
-              <div className="plannerProviderGrid">
-                {result.recommendedTravelProviders.map((item) => (
-                  <div className="plannerProviderCard" key={item._id}>
-                    <div className="plannerProviderTitle">{item.businessName}</div>
-                    <div className="plannerProviderMeta">
-                      {item.city} • ⭐ {item.ratingAverage || 0}
+            <div className="plannerResultBlock">
+              <div className="plannerResultBlockTitle">Recommended Travel Planners</div>
+              {result.recommendedTravelProviders?.length ? (
+                <div className="plannerResultProviderGrid">
+                  {result.recommendedTravelProviders.map((item) => (
+                    <div className="plannerResultProviderCard" key={item._id}>
+                      <div className="plannerResultProviderTitle">{item.businessName}</div>
+                      <div className="plannerResultProviderMeta">
+                        {item.city} • ⭐ {item.ratingAverage || 0}
+                      </div>
+                      <div className="plannerResultProviderText">
+                        {item.travelPlanner?.packageTitle ||
+                          item.description ||
+                          "Travel planner"}
+                      </div>
+                      <button
+                        className="plannerResultPrimaryBtn"
+                        onClick={() => navigate(`/providers/${item._id}`)}
+                      >
+                        View Planner
+                      </button>
                     </div>
-                    <div className="plannerProviderText">
-                      {item.travelPlanner?.packageTitle ||
-                        item.description ||
-                        "Travel planner"}
+                  ))}
+                </div>
+              ) : (
+                <div className="plannerResultMutedBox">No matching travel planners found.</div>
+              )}
+            </div>
+
+            <div className="plannerResultBlock">
+              <div className="plannerResultBlockTitle">Recommended Vehicle Services</div>
+              {result.recommendedVehicleProviders?.length ? (
+                <div className="plannerResultProviderGrid">
+                  {result.recommendedVehicleProviders.map((item) => (
+                    <div className="plannerResultProviderCard" key={item._id}>
+                      <div className="plannerResultProviderTitle">{item.businessName}</div>
+                      <div className="plannerResultProviderMeta">
+                        {item.city} • ⭐ {item.ratingAverage || 0}
+                      </div>
+                      <div className="plannerResultProviderText">
+                        {(item.vehicles || [])
+                          .slice(0, 2)
+                          .map(
+                            (vehicle) =>
+                              `${vehicle.title || vehicle.vehicleType} - ${money(vehicle.price)}`
+                          )
+                          .join(", ") || "Vehicle service"}
+                      </div>
+                      <button
+                        className="plannerResultPrimaryBtn"
+                        onClick={() => navigate(`/providers/${item._id}`)}
+                      >
+                        View Vehicles
+                      </button>
                     </div>
-                    <button
-                      className="plannerPrimaryBtn"
-                      onClick={() => navigate(`/providers/${item._id}`)}
+                  ))}
+                </div>
+              ) : (
+                <div className="plannerResultMutedBox">No matching vehicle providers found.</div>
+              )}
+            </div>
+
+            <div className="plannerResultBlock">
+              <div className="plannerResultBlockTitle">Ask AI about this plan</div>
+              <div className="plannerResultChatBox">
+                <div className="plannerResultChatMessages">
+                  {chatMessages.map((item, index) => (
+                    <div
+                      key={index}
+                      className={`plannerResultChatBubble ${
+                        item.role === "user" ? "isUser" : "isBot"
+                      }`}
                     >
-                      View Planner
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="plannerMutedBox">No matching travel planners found.</div>
-            )}
-          </div>
-
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">Recommended Vehicle Services</div>
-            {result.recommendedVehicleProviders?.length ? (
-              <div className="plannerProviderGrid">
-                {result.recommendedVehicleProviders.map((item) => (
-                  <div className="plannerProviderCard" key={item._id}>
-                    <div className="plannerProviderTitle">{item.businessName}</div>
-                    <div className="plannerProviderMeta">
-                      {item.city} • ⭐ {item.ratingAverage || 0}
+                      {item.text}
                     </div>
-                    <div className="plannerProviderText">
-                      {(item.vehicles || [])
-                        .slice(0, 2)
-                        .map((vehicle) => `${vehicle.title || vehicle.vehicleType} - ${money(vehicle.price)}`)
-                        .join(", ") || "Vehicle service"}
-                    </div>
-                    <button
-                      className="plannerPrimaryBtn"
-                      onClick={() => navigate(`/providers/${item._id}`)}
-                    >
-                      View Vehicles
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="plannerMutedBox">No matching vehicle providers found.</div>
-            )}
-          </div>
+                  ))}
+                </div>
 
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">Extra Tips</div>
-            <ul className="plannerList">
-              {(result.plan.tips || []).map((tip, idx) => (
-                <li key={idx}>{tip}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="plannerBlock">
-            <div className="plannerBlockTitle">💬 Chat with AI during trip</div>
-            <div className="plannerChatBox">
-              <div className="plannerChatMessages">
-                {chatMessages.map((m, idx) => (
-                  <div
-                    key={idx}
-                    className={`plannerChatBubble ${m.role === "user" ? "isUser" : "isBot"}`}
+                <div className="plannerResultChatComposer">
+                  <input
+                    className="plannerResultInput"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Ask about weather, timing, packing, route, best season..."
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") sendChat();
+                    }}
+                  />
+                  <button
+                    className="plannerResultPrimaryBtn"
+                    onClick={sendChat}
+                    disabled={chatLoading}
                   >
-                    {m.text}
-                  </div>
-                ))}
-              </div>
-
-              <div className="plannerChatComposer">
-                <input
-                  className="plannerInput"
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  placeholder="Ask about route order, weather, timing, what to carry..."
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") sendChat();
-                  }}
-                />
-                <button
-                  className="plannerPrimaryBtn"
-                  onClick={sendChat}
-                  disabled={chatLoading}
-                >
-                  {chatLoading ? "Sending..." : "Send"}
-                </button>
+                    {chatLoading ? "Sending..." : "Send"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
