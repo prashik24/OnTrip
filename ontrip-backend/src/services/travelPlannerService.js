@@ -1,10 +1,28 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
+const ai = process.env.GEMINI_API_KEY
+  ? new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+    })
+  : null;
 
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const YOUR_SITE_URL = process.env.YOUR_SITE_URL || "";
+const YOUR_SITE_NAME = process.env.YOUR_SITE_NAME || "OnTrip AI Planner";
+
+const GEMINI_MODEL = "gemini-2.5-flash";
+
+/**
+ * Put free or low-cost fallback models here.
+ * OpenRouter supports model fallback routing with arrays,
+ * but here we also do explicit code-level fallback for clarity.
+ */
+const OPENROUTER_MODELS = [
+  "google/gemini-2.0-flash-exp:free",
+  "meta-llama/llama-3.3-70b-instruct:free",
+  "mistralai/mistral-small-3.1-24b-instruct:free",
+];
 
 function safeArray(value) {
   return Array.isArray(value) ? value : [];
@@ -26,6 +44,168 @@ async function fetchJson(url, options = {}) {
     throw new Error(`Request failed ${response.status}: ${text}`);
   }
   return response.json();
+}
+
+function isQuotaOrRateError(error) {
+  const text = String(error?.message || "").toLowerCase();
+  return (
+    text.includes("429") ||
+    text.includes("quota") ||
+    text.includes("resource_exhausted") ||
+    text.includes("rate limit") ||
+    text.includes("too many requests")
+  );
+}
+
+function extractJson(text, fallback = null) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    const match = String(text || "").match(/\{[\s\S]*\}/);
+    if (match) {
+      try {
+        return JSON.parse(match[0]);
+      } catch {
+        return fallback;
+      }
+    }
+    return fallback;
+  }
+}
+
+async function generateWithGeminiText(prompt) {
+  if (!ai) {
+    throw new Error("Gemini API key missing");
+  }
+
+  const response = await ai.models.generateContent({
+    model: GEMINI_MODEL,
+    contents: prompt,
+  });
+
+  return response.text || "";
+}
+
+async function generateWithGeminiJson(prompt) {
+  if (!ai) {
+    throw new Error("Gemini API key missing");
+  }
+
+  const response = await ai.models.generateContent({
+    model: GEMINI_MODEL,
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+    },
+  });
+
+  const text = response.text || "{}";
+  const parsed = extractJson(text, null);
+
+  if (!parsed) {
+    throw new Error("Gemini returned invalid JSON");
+  }
+
+  return parsed;
+}
+
+async function generateWithOpenRouterText(prompt) {
+  if (!OPENROUTER_API_KEY) {
+    throw new Error("OpenRouter API key missing");
+  }
+
+  let lastError = null;
+
+  for (const model of OPENROUTER_MODELS) {
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": YOUR_SITE_URL,
+          "X-Title": YOUR_SITE_NAME,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          temperature: 0.4,
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`OpenRouter ${model} failed: ${response.status} ${text}`);
+      }
+
+      const data = await response.json();
+      const content =
+        data?.choices?.[0]?.message?.content ||
+        data?.choices?.[0]?.text ||
+        "";
+
+      if (!content) {
+        throw new Error(`OpenRouter ${model} returned empty response`);
+      }
+
+      return content;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error("All OpenRouter models failed");
+}
+
+async function generateWithOpenRouterJson(prompt) {
+  const text = await generateWithOpenRouterText(prompt);
+  const parsed = extractJson(text, null);
+
+  if (!parsed) {
+    throw new Error("OpenRouter returned invalid JSON");
+  }
+
+  return parsed;
+}
+
+/**
+ * Main AI wrapper:
+ * 1) Gemini
+ * 2) OpenRouter fallback
+ */
+async function generateJsonWithFallback(prompt, localFallback = null) {
+  try {
+    return await generateWithGeminiJson(prompt);
+  } catch (geminiError) {
+    console.error("Gemini JSON failed:", geminiError.message);
+
+    try {
+      return await generateWithOpenRouterJson(prompt);
+    } catch (openRouterError) {
+      console.error("OpenRouter JSON failed:", openRouterError.message);
+      return localFallback;
+    }
+  }
+}
+
+async function generateTextWithFallback(prompt, localFallbackText = "") {
+  try {
+    return await generateWithGeminiText(prompt);
+  } catch (geminiError) {
+    console.error("Gemini text failed:", geminiError.message);
+
+    try {
+      return await generateWithOpenRouterText(prompt);
+    } catch (openRouterError) {
+      console.error("OpenRouter text failed:", openRouterError.message);
+      return localFallbackText;
+    }
+  }
 }
 
 async function geocodeLocation(query) {
@@ -55,12 +235,7 @@ async function geocodeLocation(query) {
 }
 
 /**
- * OpenWeather FREE-ENDPOINT VERSION
- * Uses:
- * - Current weather: /data/2.5/weather
- * - 5 day / 3 hour forecast: /data/2.5/forecast
- *
- * Avoids One Call 3.0 subscription requirement.
+ * OpenWeather free endpoints only
  */
 async function getWeather(lat, lon) {
   if (!OPENWEATHER_API_KEY || lat == null || lon == null) return null;
@@ -227,12 +402,7 @@ function optimizePlaceOrder(startPoint, places) {
     let bestDistance = Infinity;
 
     remaining.forEach((place, index) => {
-      const d = haversineKm(
-        current.lat,
-        current.lon,
-        place.lat,
-        place.lon
-      );
+      const d = haversineKm(current.lat, current.lon, place.lat, place.lon);
       if (d < bestDistance) {
         bestDistance = d;
         bestIndex = index;
@@ -260,39 +430,51 @@ function optimizePlaceOrder(startPoint, places) {
   });
 }
 
+function localPlacesFallback(destination, interestFocus = []) {
+  const focusText = interestFocus.length
+    ? interestFocus.join(", ")
+    : "general sightseeing";
+
+  return [
+    {
+      name: `${destination} Main Landmark`,
+      reason: "Popular and important sightseeing place",
+      category: focusText,
+      exploreTimeText: "1 to 2 hours",
+    },
+    {
+      name: `${destination} Old City Area`,
+      reason: "Good for local culture and food",
+      category: focusText,
+      exploreTimeText: "2 to 3 hours",
+    },
+    {
+      name: `${destination} Famous Temple`,
+      reason: "Important spiritual place",
+      category: "temple",
+      exploreTimeText: "1 to 1.5 hours",
+    },
+    {
+      name: `${destination} Nature Point`,
+      reason: "Relaxing outdoor experience",
+      category: "nature",
+      exploreTimeText: "1.5 to 2 hours",
+    },
+    {
+      name: `${destination} Market Area`,
+      reason: "Useful for local shopping and food exploration",
+      category: "shopping",
+      exploreTimeText: "1 to 2 hours",
+    },
+  ];
+}
+
 async function generateFamousPlacesWithAI(destination, interestFocus = []) {
   const focusText = interestFocus.length
     ? interestFocus.join(", ")
     : "general sightseeing";
 
-  if (!process.env.GEMINI_API_KEY) {
-    return [
-      {
-        name: `${destination} Main Landmark`,
-        reason: "Popular and important sightseeing place",
-        category: focusText,
-        exploreTimeText: "1 to 2 hours",
-      },
-      {
-        name: `${destination} Old City Area`,
-        reason: "Good for local culture and food",
-        category: focusText,
-        exploreTimeText: "2 to 3 hours",
-      },
-      {
-        name: `${destination} Famous Temple`,
-        reason: "Important spiritual place",
-        category: "temple",
-        exploreTimeText: "1 to 1.5 hours",
-      },
-      {
-        name: `${destination} Nature Point`,
-        reason: "Relaxing outdoor experience",
-        category: "nature",
-        exploreTimeText: "1.5 to 2 hours",
-      },
-    ];
-  }
+  const fallback = { places: localPlacesFallback(destination, interestFocus) };
 
   const prompt = `
 Return JSON only.
@@ -316,45 +498,8 @@ Format:
 }
 `;
 
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      },
-    });
-
-    const parsed = JSON.parse(response.text || "{}");
-    return safeArray(parsed?.places).slice(0, 6);
-  } catch {
-    return [
-      {
-        name: `${destination} Main Landmark`,
-        reason: "Popular and important sightseeing place",
-        category: focusText,
-        exploreTimeText: "1 to 2 hours",
-      },
-      {
-        name: `${destination} Old City Area`,
-        reason: "Good for local culture and food",
-        category: focusText,
-        exploreTimeText: "2 to 3 hours",
-      },
-      {
-        name: `${destination} Famous Temple`,
-        reason: "Important spiritual place",
-        category: "temple",
-        exploreTimeText: "1 to 1.5 hours",
-      },
-      {
-        name: `${destination} Nature Point`,
-        reason: "Relaxing outdoor experience",
-        category: "nature",
-        exploreTimeText: "1.5 to 2 hours",
-      },
-    ];
-  }
+  const parsed = await generateJsonWithFallback(prompt, fallback);
+  return safeArray(parsed?.places).slice(0, 6);
 }
 
 async function enrichPlaces(destination, places, weatherDescription = "") {
@@ -374,8 +519,8 @@ async function enrichPlaces(destination, places, weatherDescription = "") {
   return enriched.filter((p) => p.lat != null && p.lon != null);
 }
 
-async function buildTravelModesWithAI(startCity, destination) {
-  const fallback = {
+function localTravelModesFallback(startCity, destination) {
+  return {
     airplane: {
       title: "Airplane",
       optionName: `${startCity || "Nearest city"} to ${destination} flight`,
@@ -398,8 +543,10 @@ async function buildTravelModesWithAI(startCity, destination) {
       note: "Estimated guidance, not a live bus timetable.",
     },
   };
+}
 
-  if (!process.env.GEMINI_API_KEY) return fallback;
+async function buildTravelModesWithAI(startCity, destination) {
+  const fallback = localTravelModesFallback(startCity, destination);
 
   const prompt = `
 Return JSON only.
@@ -437,22 +584,11 @@ Format:
 }
 `;
 
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      },
-    });
-
-    return {
-      ...fallback,
-      ...JSON.parse(response.text || "{}"),
-    };
-  } catch {
-    return fallback;
-  }
+  const parsed = await generateJsonWithFallback(prompt, fallback);
+  return {
+    ...fallback,
+    ...(parsed || {}),
+  };
 }
 
 function buildRouteSummary(startName, orderedPlaces) {
@@ -545,7 +681,7 @@ async function generateStructuredTripPlan({
   travelModes,
   interestFocus,
 }) {
-  if (!process.env.GEMINI_API_KEY) return null;
+  const fallback = null;
 
   const prompt = `
 Return JSON only.
@@ -587,19 +723,7 @@ Rules:
 - keep airplane, railway, and road wording clean
 `;
 
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      },
-    });
-
-    return JSON.parse(response.text || "{}");
-  } catch {
-    return null;
-  }
+  return await generateJsonWithFallback(prompt, fallback);
 }
 
 export function extractUsefulProviders(providers = []) {
@@ -668,9 +792,8 @@ function providerMatchScore(provider, destination) {
 }
 
 export async function answerTripChat({ message, plan, history = [] }) {
-  if (!process.env.GEMINI_API_KEY) {
-    return "AI chat is unavailable because GEMINI_API_KEY is missing.";
-  }
+  const localFallbackText =
+    "I could not reach the AI service right now. Based on your plan, follow the shown route order, keep weather in mind, and visit the most crowded places early in the day.";
 
   const prompt = `
 You are a helpful travel assistant.
@@ -690,12 +813,7 @@ Instructions:
 - keep reply practical and short
 `;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-  });
-
-  return response.text || "Sorry, I could not answer right now.";
+  return await generateTextWithFallback(prompt, localFallbackText);
 }
 
 export async function buildTripIntelligence({
