@@ -1,9 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 const ai = process.env.GEMINI_API_KEY
-  ? new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
-    })
+  ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
   : null;
 
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
@@ -11,10 +9,17 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
 const GEMINI_MODEL = "gemini-2.5-flash";
 
-const OPENROUTER_MODELS = [
-  "google/gemini-2.0-flash-exp:free",
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "mistralai/mistral-small-3.1-24b-instruct:free",
+/**
+ * Use OpenRouter's free router first, with a small list of candidate free models.
+ * OpenRouter supports:
+ * - model: "openrouter/free"
+ * - models: [...] fallback list
+ */
+const OPENROUTER_PRIMARY_MODEL = "openrouter/free";
+const OPENROUTER_FALLBACK_MODELS = [
+  "openrouter/free",
+  "meta-llama/llama-3.1-8b-instruct:free",
+  "mistralai/mistral-7b-instruct:free",
 ];
 
 function safeArray(value) {
@@ -60,9 +65,7 @@ function extractJson(text, fallback = null) {
 ========================= */
 
 async function generateWithGeminiText(prompt) {
-  if (!ai) {
-    throw new Error("Gemini API key missing");
-  }
+  if (!ai) throw new Error("Gemini API key missing");
 
   const response = await ai.models.generateContent({
     model: GEMINI_MODEL,
@@ -73,9 +76,7 @@ async function generateWithGeminiText(prompt) {
 }
 
 async function generateWithGeminiJson(prompt) {
-  if (!ai) {
-    throw new Error("Gemini API key missing");
-  }
+  if (!ai) throw new Error("Gemini API key missing");
 
   const response = await ai.models.generateContent({
     model: GEMINI_MODEL,
@@ -85,81 +86,65 @@ async function generateWithGeminiJson(prompt) {
     },
   });
 
-  const text = response.text || "{}";
-  const parsed = extractJson(text, null);
-
-  if (!parsed) {
-    throw new Error("Gemini returned invalid JSON");
-  }
-
+  const parsed = extractJson(response.text || "{}", null);
+  if (!parsed) throw new Error("Gemini returned invalid JSON");
   return parsed;
 }
 
-async function generateWithOpenRouterText(prompt) {
+async function callOpenRouter(prompt, { wantJson = false } = {}) {
   if (!OPENROUTER_API_KEY) {
     throw new Error("OpenRouter API key missing");
   }
 
-  let lastError = null;
+  const body = {
+    model: OPENROUTER_PRIMARY_MODEL,
+    models: OPENROUTER_FALLBACK_MODELS,
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.4,
+  };
 
-  for (const model of OPENROUTER_MODELS) {
-    try {
-      const response = await fetch(
-        "https://openrouter.ai/api/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              {
-                role: "user",
-                content: prompt,
-              },
-            ],
-            temperature: 0.4,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(
-          `OpenRouter ${model} failed: ${response.status} ${text}`
-        );
-      }
-
-      const data = await response.json();
-      const content =
-        data?.choices?.[0]?.message?.content ||
-        data?.choices?.[0]?.text ||
-        "";
-
-      if (!content) {
-        throw new Error(`OpenRouter ${model} returned empty response`);
-      }
-
-      return content;
-    } catch (error) {
-      console.error(`OpenRouter text failed for ${model}:`, error.message);
-      lastError = error;
-    }
+  if (wantJson) {
+    body.response_format = { type: "json_object" };
   }
 
-  throw lastError || new Error("All OpenRouter models failed");
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`OpenRouter failed: ${response.status} ${text}`);
+  }
+
+  const data = await response.json();
+  const content =
+    data?.choices?.[0]?.message?.content ||
+    data?.choices?.[0]?.text ||
+    "";
+
+  if (!content) {
+    throw new Error("OpenRouter returned empty content");
+  }
+
+  return content;
+}
+
+async function generateWithOpenRouterText(prompt) {
+  return await callOpenRouter(prompt, { wantJson: false });
 }
 
 async function generateWithOpenRouterJson(prompt) {
-  const text = await generateWithOpenRouterText(prompt);
+  const text = await callOpenRouter(prompt, { wantJson: true });
   const parsed = extractJson(text, null);
-
-  if (!parsed) {
-    throw new Error("OpenRouter returned invalid JSON");
-  }
-
+  if (!parsed) throw new Error("OpenRouter returned invalid JSON");
   return parsed;
 }
 
@@ -171,6 +156,7 @@ async function generateTextWithFallback(prompt, localFallbackText = "") {
     console.error("Gemini text failed:", geminiError.message);
 
     try {
+      await sleep(1200);
       console.log("Gemini failed, trying OpenRouter text...");
       const text = await generateWithOpenRouterText(prompt);
       console.log("OpenRouter text success");
@@ -190,10 +176,11 @@ async function generateJsonWithFallback(prompt, localFallback = null) {
     console.error("Gemini JSON failed:", geminiError.message);
 
     try {
+      await sleep(1200);
       console.log("Gemini failed, trying OpenRouter JSON...");
-      const data = await generateWithOpenRouterJson(prompt);
+      const parsed = await generateWithOpenRouterJson(prompt);
       console.log("OpenRouter JSON success");
-      return data;
+      return parsed;
     } catch (openRouterError) {
       console.error("OpenRouter JSON failed:", openRouterError.message);
       return localFallback;
@@ -293,13 +280,8 @@ function buildDailyFromForecastList(list = []) {
     const tempMin = item?.main?.temp_min;
     const tempMax = item?.main?.temp_max;
 
-    if (typeof tempMin === "number") {
-      grouped[date].min = Math.min(grouped[date].min, tempMin);
-    }
-
-    if (typeof tempMax === "number") {
-      grouped[date].max = Math.max(grouped[date].max, tempMax);
-    }
+    if (typeof tempMin === "number") grouped[date].min = Math.min(grouped[date].min, tempMin);
+    if (typeof tempMax === "number") grouped[date].max = Math.max(grouped[date].max, tempMax);
   }
 
   return Object.values(grouped)
@@ -319,18 +301,10 @@ function buildDailyFromForecastList(list = []) {
 
 function weatherSuitabilityLabel(description = "") {
   const text = String(description).toLowerCase();
-  if (text.includes("rain") || text.includes("storm")) {
-    return "Carry umbrella and keep indoor backup";
-  }
-  if (text.includes("fog")) {
-    return "Start later in the morning if visibility is low";
-  }
-  if (text.includes("clear")) {
-    return "Good for outdoor sightseeing";
-  }
-  if (text.includes("cloud")) {
-    return "Comfortable for outdoor visits";
-  }
+  if (text.includes("rain") || text.includes("storm")) return "Carry umbrella and keep indoor backup";
+  if (text.includes("fog")) return "Start later in the morning if visibility is low";
+  if (text.includes("clear")) return "Good for outdoor sightseeing";
+  if (text.includes("cloud")) return "Comfortable for outdoor visits";
   return "Check local conditions before long outdoor visits";
 }
 
@@ -392,7 +366,6 @@ function optimizePlaceOrder(startPoint, places) {
 
   const remaining = [...places];
   const ordered = [];
-
   let current = startPoint || remaining[0];
 
   while (remaining.length) {
@@ -414,9 +387,7 @@ function optimizePlaceOrder(startPoint, places) {
 
   return ordered.map((place, index) => {
     const prev = index === 0 ? startPoint : ordered[index - 1];
-    const legKm = prev
-      ? haversineKm(prev.lat, prev.lon, place.lat, place.lon)
-      : 0;
+    const legKm = prev ? haversineKm(prev.lat, prev.lon, place.lat, place.lon) : 0;
 
     return {
       ...place,
@@ -429,9 +400,7 @@ function optimizePlaceOrder(startPoint, places) {
 }
 
 function localPlacesFallback(destination, interestFocus = []) {
-  const focusText = interestFocus.length
-    ? interestFocus.join(", ")
-    : "general sightseeing";
+  const focusText = interestFocus.length ? interestFocus.join(", ") : "general sightseeing";
 
   return [
     {
@@ -468,10 +437,7 @@ function localPlacesFallback(destination, interestFocus = []) {
 }
 
 async function generateFamousPlacesWithAI(destination, interestFocus = []) {
-  const focusText = interestFocus.length
-    ? interestFocus.join(", ")
-    : "general sightseeing";
-
+  const focusText = interestFocus.length ? interestFocus.join(", ") : "general sightseeing";
   const fallback = { places: localPlacesFallback(destination, interestFocus) };
 
   const prompt = `
@@ -583,10 +549,7 @@ Format:
 `;
 
   const parsed = await generateJsonWithFallback(prompt, fallback);
-  return {
-    ...fallback,
-    ...(parsed || {}),
-  };
+  return { ...fallback, ...(parsed || {}) };
 }
 
 function buildRouteSummary(startName, orderedPlaces) {
@@ -679,8 +642,6 @@ async function generateStructuredTripPlan({
   travelModes,
   interestFocus,
 }) {
-  const fallback = null;
-
   const prompt = `
 Return JSON only.
 
@@ -721,7 +682,7 @@ Rules:
 - keep airplane, railway, and road wording clean
 `;
 
-  return await generateJsonWithFallback(prompt, fallback);
+  return await generateJsonWithFallback(prompt, null);
 }
 
 /* =========================
@@ -851,12 +812,10 @@ export async function buildTripIntelligence({
     weather?.current?.description || ""
   );
 
-  const orderedPlaces = optimizePlaceOrder(startGeo, enrichedPlaces).map(
-    (p, index) => ({
-      ...p,
-      crowdLabel: estimateCrowdLabel(index),
-    })
-  );
+  const orderedPlaces = optimizePlaceOrder(startGeo, enrichedPlaces).map((p, index) => ({
+    ...p,
+    crowdLabel: estimateCrowdLabel(index),
+  }));
 
   const travelModes = await buildTravelModesWithAI(startCity, destination);
   const routeSummary = buildRouteSummary(startCity || destination, orderedPlaces);
@@ -891,16 +850,12 @@ export async function buildTripIntelligence({
 
   const recommendedTravelProviders = providersNormalized
     .filter((p) => p.listingType === "travel_planner")
-    .sort(
-      (a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination)
-    )
+    .sort((a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination))
     .slice(0, 4);
 
   const recommendedVehicleProviders = providersNormalized
     .filter((p) => p.listingType === "vehicle")
-    .sort(
-      (a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination)
-    )
+    .sort((a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination))
     .slice(0, 4);
 
   return {
