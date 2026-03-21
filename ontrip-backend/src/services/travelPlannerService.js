@@ -8,16 +8,9 @@ const ai = process.env.GEMINI_API_KEY
 
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-const YOUR_SITE_URL = process.env.YOUR_SITE_URL || "";
-const YOUR_SITE_NAME = process.env.YOUR_SITE_NAME || "OnTrip AI Planner";
 
 const GEMINI_MODEL = "gemini-2.5-flash";
 
-/**
- * Put free or low-cost fallback models here.
- * OpenRouter supports model fallback routing with arrays,
- * but here we also do explicit code-level fallback for clarity.
- */
 const OPENROUTER_MODELS = [
   "google/gemini-2.0-flash-exp:free",
   "meta-llama/llama-3.3-70b-instruct:free",
@@ -46,17 +39,6 @@ async function fetchJson(url, options = {}) {
   return response.json();
 }
 
-function isQuotaOrRateError(error) {
-  const text = String(error?.message || "").toLowerCase();
-  return (
-    text.includes("429") ||
-    text.includes("quota") ||
-    text.includes("resource_exhausted") ||
-    text.includes("rate limit") ||
-    text.includes("too many requests")
-  );
-}
-
 function extractJson(text, fallback = null) {
   try {
     return JSON.parse(text);
@@ -72,6 +54,10 @@ function extractJson(text, fallback = null) {
     return fallback;
   }
 }
+
+/* =========================
+   AI FALLBACK LAYER
+========================= */
 
 async function generateWithGeminiText(prompt) {
   if (!ai) {
@@ -118,29 +104,32 @@ async function generateWithOpenRouterText(prompt) {
 
   for (const model of OPENROUTER_MODELS) {
     try {
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": YOUR_SITE_URL,
-          "X-Title": YOUR_SITE_NAME,
-        },
-        body: JSON.stringify({
-          model,
-          messages: [
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          temperature: 0.4,
-        }),
-      });
+      const response = await fetch(
+        "https://openrouter.ai/api/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              {
+                role: "user",
+                content: prompt,
+              },
+            ],
+            temperature: 0.4,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const text = await response.text();
-        throw new Error(`OpenRouter ${model} failed: ${response.status} ${text}`);
+        throw new Error(
+          `OpenRouter ${model} failed: ${response.status} ${text}`
+        );
       }
 
       const data = await response.json();
@@ -155,6 +144,7 @@ async function generateWithOpenRouterText(prompt) {
 
       return content;
     } catch (error) {
+      console.error(`OpenRouter text failed for ${model}:`, error.message);
       lastError = error;
     }
   }
@@ -173,19 +163,37 @@ async function generateWithOpenRouterJson(prompt) {
   return parsed;
 }
 
-/**
- * Main AI wrapper:
- * 1) Gemini
- * 2) OpenRouter fallback
- */
+async function generateTextWithFallback(prompt, localFallbackText = "") {
+  try {
+    console.log("Trying Gemini text...");
+    return await generateWithGeminiText(prompt);
+  } catch (geminiError) {
+    console.error("Gemini text failed:", geminiError.message);
+
+    try {
+      console.log("Gemini failed, trying OpenRouter text...");
+      const text = await generateWithOpenRouterText(prompt);
+      console.log("OpenRouter text success");
+      return text;
+    } catch (openRouterError) {
+      console.error("OpenRouter text failed:", openRouterError.message);
+      return localFallbackText;
+    }
+  }
+}
+
 async function generateJsonWithFallback(prompt, localFallback = null) {
   try {
+    console.log("Trying Gemini JSON...");
     return await generateWithGeminiJson(prompt);
   } catch (geminiError) {
     console.error("Gemini JSON failed:", geminiError.message);
 
     try {
-      return await generateWithOpenRouterJson(prompt);
+      console.log("Gemini failed, trying OpenRouter JSON...");
+      const data = await generateWithOpenRouterJson(prompt);
+      console.log("OpenRouter JSON success");
+      return data;
     } catch (openRouterError) {
       console.error("OpenRouter JSON failed:", openRouterError.message);
       return localFallback;
@@ -193,20 +201,9 @@ async function generateJsonWithFallback(prompt, localFallback = null) {
   }
 }
 
-async function generateTextWithFallback(prompt, localFallbackText = "") {
-  try {
-    return await generateWithGeminiText(prompt);
-  } catch (geminiError) {
-    console.error("Gemini text failed:", geminiError.message);
-
-    try {
-      return await generateWithOpenRouterText(prompt);
-    } catch (openRouterError) {
-      console.error("OpenRouter text failed:", openRouterError.message);
-      return localFallbackText;
-    }
-  }
-}
+/* =========================
+   GEO + WEATHER
+========================= */
 
 async function geocodeLocation(query) {
   if (!query) return null;
@@ -234,9 +231,6 @@ async function geocodeLocation(query) {
   };
 }
 
-/**
- * OpenWeather free endpoints only
- */
 async function getWeather(lat, lon) {
   if (!OPENWEATHER_API_KEY || lat == null || lon == null) return null;
 
@@ -318,6 +312,10 @@ function buildDailyFromForecastList(list = []) {
       main: day.main,
     }));
 }
+
+/* =========================
+   TRIP HELPERS
+========================= */
 
 function weatherSuitabilityLabel(description = "") {
   const text = String(description).toLowerCase();
@@ -726,6 +724,10 @@ Rules:
   return await generateJsonWithFallback(prompt, fallback);
 }
 
+/* =========================
+   PROVIDERS
+========================= */
+
 export function extractUsefulProviders(providers = []) {
   return providers.map((provider) => ({
     _id: provider._id,
@@ -791,9 +793,13 @@ function providerMatchScore(provider, destination) {
   return score;
 }
 
+/* =========================
+   CHAT
+========================= */
+
 export async function answerTripChat({ message, plan, history = [] }) {
   const localFallbackText =
-    "I could not reach the AI service right now. Based on your plan, follow the shown route order, keep weather in mind, and visit the most crowded places early in the day.";
+    "AI service is busy right now. Based on your current trip, follow the shown route order, keep weather in mind, and visit crowded places early in the day.";
 
   const prompt = `
 You are a helpful travel assistant.
@@ -815,6 +821,10 @@ Instructions:
 
   return await generateTextWithFallback(prompt, localFallbackText);
 }
+
+/* =========================
+   MAIN PLAN BUILDER
+========================= */
 
 export async function buildTripIntelligence({
   destination,
@@ -841,10 +851,12 @@ export async function buildTripIntelligence({
     weather?.current?.description || ""
   );
 
-  const orderedPlaces = optimizePlaceOrder(startGeo, enrichedPlaces).map((p, index) => ({
-    ...p,
-    crowdLabel: estimateCrowdLabel(index),
-  }));
+  const orderedPlaces = optimizePlaceOrder(startGeo, enrichedPlaces).map(
+    (p, index) => ({
+      ...p,
+      crowdLabel: estimateCrowdLabel(index),
+    })
+  );
 
   const travelModes = await buildTravelModesWithAI(startCity, destination);
   const routeSummary = buildRouteSummary(startCity || destination, orderedPlaces);
