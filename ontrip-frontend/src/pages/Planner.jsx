@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { isLoggedIn } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
@@ -17,6 +17,7 @@ export default function Planner() {
     travelStyle: "Balanced",
     startCity: "",
     interestFocus: [],
+    priorityMode: "balanced",
   });
 
   const [msg, setMsg] = useState("");
@@ -26,6 +27,15 @@ export default function Planner() {
     { label: "Balanced", value: "Balanced" },
     { label: "Comfort", value: "Comfort" },
     { label: "Luxury", value: "Luxury" },
+  ];
+
+  const priorityOptions = [
+    { label: "Cheapest Plan", value: "cheapest" },
+    { label: "Fastest Plan", value: "fastest" },
+    { label: "Family Plan", value: "family" },
+    { label: "Solo Plan", value: "solo" },
+    { label: "Food-Focused Plan", value: "food" },
+    { label: "Balanced Plan", value: "balanced" },
   ];
 
   const interestOptions = [
@@ -49,6 +59,32 @@ export default function Planner() {
       };
     });
   }
+
+  const budgetHint = useMemo(() => {
+    const budget = Number(form.budget || 0);
+    const days = Number(form.days || 1);
+    const people = Number(form.peopleCount || 1);
+    const perPersonPerDay = budget / Math.max(1, days * people);
+
+    if (perPersonPerDay < 1200) {
+      return {
+        level: "warn",
+        text: "This budget may be low for transport, stay, and food.",
+      };
+    }
+
+    if (perPersonPerDay < 2500) {
+      return {
+        level: "ok",
+        text: "This budget is workable for a basic or balanced trip.",
+      };
+    }
+
+    return {
+      level: "good",
+      text: "This budget looks good for a comfortable trip.",
+    };
+  }, [form.budget, form.days, form.peopleCount]);
 
   function goNext() {
     if (!isLoggedIn()) {
@@ -149,6 +185,10 @@ export default function Planner() {
             </div>
           </div>
 
+          <div className={`plannerBudgetHint is-${budgetHint.level}`}>
+            {budgetHint.text}
+          </div>
+
           <div className="plannerField">
             <label>Focus your trip plan</label>
             <div className="plannerChipWrap">
@@ -166,6 +206,16 @@ export default function Planner() {
                 );
               })}
             </div>
+          </div>
+
+          <div className="plannerField">
+            <label>Regenerate by priority</label>
+            <CustomSelect
+              value={form.priorityMode}
+              onChange={(e) => update("priorityMode", e.target.value)}
+              options={priorityOptions}
+              placeholder="Select priority"
+            />
           </div>
 
           <button className="plannerPrimaryBtn" onClick={goNext}>
