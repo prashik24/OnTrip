@@ -35,13 +35,15 @@ export default function BookingHistory() {
     <div className="bookingHistoryPage container">
       <div className="bookingHistoryHead">
         <h1>Booking History</h1>
-        <p>Track bookings, payment state, invoice, booking summary, and reviews.</p>
+        <p>Track bookings, invoices, status, and reviews.</p>
       </div>
 
       {msg && <div className="bookingHistoryMessage">{msg}</div>}
 
       {bookings.length === 0 ? (
-        <div className="bookingHistoryEmpty">You have not booked any service yet.</div>
+        <div className="bookingHistoryEmpty">
+          You have not booked any service yet.
+        </div>
       ) : (
         <div className="bookingHistoryGrid">
           {bookings.map((booking) => {
@@ -120,7 +122,7 @@ export default function BookingHistory() {
                     View Invoice
                   </button>
 
-                  {!isCancelled && booking.canReview && (
+                  {!isCancelled && booking.canReview ? (
                     <button
                       className={
                         booking.existingReview
@@ -132,6 +134,10 @@ export default function BookingHistory() {
                       }
                     >
                       {booking.existingReview ? "Edit Review" : "Write Review"}
+                    </button>
+                  ) : (
+                    <button className="bookingHistoryBtn bookingHistoryBtnMuted" disabled>
+                      {isCancelled ? "Review Unavailable" : "No Review"}
                     </button>
                   )}
                 </div>
