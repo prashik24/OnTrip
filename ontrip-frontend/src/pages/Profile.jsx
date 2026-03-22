@@ -11,6 +11,7 @@ export default function Profile() {
   const [uploading, setUploading] = useState(false);
   const [hasProviderListings, setHasProviderListings] = useState(false);
   const [hasBookings, setHasBookings] = useState(false);
+  const [hasSavedTrips, setHasSavedTrips] = useState(false);
   const [msg, setMsg] = useState({ text: "", type: "" });
 
   const [form, setForm] = useState({
@@ -56,9 +57,19 @@ export default function Profile() {
       }
     }
 
+    async function loadSavedTripsStatus() {
+      try {
+        const data = await apiFetch("/api/saved-trips");
+        setHasSavedTrips((data.trips || []).length > 0);
+      } catch {
+        setHasSavedTrips(false);
+      }
+    }
+
     loadMe();
     loadProviderStatus();
     loadBookingStatus();
+    loadSavedTripsStatus();
   }, []);
 
   function update(key, value) {
@@ -222,6 +233,19 @@ export default function Profile() {
                   <p>Track bookings, payment state, and travel plans.</p>
                   <button className="profileGhostBtn" onClick={() => navigate("/profile/bookings")}>
                     Open Booking History
+                  </button>
+                </div>
+              )}
+
+              {hasSavedTrips && (
+                <div className="profileQuickCard">
+                  <h3>Saved Trips</h3>
+                  <p>View your saved AI trip plans and open or download them anytime.</p>
+                  <button
+                    className="profileGhostBtn"
+                    onClick={() => navigate("/profile/saved-trips")}
+                  >
+                    Open Saved Trips
                   </button>
                 </div>
               )}
