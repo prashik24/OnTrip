@@ -25,6 +25,7 @@ import BookingHistory from "./pages/BookingHistory";
 import BookingCheckout from "./pages/BookingCheckout";
 import BookingSuccess from "./pages/BookingSuccess";
 import InvoiceView from "./pages/InvoiceView";
+import SavedTrips from "./pages/SavedTrips";
 
 import "./App.css";
 
@@ -62,6 +63,7 @@ export default function App() {
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/my-listings" element={<MyListings />} />
+            <Route path="/profile/saved-trips" element={<SavedTrips />} />
             <Route path="/profile/bookings" element={<BookingHistory />} />
             <Route path="/profile/bookings/:id" element={<BookingSuccess />} />
             <Route path="/profile/bookings/:id/invoice" element={<InvoiceView />} />
