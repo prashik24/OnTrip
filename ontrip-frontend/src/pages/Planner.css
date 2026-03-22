@@ -127,6 +127,31 @@
   color: #ffffff;
 }
 
+.plannerBudgetHint {
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 650;
+  line-height: 1.6;
+}
+
+.plannerBudgetHint.is-warn {
+  background: rgba(245, 158, 11, 0.09);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+  color: #b45309;
+}
+
+.plannerBudgetHint.is-ok {
+  background: rgba(0, 184, 241, 0.06);
+  border: 1px solid rgba(0, 184, 241, 0.14);
+  color: #075985;
+}
+
+.plannerBudgetHint.is-good {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.16);
+  color: #15803d;
+}
+
 .plannerPrimaryBtn {
   min-height: 44px;
   padding: 0 16px;
