@@ -91,7 +91,7 @@ export default function SavedTrips() {
         </div>
 
         <button
-          className="savedTripsSecondaryBtn commonBackBtn"
+          className="savedTripsSecondaryBtn"
           onClick={() => navigate("/profile")}
         >
           Back to Profile
