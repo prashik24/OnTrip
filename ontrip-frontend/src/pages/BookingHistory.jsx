@@ -51,61 +51,63 @@ export default function BookingHistory() {
 
             return (
               <div className="bookingHistoryCard" key={booking._id}>
-                <div className="bookingHistoryTop">
-                  <div className="bookingHistoryTopLeft">
-                    <h3>{booking.serviceTitle}</h3>
-                    <p>{booking.provider?.businessName || "Provider"}</p>
-                  </div>
-                  <div className="bookingHistoryPrice">₹{booking.amount}</div>
-                </div>
-
-                <div className="bookingHistoryInfo">
-                  <div>
-                    <span>Booking Ref:</span> {booking.bookingRef}
-                  </div>
-                  <div>
-                    <span>Date:</span>{" "}
-                    {booking.bookingDate
-                      ? new Date(booking.bookingDate).toLocaleDateString()
-                      : "-"}
-                  </div>
-                  <div>
-                    <span>Payment:</span> {booking.paymentStatus}
-                  </div>
-                  <div>
-                    <span>Status:</span> {booking.bookingStatus}
-                  </div>
-                  <div>
-                    <span>People:</span> {booking.peopleCount}
-                  </div>
-                  <div>
-                    <span>Days:</span> {booking.days}
+                <div className="bookingHistoryCardBody">
+                  <div className="bookingHistoryTop">
+                    <div className="bookingHistoryTopLeft">
+                      <h3>{booking.serviceTitle}</h3>
+                      <p>{booking.provider?.businessName || "Provider"}</p>
+                    </div>
+                    <div className="bookingHistoryPrice">₹{booking.amount}</div>
                   </div>
 
-                  {booking.destination ? (
+                  <div className="bookingHistoryInfo">
                     <div>
-                      <span>Destination:</span> {booking.destination}
+                      <span>Booking Ref:</span> {booking.bookingRef}
+                    </div>
+                    <div>
+                      <span>Date:</span>{" "}
+                      {booking.bookingDate
+                        ? new Date(booking.bookingDate).toLocaleDateString()
+                        : "-"}
+                    </div>
+                    <div>
+                      <span>Payment:</span> {booking.paymentStatus}
+                    </div>
+                    <div>
+                      <span>Status:</span> {booking.bookingStatus}
+                    </div>
+                    <div>
+                      <span>People:</span> {booking.peopleCount}
+                    </div>
+                    <div>
+                      <span>Days:</span> {booking.days}
+                    </div>
+
+                    {booking.destination ? (
+                      <div>
+                        <span>Destination:</span> {booking.destination}
+                      </div>
+                    ) : null}
+
+                    {booking.place ? (
+                      <div>
+                        <span>Place:</span> {booking.place}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  {booking.cancellationReason ? (
+                    <div className="bookingHistoryAlert bookingHistoryAlertDanger">
+                      <strong>Cancellation Reason:</strong> {booking.cancellationReason}
                     </div>
                   ) : null}
 
-                  {booking.place ? (
-                    <div>
-                      <span>Place:</span> {booking.place}
+                  {isCancelled ? (
+                    <div className="bookingHistoryAlert bookingHistoryAlertSuccess">
+                      Your provider cancelled this service. They will refund your money soon.
                     </div>
                   ) : null}
                 </div>
-
-                {booking.cancellationReason ? (
-                  <div className="bookingHistoryAlert bookingHistoryAlertDanger">
-                    <strong>Cancellation Reason:</strong> {booking.cancellationReason}
-                  </div>
-                ) : null}
-
-                {isCancelled ? (
-                  <div className="bookingHistoryAlert bookingHistoryAlertSuccess">
-                    Your provider cancelled this service. They will refund your money soon.
-                  </div>
-                ) : null}
 
                 <div className="bookingHistoryActions">
                   <button
