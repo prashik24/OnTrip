@@ -218,14 +218,6 @@
   cursor: pointer;
 }
 
-.bookingReviewPreviousHead {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
 .bookingReviewImageGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -238,11 +230,11 @@
 
 .bookingReviewImageCard {
   display: grid;
-  gap: 8px;
 }
 
 .bookingReviewImageItem {
-  min-height: 140px;
+  position: relative;
+  min-height: 150px;
   border-radius: 12px;
   overflow: hidden;
   background: rgba(177, 227, 250, 0.18);
@@ -256,35 +248,28 @@
   display: block;
 }
 
-.bookingReviewPreviewBox {
-  display: grid;
-  gap: 10px;
-  justify-content: start;
-}
-
-.bookingReviewRemoveBtn,
-.bookingReviewRemoveTextBtn {
-  min-height: 40px;
-  padding: 0 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 98, 98, 0.16);
-  background: rgba(255, 98, 98, 0.08);
-  color: #b42318;
-  font: inherit;
-  font-weight: 700;
+.bookingReviewImageRemoveIcon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(180, 35, 24, 0.92);
+  color: #ffffff;
+  font-size: 22px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: 0.18s ease;
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.16);
 }
 
-.bookingReviewRemoveTextBtn {
-  min-height: auto;
-  padding: 8px 12px;
-}
-
-.bookingReviewRemoveBtn:hover,
-.bookingReviewRemoveTextBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+.bookingReviewImageRemoveIcon:hover {
+  transform: scale(1.06);
 }
 
 .bookingReviewActions {
