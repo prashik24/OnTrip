@@ -3,13 +3,15 @@
 }
 
 .profileCard {
-  max-width: 980px;
+  width: 100%;
+  max-width: 1100px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 18px;
   padding: 24px;
   box-shadow: 0 10px 28px rgba(10, 22, 35, 0.06);
   border: 1px solid rgba(0, 184, 241, 0.12);
+  box-sizing: border-box;
 }
 
 .profileHeader {
@@ -225,7 +227,7 @@
 .profileQuickGrid {
   margin-top: 22px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 14px;
 }
 
@@ -251,112 +253,6 @@
   color: var(--muted);
   line-height: 1.6;
   font-weight: 550;
-}
-
-.profileSavedTripsGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.profileSavedTripCard {
-  padding: 18px;
-  border-radius: 14px;
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
-  display: grid;
-  gap: 14px;
-}
-
-.profileSavedTripPrintArea {
-  display: grid;
-  gap: 12px;
-}
-
-.profileSavedTripTop {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.profileSavedTripTop h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 720;
-  color: var(--text);
-}
-
-.profileSavedTripTop p {
-  margin: 6px 0 0;
-  color: var(--muted);
-  line-height: 1.6;
-  font-weight: 550;
-}
-
-.profileSavedTripBadge {
-  min-height: 34px;
-  padding: 0 12px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  background: rgba(0, 184, 241, 0.08);
-  border: 1px solid rgba(0, 184, 241, 0.14);
-  color: #0369a1;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.profileSavedTripMiniGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.profileSavedTripMiniItem {
-  background: rgba(244, 251, 255, 0.94);
-  border-radius: 12px;
-  padding: 12px;
-  display: grid;
-  gap: 6px;
-  border: 1px solid rgba(0, 184, 241, 0.1);
-}
-
-.profileSavedTripMiniItem span {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: rgba(15, 23, 42, 0.46);
-}
-
-.profileSavedTripMiniItem strong {
-  font-size: 15px;
-  font-weight: 700;
-  color: rgba(15, 23, 42, 0.92);
-}
-
-.profileSavedTripSummary {
-  color: rgba(15, 23, 42, 0.8);
-  font-size: 14px;
-  line-height: 1.7;
-  font-weight: 550;
-}
-
-.profileSavedTripActions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.profileEmptyTrips {
-  padding: 16px;
-  border-radius: 14px;
-  background: rgba(244, 251, 255, 0.94);
-  border: 1px solid rgba(0, 184, 241, 0.1);
-  color: rgba(15, 23, 42, 0.72);
-  font-weight: 650;
 }
 
 .profileFormGrid {
@@ -385,6 +281,7 @@
   color: var(--text);
   outline: none;
   transition: 0.18s ease;
+  box-sizing: border-box;
 }
 
 .profileForm input {
@@ -423,11 +320,6 @@
   .profileIdentity h1 {
     font-size: 26px;
   }
-
-  .profileQuickGrid,
-  .profileSavedTripsGrid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 640px) {
@@ -441,8 +333,7 @@
   }
 
   .profileInfoGrid,
-  .profileFormGrid,
-  .profileSavedTripMiniGrid {
+  .profileFormGrid {
     grid-template-columns: 1fr;
   }
 }
