@@ -73,12 +73,6 @@
   line-height: 1.7;
 }
 
-.plannerResultMetaStrong {
-  color: #0f5c79;
-  font-weight: 700;
-  font-size: 14px;
-}
-
 .plannerResultTravelNote {
   padding: 10px 12px;
   border-radius: 12px;
@@ -141,14 +135,16 @@
 }
 
 .plannerResultProviderGrid,
-.plannerResultPlacesGrid {
+.plannerResultPlacesGrid,
+.plannerResultItineraryGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
 .plannerResultProviderCard,
-.plannerResultPlaceCard {
+.plannerResultPlaceCard,
+.plannerResultItineraryCard {
   background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 14px;
@@ -334,13 +330,13 @@
   color: #0369a1;
 }
 
-.plannerResultTravelFacts {
+.plannerResultTravelSimpleGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.plannerResultTravelFact {
+.plannerResultTravelSimpleItem {
   background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 12px;
@@ -349,7 +345,7 @@
   gap: 6px;
 }
 
-.plannerResultTravelFact span {
+.plannerResultTravelSimpleItem span {
   font-size: 12px;
   font-weight: 700;
   color: rgba(11, 27, 42, 0.56);
@@ -357,7 +353,7 @@
   letter-spacing: 0.04em;
 }
 
-.plannerResultTravelFact strong {
+.plannerResultTravelSimpleItem strong {
   font-size: 14px;
   color: var(--text);
   line-height: 1.45;
@@ -388,12 +384,130 @@
   letter-spacing: 0.04em;
 }
 
+.plannerResultItineraryHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.plannerResultDayBadge {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(0, 184, 241, 0.08);
+  border: 1px solid rgba(0, 184, 241, 0.14);
+  color: #0369a1;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.plannerResultSequenceList {
+  display: grid;
+  gap: 10px;
+}
+
+.plannerResultSequenceItem {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(244, 251, 255, 0.8);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+}
+
+.plannerResultSequenceCount {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.plannerResultSequenceContent {
+  display: grid;
+  gap: 4px;
+}
+
+.plannerResultSequenceTitle {
+  font-size: 15px;
+  font-weight: 720;
+  color: var(--text);
+}
+
+.plannerResultSequenceMeta {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(11, 27, 42, 0.72);
+  line-height: 1.55;
+}
+
+.plannerResultBudgetStatus {
+  display: grid;
+  gap: 10px;
+}
+
+.plannerResultBudgetTop {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.plannerResultBudgetPill {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  font-weight: 800;
+}
+
+.plannerResultBudgetPill.isSoft {
+  background: rgba(0, 184, 241, 0.08);
+  color: #0369a1;
+  border: 1px solid rgba(0, 184, 241, 0.14);
+}
+
+.plannerResultBudgetSummary {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.plannerResultBudgetSummary.isGood {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.16);
+  color: #15803d;
+}
+
+.plannerResultBudgetSummary.isWarn {
+  background: rgba(245, 158, 11, 0.09);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+  color: #b45309;
+}
+
+.plannerResultBudgetExtra {
+  color: rgba(11, 27, 42, 0.84);
+  font-weight: 650;
+}
+
 @media (max-width: 980px) {
   .plannerResultThreeCol,
   .plannerResultProviderGrid,
   .plannerResultPlacesGrid,
+  .plannerResultItineraryGrid,
   .plannerResultChatComposer,
-  .plannerResultTravelFacts,
+  .plannerResultTravelSimpleGrid,
   .plannerResultTravelMiniGrid {
     grid-template-columns: 1fr;
   }
