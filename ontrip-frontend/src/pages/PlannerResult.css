@@ -509,7 +509,7 @@ font-size: 15px;
   overflow-wrap: anywhere;
   white-space: normal;
   display: -webkit-box;
-  -webkit-line-clamp: 6;
+  line-clamp: 6;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -750,5 +750,141 @@ font-size: 15px;
   .plannerResultTravelSimpleItem,
   .plannerResultTravelMiniBox {
     min-height: auto;
+  }
+}
+
+.plannerResultPage {
+  padding-bottom: 32px;
+  min-width: 0;
+}
+
+.plannerResultOuter {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  padding: 20px;
+  display: grid;
+  gap: 18px;
+  box-sizing: border-box;
+}
+
+.plannerResultOnly {
+  display: grid;
+  gap: 18px;
+}
+
+/* 🔥 SMALLER HEADING (Airplane / Railway / Road) */
+.plannerResultProviderTitle-1 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* 🔥 3 COLUMN FIXED HEIGHT CARDS */
+.plannerResultThreeCol {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.plannerResultBlock {
+  background: rgba(244, 251, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+/* 🔥 FORCE ALL CARDS SAME HEIGHT */
+.plannerResultThreeCol > * {
+  height: 100%;
+}
+
+/* 🔥 VERTICAL STACK (TIME → PRICE → TOTAL → AVAILABILITY) */
+.plannerResultTravelSimpleGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* 🔥 SAME SIZE BOXES */
+.plannerResultTravelSimpleItem {
+  min-height: 110px;
+  background: #ffffff;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+/* LABEL (TIME / PRICE etc) */
+.plannerResultTravelSimpleItem span {
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(11, 27, 42, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* VALUE TEXT */
+.plannerResultTravelSimpleItem strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* 🔥 HANDLE LONG TEXT (Availability etc) */
+.plannerResultTravelSimpleItem strong {
+  display: -webkit-box;
+  line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* GENERAL TEXT FIX */
+.plannerResultMutedBox {
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+/* BUTTON STYLE (UNCHANGED CLEAN) */
+.plannerResultPrimaryBtn,
+.plannerResultSecondaryBtn {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.plannerResultPrimaryBtn {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+}
+
+.plannerResultSecondaryBtn {
+  background: #fff;
+  border: 1px solid rgba(11, 27, 42, 0.1);
+}
+
+/* MOBILE FIX */
+@media (max-width: 980px) {
+  .plannerResultThreeCol {
+    grid-template-columns: 1fr;
   }
 }
