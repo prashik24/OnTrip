@@ -1,0 +1,218 @@
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../lib/api";
+import { downloadTripPdfFromElement } from "../utils/tripPdf";
+import "./SavedTrips.css";
+
+function money(value) {
+  const n = Number(value || 0);
+  return `₹${n.toLocaleString("en-IN")}`;
+}
+
+export default function SavedTrips() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [msg, setMsg] = useState("");
+  const [savedTrips, setSavedTrips] = useState([]);
+  const cardRefs = useRef({});
+
+  useEffect(() => {
+    async function loadSavedTrips() {
+      try {
+        const data = await apiFetch("/api/saved-trips");
+        setSavedTrips(data.trips || []);
+      } catch (err) {
+        setMsg(err.message || "Failed to load saved trips.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadSavedTrips();
+  }, []);
+
+  async function handleDeleteTrip(id) {
+    try {
+      setMsg("");
+
+      await apiFetch(`/api/saved-trips/${id}`, {
+        method: "DELETE",
+      });
+
+      setSavedTrips((prev) => prev.filter((item) => item._id !== id));
+    } catch (err) {
+      setMsg(err.message || "Failed to delete trip.");
+    }
+  }
+
+  async function handleDownloadTrip(trip) {
+    const element = cardRefs.current[trip._id];
+    if (!element) return;
+
+    try {
+      await downloadTripPdfFromElement(
+        element,
+        `${trip.destination || "saved-trip"}-plan.pdf`
+      );
+    } catch {
+      setMsg("Failed to download PDF.");
+    }
+  }
+
+  function openTrip(trip) {
+    navigate("/planner/result", {
+      state: {
+        form: {
+          destination: trip.destination,
+          startCity: trip.startCity,
+          days: trip.days,
+          budget: trip.budget,
+          peopleCount: trip.peopleCount,
+          travelStyle: trip.travelStyle,
+          interestFocus: [],
+        },
+        savedTripData: trip.tripData,
+      },
+    });
+  }
+
+  if (loading) {
+    return (
+      <div className="container savedTripsPage">
+        <div className="savedTripsOuter">
+          <div className="savedTripsEmpty">Loading saved trips...</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container savedTripsPage">
+      <div className="savedTripsOuter">
+        <div className="savedTripsHead">
+          <div>
+            <h1>Saved Trips</h1>
+            <p>Open, download, or delete your saved AI trip plans.</p>
+          </div>
+
+          <button
+            className="savedTripsSecondaryBtn"
+            onClick={() => navigate("/profile")}
+          >
+            Back to Profile
+          </button>
+        </div>
+
+        {msg ? <div className="savedTripsMessage">{msg}</div> : null}
+
+        {!savedTrips.length ? (
+          <div className="savedTripsEmpty">
+            No saved trips found. Save a trip from planner result page first.
+          </div>
+        ) : (
+          <div className="savedTripsGrid">
+            {savedTrips.map((trip) => {
+              const plan = trip.tripData?.plan || {};
+              const budgetStatus = plan?.budgetStatus || {};
+
+              return (
+                <div
+                  key={trip._id}
+                  className="savedTripCard"
+                  ref={(el) => {
+                    cardRefs.current[trip._id] = el;
+                  }}
+                >
+                  <div className="savedTripTop">
+                    <div>
+                      <div className="savedTripTitle">
+                        {trip.title || `${trip.destination} Trip`}
+                      </div>
+                      <div className="savedTripSub">
+                        {trip.startCity ? `${trip.startCity} → ` : ""}
+                        {trip.destination}
+                      </div>
+                    </div>
+
+                    <div className="savedTripBadge">{trip.days} Days</div>
+                  </div>
+
+                  <div className="savedTripMiniGrid">
+                    <div className="savedTripMiniItem">
+                      <span>Budget</span>
+                      <strong>{money(trip.budget)}</strong>
+                    </div>
+
+                    <div className="savedTripMiniItem">
+                      <span>People</span>
+                      <strong>{trip.peopleCount}</strong>
+                    </div>
+
+                    <div className="savedTripMiniItem">
+                      <span>Style</span>
+                      <strong>{trip.travelStyle}</strong>
+                    </div>
+
+                    <div className="savedTripMiniItem">
+                      <span>Saved On</span>
+                      <strong>
+                        {new Date(trip.createdAt).toLocaleDateString("en-IN")}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="savedTripSummary">
+                    {plan.summary || "Saved trip plan"}
+                  </div>
+
+                  {plan?.travelModes?.bestOption ? (
+                    <div className="savedTripBestBox">
+                      <div className="savedTripBestLabel">Best Option</div>
+                      <div className="savedTripBestText">
+                        {plan.travelModes.bestOption.title} •{" "}
+                        {plan.travelModes.bestOption.estimatedTime || "Time not available"}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {budgetStatus?.statusText ? (
+                    <div
+                      className={`savedTripBudgetStatus ${
+                        budgetStatus.isSufficient ? "isGood" : "isWarn"
+                      }`}
+                    >
+                      {budgetStatus.statusText}
+                    </div>
+                  ) : null}
+
+                  <div className="savedTripActions">
+                    <button
+                      className="savedTripsPrimaryBtn"
+                      onClick={() => openTrip(trip)}
+                    >
+                      Open Trip
+                    </button>
+
+                    <button
+                      className="savedTripsSecondaryBtn"
+                      onClick={() => handleDownloadTrip(trip)}
+                    >
+                      Download PDF
+                    </button>
+
+                    <button
+                      className="savedTripsDangerBtn"
+                      onClick={() => handleDeleteTrip(trip._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
