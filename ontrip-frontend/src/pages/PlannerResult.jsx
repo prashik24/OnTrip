@@ -104,6 +104,7 @@ export default function PlannerResult() {
   const navigate = useNavigate();
   const location = useLocation();
   const formFromState = location.state?.form;
+  const savedTripData = location.state?.savedTripData || null;
   const tripPrintRef = useRef(null);
 
   const [form] = useState(() => {
@@ -117,9 +118,9 @@ export default function PlannerResult() {
     }
   });
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!savedTripData);
   const [msg, setMsg] = useState("");
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(savedTripData || null);
   const [saveLoading, setSaveLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
 
@@ -128,12 +129,28 @@ export default function PlannerResult() {
   const [chatMessages, setChatMessages] = useState([
     {
       role: "assistant",
-      text: "Ask about route order, weather, best visiting time, or what to pack.",
+      text: savedTripData
+        ? `Your saved ${savedTripData?.plan?.title || form?.destination || "trip"} is open. Ask anything about timing, route, weather, or budget.`
+        : "Ask about route order, weather, best visiting time, or what to pack.",
     },
   ]);
 
   useEffect(() => {
     async function loadPlan() {
+      if (savedTripData) {
+        setResult(savedTripData);
+        setChatMessages([
+          {
+            role: "assistant",
+            text: `Your saved ${
+              savedTripData?.plan?.title || form?.destination || "trip"
+            } is open. Ask anything about timing, route, weather, or budget.`,
+          },
+        ]);
+        setLoading(false);
+        return;
+      }
+
       if (!form?.destination) {
         setMsg("Trip input not found. Please generate again.");
         setLoading(false);
@@ -169,10 +186,10 @@ export default function PlannerResult() {
     }
 
     loadPlan();
-  }, [form]);
+  }, [form, savedTripData]);
 
   async function handleSaveTrip() {
-    if (!result?.plan || saveLoading) return;
+    if (!result?.plan || saveLoading || savedTripData) return;
 
     try {
       setSaveLoading(true);
@@ -207,7 +224,7 @@ export default function PlannerResult() {
       setDownloadLoading(true);
       await downloadTripPdfFromElement(
         tripPrintRef.current,
-        `${form?.destination || "trip-plan"}-plan.pdf`
+        `${form?.destination || result?.plan?.title || "trip-plan"}-plan.pdf`
       );
     } catch {
       setMsg("Failed to download PDF.");
@@ -275,13 +292,15 @@ export default function PlannerResult() {
               Edit Inputs
             </button>
 
-            <button
-              className="plannerResultSecondaryBtn"
-              onClick={handleSaveTrip}
-              disabled={saveLoading || !result?.plan}
-            >
-              {saveLoading ? "Saving..." : "Save Trip"}
-            </button>
+            {!savedTripData && (
+              <button
+                className="plannerResultSecondaryBtn"
+                onClick={handleSaveTrip}
+                disabled={saveLoading || !result?.plan}
+              >
+                {saveLoading ? "Saving..." : "Save Trip"}
+              </button>
+            )}
 
             <button
               className="plannerResultPrimaryBtn"
@@ -373,9 +392,7 @@ export default function PlannerResult() {
                     <div className="plannerResultItineraryCard" key={index}>
                       <div className="plannerResultItineraryHeader">
                         <div>
-                          <div className="plannerResultProviderTitle">
-                            Day {dayItem.day}
-                          </div>
+                          <div className="plannerResultProviderTitle">Day {dayItem.day}</div>
                           <div className="plannerResultProviderMeta">{dayItem.title}</div>
                         </div>
 
@@ -410,9 +427,7 @@ export default function PlannerResult() {
                                 {place.order || idx + 1}
                               </div>
                               <div className="plannerResultSequenceContent">
-                                <div className="plannerResultSequenceTitle">
-                                  {place.name}
-                                </div>
+                                <div className="plannerResultSequenceTitle">{place.name}</div>
                                 <div className="plannerResultSequenceMeta">
                                   Explore: {place.exploreTimeText}
                                 </div>
