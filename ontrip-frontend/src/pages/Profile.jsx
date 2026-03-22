@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./Profile.css";
 import { apiFetch, clearAuth, getUser, saveUserOnly } from "../lib/api";
 import { useNavigate } from "react-router-dom";
+import { downloadTripPdfFromElement } from "../utils/tripPdf";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [hasProviderListings, setHasProviderListings] = useState(false);
+  const [savedTrips, setSavedTrips] = useState([]);
   const [msg, setMsg] = useState({ text: "", type: "" });
 
   const [form, setForm] = useState({
@@ -46,8 +48,18 @@ export default function Profile() {
       }
     }
 
+    async function loadSavedTrips() {
+      try {
+        const data = await apiFetch("/api/saved-trips");
+        setSavedTrips(data.trips || []);
+      } catch {
+        setSavedTrips([]);
+      }
+    }
+
     loadMe();
     loadProviderStatus();
+    loadSavedTrips();
   }, []);
 
   function update(key, value) {
@@ -113,6 +125,35 @@ export default function Profile() {
     }
   }
 
+  async function handleDeleteTrip(id) {
+    try {
+      setMsg({ text: "", type: "" });
+
+      await apiFetch(`/api/saved-trips/${id}`, {
+        method: "DELETE",
+      });
+
+      setSavedTrips((prev) => prev.filter((item) => item._id !== id));
+      setMsg({ text: "Saved trip deleted successfully", type: "success" });
+    } catch (err) {
+      setMsg({ text: err.message || "Failed to delete trip", type: "error" });
+    }
+  }
+
+  async function handleDownloadSavedTrip(trip) {
+    const element = document.getElementById(`saved-trip-print-${trip._id}`);
+    if (!element) return;
+
+    try {
+      await downloadTripPdfFromElement(
+        element,
+        `${trip.destination || "saved-trip"}-plan.pdf`
+      );
+    } catch {
+      setMsg({ text: "Failed to download saved trip PDF", type: "error" });
+    }
+  }
+
   function logout() {
     clearAuth();
     window.dispatchEvent(new Event("ontrip-auth-changed"));
@@ -151,7 +192,6 @@ export default function Profile() {
               <h1>{user?.name || "Traveler"}</h1>
               <p>{user?.email || "No email added"}</p>
             </div>
- 
           </div>
 
           <div className="profileActions">
@@ -171,11 +211,7 @@ export default function Profile() {
           </div>
         </div>
 
-        {msg.text && (
-          <div className={`profileMessage ${msg.type}`}>
-            {msg.text}
-          </div>
-        )}
+        {msg.text && <div className={`profileMessage ${msg.type}`}>{msg.text}</div>}
 
         {!editing ? (
           <div className="profileContent">
@@ -209,6 +245,108 @@ export default function Profile() {
               </div>
             </div>
 
+            <div className="profileSection">
+              <h2>Saved Trips</h2>
+
+              {savedTrips.length ? (
+                <div className="profileSavedTripsGrid">
+                  {savedTrips.map((trip) => {
+                    const plan = trip.tripData?.plan || {};
+
+                    return (
+                      <div className="profileSavedTripCard" key={trip._id}>
+                        <div
+                          id={`saved-trip-print-${trip._id}`}
+                          className="profileSavedTripPrintArea"
+                        >
+                          <div className="profileSavedTripTop">
+                            <div>
+                              <h3>{trip.title || `${trip.destination} Trip`}</h3>
+                              <p>
+                                {trip.startCity ? `${trip.startCity} → ` : ""}
+                                {trip.destination}
+                              </p>
+                            </div>
+                            <div className="profileSavedTripBadge">
+                              {trip.days} Days
+                            </div>
+                          </div>
+
+                          <div className="profileSavedTripMiniGrid">
+                            <div className="profileSavedTripMiniItem">
+                              <span>Budget</span>
+                              <strong>₹{Number(trip.budget || 0).toLocaleString("en-IN")}</strong>
+                            </div>
+
+                            <div className="profileSavedTripMiniItem">
+                              <span>People</span>
+                              <strong>{trip.peopleCount}</strong>
+                            </div>
+
+                            <div className="profileSavedTripMiniItem">
+                              <span>Style</span>
+                              <strong>{trip.travelStyle}</strong>
+                            </div>
+
+                            <div className="profileSavedTripMiniItem">
+                              <span>Saved On</span>
+                              <strong>{new Date(trip.createdAt).toLocaleDateString("en-IN")}</strong>
+                            </div>
+                          </div>
+
+                          <div className="profileSavedTripSummary">
+                            {plan.summary || "Saved trip plan"}
+                          </div>
+                        </div>
+
+                        <div className="profileSavedTripActions">
+                          <button
+                            className="profileGhostBtn"
+                            onClick={() =>
+                              navigate("/planner/result", {
+                                state: {
+                                  form: {
+                                    destination: trip.destination,
+                                    startCity: trip.startCity,
+                                    days: trip.days,
+                                    budget: trip.budget,
+                                    peopleCount: trip.peopleCount,
+                                    travelStyle: trip.travelStyle,
+                                    interestFocus: [],
+                                  },
+                                  savedTripData: trip.tripData,
+                                },
+                              })
+                            }
+                          >
+                            Open Trip
+                          </button>
+
+                          <button
+                            className="profilePrimaryBtn"
+                            onClick={() => handleDownloadSavedTrip(trip)}
+                          >
+                            Download PDF
+                          </button>
+
+                          <button
+                            className="profileDangerBtn"
+                            onClick={() => handleDeleteTrip(trip._id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="profileEmptyTrips">
+                  No saved trips yet. Save a trip from the planner result page.
+                </div>
+              )}
+            </div>
+
             <div className="profileQuickGrid">
               <div className="profileQuickCard">
                 <h3>Booking History</h3>
@@ -223,7 +361,10 @@ export default function Profile() {
                   <div className="profileQuickCard">
                     <h3>My Listings</h3>
                     <p>View, update, and remove your registered provider services.</p>
-                    <button className="profileGhostBtn" onClick={() => navigate("/profile/my-listings")}>
+                    <button
+                      className="profileGhostBtn"
+                      onClick={() => navigate("/profile/my-listings")}
+                    >
                       Open My Listings
                     </button>
                   </div>
@@ -231,7 +372,10 @@ export default function Profile() {
                   <div className="profileQuickCard">
                     <h3>Provider Dashboard</h3>
                     <p>View customer bookings, statuses, and updates.</p>
-                    <button className="profileGhostBtn" onClick={() => navigate("/provider/dashboard")}>
+                    <button
+                      className="profileGhostBtn"
+                      onClick={() => navigate("/provider/dashboard")}
+                    >
                       Open Dashboard
                     </button>
                   </div>
