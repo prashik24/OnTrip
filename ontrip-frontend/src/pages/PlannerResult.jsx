@@ -64,6 +64,66 @@ function PlannerMap({ mapData }) {
   return <div ref={mapRef} className="plannerLeafletMap" />;
 }
 
+function TravelModeCard({ title, data }) {
+  if (!data) return null;
+
+  return (
+    <div className="plannerResultBlock">
+      <div className="plannerResultBlockTitle">{title}</div>
+
+      <div className="plannerResultProviderTitle">
+        {data.optionName || `${title} option`}
+      </div>
+
+      <div className="plannerResultTravelFacts">
+        <div className="plannerResultTravelFact">
+          <span>Time</span>
+          <strong>{data.estimatedTime || "Not available"}</strong>
+        </div>
+
+        <div className="plannerResultTravelFact">
+          <span>Price</span>
+          <strong>{data.estimatedPrice?.perPerson || "Not available"}</strong>
+        </div>
+
+        <div className="plannerResultTravelFact">
+          <span>Total</span>
+          <strong>{data.estimatedPrice?.total || "Not available"}</strong>
+        </div>
+
+        <div className="plannerResultTravelFact">
+          <span>Availability</span>
+          <strong>{data.availabilityName || "Not available"}</strong>
+        </div>
+      </div>
+
+      <div className="plannerResultTravelMiniGrid">
+        <div className="plannerResultTravelMiniBox">
+          <div className="plannerResultMiniLabel">Best for</div>
+          <div>{data.bestFor || "General travel"}</div>
+        </div>
+
+        <div className="plannerResultTravelMiniBox">
+          <div className="plannerResultMiniLabel">Budget fit</div>
+          <div>{data.budgetFit || "Depends on route"}</div>
+        </div>
+      </div>
+
+      <div className="plannerResultMutedBox">{data.details}</div>
+
+      {(data.points || []).length ? (
+        <ul className="plannerResultList">
+          {data.points.map((point, idx) => (
+            <li key={idx}>{point}</li>
+          ))}
+        </ul>
+      ) : null}
+
+      <div className="plannerResultTravelNote">{data.note}</div>
+    </div>
+  );
+}
+
 export default function PlannerResult() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -207,54 +267,52 @@ export default function PlannerResult() {
               <div className="plannerResultMutedBox">{result.plan.destinationWhyFamous}</div>
             </div>
 
+            {result.plan.travelModes?.bestOption ? (
+              <div className="plannerResultBlock plannerResultBestTravelBlock">
+                <div className="plannerResultBlockTitle">Best Travel Option for Your Budget</div>
+
+                <div className="plannerResultBestTravelTop">
+                  <div>
+                    <div className="plannerResultBestTravelBadge">
+                      {result.plan.travelModes.bestOption.title}
+                    </div>
+                    <div className="plannerResultProviderTitle">
+                      {result.plan.travelModes.bestOption.optionName}
+                    </div>
+                  </div>
+
+                  <div className="plannerResultBestTravelPrice">
+                    {result.plan.travelModes.bestOption.estimatedPrice?.perPerson || ""}
+                  </div>
+                </div>
+
+                <div className="plannerResultTravelFacts">
+                  <div className="plannerResultTravelFact">
+                    <span>Time</span>
+                    <strong>
+                      {result.plan.travelModes.bestOption.estimatedTime || "Not available"}
+                    </strong>
+                  </div>
+
+                  <div className="plannerResultTravelFact">
+                    <span>Total</span>
+                    <strong>
+                      {result.plan.travelModes.bestOption.estimatedPrice?.total ||
+                        "Not available"}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="plannerResultMutedBox">
+                  {result.plan.travelModes.bestOption.reason}
+                </div>
+              </div>
+            ) : null}
+
             <div className="plannerResultThreeCol">
-              <div className="plannerResultBlock">
-                <div className="plannerResultBlockTitle">Airplane</div>
-                <div className="plannerResultProviderTitle">
-                  {result.plan.travelModes?.airplane?.optionName}
-                </div>
-                <div className="plannerResultMetaStrong">
-                  Time: {result.plan.travelModes?.airplane?.estimatedTime}
-                </div>
-                <div className="plannerResultMutedBox">
-                  {result.plan.travelModes?.airplane?.details}
-                </div>
-                <div className="plannerResultTravelNote">
-                  {result.plan.travelModes?.airplane?.note}
-                </div>
-              </div>
-
-              <div className="plannerResultBlock">
-                <div className="plannerResultBlockTitle">Railway</div>
-                <div className="plannerResultProviderTitle">
-                  {result.plan.travelModes?.railway?.optionName}
-                </div>
-                <div className="plannerResultMetaStrong">
-                  Time: {result.plan.travelModes?.railway?.estimatedTime}
-                </div>
-                <div className="plannerResultMutedBox">
-                  {result.plan.travelModes?.railway?.details}
-                </div>
-                <div className="plannerResultTravelNote">
-                  {result.plan.travelModes?.railway?.note}
-                </div>
-              </div>
-
-              <div className="plannerResultBlock">
-                <div className="plannerResultBlockTitle">Road</div>
-                <div className="plannerResultProviderTitle">
-                  {result.plan.travelModes?.road?.optionName}
-                </div>
-                <div className="plannerResultMetaStrong">
-                  Time: {result.plan.travelModes?.road?.estimatedTime}
-                </div>
-                <div className="plannerResultMutedBox">
-                  {result.plan.travelModes?.road?.details}
-                </div>
-                <div className="plannerResultTravelNote">
-                  {result.plan.travelModes?.road?.note}
-                </div>
-              </div>
+              <TravelModeCard title="Airplane" data={result.plan.travelModes?.airplane} />
+              <TravelModeCard title="Railway" data={result.plan.travelModes?.railway} />
+              <TravelModeCard title="Road" data={result.plan.travelModes?.road} />
             </div>
 
             {result?.mapData ? (
