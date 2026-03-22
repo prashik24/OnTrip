@@ -22,6 +22,7 @@ import ProviderRegister from "./pages/ProviderRegister";
 import MyListings from "./pages/MyListings";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import BookingHistory from "./pages/BookingHistory";
+import BookingReviewPage from "./pages/BookingReviewPage";
 import BookingCheckout from "./pages/BookingCheckout";
 import BookingSuccess from "./pages/BookingSuccess";
 import InvoiceView from "./pages/InvoiceView";
@@ -65,6 +66,7 @@ export default function App() {
             <Route path="/profile/my-listings" element={<MyListings />} />
             <Route path="/profile/saved-trips" element={<SavedTrips />} />
             <Route path="/profile/bookings" element={<BookingHistory />} />
+            <Route path="/profile/bookings/:bookingId/review" element={<BookingReviewPage />} />
             <Route path="/profile/bookings/:id" element={<BookingSuccess />} />
             <Route path="/profile/bookings/:id/invoice" element={<InvoiceView />} />
             <Route path="/provider/dashboard" element={<ProviderDashboard />} />
