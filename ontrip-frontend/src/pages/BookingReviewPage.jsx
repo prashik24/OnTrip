@@ -92,14 +92,6 @@ export default function BookingReviewPage() {
     });
   }
 
-  function clearAllExistingImages() {
-    setForm((prev) => ({
-      ...prev,
-      existingImages: [],
-      removeExistingImages: true,
-    }));
-  }
-
   const selectedPreviewUrl = useMemo(() => {
     if (!form.image) return "";
     return URL.createObjectURL(form.image);
@@ -174,7 +166,7 @@ export default function BookingReviewPage() {
       <div className="bookingReviewHead">
         <div>
           <h1>{booking.existingReview ? "Edit Review" : "Write Review"}</h1>
-          <p>Update your review and manage review image easily.</p>
+          <p>Update your review and manage image directly from the photo.</p>
         </div>
 
         <button
@@ -289,56 +281,46 @@ export default function BookingReviewPage() {
                 />
               </div>
 
-              {/* selected new image preview */}
               {selectedPreviewUrl ? (
                 <div className="bookingReviewField">
                   <label>Selected Image</label>
-                  <div className="bookingReviewPreviewBox">
-                    <div className="bookingReviewImageGrid bookingReviewImageGridSingle">
+                  <div className="bookingReviewImageGrid bookingReviewImageGridSingle">
+                    <div className="bookingReviewImageCard">
                       <div className="bookingReviewImageItem">
                         <img src={selectedPreviewUrl} alt="selected review" />
+                        <button
+                          type="button"
+                          className="bookingReviewImageRemoveIcon"
+                          onClick={removeSelectedImage}
+                          aria-label="Remove selected image"
+                          title="Remove selected image"
+                        >
+                          ×
+                        </button>
                       </div>
                     </div>
-
-                    <button
-                      type="button"
-                      className="bookingReviewRemoveBtn"
-                      onClick={removeSelectedImage}
-                    >
-                      Remove Selected Image
-                    </button>
                   </div>
                 </div>
               ) : null}
 
-              {/* previous image under choose file */}
               {form.existingImages?.length > 0 ? (
                 <div className="bookingReviewField">
-                  <div className="bookingReviewPreviousHead">
-                    <label>Previous Review Image</label>
-
-                    <button
-                      type="button"
-                      className="bookingReviewRemoveTextBtn"
-                      onClick={clearAllExistingImages}
-                    >
-                      Remove All Previous Images
-                    </button>
-                  </div>
-
+                  <label>Previous Review Image</label>
                   <div className="bookingReviewImageGrid">
                     {form.existingImages.map((img, index) => (
                       <div className="bookingReviewImageCard" key={index}>
                         <div className="bookingReviewImageItem">
                           <img src={img.url} alt="review" />
+                          <button
+                            type="button"
+                            className="bookingReviewImageRemoveIcon"
+                            onClick={() => removeExistingImage(index)}
+                            aria-label="Remove previous image"
+                            title="Remove previous image"
+                          >
+                            ×
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          className="bookingReviewRemoveBtn"
-                          onClick={() => removeExistingImage(index)}
-                        >
-                          Remove Image
-                        </button>
                       </div>
                     ))}
                   </div>
