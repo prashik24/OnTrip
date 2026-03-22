@@ -7,6 +7,8 @@ export default function Sidebar({ open, onClose }) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [hasProviderListings, setHasProviderListings] = useState(false);
+  const [hasBookings, setHasBookings] = useState(false);
+  const [hasSavedTrips, setHasSavedTrips] = useState(false);
 
   const user = getUser();
   const loggedIn = isLoggedIn();
@@ -16,22 +18,50 @@ export default function Sidebar({ open, onClose }) {
   const initial = userName?.charAt(0)?.toUpperCase() || "U";
 
   useEffect(() => {
-    async function loadProviderStatus() {
+    async function loadQuickAccessStatus() {
       if (!loggedIn) {
         setHasProviderListings(false);
+        setHasBookings(false);
+        setHasSavedTrips(false);
         return;
       }
 
       try {
-        const data = await apiFetch("/api/providers/mine");
-        setHasProviderListings((data.providers || []).length > 0);
+        const [providerRes, bookingRes, savedTripRes] = await Promise.allSettled([
+          apiFetch("/api/providers/mine"),
+          apiFetch("/api/bookings/mine"),
+          apiFetch("/api/saved-trips"),
+        ]);
+
+        if (providerRes.status === "fulfilled") {
+          setHasProviderListings((providerRes.value?.providers || []).length > 0);
+        } else {
+          setHasProviderListings(false);
+        }
+
+        if (bookingRes.status === "fulfilled") {
+          setHasBookings((bookingRes.value?.bookings || []).length > 0);
+        } else {
+          setHasBookings(false);
+        }
+
+        if (savedTripRes.status === "fulfilled") {
+          setHasSavedTrips((savedTripRes.value?.trips || []).length > 0);
+        } else {
+          setHasSavedTrips(false);
+        }
       } catch {
         setHasProviderListings(false);
+        setHasBookings(false);
+        setHasSavedTrips(false);
       }
     }
 
-    loadProviderStatus();
+    loadQuickAccessStatus();
   }, [loggedIn]);
+
+  const showQuickAccess =
+    loggedIn && (hasBookings || hasSavedTrips || hasProviderListings);
 
   const navItems = useMemo(
     () => [
@@ -191,23 +221,32 @@ export default function Sidebar({ open, onClose }) {
           </div>
         )}
 
-        {loggedIn && (
+        {showQuickAccess && (
           <div className="otSection otUserQuickSection">
             <div className="otSectionTitle">Quick Access</div>
 
-            <div
-              className={`otMiniStats ${
-                hasProviderListings ? "threeCol" : "oneCol"
-              }`}
-            >
-              <button
-                className="otMiniStat"
-                type="button"
-                onClick={() => goWithClose("/profile/bookings")}
-              >
-                <span className="otMiniStatValue">My Bookings</span>
-                <span className="otMiniStatLabel">Trips and reservations</span>
-              </button>
+            <div className="otMiniStats">
+              {hasBookings && (
+                <button
+                  className="otMiniStat"
+                  type="button"
+                  onClick={() => goWithClose("/profile/bookings")}
+                >
+                  <span className="otMiniStatValue">Booking History</span>
+                  <span className="otMiniStatLabel">Trips and reservations</span>
+                </button>
+              )}
+
+              {hasSavedTrips && (
+                <button
+                  className="otMiniStat"
+                  type="button"
+                  onClick={() => goWithClose("/profile/saved-trips")}
+                >
+                  <span className="otMiniStatValue">Saved Trips</span>
+                  <span className="otMiniStatLabel">Open saved AI trip plans</span>
+                </button>
+              )}
 
               {hasProviderListings && (
                 <button
