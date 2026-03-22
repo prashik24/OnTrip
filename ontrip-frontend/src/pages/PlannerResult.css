@@ -1,9 +1,13 @@
 .plannerResultPage {
   padding-bottom: 32px;
+  min-width: 0;
 }
 
 .plannerResultOuter {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 18px;
@@ -14,11 +18,26 @@
   box-sizing: border-box;
 }
 
+.plannerResultHead,
+.plannerResultOnly,
+.plannerResultBlock,
+.plannerResultThreeCol,
+.plannerResultProviderGrid,
+.plannerResultPlacesGrid,
+.plannerResultItineraryGrid,
+.plannerResultTravelSimpleGrid,
+.plannerResultTravelMiniGrid,
+.plannerResultChatComposer,
+.plannerResultTopActions {
+  min-width: 0;
+}
+
 .plannerResultHead h1 {
   margin: 0;
   font-size: 32px;
   font-weight: 760;
   color: var(--text);
+  word-break: break-word;
 }
 
 .plannerResultHead p {
@@ -27,6 +46,7 @@
   line-height: 1.65;
   font-weight: 550;
   max-width: 860px;
+  word-break: break-word;
 }
 
 .plannerResultHeadRow {
@@ -35,12 +55,18 @@
   align-items: flex-start;
   gap: 14px;
   flex-wrap: wrap;
+  min-width: 0;
+}
+
+.plannerResultHeadRow > * {
+  min-width: 0;
 }
 
 .plannerResultTopActions {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .plannerResultMessage {
@@ -50,20 +76,25 @@
   border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
   font-weight: 650;
+  word-break: break-word;
 }
 
 .plannerResultOnly {
   display: grid;
   gap: 18px;
+  min-width: 0;
 }
 
 .plannerResultBlock {
+  min-width: 0;
+  overflow: hidden;
   background: rgba(244, 251, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 14px;
   padding: 16px;
   display: grid;
   gap: 10px;
+  box-sizing: border-box;
 }
 
 .plannerResultTravelModeCard {
@@ -76,12 +107,16 @@
   font-size: 17px;
   font-weight: 720;
   color: var(--text);
+  word-break: break-word;
 }
 
 .plannerResultMutedBox {
   color: rgba(11, 27, 42, 0.78);
   font-weight: 550;
   line-height: 1.7;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .plannerResultTravelNote {
@@ -92,6 +127,8 @@
   color: rgba(11, 27, 42, 0.8);
   font-weight: 600;
   line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .plannerResultThreeCol {
@@ -99,6 +136,11 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
   align-items: stretch;
+  min-width: 0;
+}
+
+.plannerResultThreeCol > * {
+  min-width: 0;
 }
 
 .plannerResultEmpty {
@@ -109,17 +151,21 @@
   color: rgba(11, 27, 42, 0.72);
   font-weight: 650;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  word-break: break-word;
 }
 
 .plannerResultPrimaryBtn,
 .plannerResultSecondaryBtn {
   min-height: 44px;
+  max-width: 100%;
   padding: 0 16px;
   border-radius: 12px;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
+  box-sizing: border-box;
+  white-space: normal;
 }
 
 .plannerResultPrimaryBtn {
@@ -149,13 +195,22 @@
 .plannerResultPlacesGrid,
 .plannerResultItineraryGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+  min-width: 0;
+}
+
+.plannerResultProviderGrid > *,
+.plannerResultPlacesGrid > *,
+.plannerResultItineraryGrid > * {
+  min-width: 0;
 }
 
 .plannerResultProviderCard,
 .plannerResultPlaceCard,
 .plannerResultItineraryCard {
+  min-width: 0;
+  overflow: hidden;
   background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 14px;
@@ -163,35 +218,51 @@
   display: grid;
   gap: 10px;
   box-shadow: 0 8px 20px rgba(10, 22, 35, 0.04);
+  box-sizing: border-box;
 }
 
 .plannerResultProviderTitle {
   font-size: 17px;
   font-weight: 720;
   color: var(--text);
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .plannerResultProviderMeta {
   color: var(--muted);
   font-size: 14px;
   font-weight: 550;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .plannerResultProviderText {
   color: rgba(11, 27, 42, 0.78);
   font-weight: 550;
   line-height: 1.65;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .plannerResultPlaceTop {
   display: flex;
   gap: 12px;
   align-items: flex-start;
+  min-width: 0;
+}
+
+.plannerResultPlaceTop > * {
+  min-width: 0;
 }
 
 .plannerResultPlaceIndex {
   min-width: 34px;
+  width: 34px;
   height: 34px;
+  flex: 0 0 34px;
   border-radius: 999px;
   display: grid;
   place-items: center;
@@ -208,6 +279,13 @@
   font-size: 13px;
   color: rgba(11, 27, 42, 0.78);
   font-weight: 650;
+  min-width: 0;
+}
+
+.plannerResultPlaceFacts span {
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .plannerResultCostBox {
@@ -219,15 +297,19 @@
   border: 1px solid rgba(0, 184, 241, 0.12);
   color: rgba(11, 27, 42, 0.84);
   font-weight: 650;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .plannerResultLeafletMap,
 .plannerLeafletMap {
   width: 100%;
+  max-width: 100%;
   height: 360px;
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgba(0, 184, 241, 0.1);
+  box-sizing: border-box;
 }
 
 .plannerResultList {
@@ -236,15 +318,22 @@
   color: rgba(11, 27, 42, 0.8);
   font-weight: 550;
   line-height: 1.7;
+  min-width: 0;
 }
 
 .plannerResultList li + li {
   margin-top: 6px;
 }
 
+.plannerResultList li {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
 .plannerResultChatBox {
   display: grid;
   gap: 12px;
+  min-width: 0;
 }
 
 .plannerResultChatMessages {
@@ -252,7 +341,9 @@
   gap: 10px;
   max-height: 360px;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 4px;
+  min-width: 0;
 }
 
 .plannerResultChatBubble {
@@ -262,6 +353,9 @@
   line-height: 1.6;
   font-weight: 550;
   font-size: 14px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
 }
 
 .plannerResultChatBubble.isUser {
@@ -281,12 +375,14 @@
 
 .plannerResultChatComposer {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
+  min-width: 0;
 }
 
 .plannerResultInput {
   width: 100%;
+  min-width: 0;
   min-height: 52px;
   border: 1.5px solid rgba(11, 27, 42, 0.12);
   border-radius: 18px;
@@ -320,6 +416,11 @@
   align-items: center;
   gap: 14px;
   flex-wrap: wrap;
+  min-width: 0;
+}
+
+.plannerResultBestTravelTop > * {
+  min-width: 0;
 }
 
 .plannerResultBestTravelBadge {
@@ -333,21 +434,25 @@
   font-size: 13px;
   font-weight: 800;
   margin-bottom: 8px;
+  max-width: 100%;
 }
 
 .plannerResultBestTravelPrice {
   font-size: 15px;
   font-weight: 800;
   color: #0369a1;
+  word-break: break-word;
 }
 
 .plannerResultTravelSimpleGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+  min-width: 0;
 }
 
 .plannerResultTravelSimpleItem {
+  min-width: 0;
   min-height: 108px;
   background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
@@ -374,15 +479,18 @@
   color: var(--text);
   line-height: 1.5;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .plannerResultTravelMiniGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  min-width: 0;
 }
 
 .plannerResultTravelMiniBox {
+  min-width: 0;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 12px;
@@ -390,6 +498,8 @@
   color: rgba(11, 27, 42, 0.82);
   font-weight: 600;
   line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .plannerResultMiniLabel {
@@ -406,6 +516,11 @@
   justify-content: space-between;
   gap: 12px;
   align-items: flex-start;
+  min-width: 0;
+}
+
+.plannerResultItineraryHeader > * {
+  min-width: 0;
 }
 
 .plannerResultDayBadge {
@@ -419,11 +534,13 @@
   align-items: center;
   font-weight: 800;
   white-space: nowrap;
+  max-width: 100%;
 }
 
 .plannerResultSequenceList {
   display: grid;
   gap: 10px;
+  min-width: 0;
 }
 
 .plannerResultSequenceItem {
@@ -434,11 +551,18 @@
   border-radius: 12px;
   background: rgba(244, 251, 255, 0.8);
   border: 1px solid rgba(0, 184, 241, 0.1);
+  min-width: 0;
+}
+
+.plannerResultSequenceItem > * {
+  min-width: 0;
 }
 
 .plannerResultSequenceCount {
   min-width: 32px;
+  width: 32px;
   height: 32px;
+  flex: 0 0 32px;
   border-radius: 999px;
   display: grid;
   place-items: center;
@@ -451,12 +575,15 @@
 .plannerResultSequenceContent {
   display: grid;
   gap: 4px;
+  min-width: 0;
 }
 
 .plannerResultSequenceTitle {
   font-size: 15px;
   font-weight: 720;
   color: var(--text);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .plannerResultSequenceMeta {
@@ -464,17 +591,21 @@
   font-weight: 600;
   color: rgba(11, 27, 42, 0.72);
   line-height: 1.55;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .plannerResultBudgetStatus {
   display: grid;
   gap: 10px;
+  min-width: 0;
 }
 
 .plannerResultBudgetTop {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .plannerResultBudgetPill {
@@ -486,6 +617,8 @@
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
   font-weight: 800;
+  max-width: 100%;
+  word-break: break-word;
 }
 
 .plannerResultBudgetPill.isSoft {
@@ -499,6 +632,8 @@
   border-radius: 12px;
   font-weight: 700;
   line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .plannerResultBudgetSummary.isGood {
@@ -516,6 +651,7 @@
 .plannerResultBudgetExtra {
   color: rgba(11, 27, 42, 0.84);
   font-weight: 650;
+  word-break: break-word;
 }
 
 @media (max-width: 980px) {
@@ -536,5 +672,20 @@
 
   .plannerResultTopActions {
     width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .plannerResultOuter {
+    padding: 16px;
+  }
+
+  .plannerResultPrimaryBtn,
+  .plannerResultSecondaryBtn {
+    width: 100%;
+  }
+
+  .plannerResultChatBubble {
+    max-width: 100%;
   }
 }
