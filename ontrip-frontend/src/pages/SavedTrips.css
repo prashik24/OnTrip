@@ -8,7 +8,7 @@
 .savedTripsHead {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
   flex-wrap: wrap;
   min-width: 0;
@@ -27,6 +27,16 @@
   line-height: 1.65;
   font-weight: 550;
   max-width: 860px;
+}
+
+.savedTripsHead > .savedTripsSecondaryBtn {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 160px;
+  height: 46px;
+  min-height: 46px;
+  padding: 0 18px;
+  white-space: nowrap;
 }
 
 .savedTripsMessage {
@@ -203,12 +213,12 @@
   white-space: nowrap;
 }
 
-.savedTripsPrimaryBtn,
-.savedTripsSecondaryBtn {
+.savedTripActions .savedTripsPrimaryBtn,
+.savedTripActions .savedTripsSecondaryBtn {
   flex: 1 1 0;
 }
 
-.savedTripsDangerBtn {
+.savedTripActions .savedTripsDangerBtn {
   flex: 0 0 106px;
 }
 
@@ -253,32 +263,15 @@
     flex-wrap: wrap;
   }
 
-  .savedTripsPrimaryBtn,
-  .savedTripsSecondaryBtn,
-  .savedTripsDangerBtn {
+  .savedTripActions .savedTripsPrimaryBtn,
+  .savedTripActions .savedTripsSecondaryBtn,
+  .savedTripActions .savedTripsDangerBtn {
     flex: 1 1 100%;
     width: 100%;
   }
-} 
-.commonBackBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
 
-  padding: 8px 14px;
-  font-size: 14px;
-  font-weight: 600;
-
-  border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-
-  background: #fff;
-  color: #333;
-
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.commonBackBtn:hover {
-  background: #f5f5f5;
+  .savedTripsHead > .savedTripsSecondaryBtn {
+    width: 100%;
+    min-width: 0;
+  }
 }
