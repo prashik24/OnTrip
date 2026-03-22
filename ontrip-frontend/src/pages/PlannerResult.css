@@ -228,6 +228,7 @@
   min-width: 0;
   word-break: break-word;
   overflow-wrap: anywhere;
+  line-height: 1.35;
 }
 
 .plannerResultProviderMeta {
@@ -428,15 +429,14 @@
   align-items: center;
   min-height: 30px;
   max-width: 100%;
-  padding: 8px 12px;
+  padding: 0 12px;
   border-radius: 999px;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   margin-bottom: 8px;
-  white-space: normal;
-  line-height: 1.35;
+  line-height: 1.3;
   word-break: break-word;
   overflow-wrap: anywhere;
 }
@@ -459,7 +459,7 @@
 
 .plannerResultTravelSimpleItem {
   min-width: 0;
-  min-height: 140px;
+  min-height: 138px;
   height: 100%;
   background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
@@ -479,13 +479,14 @@
   color: rgba(11, 27, 42, 0.56);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  line-height: 1.2;
 }
 
 .plannerResultTravelSimpleItem strong {
-  font-size: 12px;
+  display: block;
+  font-size: 13px;
   color: var(--text);
   line-height: 1.45;
-  font-weight: 700;
   word-break: break-word;
   overflow-wrap: anywhere;
 }
@@ -499,6 +500,7 @@
 
 .plannerResultTravelMiniBox {
   min-width: 0;
+  min-height: 98px;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 12px;
@@ -510,6 +512,10 @@
   word-break: break-word;
   overflow-wrap: anywhere;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 6px;
 }
 
 .plannerResultTravelMiniBox div {
@@ -521,17 +527,17 @@
   font-size: 11px;
   font-weight: 800;
   color: #0369a1;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   white-space: nowrap;
 }
 
 .plannerResultItineraryHeader {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
+  justify-content: space-between;
   gap: 12px;
-  align-items: start;
+  align-items: flex-start;
   min-width: 0;
 }
 
@@ -542,7 +548,7 @@
 .plannerResultDayBadge {
   min-height: 34px;
   max-width: 100%;
-  padding: 8px 12px;
+  padding: 0 12px;
   border-radius: 999px;
   background: rgba(0, 184, 241, 0.08);
   border: 1px solid rgba(0, 184, 241, 0.14);
@@ -552,8 +558,8 @@
   justify-content: center;
   font-weight: 800;
   font-size: 12px;
+  line-height: 1.25;
   white-space: normal;
-  line-height: 1.35;
   word-break: break-word;
   overflow-wrap: anywhere;
   text-align: center;
@@ -695,14 +701,6 @@
   .plannerResultTopActions {
     width: 100%;
   }
-
-  .plannerResultItineraryHeader {
-    grid-template-columns: 1fr;
-  }
-
-  .plannerResultDayBadge {
-    width: 100%;
-  }
 }
 
 @media (max-width: 640px) {
@@ -717,5 +715,14 @@
 
   .plannerResultChatBubble {
     max-width: 100%;
+  }
+
+  .plannerResultTravelSimpleItem,
+  .plannerResultTravelMiniBox {
+    min-height: auto;
+  }
+
+  .plannerResultDayBadge {
+    width: 100%;
   }
 }
