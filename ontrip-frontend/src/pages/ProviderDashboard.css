@@ -4,6 +4,12 @@
   gap: 18px;
 }
 
+/* 🔥 OUTER WIDTH FIX */
+.providerDashboardPage.container {
+  max-width: 1800px;
+}
+
+/* HEADER */
 .providerDashboardHead h1 {
   margin: 0;
   font-size: 32px;
@@ -18,6 +24,7 @@
   font-weight: 550;
 }
 
+/* MESSAGE */
 .providerDashboardMessage {
   padding: 12px 14px;
   border-radius: 14px;
@@ -27,6 +34,7 @@
   font-weight: 650;
 }
 
+/* EMPTY STATE */
 .providerDashboardEmpty {
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.12);
@@ -37,14 +45,14 @@
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
 }
 
-/* 🔥 MAIN GRID FIX */
+/* 🔥 GRID LAYOUT */
 .providerDashboardGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
 
-/* 🔥 RESPONSIVE */
+/* RESPONSIVE */
 @media (max-width: 1200px) {
   .providerDashboardGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -57,6 +65,7 @@
   }
 }
 
+/* CARD */
 .providerDashboardCard {
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.12);
@@ -65,9 +74,10 @@
   padding: 18px;
   display: grid;
   gap: 14px;
-  height: 100%; /* 🔥 equal height cards */
+  height: 100%;
 }
 
+/* TOP */
 .providerDashboardTop {
   display: flex;
   justify-content: space-between;
@@ -93,6 +103,7 @@
   color: #0369a1;
 }
 
+/* INFO */
 .providerDashboardInfo {
   display: grid;
   gap: 8px;
@@ -100,15 +111,18 @@
   font-weight: 550;
 }
 
+/* 🔥 BUTTON GRID (FIXED SIZE) */
 .providerDashboardActions {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  flex-wrap: wrap;
 }
 
+/* BUTTON */
 .providerDashboardBtn {
-  min-height: 42px;
-  padding: 0 16px;
+  width: 100%;
+  height: 42px;
+  padding: 0;
   border: 1px solid rgba(11, 27, 42, 0.1);
   border-radius: 12px;
   font: inherit;
@@ -117,6 +131,10 @@
   background: #ffffff;
   color: var(--text);
   transition: 0.18s ease;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .providerDashboardBtn:hover {
@@ -128,8 +146,14 @@
   cursor: not-allowed;
 }
 
+/* DANGER BUTTON */
 .providerDashboardBtn.danger {
   background: rgba(255, 98, 98, 0.08);
   color: #b42318;
   border-color: rgba(255, 98, 98, 0.16);
+}
+
+/* OPTIONAL: If only 1 button (cancelled case) */
+.providerDashboardActions:has(.providerDashboardBtn:only-child) {
+  grid-template-columns: 1fr;
 }
