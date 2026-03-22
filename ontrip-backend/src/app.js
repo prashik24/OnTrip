@@ -7,7 +7,7 @@ import providerRoutes from "./routes/providerRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import aiPlannerRoutes from "./routes/aiPlannerRoutes.js";
-
+import savedTripRoutes from "./src/routes/savedTripRoutes.js";
 const app = express();
 
 app.use(
@@ -29,5 +29,6 @@ app.use("/api/providers", providerRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/ai-planner", aiPlannerRoutes);
+app.use("/api/saved-trips", savedTripRoutes);
 
 export default app;
