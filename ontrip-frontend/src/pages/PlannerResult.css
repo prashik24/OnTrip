@@ -35,7 +35,7 @@
 .plannerResultHead h1 {
   margin: 0;
   font-size: 32px;
-  font-weight: 760;
+  font-weight: 660;
   color: var(--text);
   word-break: break-word;
 }
@@ -118,10 +118,17 @@
 
 .plannerResultBlockTitle {
   margin: 0;
-  font-size: 15px;
+  font-size: 25px;
   font-weight: 700;
   color: var(--text);
   word-break: break-word;
+}
+.plannerResultProviderTitle-1{
+  font-size: 15px;
+  font-weight: 620;
+  color: var(--text);
+  
+
 }
 
 .plannerResultMutedBox {
