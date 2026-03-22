@@ -1,0 +1,236 @@
+.savedTripsPage {
+  padding-bottom: 32px;
+}
+
+.savedTripsOuter {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  padding: 20px;
+  display: grid;
+  gap: 18px;
+  box-sizing: border-box;
+}
+
+.savedTripsHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.savedTripsHead h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 760;
+  color: var(--text);
+}
+
+.savedTripsHead p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+  font-weight: 550;
+  max-width: 860px;
+}
+
+.savedTripsMessage {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 98, 98, 0.08);
+  border: 1px solid rgba(255, 98, 98, 0.16);
+  color: #b42318;
+  font-weight: 650;
+}
+
+.savedTripsEmpty {
+  background: rgba(244, 251, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 14px;
+  padding: 18px;
+  color: rgba(11, 27, 42, 0.72);
+  font-weight: 650;
+}
+
+.savedTripsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.savedTripCard {
+  background: #ffffff;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+  box-shadow: 0 8px 20px rgba(10, 22, 35, 0.04);
+}
+
+.savedTripTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.savedTripTitle {
+  font-size: 18px;
+  font-weight: 720;
+  color: var(--text);
+}
+
+.savedTripSub {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 550;
+  line-height: 1.6;
+}
+
+.savedTripBadge {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(0, 184, 241, 0.08);
+  border: 1px solid rgba(0, 184, 241, 0.14);
+  color: #0369a1;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.savedTripMiniGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.savedTripMiniItem {
+  background: rgba(244, 251, 255, 0.94);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+  border: 1px solid rgba(0, 184, 241, 0.1);
+}
+
+.savedTripMiniItem span {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: rgba(15, 23, 42, 0.46);
+}
+
+.savedTripMiniItem strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.savedTripSummary {
+  color: rgba(11, 27, 42, 0.8);
+  font-weight: 550;
+  line-height: 1.7;
+}
+
+.savedTripBestBox {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0, 184, 241, 0.06);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+}
+
+.savedTripBestLabel {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0369a1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.savedTripBestText {
+  color: rgba(11, 27, 42, 0.84);
+  font-weight: 650;
+  line-height: 1.6;
+}
+
+.savedTripBudgetStatus {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.savedTripBudgetStatus.isGood {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.16);
+  color: #15803d;
+}
+
+.savedTripBudgetStatus.isWarn {
+  background: rgba(245, 158, 11, 0.09);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+  color: #b45309;
+}
+
+.savedTripActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.savedTripsPrimaryBtn,
+.savedTripsSecondaryBtn,
+.savedTripsDangerBtn {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.savedTripsPrimaryBtn {
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+}
+
+.savedTripsSecondaryBtn {
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  background: #ffffff;
+  color: var(--text);
+}
+
+.savedTripsDangerBtn {
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.08);
+  color: #b42318;
+}
+
+.savedTripsPrimaryBtn:hover,
+.savedTripsSecondaryBtn:hover,
+.savedTripsDangerBtn:hover {
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+}
+
+@media (max-width: 980px) {
+  .savedTripsGrid,
+  .savedTripMiniGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .savedTripsHead {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
