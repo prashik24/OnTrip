@@ -7,7 +7,8 @@ import providerRoutes from "./routes/providerRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import aiPlannerRoutes from "./routes/aiPlannerRoutes.js";
-import savedTripRoutes from "./src/routes/savedTripRoutes.js";
+import savedTripRoutes from "./routes/savedTripRoutes.js"; // ✅ FIXED
+
 const app = express();
 
 app.use(
