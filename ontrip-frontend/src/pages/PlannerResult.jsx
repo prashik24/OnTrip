@@ -70,56 +70,31 @@ function TravelModeCard({ title, data }) {
   return (
     <div className="plannerResultBlock">
       <div className="plannerResultBlockTitle">{title}</div>
-
       <div className="plannerResultProviderTitle">
         {data.optionName || `${title} option`}
       </div>
 
-      <div className="plannerResultTravelFacts">
-        <div className="plannerResultTravelFact">
+      <div className="plannerResultTravelSimpleGrid">
+        <div className="plannerResultTravelSimpleItem">
           <span>Time</span>
           <strong>{data.estimatedTime || "Not available"}</strong>
         </div>
 
-        <div className="plannerResultTravelFact">
+        <div className="plannerResultTravelSimpleItem">
           <span>Price</span>
           <strong>{data.estimatedPrice?.perPerson || "Not available"}</strong>
         </div>
 
-        <div className="plannerResultTravelFact">
+        <div className="plannerResultTravelSimpleItem">
           <span>Total</span>
           <strong>{data.estimatedPrice?.total || "Not available"}</strong>
         </div>
 
-        <div className="plannerResultTravelFact">
+        <div className="plannerResultTravelSimpleItem">
           <span>Availability</span>
           <strong>{data.availabilityName || "Not available"}</strong>
         </div>
       </div>
-
-      <div className="plannerResultTravelMiniGrid">
-        <div className="plannerResultTravelMiniBox">
-          <div className="plannerResultMiniLabel">Best for</div>
-          <div>{data.bestFor || "General travel"}</div>
-        </div>
-
-        <div className="plannerResultTravelMiniBox">
-          <div className="plannerResultMiniLabel">Budget fit</div>
-          <div>{data.budgetFit || "Depends on route"}</div>
-        </div>
-      </div>
-
-      <div className="plannerResultMutedBox">{data.details}</div>
-
-      {(data.points || []).length ? (
-        <ul className="plannerResultList">
-          {data.points.map((point, idx) => (
-            <li key={idx}>{point}</li>
-          ))}
-        </ul>
-      ) : null}
-
-      <div className="plannerResultTravelNote">{data.note}</div>
     </div>
   );
 }
@@ -267,6 +242,12 @@ export default function PlannerResult() {
               <div className="plannerResultMutedBox">{result.plan.destinationWhyFamous}</div>
             </div>
 
+            <div className="plannerResultThreeCol">
+              <TravelModeCard title="Airplane" data={result.plan.travelModes?.airplane} />
+              <TravelModeCard title="Railway" data={result.plan.travelModes?.railway} />
+              <TravelModeCard title="Road" data={result.plan.travelModes?.road} />
+            </div>
+
             {result.plan.travelModes?.bestOption ? (
               <div className="plannerResultBlock plannerResultBestTravelBlock">
                 <div className="plannerResultBlockTitle">Best Travel Option for Your Budget</div>
@@ -286,15 +267,15 @@ export default function PlannerResult() {
                   </div>
                 </div>
 
-                <div className="plannerResultTravelFacts">
-                  <div className="plannerResultTravelFact">
+                <div className="plannerResultTravelSimpleGrid">
+                  <div className="plannerResultTravelSimpleItem">
                     <span>Time</span>
                     <strong>
                       {result.plan.travelModes.bestOption.estimatedTime || "Not available"}
                     </strong>
                   </div>
 
-                  <div className="plannerResultTravelFact">
+                  <div className="plannerResultTravelSimpleItem">
                     <span>Total</span>
                     <strong>
                       {result.plan.travelModes.bestOption.estimatedPrice?.total ||
@@ -309,18 +290,87 @@ export default function PlannerResult() {
               </div>
             ) : null}
 
-            <div className="plannerResultThreeCol">
-              <TravelModeCard title="Airplane" data={result.plan.travelModes?.airplane} />
-              <TravelModeCard title="Railway" data={result.plan.travelModes?.railway} />
-              <TravelModeCard title="Road" data={result.plan.travelModes?.road} />
-            </div>
-
             {result?.mapData ? (
               <div className="plannerResultBlock">
                 <div className="plannerResultBlockTitle">Route Map</div>
                 <PlannerMap mapData={result.mapData} />
               </div>
             ) : null}
+
+            <div className="plannerResultBlock">
+              <div className="plannerResultBlockTitle">Day-wise Fast Route Plan</div>
+
+              {result.plan.itinerary?.length ? (
+                <div className="plannerResultItineraryGrid">
+                  {result.plan.itinerary.map((dayItem, index) => (
+                    <div className="plannerResultItineraryCard" key={index}>
+                      <div className="plannerResultItineraryHeader">
+                        <div>
+                          <div className="plannerResultProviderTitle">
+                            Day {dayItem.day}
+                          </div>
+                          <div className="plannerResultProviderMeta">{dayItem.title}</div>
+                        </div>
+
+                        <div className="plannerResultDayBadge">
+                          {dayItem.totalDistanceText || "0 km"}
+                        </div>
+                      </div>
+
+                      <div className="plannerResultTravelMiniGrid">
+                        <div className="plannerResultTravelMiniBox">
+                          <div className="plannerResultMiniLabel">Travel Time</div>
+                          <div>{dayItem.totalTravelTimeText || "Not available"}</div>
+                        </div>
+
+                        <div className="plannerResultTravelMiniBox">
+                          <div className="plannerResultMiniLabel">Route Order</div>
+                          <div>{dayItem.routeOrderText || "Not available"}</div>
+                        </div>
+                      </div>
+
+                      {dayItem.optimizationNote ? (
+                        <div className="plannerResultMutedBox">
+                          {dayItem.optimizationNote}
+                        </div>
+                      ) : null}
+
+                      {dayItem.placeSequence?.length ? (
+                        <div className="plannerResultSequenceList">
+                          {dayItem.placeSequence.map((place, idx) => (
+                            <div className="plannerResultSequenceItem" key={idx}>
+                              <div className="plannerResultSequenceCount">
+                                {place.order || idx + 1}
+                              </div>
+                              <div className="plannerResultSequenceContent">
+                                <div className="plannerResultSequenceTitle">
+                                  {place.name}
+                                </div>
+                                <div className="plannerResultSequenceMeta">
+                                  Explore: {place.exploreTimeText}
+                                </div>
+                                <div className="plannerResultSequenceMeta">
+                                  From previous: {place.distanceFromPreviousText} •{" "}
+                                  {place.durationFromPreviousText}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <ul className="plannerResultList">
+                          {(dayItem.items || []).map((item, idx) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="plannerResultMutedBox">No day-wise route available.</div>
+              )}
+            </div>
 
             <div className="plannerResultBlock">
               <div className="plannerResultBlockTitle">Places to Explore</div>
@@ -371,7 +421,39 @@ export default function PlannerResult() {
             </div>
 
             <div className="plannerResultBlock">
-              <div className="plannerResultBlockTitle">Budget breakdown</div>
+              <div className="plannerResultBlockTitle">Full Budget Breakdown</div>
+
+              <div className="plannerResultBudgetStatus">
+                <div className="plannerResultBudgetTop">
+                  <div className="plannerResultBudgetPill">
+                    Given Budget: {money(result.plan.budgetStatus?.totalBudget)}
+                  </div>
+                  <div className="plannerResultBudgetPill isSoft">
+                    Estimated Total: {money(result.plan.budgetStatus?.estimatedTotal)}
+                  </div>
+                </div>
+
+                <div
+                  className={`plannerResultBudgetSummary ${
+                    result.plan.budgetStatus?.isSufficient ? "isGood" : "isWarn"
+                  }`}
+                >
+                  {result.plan.budgetStatus?.statusText}
+                </div>
+
+                {!result.plan.budgetStatus?.isSufficient ? (
+                  <div className="plannerResultBudgetExtra">
+                    Extra required:{" "}
+                    <strong>{money(result.plan.budgetStatus?.extraRequired)}</strong>
+                  </div>
+                ) : (
+                  <div className="plannerResultBudgetExtra">
+                    Remaining after estimate:{" "}
+                    <strong>{money(result.plan.budgetStatus?.savingsLeft)}</strong>
+                  </div>
+                )}
+              </div>
+
               <ul className="plannerResultList">
                 {(result.plan.budgetBreakdown || []).map((item, idx) => (
                   <li key={idx}>
