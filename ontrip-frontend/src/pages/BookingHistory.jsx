@@ -64,21 +64,26 @@ export default function BookingHistory() {
                     <div>
                       <span>Booking Ref:</span> {booking.bookingRef}
                     </div>
+
                     <div>
                       <span>Date:</span>{" "}
                       {booking.bookingDate
                         ? new Date(booking.bookingDate).toLocaleDateString()
                         : "-"}
                     </div>
+
                     <div>
                       <span>Payment:</span> {booking.paymentStatus}
                     </div>
+
                     <div>
                       <span>Status:</span> {booking.bookingStatus}
                     </div>
+
                     <div>
                       <span>People:</span> {booking.peopleCount}
                     </div>
+
                     <div>
                       <span>Days:</span> {booking.days}
                     </div>
@@ -104,7 +109,8 @@ export default function BookingHistory() {
 
                   {isCancelled ? (
                     <div className="bookingHistoryAlert bookingHistoryAlertSuccess">
-                      Your provider cancelled this service. They will refund your money soon.
+                      Your provider cancelled this service. They will refund your
+                      money soon.
                     </div>
                   ) : null}
                 </div>
@@ -119,7 +125,9 @@ export default function BookingHistory() {
 
                   <button
                     className="bookingHistoryBtn"
-                    onClick={() => navigate(`/profile/bookings/${booking._id}/invoice`)}
+                    onClick={() =>
+                      navigate(`/profile/bookings/${booking._id}/invoice`)
+                    }
                   >
                     View Invoice
                   </button>
@@ -138,9 +146,7 @@ export default function BookingHistory() {
                       {booking.existingReview ? "Edit Review" : "Write Review"}
                     </button>
                   ) : (
-                    <button className="bookingHistoryBtn bookingHistoryBtnMuted" disabled>
-                      {isCancelled ? "Review Unavailable" : "No Review"}
-                    </button>
+                    <div className="bookingHistoryActionPlaceholder" />
                   )}
                 </div>
               </div>
