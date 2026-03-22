@@ -71,7 +71,7 @@ function TravelModeCard({ title, data }) {
   return (
     <div className="plannerResultBlock plannerResultTravelModeCard">
       <div className="plannerResultBlockTitle">{title}</div>
-      <div className="plannerResultProviderTitle">
+      <div className="plannerResultProviderTitle plannerResultProviderTitle-1">
         {data.optionName || `${title} option`}
       </div>
 

@@ -1,4 +1,4 @@
-.profilePage {
+
   .profilePage {
   padding-bottom: 32px;
   max-width: 1800px;
@@ -9,7 +9,6 @@
   box-sizing: border-box;
 }
   
-}
 
 .profileCard {
   width: 100%;
