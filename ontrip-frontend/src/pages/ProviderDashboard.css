@@ -37,9 +37,24 @@
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
 }
 
+/* 🔥 MAIN GRID FIX */
 .providerDashboardGrid {
   display: grid;
-  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+/* 🔥 RESPONSIVE */
+@media (max-width: 1200px) {
+  .providerDashboardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .providerDashboardGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .providerDashboardCard {
@@ -50,6 +65,7 @@
   padding: 18px;
   display: grid;
   gap: 14px;
+  height: 100%; /* 🔥 equal height cards */
 }
 
 .providerDashboardTop {
