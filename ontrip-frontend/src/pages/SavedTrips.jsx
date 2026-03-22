@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { downloadTripPdfFromElement } from "../utils/tripPdf";
+import LoadingSpinner from "../components/LoadingSpinner";
 import "./SavedTrips.css";
 
 function money(value) {
@@ -19,6 +20,7 @@ export default function SavedTrips() {
   useEffect(() => {
     async function loadSavedTrips() {
       try {
+        setLoading(true);
         const data = await apiFetch("/api/saved-trips");
         setSavedTrips(data.trips || []);
       } catch (err) {
@@ -77,142 +79,134 @@ export default function SavedTrips() {
   }
 
   if (loading) {
-    return (
-      <div className="container savedTripsPage">
-        <div className="savedTripsOuter">
-          <div className="savedTripsEmpty">Loading saved trips...</div>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner text="Loading saved trips..." />;
   }
 
   return (
-    <div className="container savedTripsPage">
-      <div className="savedTripsOuter">
-        <div className="savedTripsHead">
-          <div>
-            <h1>Saved Trips</h1>
-            <p>Open, download, or delete your saved AI trip plans.</p>
-          </div>
-
-          <button
-            className="savedTripsSecondaryBtn"
-            onClick={() => navigate("/profile")}
-          >
-            Back to Profile
-          </button>
+    <div className="savedTripsPage container">
+      <div className="savedTripsHead">
+        <div>
+          <h1>Saved Trips</h1>
+          <p>Open, download, or delete your saved AI trip plans.</p>
         </div>
 
-        {msg ? <div className="savedTripsMessage">{msg}</div> : null}
+        <button
+          className="savedTripsSecondaryBtn"
+          onClick={() => navigate("/profile")}
+        >
+          Back to Profile
+        </button>
+      </div>
 
-        {!savedTrips.length ? (
-          <div className="savedTripsEmpty">
-            No saved trips found. Save a trip from planner result page first.
-          </div>
-        ) : (
-          <div className="savedTripsGrid">
-            {savedTrips.map((trip) => {
-              const plan = trip.tripData?.plan || {};
-              const budgetStatus = plan?.budgetStatus || {};
+      {msg ? <div className="savedTripsMessage">{msg}</div> : null}
 
-              return (
-                <div
-                  key={trip._id}
-                  className="savedTripCard"
-                  ref={(el) => {
-                    cardRefs.current[trip._id] = el;
-                  }}
-                >
-                  <div className="savedTripTop">
-                    <div>
-                      <div className="savedTripTitle">
-                        {trip.title || `${trip.destination} Trip`}
-                      </div>
-                      <div className="savedTripSub">
-                        {trip.startCity ? `${trip.startCity} → ` : ""}
-                        {trip.destination}
-                      </div>
+      {!savedTrips.length ? (
+        <div className="savedTripsEmpty">
+          No saved trips found. Save a trip from planner result page first.
+        </div>
+      ) : (
+        <div className="savedTripsGrid">
+          {savedTrips.map((trip) => {
+            const plan = trip.tripData?.plan || {};
+            const budgetStatus = plan?.budgetStatus || {};
+
+            return (
+              <div
+                key={trip._id}
+                className="savedTripCard"
+                ref={(el) => {
+                  cardRefs.current[trip._id] = el;
+                }}
+              >
+                <div className="savedTripTop">
+                  <div>
+                    <div className="savedTripTitle">
+                      {trip.title || `${trip.destination} Trip`}
                     </div>
-
-                    <div className="savedTripBadge">{trip.days} Days</div>
-                  </div>
-
-                  <div className="savedTripMiniGrid">
-                    <div className="savedTripMiniItem">
-                      <span>Budget</span>
-                      <strong>{money(trip.budget)}</strong>
-                    </div>
-
-                    <div className="savedTripMiniItem">
-                      <span>People</span>
-                      <strong>{trip.peopleCount}</strong>
-                    </div>
-
-                    <div className="savedTripMiniItem">
-                      <span>Style</span>
-                      <strong>{trip.travelStyle}</strong>
-                    </div>
-
-                    <div className="savedTripMiniItem">
-                      <span>Saved On</span>
-                      <strong>
-                        {new Date(trip.createdAt).toLocaleDateString("en-IN")}
-                      </strong>
+                    <div className="savedTripSub">
+                      {trip.startCity ? `${trip.startCity} → ` : ""}
+                      {trip.destination}
                     </div>
                   </div>
 
-                  <div className="savedTripSummary">
-                    {plan.summary || "Saved trip plan"}
+                  <div className="savedTripBadge">{trip.days} Days</div>
+                </div>
+
+                <div className="savedTripMiniGrid">
+                  <div className="savedTripMiniItem">
+                    <span>Budget</span>
+                    <strong>{money(trip.budget)}</strong>
                   </div>
 
-                  {plan?.travelModes?.bestOption ? (
-                    <div className="savedTripBestBox">
-                      <div className="savedTripBestLabel">Best Option</div>
-                      <div className="savedTripBestText">
-                        {plan.travelModes.bestOption.title} •{" "}
-                        {plan.travelModes.bestOption.estimatedTime || "Time not available"}
-                      </div>
-                    </div>
-                  ) : null}
+                  <div className="savedTripMiniItem">
+                    <span>People</span>
+                    <strong>{trip.peopleCount}</strong>
+                  </div>
 
-                  {budgetStatus?.statusText ? (
-                    <div
-                      className={`savedTripBudgetStatus ${
-                        budgetStatus.isSufficient ? "isGood" : "isWarn"
-                      }`}
-                    >
-                      {budgetStatus.statusText}
-                    </div>
-                  ) : null}
+                  <div className="savedTripMiniItem">
+                    <span>Style</span>
+                    <strong>{trip.travelStyle}</strong>
+                  </div>
 
-                  <div className="savedTripActions">
-                    <button
-                      className="savedTripsPrimaryBtn"
-                      onClick={() => openTrip(trip)}
-                    >
-                      Open Trip
-                    </button>
-
-                    <button
-                      className="savedTripsSecondaryBtn"
-                      onClick={() => handleDownloadTrip(trip)}
-                    >
-                      Download PDF
-                    </button>
-
-                    <button
-                      className="savedTripsDangerBtn"
-                      onClick={() => handleDeleteTrip(trip._id)}
-                    >
-                      Delete
-                    </button>
+                  <div className="savedTripMiniItem">
+                    <span>Saved On</span>
+                    <strong>
+                      {new Date(trip.createdAt).toLocaleDateString("en-IN")}
+                    </strong>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+
+                <div className="savedTripSummary">
+                  {plan.summary || "Saved trip plan"}
+                </div>
+
+                {plan?.travelModes?.bestOption ? (
+                  <div className="savedTripBestBox">
+                    <div className="savedTripBestLabel">Best Option</div>
+                    <div className="savedTripBestText">
+                      {plan.travelModes.bestOption.title} •{" "}
+                      {plan.travelModes.bestOption.estimatedTime || "Time not available"}
+                    </div>
+                  </div>
+                ) : null}
+
+                {budgetStatus?.statusText ? (
+                  <div
+                    className={`savedTripBudgetStatus ${
+                      budgetStatus.isSufficient ? "isGood" : "isWarn"
+                    }`}
+                  >
+                    {budgetStatus.statusText}
+                  </div>
+                ) : null}
+
+                <div className="savedTripActions">
+                  <button
+                    className="savedTripsPrimaryBtn"
+                    onClick={() => openTrip(trip)}
+                  >
+                    Open Trip
+                  </button>
+
+                  <button
+                    className="savedTripsSecondaryBtn"
+                    onClick={() => handleDownloadTrip(trip)}
+                  >
+                    Download PDF
+                  </button>
+
+                  <button
+                    className="savedTripsDangerBtn"
+                    onClick={() => handleDeleteTrip(trip._id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
