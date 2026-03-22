@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
@@ -27,6 +27,7 @@ export default function BookingReviewPage() {
     comment: "",
     image: null,
     existingImages: [],
+    removeExistingImages: false,
   });
 
   useEffect(() => {
@@ -43,8 +44,8 @@ export default function BookingReviewPage() {
       const found = bookingList.find((item) => item._id === bookingId);
 
       if (!found) {
-        setMsg("Booking not found.");
         setBooking(null);
+        setMsg("Booking not found.");
         return;
       }
 
@@ -54,6 +55,7 @@ export default function BookingReviewPage() {
         comment: found.existingReview?.comment || "",
         image: null,
         existingImages: found.existingReview?.images || [],
+        removeExistingImages: false,
       });
     } catch (err) {
       setMsg(err.message || "Failed to load booking.");
@@ -68,6 +70,48 @@ export default function BookingReviewPage() {
       [key]: value,
     }));
   }
+
+  function removeSelectedImage() {
+    setForm((prev) => ({
+      ...prev,
+      image: null,
+    }));
+  }
+
+  function removeExistingImage(indexToRemove) {
+    setForm((prev) => {
+      const nextImages = (prev.existingImages || []).filter(
+        (_, index) => index !== indexToRemove
+      );
+
+      return {
+        ...prev,
+        existingImages: nextImages,
+        removeExistingImages: nextImages.length === 0,
+      };
+    });
+  }
+
+  function clearAllExistingImages() {
+    setForm((prev) => ({
+      ...prev,
+      existingImages: [],
+      removeExistingImages: true,
+    }));
+  }
+
+  const selectedPreviewUrl = useMemo(() => {
+    if (!form.image) return "";
+    return URL.createObjectURL(form.image);
+  }, [form.image]);
+
+  useEffect(() => {
+    return () => {
+      if (selectedPreviewUrl) {
+        URL.revokeObjectURL(selectedPreviewUrl);
+      }
+    };
+  }, [selectedPreviewUrl]);
 
   async function submitReview() {
     if (!booking) return;
@@ -85,15 +129,21 @@ export default function BookingReviewPage() {
         fd.append("reviewImage", form.image);
       }
 
+      fd.append("removeExistingImages", String(form.removeExistingImages));
+      fd.append(
+        "keptExistingImageUrls",
+        JSON.stringify((form.existingImages || []).map((img) => img.url))
+      );
+
       await apiFetch("/api/reviews/booking", {
         method: "POST",
         body: fd,
       });
 
-      setMsg("Review saved successfully.");
       await loadBooking();
+      setMsg("Review submitted successfully.");
     } catch (err) {
-      setMsg(err.message || "Failed to save review.");
+      setMsg(err.message || "Failed to submit review.");
     } finally {
       setSubmitting(false);
     }
@@ -106,7 +156,7 @@ export default function BookingReviewPage() {
   if (!booking) {
     return (
       <div className="bookingReviewPage container">
-        <div className="bookingReviewMessage">{msg || "Booking not found."}</div>
+        {msg && <div className="bookingReviewMessage">{msg}</div>}
         <button
           className="bookingReviewBackBtn"
           onClick={() => navigate("/profile/bookings")}
@@ -124,7 +174,7 @@ export default function BookingReviewPage() {
       <div className="bookingReviewHead">
         <div>
           <h1>{booking.existingReview ? "Edit Review" : "Write Review"}</h1>
-          <p>Manage your review while keeping the previous review image and details visible.</p>
+          <p>Update your review and manage review image easily.</p>
         </div>
 
         <button
@@ -195,19 +245,6 @@ export default function BookingReviewPage() {
                 Your provider cancelled this service. They will refund your money soon.
               </div>
             ) : null}
-
-            {form.existingImages?.length > 0 && (
-              <div className="bookingReviewExistingWrap">
-                <label>Previous Review Image</label>
-                <div className="bookingReviewImageGrid">
-                  {form.existingImages.map((img, index) => (
-                    <div className="bookingReviewImageItem" key={index}>
-                      <img src={img.url} alt="review" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </aside>
 
@@ -242,8 +279,8 @@ export default function BookingReviewPage() {
               <div className="bookingReviewField">
                 <label>
                   {form.existingImages?.length > 0
-                    ? "Replace Image (optional)"
-                    : "Image (optional)"}
+                    ? "Choose File (replace or add)"
+                    : "Choose File"}
                 </label>
                 <input
                   type="file"
@@ -252,13 +289,69 @@ export default function BookingReviewPage() {
                 />
               </div>
 
+              {/* selected new image preview */}
+              {selectedPreviewUrl ? (
+                <div className="bookingReviewField">
+                  <label>Selected Image</label>
+                  <div className="bookingReviewPreviewBox">
+                    <div className="bookingReviewImageGrid bookingReviewImageGridSingle">
+                      <div className="bookingReviewImageItem">
+                        <img src={selectedPreviewUrl} alt="selected review" />
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="bookingReviewRemoveBtn"
+                      onClick={removeSelectedImage}
+                    >
+                      Remove Selected Image
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+
+              {/* previous image under choose file */}
+              {form.existingImages?.length > 0 ? (
+                <div className="bookingReviewField">
+                  <div className="bookingReviewPreviousHead">
+                    <label>Previous Review Image</label>
+
+                    <button
+                      type="button"
+                      className="bookingReviewRemoveTextBtn"
+                      onClick={clearAllExistingImages}
+                    >
+                      Remove All Previous Images
+                    </button>
+                  </div>
+
+                  <div className="bookingReviewImageGrid">
+                    {form.existingImages.map((img, index) => (
+                      <div className="bookingReviewImageCard" key={index}>
+                        <div className="bookingReviewImageItem">
+                          <img src={img.url} alt="review" />
+                        </div>
+                        <button
+                          type="button"
+                          className="bookingReviewRemoveBtn"
+                          onClick={() => removeExistingImage(index)}
+                        >
+                          Remove Image
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
               <div className="bookingReviewActions">
                 <button
                   className="bookingReviewSubmitBtn"
                   onClick={submitReview}
                   disabled={submitting}
                 >
-                  {submitting ? "Saving..." : "Submit Review"}
+                  {submitting ? "Submitting..." : "Submit Review"}
                 </button>
 
                 <button
