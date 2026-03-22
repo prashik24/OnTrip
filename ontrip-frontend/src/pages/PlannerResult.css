@@ -35,7 +35,7 @@
 .plannerResultHead h1 {
   margin: 0;
   font-size: 32px;
-  font-weight: 760;
+  font-weight: 660;
   color: var(--text);
   word-break: break-word;
 }
@@ -45,7 +45,7 @@
   color: var(--muted);
   line-height: 1.65;
   font-weight: 550;
-  max-width: 760px;
+  max-width: 860px;
   word-break: break-word;
 }
 
@@ -68,6 +68,17 @@
   flex-wrap: wrap;
   min-width: 0;
 }
+
+.plannerResultProviderTitle-1{
+      font-size: 15px;
+  font-weight: 620;
+  color: var(--text);
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere; 
+
+}
+
 
 .plannerResultMessage {
   padding: 12px 14px;
@@ -98,11 +109,12 @@
 }
 
 .plannerResultTravelModeCard {
+  min-width: 0;
   height: 100%;
   display: grid;
+  grid-template-rows: auto auto 1fr;
   gap: 12px;
   align-content: start;
-  grid-template-rows: auto auto 1fr;
 }
 
 .plannerResultBlockTitle {
@@ -144,6 +156,7 @@
 
 .plannerResultThreeCol > * {
   min-width: 0;
+  height: 100%;
 }
 
 .plannerResultEmpty {
@@ -232,15 +245,7 @@
   word-break: break-word;
   overflow-wrap: anywhere;
 }
-.plannerResultProviderTitle-1{
-      font-size: 15px;
-  font-weight: 620;
-  color: var(--text);
-  min-width: 0;
-  word-break: break-word;
-  overflow-wrap: anywhere; 
 
-}
 .plannerResultProviderMeta {
   color: var(--muted);
   font-size: 14px;
@@ -455,7 +460,7 @@
   word-break: break-word;
 }
 
-/* SAME INNER BOX ALIGNMENT FOR AIRPLANE / RAILWAY / ROAD */
+/* IMPORTANT: SAME SIZE + SAME ALIGNMENT IN ALL 3 CARDS */
 .plannerResultTravelSimpleGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -465,17 +470,22 @@
   grid-auto-rows: 1fr;
 }
 
+.plannerResultTravelSimpleGrid > * {
+  min-width: 0;
+  height: 100%;
+}
+
 .plannerResultTravelSimpleItem {
   min-width: 0;
   height: 100%;
-  min-height: 185px;
+  min-height: 168px;
   background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 14px;
   padding: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  align-items: start;
   gap: 10px;
   box-sizing: border-box;
   overflow: hidden;
@@ -491,21 +501,26 @@
 }
 
 .plannerResultTravelSimpleItem strong {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text);
-  line-height: 1.5;
+  line-height: 1.45;
   word-break: break-word;
   overflow-wrap: anywhere;
   white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* BLUE BOX SHOULD WRAP, NOT OVERFLOW */
+/* BLUE BOX WRAP FIX */
 .plannerResultTravelMiniGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   min-width: 0;
+  align-items: stretch;
 }
 
 .plannerResultTravelMiniBox {
