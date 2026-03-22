@@ -13,11 +13,6 @@ const YOUR_SITE_NAME = process.env.YOUR_SITE_NAME || "OnTrip AI Planner";
 
 const GEMINI_MODEL = "gemini-2.5-flash";
 
-/**
- * Put free or low-cost fallback models here.
- * OpenRouter supports model fallback routing with arrays,
- * but here we also do explicit code-level fallback for clarity.
- */
 const OPENROUTER_MODELS = [
   "google/gemini-2.0-flash-exp:free",
   "meta-llama/llama-3.3-70b-instruct:free",
@@ -44,17 +39,6 @@ async function fetchJson(url, options = {}) {
     throw new Error(`Request failed ${response.status}: ${text}`);
   }
   return response.json();
-}
-
-function isQuotaOrRateError(error) {
-  const text = String(error?.message || "").toLowerCase();
-  return (
-    text.includes("429") ||
-    text.includes("quota") ||
-    text.includes("resource_exhausted") ||
-    text.includes("rate limit") ||
-    text.includes("too many requests")
-  );
 }
 
 function extractJson(text, fallback = null) {
@@ -173,11 +157,6 @@ async function generateWithOpenRouterJson(prompt) {
   return parsed;
 }
 
-/**
- * Main AI wrapper:
- * 1) Gemini
- * 2) OpenRouter fallback
- */
 async function generateJsonWithFallback(prompt, localFallback = null) {
   try {
     return await generateWithGeminiJson(prompt);
@@ -234,9 +213,6 @@ async function geocodeLocation(query) {
   };
 }
 
-/**
- * OpenWeather free endpoints only
- */
 async function getWeather(lat, lon) {
   if (!OPENWEATHER_API_KEY || lat == null || lon == null) return null;
 
@@ -394,7 +370,6 @@ function optimizePlaceOrder(startPoint, places) {
 
   const remaining = [...places];
   const ordered = [];
-
   let current = startPoint || remaining[0];
 
   while (remaining.length) {
@@ -531,13 +506,16 @@ function getBudgetTier(totalBudget, peopleCount) {
 function buildModePriceRange(totalBudget, peopleCount, type) {
   const total = Math.max(1000, Number(totalBudget || 0));
   const pax = Math.max(1, Number(peopleCount || 1));
-
   const perPersonTotal = total / pax;
 
   if (type === "airplane") {
     const low = Math.max(2500, Math.round(perPersonTotal * 0.28));
     const high = Math.max(low + 1500, Math.round(perPersonTotal * 0.5));
     return {
+      perPersonMin: low,
+      perPersonMax: high,
+      totalMin: low * pax,
+      totalMax: high * pax,
       perPerson: `₹${low.toLocaleString("en-IN")} - ₹${high.toLocaleString("en-IN")} per person`,
       total: `₹${(low * pax).toLocaleString("en-IN")} - ₹${(high * pax).toLocaleString("en-IN")} total`,
     };
@@ -547,6 +525,10 @@ function buildModePriceRange(totalBudget, peopleCount, type) {
     const low = Math.max(400, Math.round(perPersonTotal * 0.08));
     const high = Math.max(low + 400, Math.round(perPersonTotal * 0.18));
     return {
+      perPersonMin: low,
+      perPersonMax: high,
+      totalMin: low * pax,
+      totalMax: high * pax,
       perPerson: `₹${low.toLocaleString("en-IN")} - ₹${high.toLocaleString("en-IN")} per person`,
       total: `₹${(low * pax).toLocaleString("en-IN")} - ₹${(high * pax).toLocaleString("en-IN")} total`,
     };
@@ -555,6 +537,10 @@ function buildModePriceRange(totalBudget, peopleCount, type) {
   const low = Math.max(800, Math.round(perPersonTotal * 0.12));
   const high = Math.max(low + 700, Math.round(perPersonTotal * 0.24));
   return {
+    perPersonMin: low,
+    perPersonMax: high,
+    totalMin: low * pax,
+    totalMax: high * pax,
     perPerson: `₹${low.toLocaleString("en-IN")} - ₹${high.toLocaleString("en-IN")} per person`,
     total: `₹${(low * pax).toLocaleString("en-IN")} - ₹${(high * pax).toLocaleString("en-IN")} total`,
   };
@@ -573,7 +559,7 @@ function localTravelModesFallback(startCity, destination, budget, peopleCount, t
       optionName: `${startCity || "Nearest city"} to ${destination} flight`,
       estimatedTime: "Fastest for long-distance travel",
       estimatedPrice: airplanePrice,
-      availabilityName: "Nearest airport flight route",
+      availabilityName: "Likely via nearest airport route",
       bestFor: "Fast travel and reduced fatigue",
       budgetFit:
         budgetTier === "comfort" || budgetTier === "luxury"
@@ -582,20 +568,13 @@ function localTravelModesFallback(startCity, destination, budget, peopleCount, t
       details:
         "Use nearest airport, then take local cab or transfer from airport to hotel.",
       note: "Estimated guidance, not a live flight schedule.",
-      points: [
-        `Likely route: ${startCity || "Nearest city"} → ${destination} via nearest airport`,
-        "Usually the fastest option",
-        `Estimated fare: ${airplanePrice.perPerson}`,
-        `Estimated total: ${airplanePrice.total}`,
-        "Best when time matters more than cost",
-      ],
     },
     railway: {
       title: "Railway",
       optionName: `${startCity || "Nearest city"} to ${destination} train route`,
       estimatedTime: "Usually moderate travel time",
       estimatedPrice: railwayPrice,
-      availabilityName: "Direct or connecting train availability likely",
+      availabilityName: "Direct or connecting train likely",
       bestFor: "Balanced cost and comfort",
       budgetFit:
         budgetTier === "budget" || budgetTier === "balanced"
@@ -604,13 +583,6 @@ function localTravelModesFallback(startCity, destination, budget, peopleCount, t
       details:
         "Check express, superfast, or overnight trains for better comfort and practical timing.",
       note: "Estimated guidance, not a live railway timetable.",
-      points: [
-        `Likely route: ${startCity || "Nearest city"} → ${destination} by train`,
-        "Good mix of price and comfort",
-        `Estimated fare: ${railwayPrice.perPerson}`,
-        `Estimated total: ${railwayPrice.total}`,
-        "Useful for medium and long routes with manageable budget",
-      ],
     },
     road: {
       title: "Road",
@@ -626,13 +598,6 @@ function localTravelModesFallback(startCity, destination, budget, peopleCount, t
       details:
         "Useful when rail or flight access is weak, or when you want flexible stops on the way.",
       note: "Estimated guidance, not a live bus timetable.",
-      points: [
-        `Likely route: ${startCity || "Nearest city"} → ${destination} by road`,
-        "Best for flexible departures and local stopovers",
-        `Estimated fare: ${roadPrice.perPerson}`,
-        `Estimated total: ${roadPrice.total}`,
-        "Travel time can increase because of traffic",
-      ],
     },
   };
 }
@@ -669,6 +634,8 @@ function chooseBestTravelMode({ travelModes, budget, peopleCount, travelStyle })
     estimatedPrice: mode?.estimatedPrice || {
       perPerson: "",
       total: "",
+      totalMin: 0,
+      totalMax: 0,
     },
     reason,
   };
@@ -694,7 +661,7 @@ Travel style: ${travelStyle}
 
 I need practical but non-live travel suggestions.
 Do NOT pretend these are live schedules.
-Give likely route names, approximate times, rough price ranges, budget fit, and likely availability.
+Give likely route names, approximate times, rough price ranges, and likely availability.
 
 Format:
 {
@@ -703,6 +670,10 @@ Format:
     "optionName": "",
     "estimatedTime": "",
     "estimatedPrice": {
+      "perPersonMin": 0,
+      "perPersonMax": 0,
+      "totalMin": 0,
+      "totalMax": 0,
       "perPerson": "",
       "total": ""
     },
@@ -710,14 +681,17 @@ Format:
     "bestFor": "",
     "budgetFit": "",
     "details": "",
-    "note": "Estimated guidance, not a live flight schedule.",
-    "points": ["", "", "", "", ""]
+    "note": "Estimated guidance, not a live flight schedule."
   },
   "railway": {
     "title": "Railway",
     "optionName": "",
     "estimatedTime": "",
     "estimatedPrice": {
+      "perPersonMin": 0,
+      "perPersonMax": 0,
+      "totalMin": 0,
+      "totalMax": 0,
       "perPerson": "",
       "total": ""
     },
@@ -725,14 +699,17 @@ Format:
     "bestFor": "",
     "budgetFit": "",
     "details": "",
-    "note": "Estimated guidance, not a live railway timetable.",
-    "points": ["", "", "", "", ""]
+    "note": "Estimated guidance, not a live railway timetable."
   },
   "road": {
     "title": "Road",
     "optionName": "",
     "estimatedTime": "",
     "estimatedPrice": {
+      "perPersonMin": 0,
+      "perPersonMax": 0,
+      "totalMin": 0,
+      "totalMax": 0,
       "perPerson": "",
       "total": ""
     },
@@ -740,8 +717,7 @@ Format:
     "bestFor": "",
     "budgetFit": "",
     "details": "",
-    "note": "Estimated guidance, not a live bus timetable.",
-    "points": ["", "", "", "", ""]
+    "note": "Estimated guidance, not a live bus timetable."
   }
 }
 `;
@@ -750,6 +726,30 @@ Format:
   const travelModes = {
     ...fallback,
     ...(parsed || {}),
+    airplane: {
+      ...fallback.airplane,
+      ...(parsed?.airplane || {}),
+      estimatedPrice: {
+        ...fallback.airplane.estimatedPrice,
+        ...(parsed?.airplane?.estimatedPrice || {}),
+      },
+    },
+    railway: {
+      ...fallback.railway,
+      ...(parsed?.railway || {}),
+      estimatedPrice: {
+        ...fallback.railway.estimatedPrice,
+        ...(parsed?.railway?.estimatedPrice || {}),
+      },
+    },
+    road: {
+      ...fallback.road,
+      ...(parsed?.road || {}),
+      estimatedPrice: {
+        ...fallback.road.estimatedPrice,
+        ...(parsed?.road?.estimatedPrice || {}),
+      },
+    },
   };
 
   return {
@@ -780,30 +780,116 @@ function buildRouteSummary(startName, orderedPlaces) {
   };
 }
 
-function buildItinerary(days, destination, orderedPlaces) {
+function buildDayWiseRoutePlan(days, destination, orderedPlaces) {
   const totalDays = Math.max(1, Number(days || 1));
-  const placesPerDay = Math.max(1, Math.ceil(orderedPlaces.length / totalDays));
+  const totalPlaces = orderedPlaces.length;
+  const baseCount = Math.floor(totalPlaces / totalDays);
+  const extra = totalPlaces % totalDays;
+
+  let cursor = 0;
 
   return Array.from({ length: totalDays }).map((_, index) => {
-    const dayPlaces = orderedPlaces.slice(
-      index * placesPerDay,
-      index * placesPerDay + placesPerDay
-    );
+    const countForDay = baseCount + (index < extra ? 1 : 0);
+    const dayPlaces = orderedPlaces.slice(cursor, cursor + countForDay);
+    cursor += countForDay;
+
+    let dayDistanceKm = 0;
+    const placeSequence = dayPlaces.map((place, placeIndex) => {
+      const km = placeIndex === 0 ? 0 : num(place.fromPreviousDistanceKm, 0);
+      dayDistanceKm += km;
+
+      return {
+        order: place.order,
+        name: place.name,
+        reason: place.reason,
+        exploreTimeText: place.exploreTimeText,
+        distanceFromPreviousText:
+          placeIndex === 0 ? "Start point" : place.fromPreviousDistanceText,
+        durationFromPreviousText:
+          placeIndex === 0 ? "Start point" : place.fromPreviousDurationText,
+      };
+    });
 
     return {
       day: index + 1,
       title:
         index === 0
-          ? `Arrival and first exploration in ${destination}`
+          ? `Day ${index + 1} fast start in ${destination}`
           : index === totalDays - 1
-          ? `Final sightseeing and relaxed finish in ${destination}`
-          : `Focused sightseeing circuit in ${destination}`,
-      items: dayPlaces.map(
-        (place) =>
-          `${place.name} • explore ${place.exploreTimeText} • from previous stop ${place.fromPreviousDurationText}`
+          ? `Day ${index + 1} final efficient cover in ${destination}`
+          : `Day ${index + 1} reduced-distance sightseeing route`,
+      routeOrderText: placeSequence.map((item) => item.name).join(" → "),
+      totalDistanceText: formatDistance(dayDistanceKm),
+      totalTravelTimeText: formatDurationFromKm(dayDistanceKm),
+      optimizationNote:
+        "Places are grouped in nearby sequence to reduce backtracking and help cover more places faster.",
+      placeSequence,
+      items: placeSequence.map((item) =>
+        item.distanceFromPreviousText === "Start point"
+          ? `${item.name} • explore ${item.exploreTimeText} • start here`
+          : `${item.name} • explore ${item.exploreTimeText} • ${item.distanceFromPreviousText} • ${item.durationFromPreviousText}`
       ),
     };
   });
+}
+
+function buildBudgetAnalysis({
+  budget,
+  peopleCount,
+  days,
+  famousPlaces,
+  travelModes,
+}) {
+  const totalBudget = Math.max(0, Number(budget || 0));
+  const pax = Math.max(1, Number(peopleCount || 1));
+  const totalDays = Math.max(1, Number(days || 1));
+
+  const bestTravelCost = num(
+    travelModes?.bestOption?.estimatedPrice?.totalMin,
+    Math.round(totalBudget * 0.18)
+  );
+
+  const stayCost = Math.round(totalDays * 1800 * Math.max(1, Math.ceil(pax / 2)));
+  const foodCost = Math.round(totalDays * pax * 450);
+  const sightseeingCost = safeArray(famousPlaces).reduce(
+    (sum, item) => sum + num(item?.estimatedCostINR?.entryFee, 0),
+    0
+  );
+  const localTransportCost = safeArray(famousPlaces).reduce(
+    (sum, item) => sum + num(item?.estimatedCostINR?.foodAndLocalTravel, 0),
+    0
+  );
+  const otherCost = Math.round(totalBudget * 0.08);
+
+  const estimatedTotal =
+    bestTravelCost + stayCost + foodCost + sightseeingCost + localTransportCost + otherCost;
+
+  const extraRequired = Math.max(0, estimatedTotal - totalBudget);
+  const savingsLeft = Math.max(0, totalBudget - estimatedTotal);
+
+  return {
+    totalBudget,
+    estimatedTotal,
+    isSufficient: estimatedTotal <= totalBudget,
+    extraRequired,
+    savingsLeft,
+    statusText:
+      estimatedTotal <= totalBudget
+        ? `Your given budget looks sufficient. Estimated savings left: ₹${savingsLeft.toLocaleString(
+            "en-IN"
+          )}.`
+        : `Your given budget may be short. Extra amount required: ₹${extraRequired.toLocaleString(
+            "en-IN"
+          )}.`,
+    breakdown: [
+      { label: "Travel", amount: bestTravelCost },
+      { label: "Stay", amount: stayCost },
+      { label: "Food", amount: foodCost },
+      { label: "Sightseeing", amount: sightseeingCost },
+      { label: "Local Transport", amount: localTransportCost },
+      { label: "Other", amount: otherCost },
+    ],
+  };
 }
 
 function buildFallbackPlan({
@@ -815,6 +901,7 @@ function buildFallbackPlan({
   weather,
   orderedPlaces,
   travelModes,
+  budgetAnalysis,
 }) {
   return {
     title: `${destination} Smart Trip Plan`,
@@ -824,16 +911,18 @@ function buildFallbackPlan({
       ? `Current weather: ${weather.current.description}. Plan outdoor visits accordingly.`
       : `Keep weather flexibility during your sightseeing plan.`,
     travelModes,
-    itinerary: buildItinerary(days, destination, orderedPlaces),
-    budgetBreakdown: [
-      { label: "Stay", amount: Math.round(budget * 0.35) },
-      { label: "Food", amount: Math.round(budget * 0.2) },
-      { label: "Local Transport", amount: Math.round(budget * 0.18) },
-      { label: "Sightseeing", amount: Math.round(budget * 0.17) },
-      { label: "Buffer", amount: Math.round(budget * 0.1) },
-    ],
+    itinerary: buildDayWiseRoutePlan(days, destination, orderedPlaces),
+    budgetBreakdown: budgetAnalysis.breakdown,
+    budgetStatus: {
+      totalBudget: budgetAnalysis.totalBudget,
+      estimatedTotal: budgetAnalysis.estimatedTotal,
+      isSufficient: budgetAnalysis.isSufficient,
+      extraRequired: budgetAnalysis.extraRequired,
+      savingsLeft: budgetAnalysis.savingsLeft,
+      statusText: budgetAnalysis.statusText,
+    },
     transportAdvice:
-      "Follow the shown route order to reduce backtracking. Visit crowded places early and keep nearby stops on the same day.",
+      "Follow the shown day-wise route order to reduce backtracking. Visit crowded places early and keep nearby stops on the same day.",
     tips: [
       "Start early for popular places.",
       "Keep buffer time for traffic and queues.",
@@ -852,6 +941,7 @@ async function generateStructuredTripPlan({
   orderedPlaces,
   travelModes,
   interestFocus,
+  budgetAnalysis,
 }) {
   const fallback = null;
 
@@ -874,6 +964,9 @@ ${JSON.stringify(weather || {}, null, 2)}
 Ordered places:
 ${JSON.stringify(orderedPlaces, null, 2)}
 
+Budget analysis:
+${JSON.stringify(budgetAnalysis, null, 2)}
+
 Format:
 {
   "title": "",
@@ -886,6 +979,10 @@ Format:
       "optionName": "",
       "estimatedTime": "",
       "estimatedPrice": {
+        "perPersonMin": 0,
+        "perPersonMax": 0,
+        "totalMin": 0,
+        "totalMax": 0,
         "perPerson": "",
         "total": ""
       },
@@ -893,14 +990,17 @@ Format:
       "bestFor": "",
       "budgetFit": "",
       "details": "",
-      "note": "",
-      "points": []
+      "note": ""
     },
     "railway": {
       "title": "",
       "optionName": "",
       "estimatedTime": "",
       "estimatedPrice": {
+        "perPersonMin": 0,
+        "perPersonMax": 0,
+        "totalMin": 0,
+        "totalMax": 0,
         "perPerson": "",
         "total": ""
       },
@@ -908,14 +1008,17 @@ Format:
       "bestFor": "",
       "budgetFit": "",
       "details": "",
-      "note": "",
-      "points": []
+      "note": ""
     },
     "road": {
       "title": "",
       "optionName": "",
       "estimatedTime": "",
       "estimatedPrice": {
+        "perPersonMin": 0,
+        "perPersonMax": 0,
+        "totalMin": 0,
+        "totalMax": 0,
         "perPerson": "",
         "total": ""
       },
@@ -923,8 +1026,7 @@ Format:
       "bestFor": "",
       "budgetFit": "",
       "details": "",
-      "note": "",
-      "points": []
+      "note": ""
     },
     "bestOption": {
       "key": "",
@@ -932,14 +1034,53 @@ Format:
       "optionName": "",
       "estimatedTime": "",
       "estimatedPrice": {
+        "perPersonMin": 0,
+        "perPersonMax": 0,
+        "totalMin": 0,
+        "totalMax": 0,
         "perPerson": "",
         "total": ""
       },
       "reason": ""
     }
   },
-  "itinerary": [],
-  "budgetBreakdown": [],
+  "itinerary": [
+    {
+      "day": 1,
+      "title": "",
+      "routeOrderText": "",
+      "totalDistanceText": "",
+      "totalTravelTimeText": "",
+      "optimizationNote": "",
+      "placeSequence": [
+        {
+          "order": 1,
+          "name": "",
+          "reason": "",
+          "exploreTimeText": "",
+          "distanceFromPreviousText": "",
+          "durationFromPreviousText": ""
+        }
+      ],
+      "items": []
+    }
+  ],
+  "budgetBreakdown": [
+    { "label": "Travel", "amount": 0 },
+    { "label": "Stay", "amount": 0 },
+    { "label": "Food", "amount": 0 },
+    { "label": "Sightseeing", "amount": 0 },
+    { "label": "Local Transport", "amount": 0 },
+    { "label": "Other", "amount": 0 }
+  ],
+  "budgetStatus": {
+    "totalBudget": 0,
+    "estimatedTotal": 0,
+    "isSufficient": true,
+    "extraRequired": 0,
+    "savingsLeft": 0,
+    "statusText": ""
+  },
   "transportAdvice": "",
   "tips": []
 }
@@ -947,10 +1088,11 @@ Format:
 Rules:
 - focus strongly on user's selected interests
 - keep route order practical
-- include place explore times naturally
+- create day-wise route sequence to cover places fast and reduce distance
 - do not include a "why this plan" section
-- keep airplane, railway, and road wording clean
-- choose best travel mode according to budget and travel style
+- keep travel mode wording clean
+- budget breakdown must include Travel, Stay, Food, Sightseeing, Local Transport, Other
+- budget status must clearly say whether budget is sufficient or extra is needed
 `;
 
   return await generateJsonWithFallback(prompt, fallback);
@@ -1086,6 +1228,14 @@ export async function buildTripIntelligence({
 
   const routeSummary = buildRouteSummary(startCity || destination, orderedPlaces);
 
+  const budgetAnalysis = buildBudgetAnalysis({
+    budget,
+    peopleCount,
+    days,
+    famousPlaces: orderedPlaces,
+    travelModes,
+  });
+
   const aiPlan = await generateStructuredTripPlan({
     destination,
     days,
@@ -1096,6 +1246,7 @@ export async function buildTripIntelligence({
     orderedPlaces,
     travelModes,
     interestFocus,
+    budgetAnalysis,
   });
 
   const fallback = buildFallbackPlan({
@@ -1107,29 +1258,58 @@ export async function buildTripIntelligence({
     weather,
     orderedPlaces,
     travelModes,
+    budgetAnalysis,
   });
 
   const plan = {
     ...fallback,
     ...(aiPlan || {}),
+    itinerary:
+      safeArray(aiPlan?.itinerary).length > 0
+        ? aiPlan.itinerary
+        : fallback.itinerary,
+    budgetBreakdown:
+      safeArray(aiPlan?.budgetBreakdown).length > 0
+        ? aiPlan.budgetBreakdown
+        : fallback.budgetBreakdown,
+    budgetStatus: {
+      ...fallback.budgetStatus,
+      ...(aiPlan?.budgetStatus || {}),
+    },
     travelModes: {
       ...travelModes,
       ...(aiPlan?.travelModes || {}),
       airplane: {
         ...travelModes.airplane,
         ...(aiPlan?.travelModes?.airplane || {}),
+        estimatedPrice: {
+          ...travelModes.airplane.estimatedPrice,
+          ...(aiPlan?.travelModes?.airplane?.estimatedPrice || {}),
+        },
       },
       railway: {
         ...travelModes.railway,
         ...(aiPlan?.travelModes?.railway || {}),
+        estimatedPrice: {
+          ...travelModes.railway.estimatedPrice,
+          ...(aiPlan?.travelModes?.railway?.estimatedPrice || {}),
+        },
       },
       road: {
         ...travelModes.road,
         ...(aiPlan?.travelModes?.road || {}),
+        estimatedPrice: {
+          ...travelModes.road.estimatedPrice,
+          ...(aiPlan?.travelModes?.road?.estimatedPrice || {}),
+        },
       },
       bestOption: {
         ...travelModes.bestOption,
         ...(aiPlan?.travelModes?.bestOption || {}),
+        estimatedPrice: {
+          ...travelModes.bestOption.estimatedPrice,
+          ...(aiPlan?.travelModes?.bestOption?.estimatedPrice || {}),
+        },
       },
     },
   };
