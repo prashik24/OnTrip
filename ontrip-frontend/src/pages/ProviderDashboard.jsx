@@ -1,25 +1,32 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../lib/api";
+import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDashboard.css";
 
 export default function ProviderDashboard() {
   const [bookings, setBookings] = useState([]);
   const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(true);
   const [loadingId, setLoadingId] = useState("");
   const [cancelReasons, setCancelReasons] = useState({});
 
   async function load() {
     try {
+      setLoading(true);
       const data = await apiFetch("/api/bookings/provider");
-      setBookings(data.bookings || []);
+      const bookingList = data.bookings || [];
+
+      setBookings(bookingList);
 
       const next = {};
-      (data.bookings || []).forEach((booking) => {
+      bookingList.forEach((booking) => {
         next[booking._id] = booking.cancellationReason || "";
       });
       setCancelReasons(next);
     } catch (err) {
-      setMsg(err.message);
+      setMsg(err.message || "Failed to load provider bookings.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -44,10 +51,14 @@ export default function ProviderDashboard() {
       setMsg(response.message || "Status updated successfully.");
       await load();
     } catch (err) {
-      setMsg(err.message);
+      setMsg(err.message || "Failed to update booking status.");
     } finally {
       setLoadingId("");
     }
+  }
+
+  if (loading) {
+    return <LoadingSpinner text="Loading provider dashboard..." />;
   }
 
   return (
@@ -60,9 +71,7 @@ export default function ProviderDashboard() {
       {msg && <div className="providerDashboardMessage">{msg}</div>}
 
       {bookings.length === 0 ? (
-        <div className="providerDashboardEmpty">
-          No customer bookings found yet.
-        </div>
+        <div className="providerDashboardEmpty">No customer bookings found yet.</div>
       ) : (
         <div className="providerDashboardGrid">
           {bookings.map((booking) => {
@@ -80,7 +89,7 @@ export default function ProviderDashboard() {
 
                 <div className="providerDashboardInfo">
                   <div>Email: {booking.user?.email || booking.contactEmail || "-"}</div>
-                  <div>Phone: {booking.contactPhone}</div>
+                  <div>Phone: {booking.contactPhone || "-"}</div>
                   <div>Date: {new Date(booking.bookingDate).toLocaleDateString()}</div>
                   <div>Payment: {booking.paymentStatus}</div>
                   <div>Status: {booking.bookingStatus}</div>
@@ -108,6 +117,7 @@ export default function ProviderDashboard() {
                         font: "inherit",
                         resize: "vertical",
                         outline: "none",
+                        boxSizing: "border-box",
                       }}
                       value={cancelReasons[booking._id] || ""}
                       onChange={(e) =>
@@ -129,21 +139,23 @@ export default function ProviderDashboard() {
                         onClick={() => updateStatus(booking._id, "confirmed")}
                         disabled={loadingId === booking._id}
                       >
-                        Confirm
+                        {loadingId === booking._id ? "Updating..." : "Confirm"}
                       </button>
+
                       <button
                         className="providerDashboardBtn"
                         onClick={() => updateStatus(booking._id, "completed")}
                         disabled={loadingId === booking._id}
                       >
-                        Complete
+                        {loadingId === booking._id ? "Updating..." : "Complete"}
                       </button>
+
                       <button
                         className="providerDashboardBtn danger"
                         onClick={() => updateStatus(booking._id, "cancelled")}
                         disabled={loadingId === booking._id}
                       >
-                        Cancel
+                        {loadingId === booking._id ? "Updating..." : "Cancel"}
                       </button>
                     </>
                   )}
