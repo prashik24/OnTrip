@@ -10,7 +10,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [hasProviderListings, setHasProviderListings] = useState(false);
-  const [savedTripsCount, setSavedTripsCount] = useState(0);
+  const [hasBookings, setHasBookings] = useState(false);
   const [msg, setMsg] = useState({ text: "", type: "" });
 
   const [form, setForm] = useState({
@@ -47,18 +47,18 @@ export default function Profile() {
       }
     }
 
-    async function loadSavedTripsCount() {
+    async function loadBookingStatus() {
       try {
-        const data = await apiFetch("/api/saved-trips");
-        setSavedTripsCount((data.trips || []).length);
+        const data = await apiFetch("/api/bookings/mine");
+        setHasBookings((data.bookings || []).length > 0);
       } catch {
-        setSavedTripsCount(0);
+        setHasBookings(false);
       }
     }
 
     loadMe();
     loadProviderStatus();
-    loadSavedTripsCount();
+    loadBookingStatus();
   }, []);
 
   function update(key, value) {
@@ -216,25 +216,12 @@ export default function Profile() {
             </div>
 
             <div className="profileQuickGrid">
-              <div className="profileQuickCard">
-                <h3>Booking History</h3>
-                <p>Track bookings, payment state, and travel plans.</p>
-                <button className="profileGhostBtn" onClick={() => navigate("/profile/bookings")}>
-                  Open Booking History
-                </button>
-              </div>
-
-              {savedTripsCount > 0 && (
+              {hasBookings && (
                 <div className="profileQuickCard">
-                  <h3>Saved Trips</h3>
-                  <p>
-                    View your saved AI trip plans, open them anytime, or download them later.
-                  </p>
-                  <button
-                    className="profileGhostBtn"
-                    onClick={() => navigate("/profile/saved-trips")}
-                  >
-                    Open Saved Trips
+                  <h3>Booking History</h3>
+                  <p>Track bookings, payment state, and travel plans.</p>
+                  <button className="profileGhostBtn" onClick={() => navigate("/profile/bookings")}>
+                    Open Booking History
                   </button>
                 </div>
               )}
