@@ -45,7 +45,7 @@
   color: var(--muted);
   line-height: 1.65;
   font-weight: 550;
-  max-width: 760px;
+  max-width: 860px;
   word-break: break-word;
 }
 
@@ -99,7 +99,10 @@
 
 .plannerResultTravelModeCard {
   height: 100%;
+  display: grid;
+  gap: 12px;
   align-content: start;
+  grid-template-rows: auto auto 1fr;
 }
 
 .plannerResultBlockTitle {
@@ -444,19 +447,20 @@
   word-break: break-word;
 }
 
-/* ===== EQUAL SIZE FOR TIME / PRICE / TOTAL / AVAILABILITY ===== */
+/* SAME INNER BOX ALIGNMENT FOR AIRPLANE / RAILWAY / ROAD */
 .plannerResultTravelSimpleGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   min-width: 0;
   align-items: stretch;
+  grid-auto-rows: 1fr;
 }
 
 .plannerResultTravelSimpleItem {
   min-width: 0;
-  min-height: 182px;
   height: 100%;
+  min-height: 185px;
   background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 14px;
@@ -485,13 +489,10 @@
   line-height: 1.5;
   word-break: break-word;
   overflow-wrap: anywhere;
-  display: -webkit-box;
-  -webkit-line-clamp: 8;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  white-space: normal;
 }
 
-/* ===== BLUE BOX TEXT SHOULD WRAP TO NEXT LINE ===== */
+/* BLUE BOX SHOULD WRAP, NOT OVERFLOW */
 .plannerResultTravelMiniGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
