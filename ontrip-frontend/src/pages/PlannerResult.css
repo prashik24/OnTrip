@@ -232,13 +232,13 @@
   word-break: break-word;
   overflow-wrap: anywhere;
 }
-plannerResultProviderTitle-1{
+.plannerResultProviderTitle-1{
       font-size: 15px;
   font-weight: 620;
   color: var(--text);
   min-width: 0;
   word-break: break-word;
-  overflow-wrap: anywhere;
+  overflow-wrap: anywhere; 
 
 }
 .plannerResultProviderMeta {
