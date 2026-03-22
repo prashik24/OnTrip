@@ -1,18 +1,19 @@
 .profilePage {
+  .profilePage {
   padding-bottom: 32px;
-}
-
-.profilePage.container {
-  max-width: 1900px;
-}
-
-.profileCard {
-  width: 100%;
   max-width: 1800px;
+  width: 100%;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
 }
+  
+}
+
 .profileCard {
   width: 100%;
-  max-width: 1900px;
+  max-width: 1700px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 18px;
