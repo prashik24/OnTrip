@@ -1,7 +1,7 @@
 
   .profilePage {
   padding-bottom: 32px;
-  max-width: 1600px;
+  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
   padding-left: 24px;
@@ -9,10 +9,9 @@
   box-sizing: border-box;
 }
   
-
 .profileCard {
   width: 100%;
-  max-width: 1600px;
+  max-width: 1400px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 18px;
