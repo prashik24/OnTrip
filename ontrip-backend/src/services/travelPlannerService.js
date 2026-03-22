@@ -1,22 +1,27 @@
 import { GoogleGenAI } from "@google/genai";
 
 const ai = process.env.GEMINI_API_KEY
-  ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+  ? new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+    })
   : null;
 
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const YOUR_SITE_URL = process.env.YOUR_SITE_URL || "";
+const YOUR_SITE_NAME = process.env.YOUR_SITE_NAME || "OnTrip AI Planner";
 
 const GEMINI_MODEL = "gemini-2.5-flash";
 
 /**
- * Updated OpenRouter fallback from file 2
+ * Put free or low-cost fallback models here.
+ * OpenRouter supports model fallback routing with arrays,
+ * but here we also do explicit code-level fallback for clarity.
  */
-const OPENROUTER_PRIMARY_MODEL = "openrouter/free";
-const OPENROUTER_FALLBACK_MODELS = [
-  "openrouter/free",
-  "meta-llama/llama-3.1-8b-instruct:free",
-  "mistralai/mistral-7b-instruct:free",
+const OPENROUTER_MODELS = [
+  "google/gemini-2.0-flash-exp:free",
+  "meta-llama/llama-3.3-70b-instruct:free",
+  "mistralai/mistral-small-3.1-24b-instruct:free",
 ];
 
 function safeArray(value) {
@@ -41,6 +46,17 @@ async function fetchJson(url, options = {}) {
   return response.json();
 }
 
+function isQuotaOrRateError(error) {
+  const text = String(error?.message || "").toLowerCase();
+  return (
+    text.includes("429") ||
+    text.includes("quota") ||
+    text.includes("resource_exhausted") ||
+    text.includes("rate limit") ||
+    text.includes("too many requests")
+  );
+}
+
 function extractJson(text, fallback = null) {
   try {
     return JSON.parse(text);
@@ -57,12 +73,10 @@ function extractJson(text, fallback = null) {
   }
 }
 
-/* =========================
-   AI FALLBACK LAYER
-========================= */
-
 async function generateWithGeminiText(prompt) {
-  if (!ai) throw new Error("Gemini API key missing");
+  if (!ai) {
+    throw new Error("Gemini API key missing");
+  }
 
   const response = await ai.models.generateContent({
     model: GEMINI_MODEL,
@@ -73,7 +87,9 @@ async function generateWithGeminiText(prompt) {
 }
 
 async function generateWithGeminiJson(prompt) {
-  if (!ai) throw new Error("Gemini API key missing");
+  if (!ai) {
+    throw new Error("Gemini API key missing");
+  }
 
   const response = await ai.models.generateContent({
     model: GEMINI_MODEL,
@@ -83,101 +99,93 @@ async function generateWithGeminiJson(prompt) {
     },
   });
 
-  const parsed = extractJson(response.text || "{}", null);
-  if (!parsed) throw new Error("Gemini returned invalid JSON");
+  const text = response.text || "{}";
+  const parsed = extractJson(text, null);
+
+  if (!parsed) {
+    throw new Error("Gemini returned invalid JSON");
+  }
+
   return parsed;
 }
 
-async function callOpenRouter(prompt, { wantJson = false } = {}) {
+async function generateWithOpenRouterText(prompt) {
   if (!OPENROUTER_API_KEY) {
     throw new Error("OpenRouter API key missing");
   }
 
-  const body = {
-    model: OPENROUTER_PRIMARY_MODEL,
-    models: OPENROUTER_FALLBACK_MODELS,
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.4,
-  };
+  let lastError = null;
 
-  if (wantJson) {
-    body.response_format = { type: "json_object" };
-  }
+  for (const model of OPENROUTER_MODELS) {
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": YOUR_SITE_URL,
+          "X-Title": YOUR_SITE_NAME,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          temperature: 0.4,
+        }),
+      });
 
-  const response = await fetch(
-    "https://openrouter.ai/api/v1/chat/completions",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`OpenRouter ${model} failed: ${response.status} ${text}`);
+      }
+
+      const data = await response.json();
+      const content =
+        data?.choices?.[0]?.message?.content ||
+        data?.choices?.[0]?.text ||
+        "";
+
+      if (!content) {
+        throw new Error(`OpenRouter ${model} returned empty response`);
+      }
+
+      return content;
+    } catch (error) {
+      lastError = error;
     }
-  );
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`OpenRouter failed: ${response.status} ${text}`);
   }
 
-  const data = await response.json();
-  const content =
-    data?.choices?.[0]?.message?.content ||
-    data?.choices?.[0]?.text ||
-    "";
-
-  if (!content) {
-    throw new Error("OpenRouter returned empty content");
-  }
-
-  return content;
-}
-
-async function generateWithOpenRouterText(prompt) {
-  return await callOpenRouter(prompt, { wantJson: false });
+  throw lastError || new Error("All OpenRouter models failed");
 }
 
 async function generateWithOpenRouterJson(prompt) {
-  const text = await callOpenRouter(prompt, { wantJson: true });
+  const text = await generateWithOpenRouterText(prompt);
   const parsed = extractJson(text, null);
-  if (!parsed) throw new Error("OpenRouter returned invalid JSON");
+
+  if (!parsed) {
+    throw new Error("OpenRouter returned invalid JSON");
+  }
+
   return parsed;
 }
 
-async function generateTextWithFallback(prompt, localFallbackText = "") {
-  try {
-    console.log("Trying Gemini text...");
-    return await generateWithGeminiText(prompt);
-  } catch (geminiError) {
-    console.error("Gemini text failed:", geminiError.message);
-
-    try {
-      await sleep(1200);
-      console.log("Gemini failed, trying OpenRouter text...");
-      const text = await generateWithOpenRouterText(prompt);
-      console.log("OpenRouter text success");
-      return text;
-    } catch (openRouterError) {
-      console.error("OpenRouter text failed:", openRouterError.message);
-      return localFallbackText;
-    }
-  }
-}
-
+/**
+ * Main AI wrapper:
+ * 1) Gemini
+ * 2) OpenRouter fallback
+ */
 async function generateJsonWithFallback(prompt, localFallback = null) {
   try {
-    console.log("Trying Gemini JSON...");
     return await generateWithGeminiJson(prompt);
   } catch (geminiError) {
     console.error("Gemini JSON failed:", geminiError.message);
 
     try {
-      await sleep(1200);
-      console.log("Gemini failed, trying OpenRouter JSON...");
-      const parsed = await generateWithOpenRouterJson(prompt);
-      console.log("OpenRouter JSON success");
-      return parsed;
+      return await generateWithOpenRouterJson(prompt);
     } catch (openRouterError) {
       console.error("OpenRouter JSON failed:", openRouterError.message);
       return localFallback;
@@ -185,9 +193,20 @@ async function generateJsonWithFallback(prompt, localFallback = null) {
   }
 }
 
-/* =========================
-   GEO + WEATHER
-========================= */
+async function generateTextWithFallback(prompt, localFallbackText = "") {
+  try {
+    return await generateWithGeminiText(prompt);
+  } catch (geminiError) {
+    console.error("Gemini text failed:", geminiError.message);
+
+    try {
+      return await generateWithOpenRouterText(prompt);
+    } catch (openRouterError) {
+      console.error("OpenRouter text failed:", openRouterError.message);
+      return localFallbackText;
+    }
+  }
+}
 
 async function geocodeLocation(query) {
   if (!query) return null;
@@ -215,6 +234,9 @@ async function geocodeLocation(query) {
   };
 }
 
+/**
+ * OpenWeather free endpoints only
+ */
 async function getWeather(lat, lon) {
   if (!OPENWEATHER_API_KEY || lat == null || lon == null) return null;
 
@@ -277,8 +299,13 @@ function buildDailyFromForecastList(list = []) {
     const tempMin = item?.main?.temp_min;
     const tempMax = item?.main?.temp_max;
 
-    if (typeof tempMin === "number") grouped[date].min = Math.min(grouped[date].min, tempMin);
-    if (typeof tempMax === "number") grouped[date].max = Math.max(grouped[date].max, tempMax);
+    if (typeof tempMin === "number") {
+      grouped[date].min = Math.min(grouped[date].min, tempMin);
+    }
+
+    if (typeof tempMax === "number") {
+      grouped[date].max = Math.max(grouped[date].max, tempMax);
+    }
   }
 
   return Object.values(grouped)
@@ -292,16 +319,20 @@ function buildDailyFromForecastList(list = []) {
     }));
 }
 
-/* =========================
-   TRIP HELPERS
-========================= */
-
 function weatherSuitabilityLabel(description = "") {
   const text = String(description).toLowerCase();
-  if (text.includes("rain") || text.includes("storm")) return "Carry umbrella and keep indoor backup";
-  if (text.includes("fog")) return "Start later in the morning if visibility is low";
-  if (text.includes("clear")) return "Good for outdoor sightseeing";
-  if (text.includes("cloud")) return "Comfortable for outdoor visits";
+  if (text.includes("rain") || text.includes("storm")) {
+    return "Carry umbrella and keep indoor backup";
+  }
+  if (text.includes("fog")) {
+    return "Start later in the morning if visibility is low";
+  }
+  if (text.includes("clear")) {
+    return "Good for outdoor sightseeing";
+  }
+  if (text.includes("cloud")) {
+    return "Comfortable for outdoor visits";
+  }
   return "Check local conditions before long outdoor visits";
 }
 
@@ -363,6 +394,7 @@ function optimizePlaceOrder(startPoint, places) {
 
   const remaining = [...places];
   const ordered = [];
+
   let current = startPoint || remaining[0];
 
   while (remaining.length) {
@@ -384,7 +416,9 @@ function optimizePlaceOrder(startPoint, places) {
 
   return ordered.map((place, index) => {
     const prev = index === 0 ? startPoint : ordered[index - 1];
-    const legKm = prev ? haversineKm(prev.lat, prev.lon, place.lat, place.lon) : 0;
+    const legKm = prev
+      ? haversineKm(prev.lat, prev.lon, place.lat, place.lon)
+      : 0;
 
     return {
       ...place,
@@ -397,7 +431,9 @@ function optimizePlaceOrder(startPoint, places) {
 }
 
 function localPlacesFallback(destination, interestFocus = []) {
-  const focusText = interestFocus.length ? interestFocus.join(", ") : "general sightseeing";
+  const focusText = interestFocus.length
+    ? interestFocus.join(", ")
+    : "general sightseeing";
 
   return [
     {
@@ -434,7 +470,10 @@ function localPlacesFallback(destination, interestFocus = []) {
 }
 
 async function generateFamousPlacesWithAI(destination, interestFocus = []) {
-  const focusText = interestFocus.length ? interestFocus.join(", ") : "general sightseeing";
+  const focusText = interestFocus.length
+    ? interestFocus.join(", ")
+    : "general sightseeing";
+
   const fallback = { places: localPlacesFallback(destination, interestFocus) };
 
   const prompt = `
@@ -480,44 +519,182 @@ async function enrichPlaces(destination, places, weatherDescription = "") {
   return enriched.filter((p) => p.lat != null && p.lon != null);
 }
 
-function localTravelModesFallback(startCity, destination) {
+function getBudgetTier(totalBudget, peopleCount) {
+  const perPerson = totalBudget / Math.max(1, peopleCount || 1);
+
+  if (perPerson <= 5000) return "budget";
+  if (perPerson <= 15000) return "balanced";
+  if (perPerson <= 35000) return "comfort";
+  return "luxury";
+}
+
+function buildModePriceRange(totalBudget, peopleCount, type) {
+  const total = Math.max(1000, Number(totalBudget || 0));
+  const pax = Math.max(1, Number(peopleCount || 1));
+
+  const perPersonTotal = total / pax;
+
+  if (type === "airplane") {
+    const low = Math.max(2500, Math.round(perPersonTotal * 0.28));
+    const high = Math.max(low + 1500, Math.round(perPersonTotal * 0.5));
+    return {
+      perPerson: `₹${low.toLocaleString("en-IN")} - ₹${high.toLocaleString("en-IN")} per person`,
+      total: `₹${(low * pax).toLocaleString("en-IN")} - ₹${(high * pax).toLocaleString("en-IN")} total`,
+    };
+  }
+
+  if (type === "railway") {
+    const low = Math.max(400, Math.round(perPersonTotal * 0.08));
+    const high = Math.max(low + 400, Math.round(perPersonTotal * 0.18));
+    return {
+      perPerson: `₹${low.toLocaleString("en-IN")} - ₹${high.toLocaleString("en-IN")} per person`,
+      total: `₹${(low * pax).toLocaleString("en-IN")} - ₹${(high * pax).toLocaleString("en-IN")} total`,
+    };
+  }
+
+  const low = Math.max(800, Math.round(perPersonTotal * 0.12));
+  const high = Math.max(low + 700, Math.round(perPersonTotal * 0.24));
+  return {
+    perPerson: `₹${low.toLocaleString("en-IN")} - ₹${high.toLocaleString("en-IN")} per person`,
+    total: `₹${(low * pax).toLocaleString("en-IN")} - ₹${(high * pax).toLocaleString("en-IN")} total`,
+  };
+}
+
+function localTravelModesFallback(startCity, destination, budget, peopleCount, travelStyle) {
+  const budgetTier = getBudgetTier(budget, peopleCount);
+
+  const airplanePrice = buildModePriceRange(budget, peopleCount, "airplane");
+  const railwayPrice = buildModePriceRange(budget, peopleCount, "railway");
+  const roadPrice = buildModePriceRange(budget, peopleCount, "road");
+
   return {
     airplane: {
       title: "Airplane",
       optionName: `${startCity || "Nearest city"} to ${destination} flight`,
-      estimatedTime: "Usually fastest for long-distance travel",
-      details: "Use nearest airport, then take city cab or local transfer.",
+      estimatedTime: "Fastest for long-distance travel",
+      estimatedPrice: airplanePrice,
+      availabilityName: "Nearest airport flight route",
+      bestFor: "Fast travel and reduced fatigue",
+      budgetFit:
+        budgetTier === "comfort" || budgetTier === "luxury"
+          ? "Good fit for this budget"
+          : "May feel costly for this budget",
+      details:
+        "Use nearest airport, then take local cab or transfer from airport to hotel.",
       note: "Estimated guidance, not a live flight schedule.",
+      points: [
+        `Likely route: ${startCity || "Nearest city"} → ${destination} via nearest airport`,
+        "Usually the fastest option",
+        `Estimated fare: ${airplanePrice.perPerson}`,
+        `Estimated total: ${airplanePrice.total}`,
+        "Best when time matters more than cost",
+      ],
     },
     railway: {
       title: "Railway",
       optionName: `${startCity || "Nearest city"} to ${destination} train route`,
-      estimatedTime: "Depends on direct train availability",
-      details: "Check major express or overnight train options for better comfort.",
+      estimatedTime: "Usually moderate travel time",
+      estimatedPrice: railwayPrice,
+      availabilityName: "Direct or connecting train availability likely",
+      bestFor: "Balanced cost and comfort",
+      budgetFit:
+        budgetTier === "budget" || budgetTier === "balanced"
+          ? "Strong fit for this budget"
+          : "Good value even with higher budget",
+      details:
+        "Check express, superfast, or overnight trains for better comfort and practical timing.",
       note: "Estimated guidance, not a live railway timetable.",
+      points: [
+        `Likely route: ${startCity || "Nearest city"} → ${destination} by train`,
+        "Good mix of price and comfort",
+        `Estimated fare: ${railwayPrice.perPerson}`,
+        `Estimated total: ${railwayPrice.total}`,
+        "Useful for medium and long routes with manageable budget",
+      ],
     },
     road: {
       title: "Road",
       optionName: `${startCity || "Nearest city"} to ${destination} road trip / bus`,
       estimatedTime: "Depends on road distance and traffic",
-      details: "Useful when rail or flight access is weak, or for flexible stops.",
+      estimatedPrice: roadPrice,
+      availabilityName: "Cab, self-drive, or intercity bus usually available",
+      bestFor: "Flexible route and nearby stops",
+      budgetFit:
+        budgetTier === "budget"
+          ? "Useful when shared bus or budget cab is chosen"
+          : "Good for flexibility and doorstep travel",
+      details:
+        "Useful when rail or flight access is weak, or when you want flexible stops on the way.",
       note: "Estimated guidance, not a live bus timetable.",
+      points: [
+        `Likely route: ${startCity || "Nearest city"} → ${destination} by road`,
+        "Best for flexible departures and local stopovers",
+        `Estimated fare: ${roadPrice.perPerson}`,
+        `Estimated total: ${roadPrice.total}`,
+        "Travel time can increase because of traffic",
+      ],
     },
   };
 }
 
-async function buildTravelModesWithAI(startCity, destination) {
-  const fallback = localTravelModesFallback(startCity, destination);
+function chooseBestTravelMode({ travelModes, budget, peopleCount, travelStyle }) {
+  const budgetTier = getBudgetTier(budget, peopleCount);
+  const style = String(travelStyle || "").toLowerCase();
+
+  let key = "railway";
+  let reason =
+    "Railway is usually the best balance of budget, comfort, and practical travel time.";
+
+  if (style === "luxury" || budgetTier === "luxury") {
+    key = "airplane";
+    reason = "Airplane is best here because your budget supports faster and more comfortable travel.";
+  } else if (style === "comfort" || budgetTier === "comfort") {
+    key = "airplane";
+    reason = "Airplane is a strong choice for comfort and time saving within this budget.";
+  } else if (style === "budget" || budgetTier === "budget") {
+    key = "railway";
+    reason = "Railway is best because it usually saves more money while staying practical.";
+  } else {
+    key = "railway";
+    reason = "Railway is best for balanced travel because it controls cost and keeps comfort reasonable.";
+  }
+
+  const mode = travelModes?.[key] || null;
+
+  return {
+    key,
+    title: mode?.title || "Railway",
+    optionName: mode?.optionName || "",
+    estimatedTime: mode?.estimatedTime || "",
+    estimatedPrice: mode?.estimatedPrice || {
+      perPerson: "",
+      total: "",
+    },
+    reason,
+  };
+}
+
+async function buildTravelModesWithAI(startCity, destination, budget, peopleCount, travelStyle) {
+  const fallback = localTravelModesFallback(
+    startCity,
+    destination,
+    budget,
+    peopleCount,
+    travelStyle
+  );
 
   const prompt = `
 Return JSON only.
 
 Start city: ${startCity || "Not provided"}
 Destination: ${destination}
+Total budget INR: ${budget}
+People count: ${peopleCount}
+Travel style: ${travelStyle}
 
 I need practical but non-live travel suggestions.
 Do NOT pretend these are live schedules.
-Give likely route names and approximate times.
+Give likely route names, approximate times, rough price ranges, budget fit, and likely availability.
 
 Format:
 {
@@ -525,28 +702,65 @@ Format:
     "title": "Airplane",
     "optionName": "",
     "estimatedTime": "",
+    "estimatedPrice": {
+      "perPerson": "",
+      "total": ""
+    },
+    "availabilityName": "",
+    "bestFor": "",
+    "budgetFit": "",
     "details": "",
-    "note": "Estimated guidance, not a live flight schedule."
+    "note": "Estimated guidance, not a live flight schedule.",
+    "points": ["", "", "", "", ""]
   },
   "railway": {
     "title": "Railway",
     "optionName": "",
     "estimatedTime": "",
+    "estimatedPrice": {
+      "perPerson": "",
+      "total": ""
+    },
+    "availabilityName": "",
+    "bestFor": "",
+    "budgetFit": "",
     "details": "",
-    "note": "Estimated guidance, not a live railway timetable."
+    "note": "Estimated guidance, not a live railway timetable.",
+    "points": ["", "", "", "", ""]
   },
   "road": {
     "title": "Road",
     "optionName": "",
     "estimatedTime": "",
+    "estimatedPrice": {
+      "perPerson": "",
+      "total": ""
+    },
+    "availabilityName": "",
+    "bestFor": "",
+    "budgetFit": "",
     "details": "",
-    "note": "Estimated guidance, not a live bus timetable."
+    "note": "Estimated guidance, not a live bus timetable.",
+    "points": ["", "", "", "", ""]
   }
 }
 `;
 
   const parsed = await generateJsonWithFallback(prompt, fallback);
-  return { ...fallback, ...(parsed || {}) };
+  const travelModes = {
+    ...fallback,
+    ...(parsed || {}),
+  };
+
+  return {
+    ...travelModes,
+    bestOption: chooseBestTravelMode({
+      travelModes,
+      budget,
+      peopleCount,
+      travelStyle,
+    }),
+  };
 }
 
 function buildRouteSummary(startName, orderedPlaces) {
@@ -639,6 +853,8 @@ async function generateStructuredTripPlan({
   travelModes,
   interestFocus,
 }) {
+  const fallback = null;
+
   const prompt = `
 Return JSON only.
 
@@ -664,7 +880,64 @@ Format:
   "summary": "",
   "destinationWhyFamous": "",
   "bestTimeToVisit": "",
-  "travelModes": {},
+  "travelModes": {
+    "airplane": {
+      "title": "",
+      "optionName": "",
+      "estimatedTime": "",
+      "estimatedPrice": {
+        "perPerson": "",
+        "total": ""
+      },
+      "availabilityName": "",
+      "bestFor": "",
+      "budgetFit": "",
+      "details": "",
+      "note": "",
+      "points": []
+    },
+    "railway": {
+      "title": "",
+      "optionName": "",
+      "estimatedTime": "",
+      "estimatedPrice": {
+        "perPerson": "",
+        "total": ""
+      },
+      "availabilityName": "",
+      "bestFor": "",
+      "budgetFit": "",
+      "details": "",
+      "note": "",
+      "points": []
+    },
+    "road": {
+      "title": "",
+      "optionName": "",
+      "estimatedTime": "",
+      "estimatedPrice": {
+        "perPerson": "",
+        "total": ""
+      },
+      "availabilityName": "",
+      "bestFor": "",
+      "budgetFit": "",
+      "details": "",
+      "note": "",
+      "points": []
+    },
+    "bestOption": {
+      "key": "",
+      "title": "",
+      "optionName": "",
+      "estimatedTime": "",
+      "estimatedPrice": {
+        "perPerson": "",
+        "total": ""
+      },
+      "reason": ""
+    }
+  },
   "itinerary": [],
   "budgetBreakdown": [],
   "transportAdvice": "",
@@ -677,14 +950,11 @@ Rules:
 - include place explore times naturally
 - do not include a "why this plan" section
 - keep airplane, railway, and road wording clean
+- choose best travel mode according to budget and travel style
 `;
 
-  return await generateJsonWithFallback(prompt, null);
+  return await generateJsonWithFallback(prompt, fallback);
 }
-
-/* =========================
-   PROVIDERS
-========================= */
 
 export function extractUsefulProviders(providers = []) {
   return providers.map((provider) => ({
@@ -751,13 +1021,9 @@ function providerMatchScore(provider, destination) {
   return score;
 }
 
-/* =========================
-   CHAT
-========================= */
-
 export async function answerTripChat({ message, plan, history = [] }) {
   const localFallbackText =
-    "AI service is busy right now. Based on your current trip, follow the shown route order, keep weather in mind, and visit crowded places early in the day.";
+    "I could not reach the AI service right now. Based on your plan, follow the shown route order, keep weather in mind, and visit the most crowded places early in the day.";
 
   const prompt = `
 You are a helpful travel assistant.
@@ -779,10 +1045,6 @@ Instructions:
 
   return await generateTextWithFallback(prompt, localFallbackText);
 }
-
-/* =========================
-   MAIN PLAN BUILDER
-========================= */
 
 export async function buildTripIntelligence({
   destination,
@@ -814,7 +1076,14 @@ export async function buildTripIntelligence({
     crowdLabel: estimateCrowdLabel(index),
   }));
 
-  const travelModes = await buildTravelModesWithAI(startCity, destination);
+  const travelModes = await buildTravelModesWithAI(
+    startCity,
+    destination,
+    budget,
+    peopleCount,
+    travelStyle
+  );
+
   const routeSummary = buildRouteSummary(startCity || destination, orderedPlaces);
 
   const aiPlan = await generateStructuredTripPlan({
@@ -843,16 +1112,40 @@ export async function buildTripIntelligence({
   const plan = {
     ...fallback,
     ...(aiPlan || {}),
+    travelModes: {
+      ...travelModes,
+      ...(aiPlan?.travelModes || {}),
+      airplane: {
+        ...travelModes.airplane,
+        ...(aiPlan?.travelModes?.airplane || {}),
+      },
+      railway: {
+        ...travelModes.railway,
+        ...(aiPlan?.travelModes?.railway || {}),
+      },
+      road: {
+        ...travelModes.road,
+        ...(aiPlan?.travelModes?.road || {}),
+      },
+      bestOption: {
+        ...travelModes.bestOption,
+        ...(aiPlan?.travelModes?.bestOption || {}),
+      },
+    },
   };
 
   const recommendedTravelProviders = providersNormalized
     .filter((p) => p.listingType === "travel_planner")
-    .sort((a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination))
+    .sort(
+      (a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination)
+    )
     .slice(0, 4);
 
   const recommendedVehicleProviders = providersNormalized
     .filter((p) => p.listingType === "vehicle")
-    .sort((a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination))
+    .sort(
+      (a, b) => providerMatchScore(b, destination) - providerMatchScore(a, destination)
+    )
     .slice(0, 4);
 
   return {
