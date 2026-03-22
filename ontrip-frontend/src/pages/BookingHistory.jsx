@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
+import LoadingSpinner from "../components/LoadingSpinner";
 import "./BookingHistory.css";
 
 const ratingOptions = [
@@ -16,6 +17,7 @@ export default function BookingHistory() {
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(true);
   const [openReviewId, setOpenReviewId] = useState("");
   const [submittingId, setSubmittingId] = useState("");
   const [reviewForms, setReviewForms] = useState({});
@@ -26,6 +28,7 @@ export default function BookingHistory() {
 
   async function loadBookings() {
     try {
+      setLoading(true);
       const data = await apiFetch("/api/bookings/mine");
       const bookingList = data.bookings || [];
       setBookings(bookingList);
@@ -41,7 +44,9 @@ export default function BookingHistory() {
       });
       setReviewForms(nextForms);
     } catch (err) {
-      setMsg(err.message);
+      setMsg(err.message || "Failed to load booking history.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -80,10 +85,14 @@ export default function BookingHistory() {
       setOpenReviewId("");
       setMsg("Review saved successfully.");
     } catch (err) {
-      setMsg(err.message);
+      setMsg(err.message || "Failed to save review.");
     } finally {
       setSubmittingId("");
     }
+  }
+
+  if (loading) {
+    return <LoadingSpinner text="Loading booking history..." />;
   }
 
   return (
@@ -96,9 +105,7 @@ export default function BookingHistory() {
       {msg && <div className="bookingHistoryMessage">{msg}</div>}
 
       {bookings.length === 0 ? (
-        <div className="bookingHistoryEmpty">
-          You have not booked any service yet.
-        </div>
+        <div className="bookingHistoryEmpty">You have not booked any service yet.</div>
       ) : (
         <div className="bookingHistoryGrid">
           {bookings.map((booking) => {
@@ -160,9 +167,7 @@ export default function BookingHistory() {
                           : "bookingHistoryReviewBtn"
                       }
                       onClick={() =>
-                        setOpenReviewId((prev) =>
-                          prev === booking._id ? "" : booking._id
-                        )
+                        setOpenReviewId((prev) => (prev === booking._id ? "" : booking._id))
                       }
                     >
                       {booking.existingReview ? "Edit Review" : "Write Review"}
