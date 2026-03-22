@@ -1,19 +1,17 @@
-import { Router } from "express";
+import express from "express";
 import {
   createSavedTrip,
   deleteSavedTrip,
   getMySavedTrips,
   getSavedTripById,
 } from "../controllers/savedTripController.js";
-import { requireAuth } from "../middleware/authMiddleware.js";
+import { protect } from "../middleware/auth.js";
 
-const router = Router();
+const router = express.Router();
 
-router.use(requireAuth);
-
-router.get("/", getMySavedTrips);
-router.get("/:id", getSavedTripById);
-router.post("/", createSavedTrip);
-router.delete("/:id", deleteSavedTrip);
+router.get("/", protect, getMySavedTrips);
+router.get("/:id", protect, getSavedTripById);
+router.post("/", protect, createSavedTrip);
+router.delete("/:id", protect, deleteSavedTrip);
 
 export default router;
