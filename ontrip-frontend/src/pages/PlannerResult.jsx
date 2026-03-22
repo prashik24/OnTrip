@@ -4,6 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { apiFetch } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { downloadTripPdfFromElement } from "../utils/tripPdf";
 import "./PlannerResult.css";
 
 function money(value) {
@@ -68,7 +69,7 @@ function TravelModeCard({ title, data }) {
   if (!data) return null;
 
   return (
-    <div className="plannerResultBlock">
+    <div className="plannerResultBlock plannerResultTravelModeCard">
       <div className="plannerResultBlockTitle">{title}</div>
       <div className="plannerResultProviderTitle">
         {data.optionName || `${title} option`}
@@ -103,6 +104,7 @@ export default function PlannerResult() {
   const navigate = useNavigate();
   const location = useLocation();
   const formFromState = location.state?.form;
+  const tripPrintRef = useRef(null);
 
   const [form] = useState(() => {
     if (formFromState) return formFromState;
@@ -118,6 +120,8 @@ export default function PlannerResult() {
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
   const [result, setResult] = useState(null);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [downloadLoading, setDownloadLoading] = useState(false);
 
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
@@ -166,6 +170,51 @@ export default function PlannerResult() {
 
     loadPlan();
   }, [form]);
+
+  async function handleSaveTrip() {
+    if (!result?.plan || saveLoading) return;
+
+    try {
+      setSaveLoading(true);
+      setMsg("");
+
+      await apiFetch("/api/saved-trips", {
+        method: "POST",
+        body: JSON.stringify({
+          title: result?.plan?.title || `${form.destination} Trip`,
+          destination: form.destination,
+          startCity: form.startCity || "",
+          days: Number(form.days),
+          budget: Number(form.budget),
+          peopleCount: Number(form.peopleCount),
+          travelStyle: form.travelStyle,
+          tripData: result,
+        }),
+      });
+
+      setMsg("Trip saved successfully. You can now view it in Profile.");
+    } catch (err) {
+      setMsg(err.message || "Failed to save trip.");
+    } finally {
+      setSaveLoading(false);
+    }
+  }
+
+  async function handleDownloadPdf() {
+    if (!tripPrintRef.current || downloadLoading) return;
+
+    try {
+      setDownloadLoading(true);
+      await downloadTripPdfFromElement(
+        tripPrintRef.current,
+        `${form?.destination || "trip-plan"}-plan.pdf`
+      );
+    } catch {
+      setMsg("Failed to download PDF.");
+    } finally {
+      setDownloadLoading(false);
+    }
+  }
 
   async function sendChat() {
     if (!result?.plan || !chatInput.trim() || chatLoading) return;
@@ -221,9 +270,27 @@ export default function PlannerResult() {
             <p>Clean result page with route order, map, weather, and live AI help.</p>
           </div>
 
-          <button className="plannerResultSecondaryBtn" onClick={() => navigate("/planner")}>
-            Edit Inputs
-          </button>
+          <div className="plannerResultTopActions">
+            <button className="plannerResultSecondaryBtn" onClick={() => navigate("/planner")}>
+              Edit Inputs
+            </button>
+
+            <button
+              className="plannerResultSecondaryBtn"
+              onClick={handleSaveTrip}
+              disabled={saveLoading || !result?.plan}
+            >
+              {saveLoading ? "Saving..." : "Save Trip"}
+            </button>
+
+            <button
+              className="plannerResultPrimaryBtn"
+              onClick={handleDownloadPdf}
+              disabled={downloadLoading || !result?.plan}
+            >
+              {downloadLoading ? "Downloading..." : "Download PDF"}
+            </button>
+          </div>
         </div>
 
         {msg && <div className="plannerResultMessage">{msg}</div>}
@@ -231,7 +298,7 @@ export default function PlannerResult() {
         {!result?.plan ? (
           <div className="plannerResultEmpty">No plan available.</div>
         ) : (
-          <div className="plannerResultOnly">
+          <div className="plannerResultOnly" ref={tripPrintRef}>
             <div className="plannerResultBlock">
               <div className="plannerResultBlockTitle">Trip Summary</div>
               <div className="plannerResultMutedBox">{result.plan.summary}</div>
