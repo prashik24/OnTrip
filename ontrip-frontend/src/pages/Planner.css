@@ -100,17 +100,28 @@
   box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.1);
 }
 
-/* ✅ CUSTOM SELECT FIX ONLY IN PLANNER */
+/* ✅ CUSTOM SELECT FIX (ONLY FOR PLANNER PAGE) */
 .plannerPage .customSelectTrigger {
   min-height: 44px !important;
   border-radius: 14px !important;
   padding: 0 12px !important;
   font-size: 14px !important;
   font-weight: 600 !important;
+  line-height: 1.2 !important;
   border: 1.2px solid rgba(11, 27, 42, 0.12) !important;
   background: #ffffff !important;
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
+  color: #12212f !important;
+}
+
+.plannerPage .customSelectTrigger span,
+.plannerPage .customSelectValue,
+.plannerPage .customSelectLabel {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  color: #12212f !important;
 }
 
 .plannerPage .customSelectTrigger:focus,
@@ -119,12 +130,27 @@
   box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.1) !important;
 }
 
-.plannerPage .customSelectOption {
-  font-size: 14px;
-  font-weight: 600;
-  padding: 10px 12px;
+.plannerPage .customSelectMenu,
+.plannerPage .customSelectContent {
+  border-radius: 16px !important;
 }
 
+.plannerPage .customSelectOption {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  padding: 10px 14px !important;
+  color: #12212f !important;
+}
+
+.plannerPage .customSelectOption span {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  color: #12212f !important;
+}
+
+/* chips */
 .plannerChipWrap {
   display: flex;
   flex-wrap: wrap;
@@ -155,6 +181,7 @@
   color: #ffffff;
 }
 
+/* button */
 .plannerPrimaryBtn {
   min-height: 40px;
   padding: 0 14px;
