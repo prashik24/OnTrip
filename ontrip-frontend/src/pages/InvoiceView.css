@@ -49,7 +49,7 @@
   font-weight: 600;
 }
 
-/* ✅ STATUS COLORS */
+/* ✅ LIGHT STATUS (your theme style) */
 .invoiceViewStatus {
   display: flex;
   flex-direction: column;
@@ -57,29 +57,39 @@
 }
 
 .invoiceViewStatus .status {
-  padding: 8px 14px;
+  padding: 7px 12px;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 700;
   text-align: center;
-  color: #fff;
-  text-transform: capitalize;
 }
 
+/* 🟢 PAID */
 .status.paid {
-  background: #16a34a;
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.18);
+  color: #15803d;
 }
 
+/* 🔴 CANCELLED */
 .status.cancelled {
-  background: #dc2626;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  color: #b42318;
 }
 
+/* 🔵 CONFIRMED (your brand blue) */
 .status.confirmed {
-  background: #2563eb;
+  background: rgba(0, 184, 241, 0.1);
+  border: 1px solid rgba(0, 184, 241, 0.16);
+  color: #0369a1;
 }
 
+/* 🟡 optional pending */
 .status.pending {
-  background: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+  color: #b45309;
 }
 
 .invoiceViewGrid {
