@@ -1,31 +1,33 @@
 .plannerPage {
-  padding-bottom: 32px;
+  padding-bottom: 24px;
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .plannerHead h1 {
   margin: 0;
-  font-size: 32px;
-  font-weight: 760;
+  font-size: 28px;
+  font-weight: 740;
   color: var(--text);
 }
 
 .plannerHead p {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   color: var(--muted);
-  line-height: 1.65;
-  font-weight: 550;
-  max-width: 860px;
+  line-height: 1.5;
+  font-weight: 520;
+  max-width: 720px;
+  font-size: 14px;
 }
 
 .plannerMessage {
-  padding: 12px 14px;
-  border-radius: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
   background: rgba(255, 98, 98, 0.08);
   border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
-  font-weight: 650;
+  font-weight: 620;
+  font-size: 13px;
 }
 
 .plannerSingleWrap {
@@ -36,51 +38,51 @@
 .plannerFormCard {
   width: 100%;
   min-width: 0;
-  max-width: 760px;
+  max-width: 620px; /* reduced */
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 18px;
-  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
-  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.04);
+  padding: 16px; /* reduced */
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .plannerSectionTitle {
   margin: 0;
-  font-size: 20px;
-  font-weight: 760;
+  font-size: 18px;
+  font-weight: 740;
   color: var(--text);
 }
 
 .plannerField {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
 }
 
 .plannerField label {
   display: block;
   margin: 0;
-  font-size: 14px;
-  font-weight: 650;
+  font-size: 13px;
+  font-weight: 600;
   color: #12212f;
 }
 
 .plannerRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 10px;
 }
 
 .plannerInput {
   width: 100%;
-  min-height: 52px;
-  border: 1.5px solid rgba(11, 27, 42, 0.12);
-  border-radius: 18px;
-  padding: 0 16px;
+  min-height: 44px; /* reduced */
+  border: 1.2px solid rgba(11, 27, 42, 0.12);
+  border-radius: 14px;
+  padding: 0 12px;
   font: inherit;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #12212f;
   background: #ffffff;
@@ -90,35 +92,36 @@
 
 .plannerInput::placeholder {
   color: rgba(11, 27, 42, 0.46);
-  font-weight: 550;
+  font-weight: 520;
 }
 
 .plannerInput:focus {
   border-color: #00b8f1;
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.1);
 }
 
 .plannerChipWrap {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .plannerChip {
-  min-height: 40px;
-  padding: 0 14px;
-  border-radius: 12px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
   border: 1px solid rgba(0, 184, 241, 0.18);
   background: rgba(0, 184, 241, 0.08);
   color: #0369a1;
   font: inherit;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 650;
   cursor: pointer;
   transition: 0.18s ease;
 }
 
 .plannerChip:hover {
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+  box-shadow: 0 6px 14px rgba(10, 22, 35, 0.06);
 }
 
 .plannerChip.isActive {
@@ -128,24 +131,25 @@
 }
 
 .plannerPrimaryBtn {
-  min-height: 44px;
-  padding: 0 16px;
+  min-height: 40px;
+  padding: 0 14px;
   border: 1px solid rgba(0, 184, 241, 0.32);
-  border-radius: 12px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
   font: inherit;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
 }
 
 .plannerPrimaryBtn:hover {
-  box-shadow: 0 8px 18px rgba(0, 184, 241, 0.16);
+  box-shadow: 0 6px 14px rgba(0, 184, 241, 0.14);
 }
 
 .plannerPrimaryBtn:disabled {
-  opacity: 0.72;
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
