@@ -49,21 +49,37 @@
   font-weight: 600;
 }
 
+/* ✅ STATUS COLORS */
 .invoiceViewStatus {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.invoiceViewStatus span {
-  padding: 7px 12px;
+.invoiceViewStatus .status {
+  padding: 8px 14px;
   border-radius: 10px;
-  background: rgba(0, 184, 241, 0.1);
-  border: 1px solid rgba(0, 184, 241, 0.16);
-  color: #0369a1;
   font-size: 13px;
   font-weight: 700;
   text-align: center;
+  color: #fff;
+  text-transform: capitalize;
+}
+
+.status.paid {
+  background: #16a34a;
+}
+
+.status.cancelled {
+  background: #dc2626;
+}
+
+.status.confirmed {
+  background: #2563eb;
+}
+
+.status.pending {
+  background: #f59e0b;
 }
 
 .invoiceViewGrid {
