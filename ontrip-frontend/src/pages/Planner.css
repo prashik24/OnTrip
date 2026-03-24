@@ -1,156 +1,176 @@
 .plannerPage {
-  padding-bottom: 20px;
+  padding-bottom: 24px;
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
-/* HEADER */
 .plannerHead h1 {
   margin: 0;
-  font-size: 26px;
-  font-weight: 750;
+  font-size: 28px;
+  font-weight: 740;
   color: var(--text);
-  letter-spacing: -0.2px;
 }
 
 .plannerHead p {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   color: var(--muted);
-  line-height: 1.45;
-  font-weight: 500;
-  max-width: 640px;
-  font-size: 13.5px;
+  line-height: 1.5;
+  font-weight: 520;
+  max-width: 720px;
+  font-size: 14px;
 }
 
-/* ERROR */
 .plannerMessage {
-  padding: 9px 12px;
+  padding: 10px 12px;
   border-radius: 12px;
   background: rgba(255, 98, 98, 0.08);
   border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
-  font-weight: 600;
+  font-weight: 620;
   font-size: 13px;
 }
 
-/* CENTER */
 .plannerSingleWrap {
   display: grid;
   justify-content: center;
 }
 
-/* CARD */
 .plannerFormCard {
   width: 100%;
-  max-width: 680px; /* slightly wider but compact */
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(0, 184, 241, 0.10);
+  min-width: 0;
+  max-width: 620px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 16px;
-  box-shadow: 0 6px 16px rgba(10, 22, 35, 0.04);
-  padding: 14px;
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.04);
+  padding: 16px;
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
-/* TITLE */
 .plannerSectionTitle {
   margin: 0;
-  font-size: 17px;
-  font-weight: 750;
+  font-size: 18px;
+  font-weight: 740;
   color: var(--text);
 }
 
-/* FIELD */
 .plannerField {
   display: grid;
-  gap: 4px;
+  gap: 6px;
+  min-width: 0;
 }
 
 .plannerField label {
-  font-size: 12.5px;
+  display: block;
+  margin: 0;
+  font-size: 13px;
   font-weight: 600;
-  color: rgba(11, 27, 42, 0.85);
+  color: #12212f;
 }
 
-/* ROW */
 .plannerRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 10px;
 }
 
-/* INPUT */
 .plannerInput {
   width: 100%;
-  min-height: 40px;
-  border: 1.2px solid rgba(11, 27, 42, 0.10);
-  border-radius: 12px;
-  padding: 0 10px;
-  font-size: 13.5px;
+  min-height: 44px;
+  border: 1.2px solid rgba(11, 27, 42, 0.12);
+  border-radius: 14px;
+  padding: 0 12px;
+  font: inherit;
+  font-size: 14px;
   font-weight: 600;
   color: #12212f;
   background: #ffffff;
   outline: none;
-  transition: 0.18s ease;
+  box-sizing: border-box;
 }
 
 .plannerInput::placeholder {
-  color: rgba(11, 27, 42, 0.45);
-  font-weight: 500;
+  color: rgba(11, 27, 42, 0.46);
+  font-weight: 520;
 }
 
 .plannerInput:focus {
   border-color: #00b8f1;
-  box-shadow: 0 0 0 2.5px rgba(0, 184, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.1);
 }
 
-/* CHIPS */
+/* ✅ CUSTOM SELECT FIX ONLY IN PLANNER */
+.plannerPage .customSelectTrigger {
+  min-height: 44px !important;
+  border-radius: 14px !important;
+  padding: 0 12px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  border: 1.2px solid rgba(11, 27, 42, 0.12) !important;
+  background: #ffffff !important;
+  display: flex;
+  align-items: center;
+}
+
+.plannerPage .customSelectTrigger:focus,
+.plannerPage .customSelectTrigger:focus-visible {
+  border-color: #00b8f1 !important;
+  box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.1) !important;
+}
+
+.plannerPage .customSelectOption {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 12px;
+}
+
 .plannerChipWrap {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .plannerChip {
-  min-height: 30px;
-  padding: 0 10px;
-  border-radius: 9px;
-  border: 1px solid rgba(0, 184, 241, 0.16);
-  background: rgba(0, 184, 241, 0.06);
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 184, 241, 0.18);
+  background: rgba(0, 184, 241, 0.08);
   color: #0369a1;
-  font-size: 12.5px;
+  font: inherit;
+  font-size: 13px;
   font-weight: 650;
   cursor: pointer;
   transition: 0.18s ease;
 }
 
 .plannerChip:hover {
-  box-shadow: 0 4px 10px rgba(10, 22, 35, 0.05);
+  box-shadow: 0 6px 14px rgba(10, 22, 35, 0.06);
 }
 
 .plannerChip.isActive {
-  border-color: rgba(0, 184, 241, 0.28);
+  border-color: rgba(0, 184, 241, 0.32);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
 }
 
-/* BUTTON */
 .plannerPrimaryBtn {
-  margin-top: 4px;
-  min-height: 38px;
+  min-height: 40px;
   padding: 0 14px;
+  border: 1px solid rgba(0, 184, 241, 0.32);
   border-radius: 10px;
-  border: 1px solid rgba(0, 184, 241, 0.30);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
-  font-size: 13.5px;
+  font: inherit;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
 }
 
 .plannerPrimaryBtn:hover {
-  box-shadow: 0 5px 12px rgba(0, 184, 241, 0.14);
+  box-shadow: 0 6px 14px rgba(0, 184, 241, 0.14);
 }
 
 .plannerPrimaryBtn:disabled {
@@ -158,7 +178,6 @@
   cursor: not-allowed;
 }
 
-/* MOBILE */
 @media (max-width: 900px) {
   .plannerRow {
     grid-template-columns: 1fr;
@@ -166,6 +185,5 @@
 
   .plannerFormCard {
     max-width: 100%;
-    padding: 12px;
   }
 }
