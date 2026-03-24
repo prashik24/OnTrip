@@ -93,9 +93,15 @@ export default function InvoiceView() {
             <h1>Invoice</h1>
             <p>{booking.bookingRef}</p>
           </div>
+
+          {/* ✅ UPDATED STATUS */}
           <div className="invoiceViewStatus">
-            <span>{booking.paymentStatus}</span>
-            <span>{booking.bookingStatus}</span>
+            <span className={`status ${booking.paymentStatus}`}>
+              {booking.paymentStatus}
+            </span>
+            <span className={`status ${booking.bookingStatus}`}>
+              {booking.bookingStatus}
+            </span>
           </div>
         </div>
 
