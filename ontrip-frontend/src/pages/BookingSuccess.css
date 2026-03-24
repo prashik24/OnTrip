@@ -84,13 +84,18 @@
   font-weight: 650;
 }
 
+/* ✅ UPDATED SECTION */
 .bookingSuccessSummary {
   display: grid;
   gap: 10px;
+  position: relative; /* for absolute badge */
 }
 
 .bookingSuccessType {
-  width: fit-content;
+  position: absolute;
+  top: 0;
+  right: 0;
+
   padding: 6px 10px;
   border-radius: 10px;
   background: rgba(0, 184, 241, 0.1);
@@ -100,8 +105,10 @@
   font-weight: 700;
 }
 
+/* small spacing so title doesn’t clash */
 .bookingSuccessSummary h2 {
   margin: 0;
+  margin-top: 6px;
   font-size: 28px;
   font-weight: 760;
   color: var(--text);
@@ -239,5 +246,11 @@
 
   .bookingSuccessBanner {
     flex-direction: column;
+  }
+
+  /* make badge normal flow on mobile */
+  .bookingSuccessType {
+    position: static;
+    width: fit-content;
   }
 }
