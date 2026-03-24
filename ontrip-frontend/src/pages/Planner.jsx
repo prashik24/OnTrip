@@ -115,13 +115,12 @@ export default function Planner() {
             </div>
 
             <div className="plannerField">
-              <label>Budget (₹)</label>
-              <input
-                className="plannerInput"
-                type="number"
-                min="1000"
-                value={form.budget}
-                onChange={(e) => update("budget", e.target.value)}
+              <label>Travel Style</label>
+              <CustomSelect
+                value={form.travelStyle}
+                onChange={(e) => update("travelStyle", e.target.value)}
+                options={travelStyleOptions}
+                placeholder="Select style"
               />
             </div>
           </div>
@@ -139,12 +138,13 @@ export default function Planner() {
             </div>
 
             <div className="plannerField">
-              <label>Travel Style</label>
-              <CustomSelect
-                value={form.travelStyle}
-                onChange={(e) => update("travelStyle", e.target.value)}
-                options={travelStyleOptions}
-                placeholder="Select style"
+              <label>Budget (₹)</label>
+              <input
+                className="plannerInput"
+                type="number"
+                min="1000"
+                value={form.budget}
+                onChange={(e) => update("budget", e.target.value)}
               />
             </div>
           </div>
