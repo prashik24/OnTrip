@@ -1,40 +1,101 @@
-.explore { padding-bottom: 10px; }
-
-.pageHead {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
+.explorePage {
+  padding-bottom: 32px;
+  display: grid;
+  gap: 18px;
 }
 
-.pageTitle {
+.exploreHero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 18px;
+  padding: 18px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.14), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 24%);
+}
+
+.exploreHeroText {
+  display: grid;
+  gap: 10px;
+  align-content: center;
+}
+
+.exploreEyebrow {
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.exploreHeroText h1 {
   margin: 0;
-  font-size: 26px;
-  letter-spacing: -0.4px;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.08;
+  letter-spacing: -1px;
 }
 
-.pageSub {
-  margin: 6px 0 0 0;
+.exploreHeroText p {
+  margin: 0;
+  max-width: 760px;
   color: var(--muted);
+  line-height: 1.72;
   font-weight: 600;
 }
 
-.filters {
-  padding: 12px;
+.exploreFilters {
   display: grid;
-  gap: 10px;
-  min-width: 320px;
+  gap: 12px;
+  min-width: 0;
+  align-content: center;
+  padding: 16px;
+  border-radius: 22px;
 }
 
-.gridPlaces {
+.exploreStats {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
+.exploreStat {
+  padding: 16px;
+  display: grid;
+  gap: 4px;
+  border-radius: 18px;
+}
+
+.exploreStat strong {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.exploreStat span {
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.stateGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
 @media (max-width: 980px) {
-  .pageHead { flex-direction: column; }
-  .filters { width: 100%; min-width: 0; }
-  .gridPlaces { grid-template-columns: 1fr; }
+  .exploreHero {
+    grid-template-columns: 1fr;
+  }
+
+  .stateGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .exploreStats {
+    grid-template-columns: 1fr;
+  }
 }
