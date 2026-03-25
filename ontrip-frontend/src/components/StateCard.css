@@ -1,0 +1,139 @@
+.stateCard {
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 22px;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.stateCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.stateCardMedia {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+
+.stateCardMedia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.stateCard:hover .stateCardMedia img {
+  transform: scale(1.05);
+}
+
+.stateBadge {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(8, 15, 30, 0.74);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+}
+
+.stateCardBody {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.stateCardTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.stateCardTop h3 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.4px;
+}
+
+.stateCardTop p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.statePrice {
+  white-space: nowrap;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--text);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.stateShort {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+  font-weight: 550;
+}
+
+.stateMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.stateMeta span {
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--soft);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stateHighlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stateHighlights span {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.stateBtn {
+  width: fit-content;
+}
+
+@media (max-width: 640px) {
+  .stateCardMedia {
+    height: 200px;
+  }
+
+  .stateCardTop {
+    flex-direction: column;
+  }
+
+  .statePrice {
+    align-self: flex-start;
+  }
+
+  .stateBtn {
+    width: 100%;
+  }
+}
