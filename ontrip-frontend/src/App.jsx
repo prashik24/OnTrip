@@ -7,6 +7,9 @@ import Footer from "./components/Footer";
 
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
+import StateDetails from "./pages/StateDetails";
+import PlaceDetails from "./pages/PlaceDetails";
+
 import Planner from "./pages/Planner";
 import PlannerResult from "./pages/PlannerResult";
 import Community from "./pages/Community";
@@ -58,6 +61,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/explore" element={<Explore />} />
+            <Route path="/explore/:stateId" element={<StateDetails />} />
+            <Route path="/explore/:stateId/:placeId" element={<PlaceDetails />} />
             <Route path="/planner" element={<Planner />} />
             <Route path="/planner/result" element={<PlannerResult />} />
             <Route path="/community" element={<Community />} />
