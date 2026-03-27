@@ -1,103 +1,117 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import CustomSelect from "../components/CustomSelect";
-import StateCard from "../components/StateCard";
 import { states } from "../data/states";
+import StateCard from "../components/StateCard";
+import CustomSelect from "../components/CustomSelect";
 import "./Explore.css";
 
+const placeTypeOptions = [
+  { value: "all", label: "All places" },
+  { value: "heritage", label: "Heritage" },
+  { value: "beach", label: "Beach" },
+  { value: "mountain", label: "Mountain" },
+  { value: "spiritual", label: "Spiritual" },
+  { value: "city", label: "City" },
+  { value: "nature", label: "Nature" },
+  { value: "adventure", label: "Adventure" },
+];
+
 export default function Explore() {
-  const [q, setQ] = useState("");
-  const [region, setRegion] = useState("All");
-  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const [placeType, setPlaceType] = useState("all");
 
-  const regions = useMemo(
-    () => ["All", ...Array.from(new Set(states.map((item) => item.region)))],
-    []
-  );
+  const filteredStates = useMemo(() => {
+    const q = query.trim().toLowerCase();
 
-  const regionOptions = regions.map((item) => ({
-    label: item,
-    value: item,
-  }));
-
-  const filtered = useMemo(() => {
     return states.filter((state) => {
-      const okRegion = region === "All" || state.region === region;
-      const query = q.trim().toLowerCase();
+      const searchHaystack = [
+        state.name,
+        state.region,
+        state.tag,
+        state.short,
+        state.whyFamous,
+        ...(state.highlights || []),
+        ...(state.places || []).flatMap((place) => [
+          place.name,
+          place.tag,
+          place.short,
+          place.whyFamous,
+          ...(place.topAttractions || []),
+        ]),
+      ]
+        .join(" ")
+        .toLowerCase();
 
-      const okQuery =
-        query === "" ||
-        [
-          state.name,
-          state.region,
-          state.tagline,
-          state.short,
-          state.whyFamous,
-          ...(state.highlights || []),
-          ...(state.famousFood || []),
-          ...state.places.map((place) => place.name),
-          ...state.places.map((place) => place.tag),
-        ]
-          .join(" ")
-          .toLowerCase()
-          .includes(query);
+      const matchesQuery = !q || searchHaystack.includes(q);
 
-      return okRegion && okQuery;
+      const matchesType =
+        placeType === "all" ||
+        state.tag?.toLowerCase().includes(placeType) ||
+        (state.highlights || []).some((item) =>
+          item.toLowerCase().includes(placeType)
+        ) ||
+        (state.places || []).some(
+          (place) =>
+            place.tag?.toLowerCase().includes(placeType) ||
+            place.short?.toLowerCase().includes(placeType) ||
+            place.whyFamous?.toLowerCase().includes(placeType)
+        );
+
+      return matchesQuery && matchesType;
     });
-  }, [q, region]);
-
-  function onOpenState(state) {
-    navigate(`/explore/${state.id}`);
-  }
+  }, [query, placeType]);
 
   return (
     <div className="container explorePage">
-      <section className="exploreHero card">
-        <div className="exploreHeroText">
-          <span className="exploreEyebrow">Discover India</span>
-          <h1>Explore every Indian state with state-wise places and full details</h1>
+      <div className="exploreHero">
+        <div className="exploreHeroContent">
+          <div className="exploreHeroBadge">Explore India</div>
+          <h1>Discover states, cities, and iconic destinations</h1>
           <p>
-            Browse all states of India, open each state, then view top subplaces,
-            photos, travel info, best time, budget and famous highlights.
+            Explore rich culture, beaches, mountains, spiritual cities, food
+            trails, nature escapes, and heritage destinations across India.
           </p>
+
+          <div className="exploreFiltersRow">
+            <div className="exploreSearchWrap">
+              <input
+                className="exploreSearch"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search states or places"
+              />
+            </div>
+
+            <div className="exploreTypeWrap">
+              <CustomSelect
+                value={placeType}
+                onChange={(e) => setPlaceType(e.target.value)}
+                options={placeTypeOptions}
+                placeholder="Choose type"
+                name="placeType"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="exploreSection">
+        <div className="exploreSectionHead">
+          <div>
+            <h2>Popular Indian States</h2>
+            <p>Browse states and open a deeper page to explore more subplaces.</p>
+          </div>
         </div>
 
-        <div className="exploreFilters card">
-          <input
-            className="input"
-            placeholder="Search state, place, food, vibe..."
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-          />
-
-          <CustomSelect
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-            options={regionOptions}
-          />
-        </div>
-      </section>
-
-      <section className="exploreStats">
-        <div className="card exploreStat">
-          <strong>{states.length}</strong>
-          <span>States</span>
-        </div>
-        <div className="card exploreStat">
-          <strong>{states.reduce((acc, item) => acc + item.places.length, 0)}</strong>
-          <span>Subplaces</span>
-        </div>
-        <div className="card exploreStat">
-          <strong>{filtered.length}</strong>
-          <span>Shown now</span>
-        </div>
-      </section>
-
-      <section className="stateGrid">
-        {filtered.map((state) => (
-          <StateCard key={state.id} state={state} onOpen={onOpenState} />
-        ))}
-      </section>
+        {filteredStates.length ? (
+          <div className="exploreStateGrid">
+            {filteredStates.map((state) => (
+              <StateCard key={state.id} state={state} />
+            ))}
+          </div>
+        ) : (
+          <div className="exploreEmpty">No matching state or place found.</div>
+        )}
+      </div>
     </div>
   );
 }
