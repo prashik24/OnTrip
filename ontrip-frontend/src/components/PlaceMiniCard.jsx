@@ -1,28 +1,38 @@
+import { Link } from "react-router-dom";
 import "./PlaceMiniCard.css";
 
-export default function PlaceMiniCard({ place, onOpen }) {
+export default function PlaceMiniCard({ stateId, place }) {
   return (
-    <article className="placeMiniCard card" onClick={() => onOpen(place)}>
-      <div className="placeMiniImg">
-        <img src={place.image} alt={place.name} />
-        <span>{place.tag}</span>
+    <Link to={`/explore/${stateId}/${place.id}`} className="placeMiniCard">
+      <div className="placeMiniCardImageWrap">
+        <img src={place.image} alt={place.name} className="placeMiniCardImage" />
+        <div className="placeMiniCardTag">{place.tag}</div>
       </div>
 
-      <div className="placeMiniBody">
-        <div className="placeMiniTop">
-          <h4>{place.name}</h4>
-          <strong>₹{place.budgetPerDay}</strong>
-        </div>
-
+      <div className="placeMiniCardBody">
+        <h4>{place.name}</h4>
         <p>{place.short}</p>
 
-        <div className="placeMiniMeta">
-          <span>{place.bestTime}</span>
-          <span>{place.topAttractions?.length || 0} highlights</span>
+        <div className="placeMiniCardMeta">
+          <div>
+            <strong>Best Time</strong>
+            <span>{place.bestTime}</span>
+          </div>
+
+          <div>
+            <strong>Duration</strong>
+            <span>{place.idealDuration}</span>
+          </div>
         </div>
 
-        <button className="btn btn-primary">View Details</button>
+        <div className="placeMiniCardAttractions">
+          {place.topAttractions.slice(0, 3).map((item) => (
+            <span key={item}>{item}</span>
+          ))}
+        </div>
+
+        <div className="placeMiniCardAction">View Details</div>
       </div>
-    </article>
+    </Link>
   );
 }
