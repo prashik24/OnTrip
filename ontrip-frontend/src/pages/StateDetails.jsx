@@ -23,35 +23,16 @@ export default function StateDetails() {
     );
   }
 
-  function openPlace(place) {
-    navigate(`/explore/${state.id}/${place.id}`);
-  }
-
   return (
     <div className="container statePage">
       <section className="stateHero card">
-        <img src={state.coverImage} alt={state.name} className="stateHeroImg" />
+        <img src={state.image} alt={state.name} className="stateHeroImg" />
 
         <div className="stateHeroOverlay">
           <div className="stateHeroHead">
             <span>{state.region}</span>
             <h1>{state.name}</h1>
-            <p>{state.tagline}</p>
-          </div>
-
-          <div className="stateHeroMeta">
-            <div className="card">
-              <strong>{state.bestTime}</strong>
-              <span>Best Time</span>
-            </div>
-            <div className="card">
-              <strong>₹{state.budgetPerDay}</strong>
-              <span>Avg / day</span>
-            </div>
-            <div className="card">
-              <strong>{state.places.length}</strong>
-              <span>Top Places</span>
-            </div>
+            <p>{state.short}</p>
           </div>
         </div>
       </section>
@@ -84,7 +65,7 @@ export default function StateDetails() {
         <div className="sectionHead">
           <div>
             <h2>Top places in {state.name}</h2>
-            <p>Open any place to view image gallery, best time, budget and attractions.</p>
+            <p>Open any place to view image gallery, best time, duration and attractions.</p>
           </div>
           <button className="btn" onClick={() => navigate("/planner")}>
             Plan My Trip
@@ -93,7 +74,7 @@ export default function StateDetails() {
 
         <div className="statePlacesGrid">
           {state.places.map((place) => (
-            <PlaceMiniCard key={place.id} place={place} onOpen={openPlace} />
+            <PlaceMiniCard key={place.id} stateId={state.id} place={place} />
           ))}
         </div>
       </section>
