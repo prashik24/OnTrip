@@ -1,37 +1,43 @@
+import { Link } from "react-router-dom";
 import "./StateCard.css";
 
-export default function StateCard({ state, onOpen }) {
+export default function StateCard({ state }) {
   return (
-    <article className="stateCard card" onClick={() => onOpen(state)}>
-      <div className="stateCardMedia">
-        <img src={state.coverImage} alt={state.name} />
-        <span className="stateBadge">{state.region}</span>
+    <Link to={`/explore/${state.id}`} className="stateCard">
+      <div className="stateCardImageWrap">
+        <img src={state.image} alt={state.name} className="stateCardImage" />
+        <div className="stateCardOverlay" />
+        <div className="stateCardTag">{state.tag}</div>
       </div>
 
       <div className="stateCardBody">
         <div className="stateCardTop">
+          <h3>{state.name}</h3>
+          <span>{state.region}</span>
+        </div>
+
+        <p className="stateCardShort">{state.short}</p>
+
+        <div className="stateCardMeta">
           <div>
-            <h3>{state.name}</h3>
-            <p>{state.tagline}</p>
+            <strong>Best Time</strong>
+            <span>{state.bestTime}</span>
           </div>
-          <div className="statePrice">₹{state.budgetPerDay}/day</div>
+
+          <div>
+            <strong>Places</strong>
+            <span>{state.places.length} destinations</span>
+          </div>
         </div>
 
-        <p className="stateShort">{state.short}</p>
-
-        <div className="stateMeta">
-          <span>Best Time: {state.bestTime}</span>
-          <span>{state.places.length} places</span>
-        </div>
-
-        <div className="stateHighlights">
+        <div className="stateCardHighlights">
           {state.highlights.slice(0, 4).map((item) => (
             <span key={item}>{item}</span>
           ))}
         </div>
 
-        <button className="btn btn-primary stateBtn">Explore State</button>
+        <div className="stateCardAction">Explore State</div>
       </div>
-    </article>
+    </Link>
   );
 }
