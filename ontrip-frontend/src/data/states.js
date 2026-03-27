@@ -1,1531 +1,797 @@
 export const states = [
   {
-    id: "andhra-pradesh",
-    name: "Andhra Pradesh",
-    region: "South India",
-    tagline: "Temples, beaches, hills and rich Telugu culture",
+    id: "rajasthan",
+    name: "Rajasthan",
+    region: "North India",
+    tag: "Royal Heritage",
     bestTime: "Oct–Mar",
-    budgetPerDay: 2400,
-    coverImage:
-      "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
     short:
-      "A diverse state known for Tirupati, scenic coastlines, spicy food and heritage towns.",
+      "Forts, palaces, desert views, lakes, colorful markets, and deep royal culture.",
     whyFamous:
-      "Famous for Tirupati Temple, Araku Valley, Vijayawada, coastal beauty, Kuchipudi dance and strong Telugu cultural identity.",
-    famousFood: ["Andhra meals", "Gongura", "Pulihora", "Pesarattu"],
-    highlights: ["Spiritual tourism", "Hill escapes", "Beaches", "Cuisine"],
+      "Rajasthan is famous for grand forts, royal palaces, desert landscapes, traditional culture, folk music, and vibrant handicrafts.",
+    image: "/images/states/rajasthan-cover.jpg",
+    highlights: ["Forts", "Palaces", "Desert", "Culture"],
+    famousFood: ["Dal Baati Churma", "Gatte ki Sabzi", "Laal Maas"],
     places: [
       {
-        id: "tirupati",
-        name: "Tirupati",
-        tag: "Spiritual",
-        bestTime: "Sep–Mar",
-        budgetPerDay: 2200,
-        image:
-          "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "One of India’s most important pilgrimage destinations.",
-        whyFamous:
-          "Known for Sri Venkateswara Temple at Tirumala and massive spiritual tourism.",
-        topAttractions: ["Tirumala Temple", "Sri Padmavathi Temple", "Kapila Theertham"],
-        idealFor: ["Pilgrimage", "Family trips", "Culture"]
-      },
-      {
-        id: "araku-valley",
-        name: "Araku Valley",
-        tag: "Nature",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2600,
-        image:
-          "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A cool hill getaway with coffee plantations and valley views.",
-        whyFamous:
-          "Popular for tribal culture, Borra Caves, scenic train route and coffee estates.",
-        topAttractions: ["Borra Caves", "Coffee Museum", "Valley viewpoints"],
-        idealFor: ["Nature lovers", "Couples", "Weekend trips"]
-      }
-    ]
-  },
-  {
-    id: "arunachal-pradesh",
-    name: "Arunachal Pradesh",
-    region: "Northeast India",
-    tagline: "Snow peaks, monasteries and untouched landscapes",
-    bestTime: "Oct–Apr",
-    budgetPerDay: 3200,
-    coverImage:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "Remote and beautiful, this state offers monasteries, mountains and tribal culture.",
-    whyFamous:
-      "Known for Tawang Monastery, alpine scenery, border landscapes and unique tribal heritage.",
-    famousFood: ["Thukpa", "Momos", "Zan", "Local bamboo shoot dishes"],
-    highlights: ["Monasteries", "Snowy routes", "Tribal life", "Adventure"],
-    places: [
-      {
-        id: "tawang",
-        name: "Tawang",
-        tag: "Mountains",
-        bestTime: "Mar–May, Sep–Nov",
-        budgetPerDay: 3400,
-        image:
-          "https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A high-altitude town known for Buddhism and dramatic mountain views.",
-        whyFamous:
-          "Home to Tawang Monastery, one of the largest monasteries in India.",
-        topAttractions: ["Tawang Monastery", "Sela Pass", "Madhuri Lake"],
-        idealFor: ["Adventure", "Spiritual travel", "Photography"]
-      },
-      {
-        id: "ziro",
-        name: "Ziro",
-        tag: "Hidden",
-        bestTime: "Oct–Apr",
-        budgetPerDay: 3000,
-        image:
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A peaceful valley known for culture, green landscapes and music vibes.",
-        whyFamous:
-          "Known for Apatani tribal culture, scenic rice fields and the Ziro Music Festival.",
-        topAttractions: ["Ziro Valley", "Local villages", "Pine hills"],
-        idealFor: ["Culture", "Nature", "Slow travel"]
-      }
-    ]
-  },
-  {
-    id: "assam",
-    name: "Assam",
-    region: "Northeast India",
-    tagline: "Tea gardens, wildlife and river island culture",
-    bestTime: "Oct–Apr",
-    budgetPerDay: 2500,
-    coverImage:
-      "https://images.unsplash.com/photo-1473773508845-188df298d2d1?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A lush state known for tea, the Brahmaputra, rhinos and vibrant Assamese identity.",
-    whyFamous:
-      "Famous for Assam tea, Kaziranga National Park, Majuli and Bihu celebrations.",
-    famousFood: ["Assam tea", "Khar", "Masor Tenga", "Pitha"],
-    highlights: ["Wildlife", "Tea estates", "River culture", "Festivals"],
-    places: [
-      {
-        id: "guwahati",
-        name: "Guwahati",
-        tag: "City",
+        id: "jaipur",
+        name: "Jaipur",
+        tag: "Pink City",
         bestTime: "Oct–Mar",
-        budgetPerDay: 2400,
-        image:
-          "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Gateway to the Northeast with temples, river views and markets.",
+        short:
+          "Historic forts, royal palaces, local shopping, and a colorful city atmosphere.",
         whyFamous:
-          "Known for Kamakhya Temple and its role as the key travel hub of Northeast India.",
-        topAttractions: ["Kamakhya Temple", "Umananda", "Brahmaputra cruise"],
-        idealFor: ["Culture", "Family trips", "Transit stays"]
+          "Jaipur is famous for Amer Fort, City Palace, Hawa Mahal, old bazaars, and its rich Rajput history.",
+        image: "/images/places/jaipur-hero.jpg",
+        gallery: [
+          "/images/places/jaipur-1.jpg",
+          "/images/places/jaipur-2.jpg",
+          "/images/places/jaipur-3.jpg",
+        ],
+        topAttractions: ["Amer Fort", "Hawa Mahal", "City Palace"],
+        food: ["Pyaaz Kachori", "Ghewar", "Dal Baati"],
+        stayArea: "MI Road, Bani Park, Malviya Nagar",
+        idealDuration: "2 to 3 days",
       },
       {
-        id: "kaziranga",
-        name: "Kaziranga",
-        tag: "Wildlife",
-        bestTime: "Nov–Apr",
-        budgetPerDay: 3200,
-        image:
-          "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1501706362039-c6e80948f11f?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "One of India’s top wildlife destinations.",
+        id: "udaipur",
+        name: "Udaipur",
+        tag: "City of Lakes",
+        bestTime: "Oct–Mar",
+        short:
+          "Lakeside beauty, royal architecture, sunset views, and a peaceful romantic vibe.",
         whyFamous:
-          "World famous for one-horned rhinoceroses and rich biodiversity.",
-        topAttractions: ["Jeep safari", "Elephant safari", "Bird watching"],
-        idealFor: ["Wildlife lovers", "Photographers", "Nature trips"]
-      }
-    ]
-  },
-  {
-    id: "bihar",
-    name: "Bihar",
-    region: "East India",
-    tagline: "Ancient learning, spirituality and deep history",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 1900,
-    coverImage:
-      "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A historic land connected to Buddhism, Nalanda and major ancient Indian empires.",
-    whyFamous:
-      "Known for Bodh Gaya, Nalanda, Rajgir and its strong place in Indian history and spirituality.",
-    famousFood: ["Litti chokha", "Thekua", "Khaja", "Sattu dishes"],
-    highlights: ["History", "Buddhist sites", "Ancient universities", "Pilgrimage"],
-    places: [
+          "Udaipur is famous for its lakes, City Palace, boat rides, rooftop cafes, and scenic hill views.",
+        image: "/images/places/udaipur-hero.jpg",
+        gallery: [
+          "/images/places/udaipur-1.jpg",
+          "/images/places/udaipur-2.jpg",
+          "/images/places/udaipur-3.jpg",
+        ],
+        topAttractions: ["City Palace", "Lake Pichola", "Sajjangarh Palace"],
+        food: ["Dal Baati", "Kachori", "Mawa Kachori"],
+        stayArea: "Lal Ghat, Fateh Sagar, City Palace area",
+        idealDuration: "2 to 3 days",
+      },
       {
-        id: "bodh-gaya",
-        name: "Bodh Gaya",
+        id: "jodhpur",
+        name: "Jodhpur",
+        tag: "Blue City",
+        bestTime: "Oct–Mar",
+        short:
+          "Massive forts, blue-painted streets, heritage charm, and bold desert character.",
+        whyFamous:
+          "Jodhpur is famous for Mehrangarh Fort, blue houses, old city views, and traditional Rajasthani charm.",
+        image: "/images/places/jodhpur-hero.jpg",
+        gallery: [
+          "/images/places/jodhpur-1.jpg",
+          "/images/places/jodhpur-2.jpg",
+          "/images/places/jodhpur-3.jpg",
+        ],
+        topAttractions: ["Mehrangarh Fort", "Jaswant Thada", "Clock Tower Market"],
+        food: ["Mirchi Bada", "Makhaniya Lassi", "Pyaaz Kachori"],
+        stayArea: "Clock Tower, Ratanada, Sardarpura",
+        idealDuration: "2 days",
+      },
+      {
+        id: "jaisalmer",
+        name: "Jaisalmer",
+        tag: "Golden City",
+        bestTime: "Nov–Feb",
+        short:
+          "Golden sandstone beauty, desert camps, dunes, and magical sunset experiences.",
+        whyFamous:
+          "Jaisalmer is famous for desert safaris, Jaisalmer Fort, golden architecture, and dune camping.",
+        image: "/images/places/jaisalmer-hero.jpg",
+        gallery: [
+          "/images/places/jaisalmer-1.jpg",
+          "/images/places/jaisalmer-2.jpg",
+          "/images/places/jaisalmer-3.jpg",
+        ],
+        topAttractions: ["Jaisalmer Fort", "Sam Sand Dunes", "Patwon Ki Haveli"],
+        food: ["Ker Sangri", "Dal Pakwan", "Kachori"],
+        stayArea: "Fort area, Sam Road, Desert camps",
+        idealDuration: "2 days",
+      },
+      {
+        id: "pushkar",
+        name: "Pushkar",
         tag: "Spiritual",
         bestTime: "Oct–Mar",
-        budgetPerDay: 2000,
-        image:
-          "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1482192505345-5655af888cc4?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "One of the holiest Buddhist pilgrimage destinations in the world.",
+        short:
+          "Sacred ghats, temple atmosphere, peaceful walks, cafes, and a laid-back travel mood.",
         whyFamous:
-          "Known as the place where Gautama Buddha attained enlightenment.",
-        topAttractions: ["Mahabodhi Temple", "Bodhi Tree", "International monasteries"],
-        idealFor: ["Pilgrimage", "History", "Peaceful travel"]
+          "Pushkar is famous for Brahma Temple, holy lake, spiritual atmosphere, and the Pushkar fair.",
+        image: "/images/places/pushkar-hero.jpg",
+        gallery: [
+          "/images/places/pushkar-1.jpg",
+          "/images/places/pushkar-2.jpg",
+          "/images/places/pushkar-3.jpg",
+        ],
+        topAttractions: ["Pushkar Lake", "Brahma Temple", "Local Bazaar"],
+        food: ["Malpua", "Falafel", "Lassi"],
+        stayArea: "Lake area, main market, temple road",
+        idealDuration: "1 to 2 days",
       },
       {
-        id: "rajgir",
-        name: "Rajgir",
-        tag: "History",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 1800,
-        image:
-          "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A heritage town with hills, ropeway and Buddhist/Jain connections.",
-        whyFamous:
-          "Known for ancient Magadha history, Vishwa Shanti Stupa and hot springs.",
-        topAttractions: ["Vishwa Shanti Stupa", "Ropeway", "Hot springs"],
-        idealFor: ["History lovers", "Family", "Culture"]
-      }
-    ]
-  },
-  {
-    id: "chhattisgarh",
-    name: "Chhattisgarh",
-    region: "Central India",
-    tagline: "Waterfalls, forests and tribal culture",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2100,
-    coverImage:
-      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A lesser-known state with dense forests, caves, waterfalls and heritage sites.",
-    whyFamous:
-      "Known for Bastar culture, Chitrakote Falls, caves and green landscapes.",
-    famousFood: ["Chila", "Farra", "Aamat", "Bore baasi"],
-    highlights: ["Waterfalls", "Tribal heritage", "Caves", "Eco tourism"],
-    places: [
-      {
-        id: "jagdalpur",
-        name: "Jagdalpur",
-        tag: "Nature",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2200,
-        image:
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1431794062232-2a99a5431c6c?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Base town for Bastar and nearby waterfall adventures.",
-        whyFamous:
-          "Known for access to Chitrakote Falls, tribal art and nearby caves.",
-        topAttractions: ["Chitrakote Falls", "Tirathgarh Falls", "Bastar Palace"],
-        idealFor: ["Nature", "Adventure", "Offbeat travel"]
-      },
-      {
-        id: "mainpat",
-        name: "Mainpat",
-        tag: "Hidden",
-        bestTime: "Oct–Mar",
-        budgetPerDay: 2300,
-        image:
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "An underrated hill station with cool weather and peaceful views.",
-        whyFamous:
-          "Popular as a hidden hill destination with Tibetan influence and viewpoints.",
-        topAttractions: ["Tiger Point", "Fish Point", "Monasteries"],
-        idealFor: ["Weekend escape", "Nature lovers", "Slow travel"]
-      }
-    ]
-  },
-  {
-    id: "goa",
-    name: "Goa",
-    region: "West India",
-    tagline: "Beaches, heritage, nightlife and easy vacations",
-    bestTime: "Nov–Feb",
-    budgetPerDay: 2800,
-    coverImage:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "Beach hopping, cafés, sunsets and a perfect mix of fun and relaxation.",
-    whyFamous:
-      "Known for beaches, Portuguese-era churches, seafood, nightlife and vibrant travel culture.",
-    famousFood: ["Goan fish curry", "Bebinca", "Prawn balchão", "Poi"],
-    highlights: ["Beaches", "Nightlife", "Heritage", "Cafés"],
-    places: [
-      {
-        id: "north-goa",
-        name: "North Goa",
-        tag: "Beaches",
-        bestTime: "Nov–Feb",
-        budgetPerDay: 3000,
-        image:
-          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Popular for party beaches, cafés and a lively atmosphere.",
-        whyFamous:
-          "Known for Baga, Calangute, Anjuna and strong nightlife culture.",
-        topAttractions: ["Baga Beach", "Anjuna", "Fort Aguada"],
-        idealFor: ["Friends", "Beach fun", "Nightlife"]
-      },
-      {
-        id: "south-goa",
-        name: "South Goa",
-        tag: "Relax",
-        bestTime: "Nov–Feb",
-        budgetPerDay: 3200,
-        image:
-          "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Peaceful beaches and slower luxury vibes.",
-        whyFamous:
-          "Known for less crowded beaches, resorts, scenic drives and quiet escapes.",
-        topAttractions: ["Palolem", "Colva", "Cabo de Rama"],
-        idealFor: ["Couples", "Family", "Relaxing trips"]
-      }
-    ]
-  },
-  {
-    id: "gujarat",
-    name: "Gujarat",
-    region: "West India",
-    tagline: "Culture, temples, white desert and wildlife",
-    bestTime: "Nov–Feb",
-    budgetPerDay: 2400,
-    coverImage:
-      "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A colorful state known for heritage towns, Gir lions and the Rann of Kutch.",
-    whyFamous:
-      "Famous for Statue of Unity, Somnath, Dwarka, Kutch and strong trade culture.",
-    famousFood: ["Gujarati thali", "Dhokla", "Khandvi", "Thepla"],
-    highlights: ["Desert festival", "Temples", "Wildlife", "Handicrafts"],
-    places: [
-      {
-        id: "ahmedabad",
-        name: "Ahmedabad",
-        tag: "City",
-        bestTime: "Nov–Feb",
-        budgetPerDay: 2300,
-        image:
-          "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A heritage city with old pols, food and modern riverfront views.",
-        whyFamous:
-          "Known for Sabarmati Ashram, old city lanes and textile heritage.",
-        topAttractions: ["Sabarmati Ashram", "Riverfront", "Adalaj Stepwell"],
-        idealFor: ["Culture", "Food lovers", "History"]
-      },
-      {
-        id: "kutch",
-        name: "Kutch",
-        tag: "Desert",
-        bestTime: "Nov–Feb",
-        budgetPerDay: 2800,
-        image:
-          "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A striking white desert with crafts, folk culture and winter festivals.",
-        whyFamous:
-          "Known for the Great Rann of Kutch, desert landscapes and artisan villages.",
-        topAttractions: ["White Rann", "Kala Dungar", "Bhujodi"],
-        idealFor: ["Photography", "Culture", "Winter trips"]
-      }
-    ]
-  },
-  {
-    id: "haryana",
-    name: "Haryana",
-    region: "North India",
-    tagline: "Heritage, urban hubs and spiritual sites",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2200,
-    coverImage:
-      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A state combining historic sites, city life and places tied to Indian epics.",
-    whyFamous:
-      "Known for Kurukshetra, Gurgaon, Surajkund and its role in agriculture and industry.",
-    famousFood: ["Bajra roti", "Kadhi", "Lassi", "Haryanvi kheer"],
-    highlights: ["Epic history", "Urban stays", "Craft fairs", "Road trips"],
-    places: [
-      {
-        id: "gurugram",
-        name: "Gurugram",
-        tag: "City",
-        bestTime: "Oct–Mar",
-        budgetPerDay: 2800,
-        image:
-          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Modern skyline, malls and fast-paced city life near Delhi.",
-        whyFamous:
-          "Known as a major corporate and business hub with luxury stays and nightlife.",
-        topAttractions: ["Cyber Hub", "Museums", "Food streets"],
-        idealFor: ["City breaks", "Business trips", "Weekend stays"]
-      },
-      {
-        id: "kurukshetra",
-        name: "Kurukshetra",
-        tag: "History",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 1900,
-        image:
-          "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A sacred city associated with the Mahabharata.",
-        whyFamous:
-          "Known for Brahma Sarovar and its deep connection to the Bhagavad Gita.",
-        topAttractions: ["Brahma Sarovar", "Jyotisar", "Museums"],
-        idealFor: ["Spiritual travel", "History", "Families"]
-      }
-    ]
-  },
-  {
-    id: "himachal-pradesh",
-    name: "Himachal Pradesh",
-    region: "North India",
-    tagline: "Mountains, snowfall, cafés and adventure",
-    bestTime: "Mar–Jun, Sep–Dec",
-    budgetPerDay: 2600,
-    coverImage:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A favorite mountain state for scenic road trips, snow, trekking and charming hill towns.",
-    whyFamous:
-      "Known for Shimla, Manali, Spiti, Dharamshala, apple orchards and mountain adventure.",
-    famousFood: ["Siddu", "Madra", "Thukpa", "Babru"],
-    highlights: ["Snow trips", "Trekking", "Road journeys", "Café culture"],
-    places: [
-      {
-        id: "manali",
-        name: "Manali",
-        tag: "Mountains",
+        id: "mount-abu",
+        name: "Mount Abu",
+        tag: "Hill Escape",
         bestTime: "Oct–Jun",
-        budgetPerDay: 2800,
-        image:
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A classic hill station with snow points, rivers and cafés.",
+        short:
+          "Cool weather, scenic hills, lake views, and a calm break from Rajasthan heat.",
         whyFamous:
-          "Known for Solang Valley, mountain stays, honeymoon trips and adventure sports.",
-        topAttractions: ["Solang", "Old Manali", "Hadimba Temple"],
-        idealFor: ["Couples", "Friends", "Adventure"]
+          "Mount Abu is famous for Nakki Lake, hill climate, viewpoints, and Dilwara Temples.",
+        image: "/images/places/mount-abu-hero.jpg",
+        gallery: [
+          "/images/places/mount-abu-1.jpg",
+          "/images/places/mount-abu-2.jpg",
+          "/images/places/mount-abu-3.jpg",
+        ],
+        topAttractions: ["Nakki Lake", "Dilwara Temples", "Sunset Point"],
+        food: ["Rajasthani Thali", "Pakora", "Rabdi"],
+        stayArea: "Lake road, market area, hill view side",
+        idealDuration: "2 days",
       },
-      {
-        id: "spiti",
-        name: "Spiti Valley",
-        tag: "Adventure",
-        bestTime: "May–Oct",
-        budgetPerDay: 3200,
-        image:
-          "https://images.unsplash.com/photo-1482192505345-5655af888cc4?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1482192505345-5655af888cc4?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A raw high-altitude desert valley for unforgettable road trips.",
-        whyFamous:
-          "Famous for monasteries, remote roads, barren beauty and stargazing.",
-        topAttractions: ["Key Monastery", "Kaza", "Chandratal"],
-        idealFor: ["Road trips", "Adventure", "Photography"]
-      }
-    ]
+    ],
   },
+
   {
-    id: "jharkhand",
-    name: "Jharkhand",
-    region: "East India",
-    tagline: "Forests, waterfalls and tribal heritage",
+    id: "maharashtra",
+    name: "Maharashtra",
+    region: "West India",
+    tag: "City + Nature",
     bestTime: "Oct–Mar",
-    budgetPerDay: 2000,
-    coverImage:
-      "https://images.unsplash.com/photo-1431794062232-2a99a5431c6c?auto=format&fit=crop&w=1200&q=80",
     short:
-      "A green state with many waterfalls, hills and sacred places.",
+      "Fast cities, hill escapes, beaches, forts, caves, and a mix of modern and historical travel.",
     whyFamous:
-      "Known for Ranchi waterfalls, Deoghar temple and rich mineral and forest landscapes.",
-    famousFood: ["Dhuska", "Pittha", "Handia", "Rugra"],
-    highlights: ["Waterfalls", "Temples", "Nature drives", "Local culture"],
+      "Maharashtra is famous for Mumbai, Western Ghats, beaches, caves, hill stations, and food culture.",
+    image: "/images/states/maharashtra-cover.jpg",
+    highlights: ["City Life", "Hill Stations", "Coast", "History"],
+    famousFood: ["Vada Pav", "Misal Pav", "Puran Poli"],
     places: [
       {
-        id: "ranchi",
-        name: "Ranchi",
-        tag: "Nature",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2100,
-        image:
-          "https://images.unsplash.com/photo-1431794062232-2a99a5431c6c?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1431794062232-2a99a5431c6c?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Known for waterfalls and pleasant weather.",
+        id: "mumbai",
+        name: "Mumbai",
+        tag: "City Life",
+        bestTime: "Nov–Feb",
+        short:
+          "Sea views, iconic landmarks, street food, nightlife, and nonstop city energy.",
         whyFamous:
-          "Known as the city of waterfalls with scenic outskirts and parks.",
-        topAttractions: ["Dassam Falls", "Hundru Falls", "Rock Garden"],
-        idealFor: ["Nature lovers", "Families", "Short trips"]
+          "Mumbai is famous for Marine Drive, Gateway of India, film culture, food, shopping, and urban life.",
+        image: "/images/places/mumbai-hero.jpg",
+        gallery: [
+          "/images/places/mumbai-1.jpg",
+          "/images/places/mumbai-2.jpg",
+          "/images/places/mumbai-3.jpg",
+        ],
+        topAttractions: ["Gateway of India", "Marine Drive", "Juhu Beach"],
+        food: ["Vada Pav", "Pav Bhaji", "Bombay Sandwich"],
+        stayArea: "Colaba, Andheri, Bandra",
+        idealDuration: "2 to 3 days",
       },
       {
-        id: "deoghar",
-        name: "Deoghar",
-        tag: "Spiritual",
-        bestTime: "Oct–Mar",
-        budgetPerDay: 1800,
-        image:
-          "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A major pilgrimage center with deep spiritual importance.",
+        id: "lonavala",
+        name: "Lonavala",
+        tag: "Weekend Escape",
+        bestTime: "Jul–Feb",
+        short:
+          "Green valleys, viewpoints, waterfalls, and a quick refreshing escape from city rush.",
         whyFamous:
-          "Known for Baba Baidyanath Dham, one of the twelve Jyotirlingas.",
-        topAttractions: ["Baidyanath Temple", "Naulakha Mandir", "Tapovan"],
-        idealFor: ["Pilgrimage", "Family", "Cultural travel"]
-      }
-    ]
-  },
-  {
-    id: "karnataka",
-    name: "Karnataka",
-    region: "South India",
-    tagline: "Heritage, tech cities, beaches and hills",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2600,
-    coverImage:
-      "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A balanced state with royal history, coffee hills, coastal escapes and modern city life.",
-    whyFamous:
-      "Known for Bengaluru, Mysuru, Coorg, Hampi, Udupi and strong cultural diversity.",
-    famousFood: ["Bisi bele bath", "Mysore pak", "Neer dosa", "Filter coffee"],
-    highlights: ["Palaces", "Coffee hills", "Ruins", "Coastline"],
-    places: [
-      {
-        id: "coorg",
-        name: "Coorg",
-        tag: "Nature",
-        bestTime: "Oct–Mar",
-        budgetPerDay: 2900,
-        image:
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
+          "Lonavala is famous for monsoon beauty, Tiger Point, caves, and easy weekend road trips.",
+        image: "/images/places/lonavala-hero.jpg",
         gallery: [
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80"
+          "/images/places/lonavala-1.jpg",
+          "/images/places/lonavala-2.jpg",
+          "/images/places/lonavala-3.jpg",
         ],
-        short: "A lush coffee region with scenic stays and forest roads.",
-        whyFamous:
-          "Known for coffee estates, waterfalls and peaceful hill vacations.",
-        topAttractions: ["Abbey Falls", "Raja’s Seat", "Coffee estates"],
-        idealFor: ["Couples", "Nature lovers", "Weekend breaks"]
+        topAttractions: ["Tiger Point", "Bhushi Dam", "Karla Caves"],
+        food: ["Chikki", "Corn Pakoda", "Maggi"],
+        stayArea: "Main market, Tungarli, Old Mumbai-Pune road",
+        idealDuration: "1 to 2 days",
       },
       {
-        id: "hampi",
-        name: "Hampi",
-        tag: "History",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2400,
-        image:
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A surreal heritage landscape of ruins, temples and boulders.",
+        id: "mahabaleshwar",
+        name: "Mahabaleshwar",
+        tag: "Hill Station",
+        bestTime: "Oct–Jun",
+        short:
+          "Cool weather, strawberry farms, viewpoints, and quiet mountain roads.",
         whyFamous:
-          "UNESCO heritage destination known for Vijayanagara Empire ruins.",
-        topAttractions: ["Virupaksha Temple", "Stone Chariot", "Hemakuta Hill"],
-        idealFor: ["History lovers", "Backpackers", "Photography"]
-      }
-    ]
+          "Mahabaleshwar is famous for viewpoints, strawberry produce, Venna Lake, and hill station charm.",
+        image: "/images/places/mahabaleshwar-hero.jpg",
+        gallery: [
+          "/images/places/mahabaleshwar-1.jpg",
+          "/images/places/mahabaleshwar-2.jpg",
+          "/images/places/mahabaleshwar-3.jpg",
+        ],
+        topAttractions: ["Venna Lake", "Arthur Seat", "Mapro Garden"],
+        food: ["Strawberry Cream", "Corn", "Maharashtrian Thali"],
+        stayArea: "Market area, Venna Lake side, Panchgani road",
+        idealDuration: "2 days",
+      },
+      {
+        id: "alibaug",
+        name: "Alibaug",
+        tag: "Beach Escape",
+        bestTime: "Oct–Mar",
+        short:
+          "Relaxed beaches, short coastal getaways, sunsets, and easy resort stays.",
+        whyFamous:
+          "Alibaug is famous for beaches, weekend trips, coastal views, and sea-facing stays.",
+        image: "/images/places/alibaug-hero.jpg",
+        gallery: [
+          "/images/places/alibaug-1.jpg",
+          "/images/places/alibaug-2.jpg",
+          "/images/places/alibaug-3.jpg",
+        ],
+        topAttractions: ["Alibaug Beach", "Kashid Beach", "Kolaba Fort"],
+        food: ["Seafood", "Konkani Curry", "Solkadhi"],
+        stayArea: "Alibaug town, Nagaon, Kashid",
+        idealDuration: "1 to 2 days",
+      },
+      {
+        id: "nashik",
+        name: "Nashik",
+        tag: "Temple + Vineyards",
+        bestTime: "Oct–Mar",
+        short:
+          "Pilgrimage energy, riverfront atmosphere, and India’s wine destination feel.",
+        whyFamous:
+          "Nashik is famous for temples, Godavari ghats, vineyards, and religious importance.",
+        image: "/images/places/nashik-hero.jpg",
+        gallery: [
+          "/images/places/nashik-1.jpg",
+          "/images/places/nashik-2.jpg",
+          "/images/places/nashik-3.jpg",
+        ],
+        topAttractions: ["Sula Vineyards", "Trimbakeshwar", "Ramkund"],
+        food: ["Misal Pav", "Sabudana Vada", "Thali"],
+        stayArea: "Gangapur Road, Panchavati, Trimbak road",
+        idealDuration: "2 days",
+      },
+      {
+        id: "aurangabad",
+        name: "Aurangabad",
+        tag: "Heritage",
+        bestTime: "Oct–Mar",
+        short:
+          "Historic monuments, cave art, and one of the strongest heritage circuits in India.",
+        whyFamous:
+          "Aurangabad is famous for Ajanta Caves, Ellora Caves, Bibi Ka Maqbara, and historical architecture.",
+        image: "/images/places/aurangabad-hero.jpg",
+        gallery: [
+          "/images/places/aurangabad-1.jpg",
+          "/images/places/aurangabad-2.jpg",
+          "/images/places/aurangabad-3.jpg",
+        ],
+        topAttractions: ["Ajanta Caves", "Ellora Caves", "Bibi Ka Maqbara"],
+        food: ["Naan Qalia", "Pulao", "Maharashtrian Meals"],
+        stayArea: "CIDCO, central city, heritage route area",
+        idealDuration: "2 to 3 days",
+      },
+    ],
   },
+
   {
     id: "kerala",
     name: "Kerala",
     region: "South India",
-    tagline: "Backwaters, greenery, beaches and wellness",
+    tag: "Nature Paradise",
     bestTime: "Sep–Mar",
-    budgetPerDay: 2700,
-    coverImage:
-      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
     short:
-      "A serene state famous for houseboats, hill stations, Ayurveda and lush beauty.",
+      "Backwaters, hills, beaches, tea gardens, and one of India’s most complete travel states.",
     whyFamous:
-      "Known for Munnar, Alleppey, Kochi, beaches, spices and wellness tourism.",
-    famousFood: ["Appam", "Puttu", "Kerala sadya", "Fish curry"],
-    highlights: ["Backwaters", "Ayurveda", "Tea hills", "Beaches"],
+      "Kerala is famous for backwaters, tea estates, houseboats, beaches, hill stations, and rich greenery.",
+    image: "/images/states/kerala-cover.jpg",
+    highlights: ["Backwaters", "Tea Hills", "Beaches", "Nature"],
+    famousFood: ["Appam", "Puttu", "Kerala Sadya"],
     places: [
       {
         id: "munnar",
         name: "Munnar",
-        tag: "Hills",
+        tag: "Tea Hills",
         bestTime: "Sep–Mar",
-        budgetPerDay: 2800,
-        image:
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Rolling tea gardens, cool air and peaceful mountain stays.",
+        short:
+          "Tea plantations, misty mountains, cool air, and beautiful scenic roads.",
         whyFamous:
-          "Known for tea plantations, viewpoints and scenic hill weather.",
-        topAttractions: ["Tea gardens", "Eravikulam", "Mattupetty Dam"],
-        idealFor: ["Couples", "Nature", "Family"]
+          "Munnar is famous for tea estates, viewpoints, cool weather, and peaceful mountain landscapes.",
+        image: "/images/places/munnar-hero.jpg",
+        gallery: [
+          "/images/places/munnar-1.jpg",
+          "/images/places/munnar-2.jpg",
+          "/images/places/munnar-3.jpg",
+        ],
+        topAttractions: ["Tea Gardens", "Top Station", "Mattupetty Dam"],
+        food: ["Appam", "Stew", "Banana Chips"],
+        stayArea: "Town center, tea valley side, Top Station route",
+        idealDuration: "2 days",
       },
       {
         id: "alleppey",
         name: "Alleppey",
         tag: "Backwaters",
         bestTime: "Oct–Feb",
-        budgetPerDay: 3000,
-        image:
-          "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "The classic Kerala backwater experience with houseboats and canals.",
+        short:
+          "Houseboats, canals, coconut trees, and slow relaxing waterside travel.",
         whyFamous:
-          "Known for overnight houseboat stays and calm backwater scenery.",
-        topAttractions: ["Houseboats", "Vembanad Lake", "Alappuzha Beach"],
-        idealFor: ["Romantic trips", "Family", "Relaxation"]
-      }
-    ]
-  },
-  {
-    id: "madhya-pradesh",
-    name: "Madhya Pradesh",
-    region: "Central India",
-    tagline: "Forts, temples, forests and heritage trails",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2200,
-    coverImage:
-      "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "The heart of India with wildlife parks, temples and impressive historic cities.",
-    whyFamous:
-      "Known for Khajuraho, Ujjain, Bhopal, Bandhavgarh and rich architecture.",
-    famousFood: ["Poha jalebi", "Bhutte ka kees", "Dal bafla", "Sabudana khichdi"],
-    highlights: ["Heritage", "Tiger reserves", "Pilgrimage", "Architecture"],
-    places: [
+          "Alleppey is famous for houseboats, backwater cruises, village canals, and scenic water routes.",
+        image: "/images/places/alleppey-hero.jpg",
+        gallery: [
+          "/images/places/alleppey-1.jpg",
+          "/images/places/alleppey-2.jpg",
+          "/images/places/alleppey-3.jpg",
+        ],
+        topAttractions: ["Backwaters", "Houseboat Ride", "Alleppey Beach"],
+        food: ["Kerala Meals", "Fish Curry", "Prawn Fry"],
+        stayArea: "Backwater side, beach road, houseboat zone",
+        idealDuration: "1 to 2 days",
+      },
       {
-        id: "khajuraho",
-        name: "Khajuraho",
-        tag: "History",
+        id: "kochi",
+        name: "Kochi",
+        tag: "Historic Port",
         bestTime: "Oct–Mar",
-        budgetPerDay: 2300,
-        image:
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A world-famous temple town known for sculpture and art.",
+        short:
+          "Fort area charm, cafes, colonial streets, and coastal city culture.",
         whyFamous:
-          "UNESCO site known for intricately carved medieval Hindu and Jain temples.",
-        topAttractions: ["Western Group of Temples", "Light & Sound Show", "Museums"],
-        idealFor: ["History", "Architecture", "Culture"]
+          "Kochi is famous for Fort Kochi, Chinese fishing nets, colonial architecture, and artsy cafes.",
+        image: "/images/places/kochi-hero.jpg",
+        gallery: [
+          "/images/places/kochi-1.jpg",
+          "/images/places/kochi-2.jpg",
+          "/images/places/kochi-3.jpg",
+        ],
+        topAttractions: ["Fort Kochi", "Mattancherry", "Marine Drive"],
+        food: ["Seafood", "Appam", "Malabar Dishes"],
+        stayArea: "Fort Kochi, Ernakulam, Marine Drive",
+        idealDuration: "2 days",
       },
       {
-        id: "ujjain",
-        name: "Ujjain",
-        tag: "Spiritual",
+        id: "wayanad",
+        name: "Wayanad",
+        tag: "Green Escape",
         bestTime: "Oct–Mar",
-        budgetPerDay: 1900,
-        image:
-          "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A sacred city on the Shipra river.",
+        short:
+          "Forest roads, waterfalls, wildlife, and quiet mountain landscapes.",
         whyFamous:
-          "Known for Mahakaleshwar Jyotirlinga and Kumbh-related spiritual significance.",
-        topAttractions: ["Mahakaleshwar Temple", "Ram Ghat", "Kal Bhairav Temple"],
-        idealFor: ["Pilgrimage", "Culture", "Family"]
-      }
-    ]
-  },
-  {
-    id: "maharashtra",
-    name: "Maharashtra",
-    region: "West India",
-    tagline: "Cities, forts, coastlines, caves and hill escapes",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2600,
-    coverImage:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A major travel state with Mumbai energy, Western Ghats beauty and heritage caves.",
-    whyFamous:
-      "Known for Mumbai, Pune, Lonavala, Ajanta-Ellora, beaches and Maratha history.",
-    famousFood: ["Vada pav", "Misal pav", "Puran poli", "Bombil fry"],
-    highlights: ["City life", "Weekend hills", "Heritage caves", "Coastal escapes"],
-    places: [
-      {
-        id: "mumbai",
-        name: "Mumbai",
-        tag: "City",
-        bestTime: "Nov–Feb",
-        budgetPerDay: 3200,
-        image:
-          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+          "Wayanad is famous for greenery, caves, waterfalls, wildlife, and scenic hill drives.",
+        image: "/images/places/wayanad-hero.jpg",
         gallery: [
-          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1200&q=80"
+          "/images/places/wayanad-1.jpg",
+          "/images/places/wayanad-2.jpg",
+          "/images/places/wayanad-3.jpg",
         ],
-        short: "India’s financial capital with sea views, food and nonstop energy.",
-        whyFamous:
-          "Known for Bollywood, Marine Drive, Gateway of India and urban nightlife.",
-        topAttractions: ["Gateway of India", "Marine Drive", "Colaba"],
-        idealFor: ["City lovers", "Foodies", "Short trips"]
+        topAttractions: ["Edakkal Caves", "Soochipara Falls", "Banasura Dam"],
+        food: ["Malabar Parotta", "Kerala Curry", "Banana Fry"],
+        stayArea: "Kalpetta, Vythiri, Sultan Bathery",
+        idealDuration: "2 days",
       },
       {
-        id: "lonavala",
-        name: "Lonavala",
-        tag: "Hills",
-        bestTime: "Jul–Feb",
-        budgetPerDay: 2500,
-        image:
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A favorite hill escape near Mumbai and Pune.",
-        whyFamous:
-          "Known for monsoon views, forts, valleys and easy weekend road trips.",
-        topAttractions: ["Tiger Point", "Bhushi Dam", "Karla Caves"],
-        idealFor: ["Weekend trips", "Friends", "Nature"]
-      }
-    ]
-  },
-  {
-    id: "manipur",
-    name: "Manipur",
-    region: "Northeast India",
-    tagline: "Lakes, hills, dance and unique traditions",
-    bestTime: "Oct–Apr",
-    budgetPerDay: 2600,
-    coverImage:
-      "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A culturally rich state known for Loktak Lake, dance traditions and scenic hills.",
-    whyFamous:
-      "Known for floating islands on Loktak Lake and classical Manipuri dance.",
-    famousFood: ["Eromba", "Chamthong", "Nga thongba", "Singju"],
-    highlights: ["Lakes", "Culture", "Hill views", "Dance heritage"],
-    places: [
-      {
-        id: "imphal",
-        name: "Imphal",
-        tag: "Culture",
+        id: "varkala",
+        name: "Varkala",
+        tag: "Cliff Beach",
         bestTime: "Oct–Mar",
-        budgetPerDay: 2400,
-        image:
-          "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "The cultural center of Manipur with local markets and history.",
+        short:
+          "Cliffside beach views, cafes, calm sea breeze, and relaxing coastal stays.",
         whyFamous:
-          "Known for Ima Keithel, museums and being the gateway to Manipur.",
-        topAttractions: ["Ima Keithel", "Kangla Fort", "War Cemetery"],
-        idealFor: ["Culture", "Local markets", "History"]
+          "Varkala is famous for cliff beaches, sunsets, yoga stays, and peaceful coastal travel.",
+        image: "/images/places/varkala-hero.jpg",
+        gallery: [
+          "/images/places/varkala-1.jpg",
+          "/images/places/varkala-2.jpg",
+          "/images/places/varkala-3.jpg",
+        ],
+        topAttractions: ["Varkala Cliff", "Beach", "Janardhana Swamy Temple"],
+        food: ["Seafood", "Cafe Meals", "Kerala Breakfast"],
+        stayArea: "North Cliff, South Cliff, Beach road",
+        idealDuration: "2 days",
       },
       {
-        id: "loktak",
-        name: "Loktak Lake",
-        tag: "Nature",
+        id: "thekkady",
+        name: "Thekkady",
+        tag: "Wildlife",
         bestTime: "Oct–Mar",
-        budgetPerDay: 2800,
-        image:
-          "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A stunning lake famous for its floating phumdis.",
+        short:
+          "Forest reserve, boating, spice plantations, and wildlife experiences.",
         whyFamous:
-          "Known as the world’s only floating lake landscape and for Keibul Lamjao nearby.",
-        topAttractions: ["Lake viewpoints", "Boat rides", "Keibul Lamjao"],
-        idealFor: ["Nature", "Photography", "Peaceful trips"]
-      }
-    ]
-  },
-  {
-    id: "meghalaya",
-    name: "Meghalaya",
-    region: "Northeast India",
-    tagline: "Cloudy hills, waterfalls and living root bridges",
-    bestTime: "Oct–Apr",
-    budgetPerDay: 2500,
-    coverImage:
-      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A dreamy hill state with caves, waterfalls, clean villages and green trails.",
-    whyFamous:
-      "Known for Cherrapunji, Shillong, living root bridges and nature adventures.",
-    famousFood: ["Jadoh", "Tungrymbai", "Dohneiiong", "Pumaloi"],
-    highlights: ["Waterfalls", "Bridges", "Caves", "Road trips"],
-    places: [
-      {
-        id: "shillong",
-        name: "Shillong",
-        tag: "Hills",
-        bestTime: "Oct–Apr",
-        budgetPerDay: 2600,
-        image:
-          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80",
+          "Thekkady is famous for Periyar Wildlife Sanctuary, spice gardens, and nature tourism.",
+        image: "/images/places/thekkady-hero.jpg",
         gallery: [
-          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80"
+          "/images/places/thekkady-1.jpg",
+          "/images/places/thekkady-2.jpg",
+          "/images/places/thekkady-3.jpg",
         ],
-        short: "A lively hill city with music, lakes and cool weather.",
-        whyFamous:
-          "Known as the Scotland of the East for its scenery and hill-town charm.",
-        topAttractions: ["Umiam Lake", "Police Bazaar", "Shillong Peak"],
-        idealFor: ["Friends", "Nature", "Road trips"]
+        topAttractions: ["Periyar Lake", "Wildlife Sanctuary", "Spice Plantations"],
+        food: ["Kerala Meals", "Cardamom Tea", "Local Curry"],
+        stayArea: "Kumily, Periyar gate area",
+        idealDuration: "1 to 2 days",
       },
-      {
-        id: "cherrapunji",
-        name: "Cherrapunji",
-        tag: "Nature",
-        bestTime: "Oct–Apr",
-        budgetPerDay: 2700,
-        image:
-          "https://images.unsplash.com/photo-1431794062232-2a99a5431c6c?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1431794062232-2a99a5431c6c?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Home to dramatic waterfalls and root bridge adventures.",
-        whyFamous:
-          "Known for heavy rainfall records, Nohkalikai Falls and living root bridges.",
-        topAttractions: ["Nohkalikai Falls", "Root bridges", "Caves"],
-        idealFor: ["Adventure", "Nature lovers", "Offbeat travel"]
-      }
-    ]
+    ],
   },
+
   {
-    id: "mizoram",
-    name: "Mizoram",
-    region: "Northeast India",
-    tagline: "Rolling hills, peace and scenic viewpoints",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2600,
-    coverImage:
-      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A peaceful hill state with clean towns, green ridges and calm travel vibes.",
-    whyFamous:
-      "Known for Aizawl, scenic mountain roads and strong local community culture.",
-    famousFood: ["Bai", "Sawhchiar", "Misa mach poora", "Local smoked dishes"],
-    highlights: ["Hill drives", "Calm stays", "Culture", "Scenic viewpoints"],
-    places: [
-      {
-        id: "aizawl",
-        name: "Aizawl",
-        tag: "Hills",
-        bestTime: "Oct–Mar",
-        budgetPerDay: 2500,
-        image:
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A beautiful hill capital with sweeping views and clean surroundings.",
-        whyFamous:
-          "Known for peaceful city landscapes and cultural richness.",
-        topAttractions: ["Viewpoints", "Museums", "Local markets"],
-        idealFor: ["Peaceful travel", "Culture", "Slow trips"]
-      },
-      {
-        id: "reiek",
-        name: "Reiek",
-        tag: "Nature",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2400,
-        image:
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A scenic hill escape near Aizawl.",
-        whyFamous:
-          "Known for trekking, mountain views and local village experiences.",
-        topAttractions: ["Reiek Peak", "Village model", "Sunset points"],
-        idealFor: ["Trekkers", "Nature", "Short escapes"]
-      }
-    ]
-  },
-  {
-    id: "nagaland",
-    name: "Nagaland",
-    region: "Northeast India",
-    tagline: "Tribal traditions, festivals and mountain beauty",
-    bestTime: "Oct–May",
-    budgetPerDay: 2800,
-    coverImage:
-      "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A culturally unique state known for colorful tribes, festivals and scenic hills.",
-    whyFamous:
-      "Known for Hornbill Festival, Kohima, local tribal heritage and mountain roads.",
-    famousFood: ["Smoked pork", "Axone dishes", "Galho", "Bamboo shoot dishes"],
-    highlights: ["Festivals", "Culture", "Hills", "Local food"],
-    places: [
-      {
-        id: "kohima",
-        name: "Kohima",
-        tag: "Culture",
-        bestTime: "Oct–May",
-        budgetPerDay: 2700,
-        image:
-          "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A hill capital known for history and culture.",
-        whyFamous:
-          "Known for wartime history and being central to Nagaland’s tribal identity.",
-        topAttractions: ["War Cemetery", "Cathedral", "Local markets"],
-        idealFor: ["Culture", "History", "Festival trips"]
-      },
-      {
-        id: "dzukou",
-        name: "Dzukou Valley",
-        tag: "Adventure",
-        bestTime: "Jun–Sep, Oct–Nov",
-        budgetPerDay: 2900,
-        image:
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A breathtaking trekking valley shared near Nagaland and Manipur.",
-        whyFamous:
-          "Known for rolling meadows, seasonal flowers and trekking views.",
-        topAttractions: ["Trek routes", "Valley camps", "Viewpoints"],
-        idealFor: ["Trekkers", "Adventure", "Nature"]
-      }
-    ]
-  },
-  {
-    id: "odisha",
-    name: "Odisha",
-    region: "East India",
-    tagline: "Temples, beaches, heritage art and wildlife",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2200,
-    coverImage:
-      "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A rich cultural state known for Jagannath Temple, beaches, crafts and classical art.",
-    whyFamous:
-      "Known for Puri, Konark, Chilika Lake, temple architecture and Odissi dance.",
-    famousFood: ["Dalma", "Pakhala", "Chhena poda", "Seafood"],
-    highlights: ["Temples", "Beach trips", "Crafts", "Pilgrimage"],
-    places: [
-      {
-        id: "puri",
-        name: "Puri",
-        tag: "Spiritual",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2200,
-        image:
-          "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A major pilgrimage and beach destination.",
-        whyFamous:
-          "Known for Jagannath Temple and the annual Rath Yatra.",
-        topAttractions: ["Jagannath Temple", "Puri Beach", "Local markets"],
-        idealFor: ["Pilgrimage", "Family", "Spiritual travel"]
-      },
-      {
-        id: "konark",
-        name: "Konark",
-        tag: "History",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2100,
-        image:
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "An iconic heritage site famed for temple architecture.",
-        whyFamous:
-          "Known for the UNESCO-listed Sun Temple and detailed stone carvings.",
-        topAttractions: ["Sun Temple", "Konark Museum", "Chandrabhaga Beach"],
-        idealFor: ["History", "Architecture", "Culture"]
-      }
-    ]
-  },
-  {
-    id: "punjab",
-    name: "Punjab",
+    id: "himachal-pradesh",
+    name: "Himachal Pradesh",
     region: "North India",
-    tagline: "Warm hospitality, food, farms and vibrant culture",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2300,
-    coverImage:
-      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
+    tag: "Mountain Escape",
+    bestTime: "Mar–Jun, Oct–Dec",
     short:
-      "A lively state famous for food, music, Sikh heritage and energetic local culture.",
+      "Snowy peaks, valleys, adventure, mountain towns, and some of India’s best road journeys.",
     whyFamous:
-      "Known for Amritsar, Golden Temple, Punjabi cuisine and agricultural landscapes.",
-    famousFood: ["Makki di roti", "Sarson da saag", "Lassi", "Butter chicken"],
-    highlights: ["Spiritual heritage", "Food", "Border ceremony", "Culture"],
+      "Himachal Pradesh is famous for mountain landscapes, trekking, snow, spiritual villages, and adventure travel.",
+    image: "/images/states/himachal-pradesh-cover.jpg",
+    highlights: ["Mountains", "Snow", "Adventure", "Valleys"],
+    famousFood: ["Siddu", "Dham", "Trout"],
     places: [
       {
-        id: "amritsar",
-        name: "Amritsar",
-        tag: "Spiritual",
-        bestTime: "Oct–Mar",
-        budgetPerDay: 2300,
-        image:
-          "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A deeply spiritual city with iconic Sikh heritage.",
-        whyFamous:
-          "Known for the Golden Temple and the Wagah border ceremony.",
-        topAttractions: ["Golden Temple", "Jallianwala Bagh", "Wagah Border"],
-        idealFor: ["Pilgrimage", "History", "Food lovers"]
-      },
-      {
-        id: "patiala",
-        name: "Patiala",
-        tag: "Culture",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2100,
-        image:
-          "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Known for royal heritage and classic Punjabi identity.",
-        whyFamous:
-          "Known for palaces, turban style, music and rich traditional culture.",
-        topAttractions: ["Qila Mubarak", "Sheesh Mahal", "Local bazaars"],
-        idealFor: ["Culture", "History", "Short trips"]
-      }
-    ]
-  },
-  {
-    id: "rajasthan",
-    name: "Rajasthan",
-    region: "Northwest India",
-    tagline: "Forts, deserts, palaces and royal culture",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2400,
-    coverImage:
-      "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "India’s royal travel state full of forts, colorful markets, desert landscapes and grand history.",
-    whyFamous:
-      "Known for Jaipur, Udaipur, Jodhpur, Jaisalmer, Rajput heritage and artisan culture.",
-    famousFood: ["Dal baati churma", "Gatte ki sabzi", "Laal maas", "Ghewar"],
-    highlights: ["Royal palaces", "Desert stays", "Markets", "Heritage walks"],
-    places: [
-      {
-        id: "jaipur",
-        name: "Jaipur",
-        tag: "History",
-        bestTime: "Oct–Mar",
-        budgetPerDay: 2200,
-        image:
-          "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Pink City vibes, forts, bazaars and royal architecture.",
-        whyFamous:
-          "Known for Amer Fort, City Palace, Hawa Mahal and old city markets.",
-        topAttractions: ["Amer Fort", "Hawa Mahal", "City Palace"],
-        idealFor: ["History", "Family", "Shopping"]
-      },
-      {
-        id: "jaisalmer",
-        name: "Jaisalmer",
-        tag: "Desert",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2600,
-        image:
-          "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Golden sandstone city with desert safaris and fort stays.",
-        whyFamous:
-          "Known for Jaisalmer Fort, dunes, camel rides and desert camps.",
-        topAttractions: ["Jaisalmer Fort", "Sam Dunes", "Patwon Ki Haveli"],
-        idealFor: ["Friends", "Adventure", "Culture"]
-      }
-    ]
-  },
-  {
-    id: "sikkim",
-    name: "Sikkim",
-    region: "Northeast India",
-    tagline: "Mountains, monasteries, lakes and clean travel",
-    bestTime: "Mar–Jun, Sep–Nov",
-    budgetPerDay: 2800,
-    coverImage:
-      "https://images.unsplash.com/photo-1482192505345-5655af888cc4?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A serene mountain state with snow views, monasteries and clean towns.",
-    whyFamous:
-      "Known for Gangtok, Nathula, Tsomgo Lake, monasteries and Kanchenjunga views.",
-    famousFood: ["Momos", "Thukpa", "Phagshapa", "Gundruk"],
-    highlights: ["Snow points", "Monasteries", "Lakes", "Mountain drives"],
-    places: [
-      {
-        id: "gangtok",
-        name: "Gangtok",
-        tag: "Mountains",
-        bestTime: "Mar–Jun, Sep–Nov",
-        budgetPerDay: 2900,
-        image:
-          "https://images.unsplash.com/photo-1482192505345-5655af888cc4?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1482192505345-5655af888cc4?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A clean and lively hill capital with cafes and mountain views.",
-        whyFamous:
-          "Known for MG Marg, monasteries and gateway routes to high-altitude points.",
-        topAttractions: ["MG Marg", "Rumtek", "Tsomgo route"],
-        idealFor: ["Couples", "Family", "Mountain trips"]
-      },
-      {
-        id: "pelling",
-        name: "Pelling",
-        tag: "Nature",
-        bestTime: "Mar–Jun, Sep–Nov",
-        budgetPerDay: 2700,
-        image:
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A quieter mountain destination with big Kanchenjunga views.",
-        whyFamous:
-          "Known for scenic panoramas, monasteries and peaceful stays.",
-        topAttractions: ["Skywalk", "Pemayangtse", "Waterfalls"],
-        idealFor: ["Nature", "Relaxed trips", "Photography"]
-      }
-    ]
-  },
-  {
-    id: "tamil-nadu",
-    name: "Tamil Nadu",
-    region: "South India",
-    tagline: "Temples, beaches, hill stations and heritage art",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2500,
-    coverImage:
-      "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A culturally rich state famous for grand temples, classical art and scenic hill escapes.",
-    whyFamous:
-      "Known for Chennai, Madurai, Ooty, Kanyakumari, Bharatanatyam and Dravidian architecture.",
-    famousFood: ["Dosa", "Pongal", "Chettinad dishes", "Filter coffee"],
-    highlights: ["Temple tourism", "Hill trips", "Coastline", "Cuisine"],
-    places: [
-      {
-        id: "ooty",
-        name: "Ooty",
-        tag: "Hills",
+        id: "manali",
+        name: "Manali",
+        tag: "Adventure",
         bestTime: "Oct–Jun",
-        budgetPerDay: 2700,
-        image:
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A classic hill station with lakes, gardens and tea estates.",
+        short:
+          "Snow views, river valleys, mountain cafes, and classic Himachal travel energy.",
         whyFamous:
-          "Known for cool weather, toy train, colonial charm and family vacations.",
-        topAttractions: ["Ooty Lake", "Botanical Garden", "Doddabetta"],
-        idealFor: ["Family", "Couples", "Nature"]
+          "Manali is famous for Solang Valley, mountain scenery, cafes, snow activities, and road trips.",
+        image: "/images/places/manali-hero.jpg",
+        gallery: [
+          "/images/places/manali-1.jpg",
+          "/images/places/manali-2.jpg",
+          "/images/places/manali-3.jpg",
+        ],
+        topAttractions: ["Solang Valley", "Old Manali", "Hadimba Temple"],
+        food: ["Siddu", "Momos", "Trout"],
+        stayArea: "Old Manali, Mall Road, Vashisht",
+        idealDuration: "3 days",
       },
       {
-        id: "madurai",
-        name: "Madurai",
-        tag: "History",
-        bestTime: "Oct–Mar",
-        budgetPerDay: 2200,
-        image:
-          "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "An ancient temple city full of tradition and local flavor.",
+        id: "shimla",
+        name: "Shimla",
+        tag: "Classic Hill Station",
+        bestTime: "Oct–Jun",
+        short:
+          "Colonial streets, viewpoints, mall road walks, and cool weather charm.",
         whyFamous:
-          "Known for Meenakshi Temple and rich Tamil cultural history.",
-        topAttractions: ["Meenakshi Temple", "Palace", "Markets"],
-        idealFor: ["Pilgrimage", "History", "Culture"]
-      }
-    ]
-  },
-  {
-    id: "telangana",
-    name: "Telangana",
-    region: "South India",
-    tagline: "Heritage forts, city food and Deccan culture",
-    bestTime: "Oct–Feb",
-    budgetPerDay: 2400,
-    coverImage:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A state where historic architecture, biryani culture and modern city life meet.",
-    whyFamous:
-      "Known for Hyderabad, Charminar, Golconda, rich cuisine and Deccan heritage.",
-    famousFood: ["Hyderabadi biryani", "Haleem", "Double ka meetha", "Irani chai"],
-    highlights: ["City tourism", "Forts", "Food trails", "Heritage"],
-    places: [
-      {
-        id: "hyderabad",
-        name: "Hyderabad",
-        tag: "City",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2600,
-        image:
-          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+          "Shimla is famous for Mall Road, ridge views, colonial architecture, and easy hill travel.",
+        image: "/images/places/shimla-hero.jpg",
         gallery: [
-          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1200&q=80"
+          "/images/places/shimla-1.jpg",
+          "/images/places/shimla-2.jpg",
+          "/images/places/shimla-3.jpg",
         ],
-        short: "A city of heritage monuments, tech zones and legendary food.",
-        whyFamous:
-          "Known for Charminar, biryani, pearls and old-meets-new city culture.",
-        topAttractions: ["Charminar", "Golconda", "Hussain Sagar"],
-        idealFor: ["Food lovers", "History", "City trips"]
+        topAttractions: ["Mall Road", "The Ridge", "Jakhoo Temple"],
+        food: ["Chole Bhature", "Bun Samosa", "Himachali Dham"],
+        stayArea: "Mall Road, Lakkar Bazaar, Kufri road",
+        idealDuration: "2 days",
       },
       {
-        id: "warangal",
-        name: "Warangal",
-        tag: "History",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2100,
-        image:
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A heritage destination with temples, lakes and Kakatiya history.",
+        id: "kasol",
+        name: "Kasol",
+        tag: "Valley Vibe",
+        bestTime: "Mar–Jun, Sep–Nov",
+        short:
+          "Riverside chill, cafes, mountain views, and backpacker-friendly travel.",
         whyFamous:
-          "Known for Warangal Fort, Thousand Pillar Temple and old dynasty heritage.",
-        topAttractions: ["Warangal Fort", "Ramappa Temple", "Temple ruins"],
-        idealFor: ["History", "Architecture", "Culture"]
-      }
-    ]
-  },
-  {
-    id: "tripura",
-    name: "Tripura",
-    region: "Northeast India",
-    tagline: "Palaces, lakes and quiet cultural charm",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2300,
-    coverImage:
-      "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A compact state with royal heritage, temple lakes and peaceful city breaks.",
-    whyFamous:
-      "Known for Ujjayanta Palace, Neermahal and a blend of Bengali and tribal culture.",
-    famousFood: ["Mui borok", "Wahan mosdeng", "Chakhwi", "Rice dishes"],
-    highlights: ["Palaces", "Culture", "Lake views", "Short escapes"],
-    places: [
-      {
-        id: "agartala",
-        name: "Agartala",
-        tag: "City",
-        bestTime: "Oct–Mar",
-        budgetPerDay: 2200,
-        image:
-          "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
+          "Kasol is famous for Parvati Valley views, cafes, river walks, and trekking access.",
+        image: "/images/places/kasol-hero.jpg",
         gallery: [
-          "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1200&q=80"
+          "/images/places/kasol-1.jpg",
+          "/images/places/kasol-2.jpg",
+          "/images/places/kasol-3.jpg",
         ],
-        short: "A calm capital with palace heritage and local markets.",
-        whyFamous:
-          "Known for Ujjayanta Palace and its simple, peaceful city vibe.",
-        topAttractions: ["Ujjayanta Palace", "Museums", "Markets"],
-        idealFor: ["Culture", "Family", "Short city trips"]
+        topAttractions: ["Parvati River", "Chalal", "Manikaran"],
+        food: ["Cafe Food", "Israeli Plates", "Maggi"],
+        stayArea: "Kasol market, riverside, Chalal side",
+        idealDuration: "2 days",
       },
       {
-        id: "neermahal",
-        name: "Neermahal",
-        tag: "Heritage",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2300,
-        image:
-          "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A palace in the middle of a lake with striking views.",
+        id: "spiti",
+        name: "Spiti Valley",
+        tag: "High Altitude",
+        bestTime: "May–Oct",
+        short:
+          "Raw landscapes, monasteries, dramatic roads, and unforgettable mountain silence.",
         whyFamous:
-          "Known as Tripura’s water palace and a key heritage attraction.",
-        topAttractions: ["Boat ride", "Palace visit", "Lake sunset"],
-        idealFor: ["Heritage", "Photography", "Romantic trips"]
-      }
-    ]
+          "Spiti is famous for high-altitude desert mountains, monasteries, remote villages, and scenic roads.",
+        image: "/images/places/spiti-hero.jpg",
+        gallery: [
+          "/images/places/spiti-1.jpg",
+          "/images/places/spiti-2.jpg",
+          "/images/places/spiti-3.jpg",
+        ],
+        topAttractions: ["Key Monastery", "Kaza", "Chandratal"],
+        food: ["Thukpa", "Momos", "Simple Mountain Meals"],
+        stayArea: "Kaza, Tabo, Key village",
+        idealDuration: "4 to 6 days",
+      },
+      {
+        id: "dharamshala",
+        name: "Dharamshala",
+        tag: "Peaceful Hills",
+        bestTime: "Mar–Jun, Sep–Nov",
+        short:
+          "Monasteries, mountain calm, Tibetan culture, and scenic peaceful weather.",
+        whyFamous:
+          "Dharamshala is famous for McLeodganj, monasteries, Tibetan culture, and mountain views.",
+        image: "/images/places/dharamshala-hero.jpg",
+        gallery: [
+          "/images/places/dharamshala-1.jpg",
+          "/images/places/dharamshala-2.jpg",
+          "/images/places/dharamshala-3.jpg",
+        ],
+        topAttractions: ["McLeodganj", "Bhagsu", "Dal Lake"],
+        food: ["Momos", "Thukpa", "Tibetan Bread"],
+        stayArea: "McLeodganj, Bhagsu, Dharamkot",
+        idealDuration: "2 to 3 days",
+      },
+      {
+        id: "bir-billing",
+        name: "Bir Billing",
+        tag: "Adventure Air",
+        bestTime: "Mar–May, Oct–Nov",
+        short:
+          "Paragliding, open skies, quiet cafes, and one of India’s best adventure spots.",
+        whyFamous:
+          "Bir Billing is famous for paragliding, mountain views, Tibetan monasteries, and peaceful stays.",
+        image: "/images/places/bir-billing-hero.jpg",
+        gallery: [
+          "/images/places/bir-billing-1.jpg",
+          "/images/places/bir-billing-2.jpg",
+          "/images/places/bir-billing-3.jpg",
+        ],
+        topAttractions: ["Paragliding Site", "Monasteries", "Sunset Point"],
+        food: ["Cafe Food", "Momos", "Pancakes"],
+        stayArea: "Bir village, landing site road",
+        idealDuration: "2 days",
+      },
+    ],
   },
+
   {
     id: "uttar-pradesh",
     name: "Uttar Pradesh",
     region: "North India",
-    tagline: "Spiritual cities, monuments and deep history",
+    tag: "Spiritual + History",
     bestTime: "Oct–Mar",
-    budgetPerDay: 2000,
-    coverImage:
-      "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
     short:
-      "A major cultural state home to the Taj Mahal, Varanasi and important heritage cities.",
+      "Sacred cities, monuments, heritage culture, and some of India’s most important historic destinations.",
     whyFamous:
-      "Known for Agra, Varanasi, Ayodhya, Lucknow, Prayagraj and spiritual tourism.",
-    famousFood: ["Kachori", "Tunday kebab", "Peda", "Banarasi paan"],
-    highlights: ["Pilgrimage", "Architecture", "History", "Food"],
+      "Uttar Pradesh is famous for the Taj Mahal, Varanasi ghats, Ayodhya, Lucknow culture, and spiritual tourism.",
+    image: "/images/states/uttar-pradesh-cover.jpg",
+    highlights: ["Heritage", "Spiritual", "Monuments", "Culture"],
+    famousFood: ["Kachori", "Tunday Kabab", "Peda"],
     places: [
       {
         id: "varanasi",
         name: "Varanasi",
-        tag: "Culture",
+        tag: "Spiritual City",
         bestTime: "Oct–Mar",
-        budgetPerDay: 1800,
-        image:
-          "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Ancient ghats, sunrise boat rides and timeless spiritual life.",
+        short:
+          "Ancient ghats, temple life, rituals, and one of the deepest spiritual experiences in India.",
         whyFamous:
-          "One of the oldest living cities, known for Ganga Aarti and sacred ghats.",
-        topAttractions: ["Dashashwamedh Ghat", "Kashi Vishwanath", "Boat ride"],
-        idealFor: ["Spiritual travel", "Culture", "Photography"]
+          "Varanasi is famous for Ganga ghats, aarti, temples, ancient culture, and spiritual identity.",
+        image: "/images/places/varanasi-hero.jpg",
+        gallery: [
+          "/images/places/varanasi-1.jpg",
+          "/images/places/varanasi-2.jpg",
+          "/images/places/varanasi-3.jpg",
+        ],
+        topAttractions: ["Dashashwamedh Ghat", "Kashi Vishwanath", "Boat Ride"],
+        food: ["Kachori Sabzi", "Malaiyyo", "Banarasi Paan"],
+        stayArea: "Godowlia, Assi Ghat, Dashashwamedh area",
+        idealDuration: "2 days",
       },
       {
         id: "agra",
         name: "Agra",
-        tag: "History",
+        tag: "Monument Icon",
         bestTime: "Oct–Mar",
-        budgetPerDay: 2100,
-        image:
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Home of India’s most iconic monument.",
+        short:
+          "World-famous monuments, Mughal heritage, and one of India’s strongest history destinations.",
         whyFamous:
-          "Known worldwide for the Taj Mahal and Mughal-era architecture.",
+          "Agra is famous for the Taj Mahal, Agra Fort, Mughal architecture, and marble craftsmanship.",
+        image: "/images/places/agra-hero.jpg",
+        gallery: [
+          "/images/places/agra-1.jpg",
+          "/images/places/agra-2.jpg",
+          "/images/places/agra-3.jpg",
+        ],
         topAttractions: ["Taj Mahal", "Agra Fort", "Mehtab Bagh"],
-        idealFor: ["History", "Couples", "Family"]
-      }
-    ]
-  },
-  {
-    id: "uttarakhand",
-    name: "Uttarakhand",
-    region: "North India",
-    tagline: "Temples, mountains, rivers and trekking routes",
-    bestTime: "Mar–Jun, Sep–Nov",
-    budgetPerDay: 2400,
-    coverImage:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A spiritual and scenic mountain state known for Char Dham routes and hill escapes.",
-    whyFamous:
-      "Known for Rishikesh, Nainital, Mussoorie, Kedarnath and adventure tourism.",
-    famousFood: ["Aloo ke gutke", "Kafuli", "Bal mithai", "Chainsoo"],
-    highlights: ["Pilgrimage", "River adventure", "Snow views", "Trekking"],
-    places: [
-      {
-        id: "rishikesh",
-        name: "Rishikesh",
-        tag: "Adventure",
-        bestTime: "Sep–Apr",
-        budgetPerDay: 2300,
-        image:
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Yoga capital with river rafting and spiritual energy.",
-        whyFamous:
-          "Known for the Ganga, ashrams, cafés and adventure activities.",
-        topAttractions: ["Laxman Jhula", "Rafting", "Ganga Aarti"],
-        idealFor: ["Adventure", "Wellness", "Friends"]
+        food: ["Petha", "Bedai", "Mughlai Food"],
+        stayArea: "Taj Ganj, Fatehabad Road, Agra Cantt",
+        idealDuration: "1 to 2 days",
       },
       {
-        id: "nainital",
-        name: "Nainital",
-        tag: "Hills",
-        bestTime: "Mar–Jun, Sep–Nov",
-        budgetPerDay: 2500,
-        image:
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "A charming lake hill station for classic family holidays.",
+        id: "ayodhya",
+        name: "Ayodhya",
+        tag: "Sacred Destination",
+        bestTime: "Oct–Mar",
+        short:
+          "Temple city atmosphere, devotion, riverfront calm, and strong spiritual importance.",
         whyFamous:
-          "Known for Naini Lake, viewpoints and old hill-town charm.",
-        topAttractions: ["Naini Lake", "Snow View", "Mall Road"],
-        idealFor: ["Family", "Couples", "Relaxed trips"]
-      }
-    ]
-  },
-  {
-    id: "west-bengal",
-    name: "West Bengal",
-    region: "East India",
-    tagline: "Culture, hills, heritage and mangrove delta",
-    bestTime: "Oct–Mar",
-    budgetPerDay: 2300,
-    coverImage:
-      "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
-    short:
-      "A state of literature, food, colonial charm, tea hills and coastal wetlands.",
-    whyFamous:
-      "Known for Kolkata, Darjeeling, Sundarbans, Durga Puja and rich Bengali culture.",
-    famousFood: ["Rosogolla", "Macher jhol", "Kathi roll", "Mishti doi"],
-    highlights: ["Culture", "Tea hills", "River city", "Wildlife"],
-    places: [
-      {
-        id: "kolkata",
-        name: "Kolkata",
-        tag: "Culture",
-        bestTime: "Oct–Feb",
-        budgetPerDay: 2300,
-        image:
-          "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
+          "Ayodhya is famous for Shri Ram Janmabhoomi, temples, religious significance, and pilgrimage travel.",
+        image: "/images/places/ayodhya-hero.jpg",
         gallery: [
-          "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1200&q=80"
+          "/images/places/ayodhya-1.jpg",
+          "/images/places/ayodhya-2.jpg",
+          "/images/places/ayodhya-3.jpg",
         ],
-        short: "An artistic city full of heritage buildings, food and emotion.",
-        whyFamous:
-          "Known for Howrah Bridge, colonial history, literature and Durga Puja.",
-        topAttractions: ["Victoria Memorial", "Howrah Bridge", "College Street"],
-        idealFor: ["Culture", "Food lovers", "History"]
+        topAttractions: ["Ram Mandir", "Hanuman Garhi", "Saryu Ghat"],
+        food: ["Kachori", "Laddu", "North Indian Meals"],
+        stayArea: "Ram Path, temple zone, Saryu side",
+        idealDuration: "1 to 2 days",
       },
       {
-        id: "darjeeling",
-        name: "Darjeeling",
-        tag: "Hills",
-        bestTime: "Mar–May, Oct–Dec",
-        budgetPerDay: 2600,
-        image:
-          "https://images.unsplash.com/photo-1482192505345-5655af888cc4?auto=format&fit=crop&w=1200&q=80",
-        gallery: [
-          "https://images.unsplash.com/photo-1482192505345-5655af888cc4?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80"
-        ],
-        short: "Tea gardens, toy train and cool mountain charm.",
+        id: "lucknow",
+        name: "Lucknow",
+        tag: "Nawabi Culture",
+        bestTime: "Oct–Mar",
+        short:
+          "Elegant architecture, food culture, old city markets, and refined historical charm.",
         whyFamous:
-          "Known for Himalayan views, tea estates and the Darjeeling Himalayan Railway.",
-        topAttractions: ["Tiger Hill", "Toy Train", "Tea gardens"],
-        idealFor: ["Couples", "Family", "Nature"]
-      }
-    ]
-  }
+          "Lucknow is famous for nawabi culture, kebabs, Bara Imambara, and old city heritage.",
+        image: "/images/places/lucknow-hero.jpg",
+        gallery: [
+          "/images/places/lucknow-1.jpg",
+          "/images/places/lucknow-2.jpg",
+          "/images/places/lucknow-3.jpg",
+        ],
+        topAttractions: ["Bara Imambara", "Rumi Darwaza", "Hazratganj"],
+        food: ["Tunday Kabab", "Biryani", "Kulfi"],
+        stayArea: "Hazratganj, Gomti Nagar, Charbagh",
+        idealDuration: "2 days",
+      },
+      {
+        id: "prayagraj",
+        name: "Prayagraj",
+        tag: "Sacred Confluence",
+        bestTime: "Oct–Mar",
+        short:
+          "Sangam significance, spiritual atmosphere, and cultural depth with historic value.",
+        whyFamous:
+          "Prayagraj is famous for Triveni Sangam, Kumbh Mela, spiritual gatherings, and historical landmarks.",
+        image: "/images/places/prayagraj-hero.jpg",
+        gallery: [
+          "/images/places/prayagraj-1.jpg",
+          "/images/places/prayagraj-2.jpg",
+          "/images/places/prayagraj-3.jpg",
+        ],
+        topAttractions: ["Triveni Sangam", "Anand Bhavan", "Allahabad Fort"],
+        food: ["Kachori", "Samosa", "Rabri"],
+        stayArea: "Civil Lines, Sangam side, High Court area",
+        idealDuration: "1 to 2 days",
+      },
+      {
+        id: "mathura-vrindavan",
+        name: "Mathura-Vrindavan",
+        tag: "Temple Circuit",
+        bestTime: "Oct–Mar",
+        short:
+          "Temple visits, devotional travel, colorful streets, and strong Krishna heritage.",
+        whyFamous:
+          "Mathura and Vrindavan are famous for Krishna temples, devotional atmosphere, and festive celebrations.",
+        image: "/images/places/mathura-vrindavan-hero.jpg",
+        gallery: [
+          "/images/places/mathura-vrindavan-1.jpg",
+          "/images/places/mathura-vrindavan-2.jpg",
+          "/images/places/mathura-vrindavan-3.jpg",
+        ],
+        topAttractions: ["Banke Bihari Temple", "Prem Mandir", "Krishna Janmabhoomi"],
+        food: ["Peda", "Kachori", "Lassi"],
+        stayArea: "Vrindavan temple area, Mathura junction side",
+        idealDuration: "1 to 2 days",
+      },
+    ],
+  },
+
+  {
+    id: "goa",
+    name: "Goa",
+    region: "West India",
+    tag: "Beaches + Chill",
+    bestTime: "Nov–Feb",
+    short:
+      "Beach life, old churches, nightlife, cafes, coastal roads, and a relaxed travel mood.",
+    whyFamous:
+      "Goa is famous for beaches, nightlife, Portuguese heritage, sea food, and holiday vibes.",
+    image: "/images/states/goa-cover.jpg",
+    highlights: ["Beaches", "Nightlife", "Heritage", "Cafe Culture"],
+    famousFood: ["Fish Curry Rice", "Bebinca", "Prawn Balchao"],
+    places: [
+      {
+        id: "north-goa",
+        name: "North Goa",
+        tag: "Beach + Party",
+        bestTime: "Nov–Feb",
+        short:
+          "Lively beaches, clubs, cafes, shopping, and a high-energy holiday scene.",
+        whyFamous:
+          "North Goa is famous for nightlife, beach shacks, water sports, and lively coastal travel.",
+        image: "/images/places/north-goa-hero.jpg",
+        gallery: [
+          "/images/places/north-goa-1.jpg",
+          "/images/places/north-goa-2.jpg",
+          "/images/places/north-goa-3.jpg",
+        ],
+        topAttractions: ["Baga", "Calangute", "Anjuna"],
+        food: ["Seafood", "Cafe Breakfast", "Goan Curry"],
+        stayArea: "Baga, Candolim, Anjuna",
+        idealDuration: "2 to 3 days",
+      },
+      {
+        id: "south-goa",
+        name: "South Goa",
+        tag: "Peaceful Beaches",
+        bestTime: "Nov–Feb",
+        short:
+          "Cleaner beaches, luxury stays, calmer sunsets, and more peaceful coastal travel.",
+        whyFamous:
+          "South Goa is famous for quiet beaches, scenic resorts, and a more relaxed beach experience.",
+        image: "/images/places/south-goa-hero.jpg",
+        gallery: [
+          "/images/places/south-goa-1.jpg",
+          "/images/places/south-goa-2.jpg",
+          "/images/places/south-goa-3.jpg",
+        ],
+        topAttractions: ["Palolem", "Colva", "Butterfly Beach"],
+        food: ["Seafood", "Bebinca", "Goan Thali"],
+        stayArea: "Palolem, Colva, Benaulim",
+        idealDuration: "2 days",
+      },
+      {
+        id: "panaji",
+        name: "Panaji",
+        tag: "Capital Charm",
+        bestTime: "Nov–Feb",
+        short:
+          "Colorful streets, riverside views, markets, and heritage city atmosphere.",
+        whyFamous:
+          "Panaji is famous for Fontainhas, Mandovi riverfront, local markets, and Portuguese architecture.",
+        image: "/images/places/panaji-hero.jpg",
+        gallery: [
+          "/images/places/panaji-1.jpg",
+          "/images/places/panaji-2.jpg",
+          "/images/places/panaji-3.jpg",
+        ],
+        topAttractions: ["Fontainhas", "Miramar", "Mandovi River"],
+        food: ["Cafe Food", "Goan Snacks", "Seafood"],
+        stayArea: "Panaji center, Miramar, Fontainhas side",
+        idealDuration: "1 day",
+      },
+      {
+        id: "old-goa",
+        name: "Old Goa",
+        tag: "Heritage Churches",
+        bestTime: "Nov–Feb",
+        short:
+          "Historic churches, architecture, and one of Goa’s strongest cultural sides.",
+        whyFamous:
+          "Old Goa is famous for Basilica of Bom Jesus, Se Cathedral, and historical church heritage.",
+        image: "/images/places/old-goa-hero.jpg",
+        gallery: [
+          "/images/places/old-goa-1.jpg",
+          "/images/places/old-goa-2.jpg",
+          "/images/places/old-goa-3.jpg",
+        ],
+        topAttractions: ["Basilica of Bom Jesus", "Se Cathedral", "Church Complex"],
+        food: ["Local Bakery", "Snacks", "Goan Meals"],
+        stayArea: "Panaji side is better for stay",
+        idealDuration: "Half day to 1 day",
+      },
+    ],
+  },
 ];
 
-export const allTags = [
-  "All",
-  ...Array.from(new Set(states.flatMap((state) => state.places.map((p) => p.tag))))
-];
-
-export function getStateById(id) {
-  return states.find((state) => state.id === id);
+export function getStateById(stateId) {
+  return states.find((state) => state.id === stateId);
 }
 
 export function getPlaceByIds(stateId, placeId) {
-  const state = states.find((item) => item.id === stateId);
+  const state = getStateById(stateId);
   if (!state) return null;
+
   const place = state.places.find((item) => item.id === placeId);
   if (!place) return null;
+
   return { state, place };
 }
