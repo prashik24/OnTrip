@@ -14,7 +14,7 @@ export default function PlaceDetails() {
         <div className="card placeNotFound">
           <h2>Place not found</h2>
           <p>This place page is missing. Please check the route or data.</p>
-          <button className="btn btn-primary" onClick={() => navigate("/explore")}>
+          <button className="placeBtn placeBtnPrimary" onClick={() => navigate("/explore")}>
             Back to Explore
           </button>
         </div>
@@ -35,77 +35,86 @@ export default function PlaceDetails() {
             <h1>{place.name}</h1>
             <p>{place.short}</p>
           </div>
-
-          <div className="placeHeroRight">
-            <div className="card">
-              <strong>{place.tag}</strong>
-              <span>Category</span>
-            </div>
-            <div className="card">
-              <strong>{place.bestTime}</strong>
-              <span>Best Time</span>
-            </div>
-            <div className="card">
-              <strong>₹{place.budgetPerDay}</strong>
-              <span>Avg / day</span>
-            </div>
-          </div>
         </div>
       </section>
 
-      <section className="placeMainGrid">
-        <div className="card placeContent">
-          <h3>Why {place.name} is famous</h3>
-          <p>{place.whyFamous}</p>
+      <section className="placeMainSingle">
+        <div className="card placeCombinedCard">
+          <div className="placeCombinedTop">
+            <div className="placeContentBlock">
+              <h3>Why {place.name} is famous</h3>
+              <p>{place.whyFamous}</p>
+            </div>
 
-          <h3>Top attractions</h3>
-          <div className="placeChipWrap">
-            {place.topAttractions.map((item) => (
-              <span key={item}>{item}</span>
-            ))}
-          </div>
+            <div className="placeQuickBlock">
+              <h3>Quick Info</h3>
 
-          <h3>Ideal for</h3>
-          <div className="placeChipWrap">
-            {place.idealFor.map((item) => (
-              <span key={item}>{item}</span>
-            ))}
-          </div>
-        </div>
-
-        <div className="card placeQuickInfo">
-          <h3>Quick Info</h3>
-          <div className="placeInfoList">
-            <div>
-              <label>State</label>
-              <strong>{state.name}</strong>
-            </div>
-            <div>
-              <label>Region</label>
-              <strong>{state.region}</strong>
-            </div>
-            <div>
-              <label>Best Time</label>
-              <strong>{place.bestTime}</strong>
-            </div>
-            <div>
-              <label>Budget</label>
-              <strong>₹{place.budgetPerDay} / day</strong>
-            </div>
-            <div>
-              <label>Travel Type</label>
-              <strong>{place.tag}</strong>
+              <div className="placeInfoList">
+                <div>
+                  <label>State</label>
+                  <strong>{state.name}</strong>
+                </div>
+                <div>
+                  <label>Region</label>
+                  <strong>{state.region}</strong>
+                </div>
+                <div>
+                  <label>Category</label>
+                  <strong>{place.tag}</strong>
+                </div>
+                <div>
+                  <label>Best Time</label>
+                  <strong>{place.bestTime}</strong>
+                </div>
+                <div>
+                  <label>Ideal Duration</label>
+                  <strong>{place.idealDuration}</strong>
+                </div>
+                <div>
+                  <label>Stay Area</label>
+                  <strong>{place.stayArea}</strong>
+                </div>
+              </div>
             </div>
           </div>
 
-          <button
-            className="btn btn-primary placePlanBtn"
-            onClick={() =>
-              navigate(`/planner?state=${encodeURIComponent(state.name)}&place=${encodeURIComponent(place.name)}`)
-            }
-          >
-            Plan trip for {place.name}
-          </button>
+          <div className="placeSectionBlock">
+            <h3>Top attractions</h3>
+            <div className="placeChipWrap">
+              {place.topAttractions.map((item) => (
+                <span key={item}>{item}</span>
+              ))}
+            </div>
+          </div>
+
+          <div className="placeSectionBlock">
+            <h3>Food to try</h3>
+            <div className="placeChipWrap">
+              {place.food.map((item) => (
+                <span key={item}>{item}</span>
+              ))}
+            </div>
+          </div>
+
+          <div className="placeActionRow">
+            <button
+              className="placeBtn placeBtnPrimary"
+              onClick={() =>
+                navigate(
+                  `/planner?state=${encodeURIComponent(state.name)}&place=${encodeURIComponent(place.name)}`
+                )
+              }
+            >
+              Plan trip for {place.name}
+            </button>
+
+            <button
+              className="placeBtn placeBtnSecondary"
+              onClick={() => navigate(`/explore/${state.id}`)}
+            >
+              Back to {state.name}
+            </button>
+          </div>
         </div>
       </section>
 
@@ -113,11 +122,8 @@ export default function PlaceDetails() {
         <div className="sectionHead">
           <div>
             <h2>Photo Gallery</h2>
-            <p>Large image layout for a richer destination look.</p>
+            <p>Explore more views of {place.name}.</p>
           </div>
-          <button className="btn" onClick={() => navigate(`/explore/${state.id}`)}>
-            Back to {state.name}
-          </button>
         </div>
 
         <div className="placeGalleryGrid">
