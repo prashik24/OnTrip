@@ -1,9 +1,8 @@
 /* =========================================================
-   ONTRIP RESPONSIVE + TYPOGRAPHY OVERRIDES
+   ONTRIP RESPONSIVE + AUTH GAP + EXPLORE TYPOGRAPHY FIXES
    Keep this file imported LAST
    ========================================================= */
 
-/* ---------- Base polish ---------- */
 html {
   -webkit-text-size-adjust: 100%;
 }
@@ -41,13 +40,9 @@ select {
   --body-lg: 15px;
   --body-md: 14px;
   --body-sm: 13px;
-
-  --radius-xl-ovr: 20px;
-  --radius-lg-ovr: 16px;
-  --radius-md-ovr: 12px;
 }
 
-/* ---------- Global container + text balancing ---------- */
+/* ---------- Global ---------- */
 .container {
   width: 100%;
   max-width: 1220px;
@@ -55,7 +50,6 @@ select {
   padding-right: var(--page-pad-desktop);
 }
 
-.pageTitle,
 .bookingCheckoutHead h1,
 .bookingHistoryHead h1,
 .bookingReviewHead h1,
@@ -109,6 +103,29 @@ select {
 .providersSearchStrip,
 .savedTripCard {
   min-width: 0;
+}
+
+/* ---------- AUTH PAGE GAP FIX ---------- */
+.authPage {
+  min-height: 100vh !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.authWrap {
+  width: 100%;
+  display: flex !important;
+  justify-content: center;
+}
+
+.authWrapSingle {
+  width: 100%;
+}
+
+.authCard {
+  margin: 0 !important;
 }
 
 /* ---------- Hard width / offset fixes ---------- */
@@ -181,7 +198,7 @@ select {
   object-fit: cover;
 }
 
-/* ---------- Consistent buttons ---------- */
+/* ---------- Button consistency ---------- */
 .bookingCheckoutBtn,
 .bookingHistoryBtn,
 .bookingHistoryReviewBtn,
@@ -222,12 +239,6 @@ select {
 .placeMiniCardAction {
   min-height: 44px;
   font-size: 14px;
-}
-
-.bookingHistoryActions,
-.providerDashboardActions,
-.savedTripActions {
-  align-items: stretch;
 }
 
 /* ---------- Navbar / sidebar ---------- */
@@ -308,7 +319,7 @@ select {
   font-size: 14px;
 }
 
-/* ---------- Cards and grids ---------- */
+/* ---------- Cards / grids ---------- */
 .providersGrid,
 .savedTripsGrid,
 .plannerResultProviderGrid,
@@ -331,6 +342,19 @@ select {
 .providerDetailsItemTitle,
 .profileQuickCard h3 {
   line-height: 1.28;
+}
+
+/* ---------- EXPLORE TYPOGRAPHY ONLY ---------- */
+.exploreHero h1 {
+  font-size: 34px;
+}
+
+.exploreSectionHead h2 {
+  font-size: 28px;
+}
+
+.exploreHero p {
+  font-size: 15px;
 }
 
 /* =========================================================
@@ -471,7 +495,6 @@ select {
   .providerDetailsSimilarCard,
   .providerDetailsReviewTop,
   .providerDetailsItemHeader,
-  .providerDetailsItemHeader,
   .providerCardHeader,
   .bookingHistoryTop,
   .myListingsTop {
@@ -511,6 +534,18 @@ select {
   .otFooterBottom .otFooterContainer {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .exploreHero h1 {
+    font-size: 30px !important;
+  }
+
+  .exploreSectionHead h2 {
+    font-size: 26px !important;
+  }
+
+  .exploreHero p {
+    font-size: 14px !important;
   }
 }
 
@@ -580,6 +615,15 @@ select {
   .providerDashboardPage.container {
     padding-left: var(--page-pad-mobile) !important;
     padding-right: var(--page-pad-mobile) !important;
+  }
+
+  .authPage {
+    padding: 16px !important;
+    align-items: flex-start !important;
+  }
+
+  .authCard {
+    margin-top: 20px !important;
   }
 
   .brandText {
@@ -906,6 +950,18 @@ select {
   .loadingText {
     font-size: 14px;
   }
+
+  .exploreHero h1 {
+    font-size: 26px !important;
+  }
+
+  .exploreSectionHead h2 {
+    font-size: 22px !important;
+  }
+
+  .exploreHero p {
+    font-size: 13px !important;
+  }
 }
 
 /* =========================================================
@@ -1030,5 +1086,13 @@ select {
     padding: 12px;
     gap: 10px;
     margin-bottom: 16px;
+  }
+
+  .exploreHero h1 {
+    font-size: 24px !important;
+  }
+
+  .exploreSectionHead h2 {
+    font-size: 20px !important;
   }
 }
