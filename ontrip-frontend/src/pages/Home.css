@@ -1,41 +1,33 @@
 /* ===============================
-   FULL SCREEN HERO IMAGE (DESKTOP)
+   FULL SCREEN HERO IMAGE
 ================================ */
 .homeFullscreen {
   width: 100vw;
-  height: calc(100vh - var(--navH));
+  height: calc(100vh - var(--navH)); /* full screen minus navbar */
 
-  background-size: cover;
-  background-position: center;
+  background-size: cover;      /* 🔥 FULL SCREEN IMAGE */
+  background-position: center; /* center aligned */
   background-repeat: no-repeat;
 
   display: flex;
-  align-items: flex-end;
+  align-items: flex-end;       /* buttons at bottom */
   justify-content: center;
 
   position: relative;
-  margin-left: -20px;
+  margin-left:-20px;
   margin-top: -20px;
-
-  overflow: hidden;
 }
 
-/* ===============================
-   MOBILE IMAGE LAYER (HIDDEN BY DEFAULT)
-================================ */
-.homeMobileBg {
-  display: none;
-}
-
-/* Optional overlay */
+/* Optional dark/soft overlay for readability */
 .homeFullscreen::before {
   content: "";
   position: absolute;
   inset: 0;
+
 }
 
 /* ===============================
-   BUTTONS / CONTENT
+   BUTTONS OVER IMAGE
 ================================ */
 .heroContent {
   position: relative;
@@ -55,43 +47,15 @@
 }
 
 /* ===============================
-   MOBILE (500x600 IMAGE FIX)
+   MOBILE FIX
 ================================ */
 @media (max-width: 768px) {
   .homeFullscreen {
-    background-image: none !important;
     height: calc(100vh - var(--navH));
-  }
-
-  .homeMobileBg {
-    display: block;
-    position: absolute;
-    inset: 0;
-
-    background-size: contain;   /* ✅ show full 500x600 image */
-    background-position: center;
-    background-repeat: no-repeat;
-
-    background-color: #f4fbff;  /* clean background */
-
-    z-index: 0;
   }
 
   .heroContent {
     margin-bottom: 20px;
     padding: 12px 16px;
-  }
-}
-
-/* ===============================
-   EXTRA SMALL DEVICES (iPhone SE etc.)
-================================ */
-@media (max-width: 480px) {
-  .homeMobileBg {
-    background-size: contain;
-  }
-
-  .heroContent {
-    padding: 10px 14px;
   }
 }
