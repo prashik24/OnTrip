@@ -1096,3 +1096,34 @@ select {
     font-size: 20px !important;
   }
 }
+/* ===== AUTH PAGE PERFECT ALIGN FIX ===== */
+
+.authPage {
+  min-height: calc(100vh - var(--navH)) !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 !important;
+}
+
+/* remove extra spacing */
+.authWrap {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.authCard {
+  margin: 0 !important;
+}
+@media (max-width: 640px) {
+  .authPage {
+    align-items: flex-start !important;
+    padding: 16px !important;
+  }
+
+  .authCard {
+    margin-top: 10px !important;
+  }
+}
