@@ -9,3 +9,14 @@ body,
 body {
   min-width: 320px;
 }
+@import "./styles/responsive-overrides.css";html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  min-width: 320px;
+}
