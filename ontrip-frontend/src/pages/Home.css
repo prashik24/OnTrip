@@ -1,5 +1,5 @@
 /* ===============================
-   FULL SCREEN HERO IMAGE
+   FULL SCREEN HERO IMAGE (DESKTOP)
 ================================ */
 .homeFullscreen {
   width: 100vw;
@@ -20,7 +20,9 @@
   overflow: hidden;
 }
 
-/* ✅ Mobile image layer (hidden by default) */
+/* ===============================
+   MOBILE IMAGE LAYER (HIDDEN BY DEFAULT)
+================================ */
 .homeMobileBg {
   display: none;
 }
@@ -33,7 +35,7 @@
 }
 
 /* ===============================
-   BUTTONS OVER IMAGE
+   BUTTONS / CONTENT
 ================================ */
 .heroContent {
   position: relative;
@@ -53,11 +55,12 @@
 }
 
 /* ===============================
-   MOBILE FIX + IMAGE SWITCH
+   MOBILE (500x600 IMAGE FIX)
 ================================ */
 @media (max-width: 768px) {
   .homeFullscreen {
-    background-image: none !important; /* remove desktop image */
+    background-image: none !important;
+    height: calc(100vh - var(--navH));
   }
 
   .homeMobileBg {
@@ -65,9 +68,11 @@
     position: absolute;
     inset: 0;
 
-    background-size: cover;
+    background-size: contain;   /* ✅ show full 500x600 image */
     background-position: center;
     background-repeat: no-repeat;
+
+    background-color: #f4fbff;  /* clean background */
 
     z-index: 0;
   }
@@ -75,5 +80,18 @@
   .heroContent {
     margin-bottom: 20px;
     padding: 12px 16px;
+  }
+}
+
+/* ===============================
+   EXTRA SMALL DEVICES (iPhone SE etc.)
+================================ */
+@media (max-width: 480px) {
+  .homeMobileBg {
+    background-size: contain;
+  }
+
+  .heroContent {
+    padding: 10px 14px;
   }
 }
