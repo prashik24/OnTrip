@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import heroImg from "../assets/ontrip-hero.png";
-import logoImg from "../assets/Ontrip.png";
+import logoImg from "../assets/OnTrip.png";
 import "./Home.css";
 
 export default function Home() {
