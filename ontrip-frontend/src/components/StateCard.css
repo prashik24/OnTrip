@@ -81,6 +81,7 @@
   font-weight: 600;
   font-size: 13px;
   line-height: 1.45;
+  word-break: break-word;
 }
 
 .stateCardShort {
@@ -142,6 +143,8 @@
   color: #0369a1;
   font-size: 12px;
   font-weight: 700;
+  max-width: 100%;
+  word-break: break-word;
 }
 
 .stateCardAction {
@@ -159,14 +162,34 @@
   letter-spacing: 0.01em;
   box-shadow: none;
   transition: transform 0.18s ease, opacity 0.18s ease;
+  text-align: center;
 }
 
 .stateCard:hover .stateCardAction {
   transform: translateY(-1px);
 }
 
+@media (max-width: 900px) {
+  .stateCardTop h3 {
+    font-size: 18px;
+  }
+
+  .stateCardShort {
+    font-size: 13.5px;
+  }
+}
+
 @media (max-width: 640px) {
+  .stateCardBody {
+    padding: 14px;
+    gap: 10px;
+  }
+
   .stateCardMeta {
     grid-template-columns: 1fr;
+  }
+
+  .stateCardAction {
+    width: 100%;
   }
 }
