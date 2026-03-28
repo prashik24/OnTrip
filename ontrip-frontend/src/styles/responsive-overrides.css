@@ -1,298 +1,268 @@
-/* =========================================================
-   ONTRIP RESPONSIVE MASTER OVERRIDES
-   - works as last imported file
-   - keeps original CSS untouched
-   - fixes alignment, spacing, home gap, auth gap,
-     button consistency, grid consistency, responsive text
-   ========================================================= */
+/* =========================================
+   RESPONSIVE TYPOGRAPHY OVERRIDES ONLY
+   Scope: font-size + font-weight only
+   No layout / spacing / width / height changes
+========================================= */
 
-html {
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
+/* ---------- Base desktop / large screens ---------- */
+:root {
+  --fs-display-1: 34px;
+  --fs-display-2: 32px;
+  --fs-h1: 30px;
+  --fs-h2: 26px;
+  --fs-h3: 22px;
+  --fs-h4: 20px;
+  --fs-title: 18px;
+  --fs-body-lg: 16px;
+  --fs-body: 15px;
+  --fs-body-sm: 14px;
+  --fs-small: 13px;
+  --fs-xs: 12px;
+
+  --fw-hero: 800;
+  --fw-h1: 780;
+  --fw-h2: 760;
+  --fw-h3: 720;
+  --fw-title: 700;
+  --fw-body: 550;
+  --fw-body-strong: 650;
+  --fw-label: 650;
+  --fw-btn: 700;
+  --fw-pill: 700;
 }
 
-body {
-  overflow-x: hidden;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-img,
-video,
-canvas,
-svg {
-  max-width: 100%;
-}
-
-button,
+/* ---------- Global text ---------- */
+html,
+body,
 input,
 textarea,
+button,
 select {
-  font: inherit;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-body);
 }
 
-:root {
-  --page-pad-xl: 24px;
-  --page-pad-lg: 20px;
-  --page-pad-md: 16px;
-  --page-pad-sm: 12px;
-
-  --h1-xl: 32px;
-  --h1-lg: 29px;
-  --h1-md: 26px;
-  --h1-sm: 22px;
-
-  --h2-xl: 24px;
-  --h2-lg: 22px;
-  --h2-md: 20px;
-  --h2-sm: 18px;
-
-  --text-lg: 15px;
-  --text-md: 14px;
-  --text-sm: 13px;
-
-  --radius-card-xl: 20px;
-  --radius-card-lg: 18px;
-  --radius-card-md: 16px;
-  --radius-card-sm: 14px;
-
-  --btn-h-lg: 44px;
-  --btn-h-md: 42px;
-  --btn-h-sm: 40px;
+/* ---------- Global common utility classes ---------- */
+.pageTitle {
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-h2);
 }
 
-/* =========================================================
-   GLOBAL SAFETY
-   ========================================================= */
-
-#root {
-  overflow-x: hidden;
+.pageSub,
+.note,
+.empty,
+.label,
+.input,
+.textarea,
+.select,
+select,
+.btn {
+  font-size: var(--fs-body);
 }
 
-.container {
-  width: 100%;
-  max-width: 1220px;
-  margin: 0 auto;
-  padding-left: var(--page-pad-xl);
-  padding-right: var(--page-pad-xl);
+.pill,
+.tag {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-pill);
 }
 
-.bookingCheckoutPage,
-.bookingHistoryPage,
-.bookingReviewPage,
-.bookingSuccessPage,
-.invoiceViewPage,
-.myListingsPage,
-.plannerPage,
-.plannerResultPage,
-.profilePage,
-.providerDashboardPage,
-.providerDetailsPage,
-.providerRegisterPage,
-.providersPage,
-.savedTripsPage {
-  min-width: 0;
+.btn,
+.btnPrimary,
+.btnSun {
+  font-weight: var(--fw-btn);
 }
 
-.bookingCheckoutCard,
-.bookingHistoryCard,
-.bookingReviewCard,
-.bookingReviewFormCard,
-.bookingSuccessCard,
-.invoiceViewCard,
-.authCard,
-.myListingsCard,
-.plannerFormCard,
-.plannerResultOuter,
-.profileCard,
-.providerDashboardCard,
-.providerDetailsCard,
-.providerRegisterForm,
-.providersSearchStrip,
-.savedTripCard,
-.providerCard,
-.placeMiniCard {
-  min-width: 0;
-  max-width: 100%;
+/* ---------- Navbar / footer / shared components ---------- */
+.brandText,
+.otBrandName {
+  font-weight: 900;
 }
 
+.brandText {
+  font-size: 26px;
+}
+
+.navItem,
+.navTextBtn,
+.navUserName,
+.loadingText,
+.otCol a,
+.otNewsText,
+.otCopyright,
+.otBottomLinks a,
+.customSelectTrigger,
+.customSelectValue,
+.customSelectOption {
+  font-size: var(--fs-body);
+}
+
+.otColTitle,
+.otSectionTitle,
+.otProfileName,
+.otGuestTitle,
+.otNavItem,
+.otActionBtn,
+.otBottomBtn,
+.otMiniStatValue,
+.otMiniStatLabel,
+.otTag,
+.otMiniLink,
+.otGuestText,
+.otNewsInput,
+.otNewsBtn,
+.otSmallNote {
+  font-size: var(--fs-body-sm);
+}
+
+.placeMiniCardBody h4 {
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-h3);
+}
+
+.placeMiniCardBody p,
+.placeMiniCardMeta span,
+.placeMiniCardAction,
+.placeMiniCardAttractions span,
+.placeMiniCardTag,
+.placeMiniCardMeta strong {
+  font-size: var(--fs-body-sm);
+}
+
+/* ---------- Auth ---------- */
+.authBrand,
+.authTitle {
+  font-weight: var(--fw-h1);
+}
+
+.authBrand {
+  font-size: 24px;
+}
+
+.authTitle {
+  font-size: 24px;
+}
+
+.authSub,
+.authInput,
+.authPrimary,
+.authBottom,
+.authLink,
+.authLinkBtn,
+.authMiniBtn,
+.authCheck,
+.authMessage,
+.authTab,
+.authLabel {
+  font-size: var(--fs-body-sm);
+}
+
+/* ---------- Section / page heads ---------- */
 .bookingCheckoutHead h1,
-.bookingHistoryHead h1,
 .bookingReviewHead h1,
-.invoiceViewHeader h1,
-.myListingsHead h1,
-.plannerHead h1,
-.plannerResultHead h1,
-.savedTripsHead h1,
-.profileIdentity h1,
+.providersTitle,
 .providerDashboardHead h1,
 .providerRegisterHead h1,
-.providersTitle,
-.providerDetailsTopContent h1 {
-  line-height: 1.18;
-  letter-spacing: -0.02em;
-  word-break: break-word;
+.plannerHead h1,
+.plannerResultHead h1,
+.profileIdentity h1,
+.myListingsHead h1,
+.savedTripsHead h1,
+.invoiceViewHeader h1,
+.bookingSuccessBanner h1,
+.bookingHistoryHead h1 {
+  font-size: var(--fs-display-2);
+  font-weight: var(--fw-h1);
 }
 
 .bookingCheckoutHead p,
-.bookingHistoryHead p,
 .bookingReviewHead p,
-.invoiceViewHeader p,
-.myListingsHead p,
-.plannerHead p,
-.plannerResultHead p,
-.savedTripsHead p,
-.profileIdentity p,
+.providersSub,
 .providerDashboardHead p,
 .providerRegisterHead p,
-.providersSub,
-.providerDetailsDesc,
-.providerDetailsMeta,
-.placeMiniCardBody p,
-.providerCardDesc {
-  font-size: var(--text-lg);
-  line-height: 1.65;
+.plannerHead p,
+.plannerResultHead p,
+.profileIdentity p,
+.myListingsHead p,
+.savedTripsHead p,
+.invoiceViewHeader p,
+.bookingHistoryHead p,
+.bookingSuccessBanner p {
+  font-size: var(--fs-body-lg);
+  font-weight: var(--fw-body);
 }
 
-/* =========================================================
-   HOME PAGE GAP FIX
-   ========================================================= */
-
-.homeFullscreen {
-  width: 100% !important;
-  min-height: calc(100vh - var(--navH));
-  height: calc(100vh - var(--navH));
-  margin-left: 0 !important;
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  background-position: center center;
-  background-size: cover;
-  overflow: hidden;
+/* ---------- Common messages / alerts ---------- */
+.bookingCheckoutMessage,
+.bookingHistoryMessage,
+.bookingHistoryEmpty,
+.bookingHistoryAlert,
+.bookingReviewMessage,
+.bookingReviewAlert,
+.bookingReviewDisabled,
+.bookingSuccessMessage,
+.invoiceViewMessage,
+.providerDashboardMessage,
+.providerDashboardEmpty,
+.providersMessage,
+.providerRegisterMessage,
+.plannerMessage,
+.plannerResultMessage,
+.savedTripsMessage,
+.savedTripsEmpty,
+.profileMessage,
+.myListingsMessage,
+.myListingsEmpty {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-body-strong);
 }
 
-.heroContent {
-  position: relative;
-  z-index: 2;
-  margin-top: 0 !important;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
+/* ---------- Booking checkout ---------- */
+.bookingCheckoutCard label,
+.bookingReviewField label,
+.providerRegisterForm > .providerRegisterGrid label,
+.providerRegisterBlock label:not(.providerRegisterCheck),
+.myListingsEditForm > .myListingsFormGrid label,
+.myListingsBlock label:not(.myListingsCheck),
+.profileForm label {
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-label);
 }
 
-/* =========================================================
-   AUTH GAP FIX
-   ========================================================= */
-
-.authPage {
-  min-height: 100vh !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+.bookingCheckoutCard input,
+.bookingCheckoutCard textarea,
+.bookingReviewFormCard textarea,
+.bookingReviewFormCard input[type="file"],
+.providerRegisterForm input:not([type="checkbox"]):not([type="file"]),
+.providerRegisterForm textarea,
+.providerRegisterForm input[type="file"],
+.myListingsEditForm input:not([type="checkbox"]):not([type="file"]),
+.myListingsEditForm textarea,
+.myListingsEditForm input[type="file"],
+.profileForm input,
+.profileForm textarea,
+.plannerInput,
+.plannerResultInput,
+.providersSearchInput,
+.invoiceTable thead th,
+.invoiceTable tbody td {
+  font-size: var(--fs-body);
 }
 
-.authWrap {
-  width: 100%;
-  display: flex !important;
-  justify-content: center;
+.bookingCheckoutAmount,
+.bookingReviewPrice,
+.providerDashboardPrice,
+.bookingHistoryPrice,
+.bookingSuccessAmount {
+  font-size: var(--fs-title);
+  font-weight: var(--fw-h2);
 }
 
-.authWrapSingle {
-  width: 100%;
+.bookingCheckoutAmount strong {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-h1);
 }
-
-.authCard {
-  width: 100%;
-  margin: 0 !important;
-}
-
-/* =========================================================
-   HARD OFFSET / WIDTH FIXES
-   ========================================================= */
-
-.bookingHistoryPage {
-  margin-left: 0 !important;
-  max-width: 100%;
-  width: 100%;
-}
-
-.bookingHistoryGrid {
-  width: 100%;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-}
-
-.bookingHistoryCard {
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
-  min-height: 0;
-}
-
-.providerDashboardPage.container {
-  width: 100%;
-  max-width: 1800px;
-  margin: 0 auto !important;
-  margin-left: 0 !important;
-  padding-left: var(--page-pad-xl) !important;
-  padding-right: var(--page-pad-xl) !important;
-}
-
-.otFooter {
-  width: 100% !important;
-  margin-left: 0 !important;
-  overflow-x: hidden;
-}
-
-.myListingsMedia {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: clamp(240px, 46vw, 620px) !important;
-  margin: 0 auto !important;
-  border-radius: 24px;
-}
-
-.myListingsMedia img {
-  border-radius: 24px !important;
-}
-
-.providerDetailsHeroImage,
-.providerDetailsPackageHero,
-.providerDetailsVehicleHero {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: clamp(220px, 34vw, 360px) !important;
-  min-height: 220px !important;
-}
-
-.providerDetailsHeroImage img,
-.providerDetailsPackageHero img,
-.providerDetailsVehicleHero img {
-  border-radius: 24px !important;
-}
-
-.providerCardMedia img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  border-radius: 16px;
-}
-
-/* =========================================================
-   BUTTON / ACTION ALIGNMENT
-   ========================================================= */
 
 .bookingCheckoutBtn,
-.bookingHistoryBtn,
-.bookingHistoryReviewBtn,
-.bookingHistoryEditBtn,
 .bookingReviewBackBtn,
 .bookingReviewSubmitBtn,
 .bookingReviewCancelBtn,
@@ -300,19 +270,12 @@ select {
 .bookingSuccessGhostBtn,
 .invoiceViewPrimaryBtn,
 .invoiceViewGhostBtn,
-.authPrimary,
-.authMiniBtn,
-.myListingsBtn,
-.plannerPrimaryBtn,
-.plannerResultPrimaryBtn,
-.plannerResultSecondaryBtn,
 .profilePrimaryBtn,
 .profileGhostBtn,
 .profileDangerBtn,
 .providerDashboardBtn,
 .providerDetailsPrimaryBtn,
 .providerDetailsGhostBtn,
-.providerDetailsVoteBtn,
 .providerRegisterPrimaryBtn,
 .providerRegisterGhostBtn,
 .providerRegisterDangerBtn,
@@ -322,960 +285,434 @@ select {
 .savedTripsPrimaryBtn,
 .savedTripsSecondaryBtn,
 .savedTripsDangerBtn,
-.otBottomBtn,
-.otActionBtn,
-.otMiniLink,
-.otGuestPrimary,
-.otGuestSecondary,
-.placeMiniCardAction,
-.btn,
-.btnPrimary,
-.btnSun {
-  min-height: var(--btn-h-lg);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.2;
-}
-
-.bookingHistoryActions,
-.providerDashboardActions {
-  align-items: stretch;
-}
-
+.plannerPrimaryBtn,
+.plannerResultPrimaryBtn,
+.plannerResultSecondaryBtn,
+.myListingsBtn,
 .bookingHistoryBtn,
 .bookingHistoryReviewBtn,
-.bookingHistoryEditBtn,
-.providerDashboardBtn,
-.savedTripsPrimaryBtn,
-.savedTripsSecondaryBtn,
-.savedTripsDangerBtn,
-.providersPrimaryBtn,
-.providersGhostBtn,
-.providersSearchBtn {
-  width: 100%;
+.bookingHistoryEditBtn {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-btn);
 }
 
-.bookingHistoryTop,
-.providerCardHeader,
-.savedTripTop,
-.bookingReviewCardTop,
-.providerDetailsReviewTop,
-.providerDetailsItemHeader,
-.myListingsTop,
-.providersTopBar,
-.savedTripsHead,
-.profileHeader {
-  min-width: 0;
+/* ---------- Booking history ---------- */
+.bookingHistoryTop h3,
+.bookingReviewCardTop h3,
+.providerDashboardTop h3,
+.providerCardHeader h3,
+.savedTripTitle,
+.profileQuickCard h3,
+.providerDetailsItemTitle {
+  font-size: var(--fs-title);
+  font-weight: var(--fw-h3);
 }
 
-.bookingHistoryTop > *,
-.providerCardHeader > *,
-.savedTripTop > *,
-.bookingReviewCardTop > *,
-.providerDetailsReviewTop > *,
-.providerDetailsItemHeader > *,
-.myListingsTop > * {
-  min-width: 0;
+.bookingHistoryTop p,
+.bookingHistoryInfo,
+.bookingReviewCardTop p,
+.bookingReviewCardInfo,
+.providerDashboardInfo,
+.providerCardHeader p,
+.providerCardDesc,
+.savedTripSub,
+.savedTripSummary,
+.profileQuickCard p,
+.profileSection p,
+.providerDetailsMeta,
+.providerDetailsDesc,
+.providerDetailsInfoRow,
+.providerDetailsInfoBlock p,
+.providerDetailsReviewItem p,
+.providerDetailsSimilarCard p {
+  font-size: var(--fs-body);
 }
 
-/* =========================================================
-   INPUTS / TYPOGRAPHY
-   ========================================================= */
-
-.authInput,
-.plannerInput,
-.plannerResultInput,
-.providersSearchInput,
-.bookingCheckoutCard input,
-.bookingCheckoutCard textarea,
-.bookingReviewFormCard textarea,
-.bookingReviewFormCard input[type="file"],
-.profileForm input,
-.profileForm textarea,
-.providerRegisterForm input:not([type="checkbox"]):not([type="file"]),
-.providerRegisterForm textarea,
-.providerRegisterForm input[type="file"],
-.myListingsEditForm input:not([type="checkbox"]):not([type="file"]),
-.myListingsEditForm textarea,
-.myListingsEditForm input[type="file"],
-.providerDashboardCard textarea,
-.exploreSearch {
-  font-size: 15px;
+.bookingHistoryAlert,
+.bookingReviewAlert,
+.savedTripBestText,
+.savedTripBudgetStatus,
+.plannerResultBudgetSummary,
+.plannerResultBudgetExtra {
+  font-size: var(--fs-body);
 }
 
-.authLabel,
-.plannerField label,
-.profileForm label,
-.providerRegisterForm > .providerRegisterGrid label,
-.providerRegisterBlock label:not(.providerRegisterCheck),
-.myListingsEditForm > .myListingsFormGrid label,
-.myListingsBlock label:not(.myListingsCheck),
-.bookingCheckoutCard label,
-.bookingReviewField label {
-  font-size: 14px;
+/* ---------- Booking success / invoice ---------- */
+.bookingSuccessSummary h2,
+.invoiceViewBrand {
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-h2);
 }
 
-.pageTitle,
-.bookingCheckoutHead h1,
-.bookingHistoryHead h1,
-.bookingReviewHead h1,
-.invoiceViewHeader h1,
-.myListingsHead h1,
-.plannerHead h1,
-.plannerResultHead h1,
-.savedTripsHead h1,
-.profileIdentity h1,
-.providerDashboardHead h1,
-.providerRegisterHead h1,
-.providersTitle {
-  font-size: var(--h1-xl);
+.bookingSuccessSummary p,
+.bookingSuccessMeta span,
+.bookingSuccessInfoItem span,
+.bookingSuccessNotes p,
+.invoiceViewBox span,
+.invoiceViewReason p {
+  font-size: var(--fs-body);
 }
 
+.bookingSuccessType,
+.bookingSuccessInfoItem strong,
+.bookingSuccessNotes strong,
+.invoiceViewStatus .status,
+.invoiceViewBox strong,
+.invoiceViewReason strong {
+  font-size: var(--fs-small);
+  font-weight: var(--fw-pill);
+}
+
+.bookingSuccessRef {
+  font-size: var(--fs-body-sm);
+  font-weight: 800;
+}
+
+/* ---------- My listings ---------- */
+.myListingsTop h3 {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-h3);
+}
+
+.myListingsTop p,
+.myListingsDesc,
+.myListingsCheck,
+.myListingsBlock h4,
+.myListingsRemoveImage,
+.providerRegisterBlock h3,
+.providerRegisterCheck,
+.providerRegisterCheck span {
+  font-size: var(--fs-body);
+}
+
+.myListingsType,
+.providerCardRating,
+.providerTypePill,
+.savedTripBadge,
+.savedTripBestLabel,
+.providerDetailsType,
+.providerDetailsMiniLabel,
+.providerDetailsDataBox strong,
+.providerDetailsVoteBtn,
+.providerDetailsReviewDate,
+.plannerResultMiniLabel,
+.plannerResultDayBadge,
+.plannerResultBestTravelBadge,
+.plannerResultTravelSimpleItem span {
+  font-size: var(--fs-small);
+  font-weight: var(--fw-pill);
+}
+
+/* ---------- Planner ---------- */
 .plannerSectionTitle,
 .providerDetailsSection h2,
 .profileSection h2,
 .profileForm h2,
-.myListingsBlock h4,
-.providerRegisterBlock h3,
-.exploreSectionHead h2 {
-  font-size: var(--h2-xl);
+.plannerResultBlockTitle {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-h2);
 }
 
-/* =========================================================
-   NAVBAR / SIDEBAR / FOOTER
-   ========================================================= */
-
-.navbarInner {
-  max-width: 1280px;
-  padding-left: var(--page-pad-xl);
-  padding-right: var(--page-pad-xl);
+.plannerField label,
+.plannerChip,
+.plannerResultProviderMeta,
+.plannerResultPlaceFacts,
+.plannerResultSequenceMeta,
+.plannerResultTravelMiniBox,
+.plannerResultTravelMiniBox > div:last-child,
+.plannerResultTravelSimpleItem strong,
+.savedTripMiniItem strong,
+.savedTripMiniItem span {
+  font-size: var(--fs-body-sm);
 }
 
-.brandText {
-  font-size: 24px;
+.plannerChip {
+  font-weight: var(--fw-btn);
 }
 
-.navbarCenter {
-  gap: 22px;
+.plannerResultProviderTitle,
+.plannerResultSequenceTitle,
+.plannerResultProviderTitle-1 {
+  font-size: var(--fs-body-lg);
+  font-weight: var(--fw-h3);
 }
 
-.navItem,
-.navTextBtn,
-.navUserName {
-  font-size: 14px;
+.plannerResultMutedBox,
+.plannerResultTravelNote,
+.plannerResultList,
+.plannerResultChatBubble,
+.plannerResultProviderText,
+.plannerResultCostBox {
+  font-size: var(--fs-body);
 }
 
-.otSide {
-  width: min(320px, 90vw);
+.plannerResultPlaceIndex,
+.plannerResultSequenceCount {
+  font-size: var(--fs-small);
+  font-weight: 800;
 }
 
-.otSideInner {
-  padding-left: 16px;
-  padding-right: 16px;
+.plannerResultBestTravelPrice {
+  font-size: var(--fs-body);
+  font-weight: 800;
 }
 
-.otFooterTop .otFooterContainer {
-  gap: 24px;
+/* ---------- Profile ---------- */
+.profileInfoItem span,
+.profileQuickCard button {
+  font-size: var(--fs-body);
 }
 
-.otBrandName {
-  font-size: 28px;
+.profileInfoItem strong {
+  font-size: var(--fs-small);
+  font-weight: var(--fw-pill);
 }
 
-.otBrandTagline,
-.otCol a,
-.otNewsText {
-  font-size: 14px;
+.profilePhotoChange {
+  font-size: var(--fs-small);
+  font-weight: var(--fw-btn);
 }
 
-/* =========================================================
-   EXPLORE TYPOGRAPHY ONLY
-   keep Explore layout, only improve scaling
-   ========================================================= */
-
-.exploreHero h1 {
-  font-size: 34px;
-  line-height: 1.12;
+/* ---------- Providers / provider details ---------- */
+.providerDetailsTopContent h1 {
+  font-size: var(--fs-h1);
+  font-weight: 820;
 }
 
-.exploreHero p {
-  font-size: 15px;
-  line-height: 1.68;
+.providerDetailsDataBox span,
+.providerDetailsMiniInfo strong,
+.providerDetailsNote,
+.providerDetailsInfoBlock h3 {
+  font-size: var(--fs-body);
 }
 
-.exploreSectionHead h2 {
-  font-size: 28px;
+.providerRegisterHead h1,
+.providersTitle {
+  letter-spacing: normal;
 }
 
-/* =========================================================
-   LARGE TABLETS / SMALL LAPTOPS
-   1024-1200 range
-   ========================================================= */
-
-@media (max-width: 1200px) {
-  .bookingHistoryGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .providersSearchGrid {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-  }
-
-  .providersSearchGrid > *:last-child {
-    grid-column: 1 / -1;
-  }
-
-  .providerDetailsTop {
-    grid-template-columns: 1fr !important;
-  }
-
-  .providerDetailsTopContent h1 {
-    padding-right: 0 !important;
-  }
-
-  .providerDetailsTypeTop {
-    position: static !important;
-    justify-self: start;
-  }
-
-  .bookingSuccessTop {
-    grid-template-columns: 280px 1fr;
-  }
+/* ---------- Saved trips ---------- */
+.savedTripsHead h1 {
+  font-size: var(--fs-display-2);
 }
 
-/* =========================================================
-   TABLET RANGE
-   iPad mini / Air / Pro / Fold width ranges
-   ========================================================= */
-
-@media (max-width: 1024px) {
-  .container {
-    padding-left: var(--page-pad-lg);
-    padding-right: var(--page-pad-lg);
-  }
-
-  .navbarInner,
-  .providerDashboardPage.container {
-    padding-left: var(--page-pad-lg) !important;
-    padding-right: var(--page-pad-lg) !important;
-  }
-
-  .pageTitle,
-  .bookingCheckoutHead h1,
-  .bookingHistoryHead h1,
-  .bookingReviewHead h1,
-  .invoiceViewHeader h1,
-  .myListingsHead h1,
-  .plannerHead h1,
-  .plannerResultHead h1,
-  .savedTripsHead h1,
-  .profileIdentity h1,
-  .providerDashboardHead h1,
-  .providerRegisterHead h1,
-  .providersTitle,
-  .providerDetailsTopContent h1 {
-    font-size: var(--h1-lg);
-  }
-
-  .plannerSectionTitle,
-  .providerDetailsSection h2,
-  .profileSection h2,
-  .profileForm h2,
-  .myListingsBlock h4,
-  .providerRegisterBlock h3,
-  .exploreSectionHead h2 {
-    font-size: var(--h2-lg);
-  }
-
-  .bookingCheckoutHead p,
-  .bookingHistoryHead p,
-  .bookingReviewHead p,
-  .invoiceViewHeader p,
-  .myListingsHead p,
-  .plannerHead p,
-  .plannerResultHead p,
-  .savedTripsHead p,
-  .profileIdentity p,
-  .providerDashboardHead p,
-  .providerRegisterHead p,
-  .providersSub,
-  .providerDetailsDesc,
-  .providerDetailsMeta,
-  .placeMiniCardBody p,
-  .providerCardDesc,
-  .exploreHero p {
-    font-size: var(--text-md);
-  }
-
-  .exploreHero h1 {
-    font-size: 30px !important;
-  }
-
-  .exploreSectionHead h2 {
-    font-size: 26px !important;
-  }
-
-  .bookingReviewLayout,
-  .invoiceViewGrid,
-  .profileInfoGrid,
-  .profileFormGrid,
-  .providerRegisterGrid,
-  .myListingsFormGrid,
-  .plannerRow,
-  .plannerResultThreeCol,
-  .plannerResultTravelMiniGrid,
-  .plannerResultProviderGrid,
-  .plannerResultPlacesGrid,
-  .plannerResultItineraryGrid,
-  .savedTripsGrid,
-  .savedTripMiniGrid,
-  .providersGrid,
-  .providerDashboardGrid,
-  .providerDetailsDataGrid,
-  .providerDetailsVehicleMetaGrid,
-  .bookingCheckoutGrid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .bookingSuccessTop,
-  .bookingSuccessInfoGrid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .bookingSuccessBanner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .bookingSuccessType {
-    position: static !important;
-    width: fit-content;
-  }
-
-  .providersTopBar,
-  .savedTripsHead,
-  .bookingReviewHead,
-  .profileHeader,
-  .providerDetailsSimilarCard,
-  .providerDetailsReviewTop,
-  .providerDetailsItemHeader,
-  .providerCardHeader,
-  .bookingHistoryTop,
-  .myListingsTop {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .providerDetailsGallery {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .myListingsImageGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .otFooterTop .otFooterContainer {
-    grid-template-columns: 1fr !important;
-  }
-
-  .otCols {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .otFooterBottom .otFooterContainer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.savedTripsHead p {
+  font-size: var(--fs-body-lg);
 }
 
-/* =========================================================
-   MOBILE / LARGE PHONES
-   iPhone XR, 12 Pro, Pixel, Samsung large phones
-   ========================================================= */
-
-@media (max-width: 820px) {
-  .heroContent {
-    width: calc(100% - 24px);
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 20px;
-    border-radius: 22px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .providerDashboardActions,
-  .bookingHistoryActions {
-    grid-template-columns: 1fr !important;
-  }
-
-  .bookingHistoryActionPlaceholder {
-    display: none;
-  }
-
-  .savedTripActions {
-    flex-wrap: wrap;
-  }
-
-  .savedTripActions .savedTripsPrimaryBtn,
-  .savedTripActions .savedTripsSecondaryBtn,
-  .savedTripActions .savedTripsDangerBtn {
-    flex: 1 1 100%;
-    width: 100%;
-  }
-
-  .bookingSuccessActions,
-  .invoiceViewActions,
-  .profileActions,
-  .bookingReviewActions,
-  .myListingsActions,
-  .providerDetailsVoteRow {
-    width: 100%;
-    flex-direction: column;
-  }
-
-  .bookingSuccessPrimaryBtn,
-  .bookingSuccessGhostBtn,
-  .invoiceViewPrimaryBtn,
-  .invoiceViewGhostBtn,
-  .profilePrimaryBtn,
-  .profileGhostBtn,
-  .profileDangerBtn,
-  .bookingReviewSubmitBtn,
-  .bookingReviewCancelBtn,
-  .myListingsBtn,
-  .providerDetailsPrimaryBtn,
-  .providerDetailsGhostBtn,
-  .providerDetailsVoteBtn {
-    width: 100%;
-  }
+.savedTripMiniItem strong,
+.savedTripBestText {
+  font-weight: var(--fw-body-strong);
 }
 
-/* =========================================================
-   MOBILE MAIN
-   iPhone SE / small Android / Surface Duo width
-   ========================================================= */
-
-@media (max-width: 640px) {
-  .container {
-    padding-left: var(--page-pad-md);
-    padding-right: var(--page-pad-md);
+/* =====================================================
+   <= 1280px  | iPad Pro / Surface Pro / Zenbook Fold
+===================================================== */
+@media (max-width: 1280px) {
+  :root {
+    --fs-display-1: 32px;
+    --fs-display-2: 30px;
+    --fs-h1: 28px;
+    --fs-h2: 24px;
+    --fs-h3: 21px;
+    --fs-h4: 19px;
+    --fs-title: 17px;
+    --fs-body-lg: 15px;
+    --fs-body: 14.5px;
+    --fs-body-sm: 13.5px;
+    --fs-small: 12.5px;
+    --fs-xs: 11.5px;
   }
 
-  .navbarInner,
-  .providerDashboardPage.container {
-    padding-left: var(--page-pad-md) !important;
-    padding-right: var(--page-pad-md) !important;
-  }
-
-  .authPage {
-    min-height: auto !important;
-    padding: 16px !important;
-    align-items: flex-start !important;
-  }
-
-  .authCard {
-    margin-top: 20px !important;
-    padding: 18px 14px;
-  }
-
-  .brandText {
-    font-size: 22px;
-  }
-
-  .pageTitle,
-  .bookingCheckoutHead h1,
-  .bookingHistoryHead h1,
-  .bookingReviewHead h1,
-  .invoiceViewHeader h1,
-  .myListingsHead h1,
-  .plannerHead h1,
-  .plannerResultHead h1,
-  .savedTripsHead h1,
-  .profileIdentity h1,
-  .providerDashboardHead h1,
-  .providerRegisterHead h1,
-  .providersTitle,
-  .providerDetailsTopContent h1 {
-    font-size: var(--h1-md);
-  }
-
-  .plannerSectionTitle,
-  .providerDetailsSection h2,
-  .profileSection h2,
-  .profileForm h2,
-  .myListingsBlock h4,
-  .providerRegisterBlock h3,
-  .exploreSectionHead h2 {
-    font-size: var(--h2-md);
-  }
-
-  .bookingCheckoutHead p,
-  .bookingHistoryHead p,
-  .bookingReviewHead p,
-  .invoiceViewHeader p,
-  .myListingsHead p,
-  .plannerHead p,
-  .plannerResultHead p,
-  .savedTripsHead p,
-  .profileIdentity p,
-  .providerDashboardHead p,
-  .providerRegisterHead p,
-  .providersSub,
-  .providerDetailsDesc,
-  .providerDetailsMeta,
-  .placeMiniCardBody p,
-  .providerCardDesc,
-  .exploreHero p {
-    font-size: var(--text-sm);
-    line-height: 1.6;
-  }
-
-  .bookingCheckoutPage,
-  .bookingHistoryPage,
-  .bookingReviewPage,
-  .bookingSuccessPage,
-  .invoiceViewPage,
-  .myListingsPage,
-  .plannerPage,
-  .plannerResultPage,
-  .savedTripsPage,
-  .providerDashboardPage,
-  .providerDetailsPage,
-  .providerRegisterPage,
-  .providersPage,
-  .profilePage {
-    gap: 16px;
-  }
-
-  .bookingCheckoutCard,
-  .bookingReviewCard,
-  .bookingReviewFormCard,
-  .invoiceViewCard,
-  .plannerFormCard,
-  .plannerResultOuter,
-  .providerDetailsCard,
-  .providerRegisterForm,
-  .providersSearchStrip,
-  .profileCard {
-    padding: 16px !important;
-  }
-
-  .bookingSuccessBanner {
-    padding: 18px 16px;
-  }
-
-  .bookingSuccessTop,
-  .bookingSuccessInfoGrid,
-  .bookingSuccessActions,
-  .bookingSuccessNotes,
-  .myListingsBody {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-  }
-
-  .bookingSuccessBanner h1 {
-    font-size: 24px;
-  }
-
-  .bookingSuccessSummary h2 {
-    font-size: 22px;
-  }
-
-  .bookingSuccessAmount {
-    font-size: 20px;
-  }
-
-  .bookingHistoryTop h3,
-  .providerCardHeader h3,
-  .placeMiniCardBody h4,
-  .myListingsTop h3 {
-    font-size: 18px;
-  }
-
-  .providerDetailsItemTitle,
-  .plannerResultProviderTitle,
-  .plannerResultSequenceTitle,
-  .savedTripTitle {
-    font-size: 16px;
-  }
-
-  .plannerResultBlockTitle {
-    font-size: 20px;
-  }
-
-  .plannerResultTravelSimpleItem strong,
-  .plannerResultProviderText,
-  .plannerResultMutedBox,
-  .savedTripSummary,
-  .savedTripBestText {
-    font-size: 13px;
-    line-height: 1.55;
-  }
-
-  .bookingCheckoutBtn,
-  .bookingHistoryBtn,
-  .bookingHistoryReviewBtn,
-  .bookingHistoryEditBtn,
-  .bookingReviewBackBtn,
-  .bookingReviewSubmitBtn,
-  .bookingReviewCancelBtn,
-  .bookingSuccessPrimaryBtn,
-  .bookingSuccessGhostBtn,
-  .invoiceViewPrimaryBtn,
-  .invoiceViewGhostBtn,
-  .authPrimary,
-  .authMiniBtn,
-  .myListingsBtn,
-  .plannerPrimaryBtn,
-  .plannerResultPrimaryBtn,
-  .plannerResultSecondaryBtn,
-  .profilePrimaryBtn,
-  .profileGhostBtn,
-  .profileDangerBtn,
-  .providerDashboardBtn,
-  .providerDetailsPrimaryBtn,
-  .providerDetailsGhostBtn,
-  .providerDetailsVoteBtn,
-  .providerRegisterPrimaryBtn,
-  .providerRegisterGhostBtn,
-  .providerRegisterDangerBtn,
-  .providersPrimaryBtn,
-  .providersGhostBtn,
-  .providersSearchBtn,
-  .savedTripsPrimaryBtn,
-  .savedTripsSecondaryBtn,
-  .savedTripsDangerBtn,
-  .placeMiniCardAction {
-    width: 100%;
-    min-height: var(--btn-h-md);
-    font-size: 13px;
-  }
-
-  .bookingReviewImageGrid,
-  .bookingReviewImageGridSingle,
-  .myListingsImageGrid,
-  .providerDetailsGallery,
-  .plannerResultChatComposer,
-  .providersSearchGrid,
-  .otCols,
-  .providersGrid,
-  .savedTripsGrid,
-  .savedTripMiniGrid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .plannerResultTopActions {
-    width: 100%;
-    flex-direction: column;
-  }
-
-  .plannerResultChatBubble {
-    max-width: 100%;
-  }
-
-  .bookingReviewCardTop,
-  .providerDetailsReviewTop,
-  .providerCardHeader,
-  .savedTripTop,
-  .bookingHistoryTop {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .bookingHistoryPrice,
-  .bookingReviewPrice,
-  .providerDashboardPrice,
-  .providerCardRating,
-  .savedTripBadge {
-    white-space: normal;
-  }
-
-  .myListingsMedia {
-    height: 240px !important;
-    border-radius: 18px;
-  }
-
-  .myListingsMedia img {
-    border-radius: 18px !important;
-  }
-
-  .providerDetailsHeroImage,
-  .providerDetailsPackageHero,
-  .providerDetailsVehicleHero,
-  .providerDetailsImageEmpty {
-    height: 220px !important;
-    min-height: 220px !important;
-    border-radius: 20px;
-  }
-
-  .providerDetailsReviewImageItem {
-    width: 78px;
-    height: 60px;
-  }
-
-  .providersSearchInput,
-  .plannerInput,
-  .plannerResultInput,
-  .authInput,
-  .bookingCheckoutCard input,
-  .bookingCheckoutCard textarea,
-  .profileForm input,
-  .profileForm textarea,
-  .providerRegisterForm input:not([type="checkbox"]):not([type="file"]),
-  .providerRegisterForm textarea,
-  .myListingsEditForm input:not([type="checkbox"]):not([type="file"]),
-  .myListingsEditForm textarea,
-  .exploreSearch {
-    font-size: 14px;
-  }
-
-  .providersSearchInput,
-  .plannerInput {
-    min-height: 48px;
-    height: 48px;
-    border-radius: 14px;
-  }
-
-  .customSelect {
-    min-height: 48px;
-  }
-
-  .customSelectTrigger {
-    min-height: 48px;
-    font-size: 14px;
-    padding: 0 14px;
-    border-radius: 14px;
-  }
-
-  .customSelectValue,
-  .customSelectOption {
-    font-size: 14px;
-  }
-
-  .otSearch {
-    min-height: 54px;
-    border-radius: 16px;
-    padding: 0 14px;
-  }
-
-  .otProfileCard {
-    grid-template-columns: 52px minmax(0, 1fr);
-  }
-
-  .otMiniLink {
-    grid-column: 1 / -1;
-    width: 100%;
-    text-align: center;
-  }
-
-  .profileAvatar {
-    width: 96px;
-    height: 96px;
-  }
-
-  .invoiceTable thead th,
-  .invoiceTable tbody td {
-    font-size: 13px;
-    padding: 10px;
-  }
-
-  .loadingWrap {
-    min-height: 220px;
-    padding: 18px;
-  }
-
-  .loadingSpinner {
-    width: 40px;
-    height: 40px;
-  }
-
-  .loadingText {
-    font-size: 14px;
-  }
-
-  .exploreHero h1 {
-    font-size: 26px !important;
-  }
-
-  .exploreSectionHead h2 {
-    font-size: 22px !important;
-  }
-
-  .exploreHero p {
-    font-size: 13px !important;
-  }
-
-  .heroContent {
-    width: calc(100% - 20px);
-    padding: 12px 14px;
-    margin-bottom: 16px;
-    gap: 10px;
-    border-radius: 18px;
-  }
-}
-
-/* =========================================================
-   VERY SMALL PHONES
-   iPhone SE and similar
-   ========================================================= */
-
-@media (max-width: 480px) {
-  .container,
-  .myListingsPage,
-  .profilePage {
-    padding-left: var(--page-pad-sm) !important;
-    padding-right: var(--page-pad-sm) !important;
-  }
-
-  .navbarInner,
-  .providerDashboardPage.container {
-    padding-left: var(--page-pad-sm) !important;
-    padding-right: var(--page-pad-sm) !important;
-  }
-
-  .pageTitle,
-  .bookingCheckoutHead h1,
-  .bookingHistoryHead h1,
-  .bookingReviewHead h1,
-  .invoiceViewHeader h1,
-  .myListingsHead h1,
-  .plannerHead h1,
-  .plannerResultHead h1,
-  .savedTripsHead h1,
-  .profileIdentity h1,
-  .providerDashboardHead h1,
-  .providerRegisterHead h1,
-  .providersTitle,
-  .providerDetailsTopContent h1 {
-    font-size: var(--h1-sm);
-  }
-
-  .bookingSuccessBanner h1 {
-    font-size: 22px;
-  }
-
-  .bookingSuccessSummary h2 {
-    font-size: 20px;
-  }
-
-  .bookingHistoryTop h3,
-  .providerCardHeader h3,
-  .placeMiniCardBody h4,
-  .myListingsTop h3,
-  .providerDetailsItemTitle {
-    font-size: 16px;
-  }
-
-  .plannerSectionTitle,
-  .providerDetailsSection h2,
-  .profileSection h2,
-  .profileForm h2,
-  .exploreSectionHead h2 {
-    font-size: var(--h2-sm);
-  }
-
-  .bookingCheckoutCard,
-  .bookingReviewCard,
-  .bookingReviewFormCard,
-  .invoiceViewCard,
-  .profileCard,
-  .plannerFormCard,
-  .plannerResultOuter,
-  .providerDetailsCard,
-  .providerRegisterForm,
-  .providersSearchStrip {
-    border-radius: 14px;
-  }
-
-  .bookingSuccessCard,
-  .bookingHistoryCard,
-  .providerDashboardCard,
-  .savedTripCard,
-  .providerCard,
-  .placeMiniCard,
-  .myListingsCard {
-    border-radius: 14px;
-  }
-
-  .bookingSuccessBanner {
-    border-radius: 14px 14px 0 0;
-  }
-
-  .myListingsMedia {
-    height: 220px !important;
-    border-radius: 16px;
-  }
-
-  .providerDetailsHeroImage,
-  .providerDetailsPackageHero,
-  .providerDetailsVehicleHero,
-  .providerDetailsImageEmpty {
-    height: 200px !important;
-    min-height: 200px !important;
-  }
-
-  .providerDetailsGalleryItem {
-    height: 82px;
-  }
-
-  .placeMiniCardMeta {
-    grid-template-columns: 1fr !important;
-  }
-
-  .bookingHistoryInfo,
-  .bookingReviewCardInfo,
-  .providerDashboardInfo,
-  .providerDetailsInfoRow,
-  .providerCardDesc,
-  .savedTripSub,
-  .savedTripSummary {
-    font-size: 13px;
-  }
-
+  .brandText,
   .otBrandName {
     font-size: 24px;
   }
 
-  .otBrandTagline,
-  .otCol a,
-  .otNewsText {
-    font-size: 13px;
-  }
-
-  .heroContent {
-    padding: 12px;
-    gap: 8px;
-    margin-bottom: 14px;
-  }
-
-  .exploreHero h1 {
-    font-size: 24px !important;
-  }
-
-  .exploreSectionHead h2 {
-    font-size: 20px !important;
+  .authBrand,
+  .authTitle {
+    font-size: 23px;
   }
 }
 
-/* =========================================================
-   WIDE DISPLAYS / NEST HUB TYPE SCREENS
-   ========================================================= */
-
-@media (min-width: 1280px) {
-  .homeFullscreen {
-    min-height: calc(100vh - var(--navH));
+/* =====================================================
+   <= 1024px | iPad Mini / iPad Air / Fold / Duo
+===================================================== */
+@media (max-width: 1024px) {
+  :root {
+    --fs-display-1: 30px;
+    --fs-display-2: 28px;
+    --fs-h1: 26px;
+    --fs-h2: 22px;
+    --fs-h3: 20px;
+    --fs-h4: 18px;
+    --fs-title: 16px;
+    --fs-body-lg: 15px;
+    --fs-body: 14px;
+    --fs-body-sm: 13px;
+    --fs-small: 12px;
+    --fs-xs: 11px;
   }
 
-  .heroContent {
-    margin-bottom: 32px;
+  .brandText,
+  .otBrandName {
+    font-size: 23px;
   }
 
-  .bookingHistoryGrid,
-  .providerDashboardGrid {
-    align-items: stretch;
+  .authBrand,
+  .authTitle {
+    font-size: 22px;
+  }
+
+  .bookingSuccessBanner h1,
+  .invoiceViewHeader h1,
+  .plannerResultHead h1,
+  .profileIdentity h1,
+  .bookingHistoryHead h1 {
+    font-weight: 760;
+  }
+}
+
+/* =====================================================
+   <= 768px | large phones / small tablets
+===================================================== */
+@media (max-width: 768px) {
+  :root {
+    --fs-display-1: 28px;
+    --fs-display-2: 26px;
+    --fs-h1: 24px;
+    --fs-h2: 21px;
+    --fs-h3: 18px;
+    --fs-h4: 17px;
+    --fs-title: 15px;
+    --fs-body-lg: 14px;
+    --fs-body: 13.5px;
+    --fs-body-sm: 12.5px;
+    --fs-small: 11.5px;
+    --fs-xs: 10.5px;
+  }
+
+  .brandText,
+  .otBrandName {
+    font-size: 22px;
+  }
+
+  .authBrand,
+  .authTitle {
+    font-size: 21px;
+  }
+
+  .bookingSuccessSummary h2,
+  .providerDetailsTopContent h1,
+  .plannerSectionTitle,
+  .providerDetailsSection h2,
+  .profileSection h2,
+  .profileForm h2,
+  .plannerResultBlockTitle {
+    font-weight: 740;
+  }
+}
+
+/* =====================================================
+   <= 640px | normal phones
+===================================================== */
+@media (max-width: 640px) {
+  :root {
+    --fs-display-1: 26px;
+    --fs-display-2: 24px;
+    --fs-h1: 22px;
+    --fs-h2: 20px;
+    --fs-h3: 17px;
+    --fs-h4: 16px;
+    --fs-title: 14px;
+    --fs-body-lg: 13.5px;
+    --fs-body: 13px;
+    --fs-body-sm: 12px;
+    --fs-small: 11px;
+    --fs-xs: 10px;
+  }
+
+  .brandText,
+  .otBrandName {
+    font-size: 21px;
+  }
+
+  .authBrand,
+  .authTitle {
+    font-size: 20px;
+  }
+
+  .bookingCheckoutHead h1,
+  .bookingReviewHead h1,
+  .providersTitle,
+  .providerDashboardHead h1,
+  .providerRegisterHead h1,
+  .plannerHead h1,
+  .plannerResultHead h1,
+  .profileIdentity h1,
+  .myListingsHead h1,
+  .savedTripsHead h1,
+  .invoiceViewHeader h1,
+  .bookingSuccessBanner h1,
+  .bookingHistoryHead h1 {
+    font-weight: 750;
+  }
+
+  .bookingHistoryTop h3,
+  .bookingReviewCardTop h3,
+  .providerDashboardTop h3,
+  .providerCardHeader h3,
+  .savedTripTitle,
+  .profileQuickCard h3,
+  .providerDetailsItemTitle {
+    font-weight: 700;
+  }
+}
+
+/* =====================================================
+   <= 480px | iPhone SE / Galaxy S8+
+===================================================== */
+@media (max-width: 480px) {
+  :root {
+    --fs-display-1: 24px;
+    --fs-display-2: 22px;
+    --fs-h1: 20px;
+    --fs-h2: 18px;
+    --fs-h3: 16px;
+    --fs-h4: 15px;
+    --fs-title: 13.5px;
+    --fs-body-lg: 13px;
+    --fs-body: 12.5px;
+    --fs-body-sm: 11.5px;
+    --fs-small: 10.5px;
+    --fs-xs: 10px;
+  }
+
+  .brandText,
+  .otBrandName {
+    font-size: 20px;
+  }
+
+  .authBrand,
+  .authTitle {
+    font-size: 19px;
+  }
+
+  .bookingCheckoutHead h1,
+  .bookingReviewHead h1,
+  .providersTitle,
+  .providerDashboardHead h1,
+  .providerRegisterHead h1,
+  .plannerHead h1,
+  .plannerResultHead h1,
+  .profileIdentity h1,
+  .myListingsHead h1,
+  .savedTripsHead h1,
+  .invoiceViewHeader h1,
+  .bookingSuccessBanner h1,
+  .bookingHistoryHead h1,
+  .bookingSuccessSummary h2,
+  .providerDetailsTopContent h1 {
+    line-height: normal;
   }
 }
