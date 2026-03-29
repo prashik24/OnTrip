@@ -19,6 +19,8 @@
   font-size: 32px;
   font-weight: 760;
   color: var(--text);
+  line-height: 1.2;
+  word-break: break-word;
 }
 
 .savedTripsHead p {
@@ -27,6 +29,7 @@
   line-height: 1.65;
   font-weight: 550;
   max-width: 860px;
+  word-break: break-word;
 }
 
 .savedTripsHead > .savedTripsSecondaryBtn {
@@ -46,6 +49,7 @@
   border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
   font-weight: 650;
+  word-break: break-word;
 }
 
 .savedTripsEmpty {
@@ -55,6 +59,7 @@
   padding: 18px;
   color: rgba(11, 27, 42, 0.72);
   font-weight: 650;
+  word-break: break-word;
 }
 
 .savedTripsGrid {
@@ -83,12 +88,18 @@
   justify-content: space-between;
   gap: 12px;
   align-items: flex-start;
+  min-width: 0;
+}
+
+.savedTripTop > div:first-child {
+  min-width: 0;
 }
 
 .savedTripTitle {
   font-size: 18px;
   font-weight: 720;
   color: var(--text);
+  word-break: break-word;
 }
 
 .savedTripSub {
@@ -97,6 +108,7 @@
   font-size: 14px;
   font-weight: 550;
   line-height: 1.6;
+  word-break: break-word;
 }
 
 .savedTripBadge {
@@ -110,6 +122,7 @@
   align-items: center;
   font-weight: 800;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .savedTripMiniGrid {
@@ -125,6 +138,7 @@
   display: grid;
   gap: 6px;
   border: 1px solid rgba(0, 184, 241, 0.1);
+  min-width: 0;
 }
 
 .savedTripMiniItem span {
@@ -139,12 +153,14 @@
   font-size: 15px;
   font-weight: 700;
   color: rgba(15, 23, 42, 0.92);
+  word-break: break-word;
 }
 
 .savedTripSummary {
   color: rgba(11, 27, 42, 0.8);
   font-weight: 550;
   line-height: 1.7;
+  word-break: break-word;
 }
 
 .savedTripBestBox {
@@ -167,6 +183,7 @@
   color: rgba(11, 27, 42, 0.84);
   font-weight: 650;
   line-height: 1.6;
+  word-break: break-word;
 }
 
 .savedTripBudgetStatus {
@@ -174,6 +191,7 @@
   border-radius: 12px;
   font-weight: 700;
   line-height: 1.6;
+  word-break: break-word;
 }
 
 .savedTripBudgetStatus.isGood {
@@ -259,6 +277,23 @@
 }
 
 @media (max-width: 640px) {
+  .savedTripsPage {
+    gap: 16px;
+  }
+
+  .savedTripsHead h1 {
+    font-size: 24px;
+  }
+
+  .savedTripsHead p {
+    font-size: 14px;
+  }
+
+  .savedTripTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .savedTripActions {
     flex-wrap: wrap;
   }
