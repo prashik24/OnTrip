@@ -98,6 +98,21 @@ export default function ProviderDetails() {
     navigate(`/providers/${provider._id}/book`);
   }
 
+  function goToChat() {
+    if (!isLoggedIn()) {
+      navigate("/login");
+      return;
+    }
+
+    const ownerId = provider?.owner?._id || provider?.owner?.id || provider?.owner;
+    if (!ownerId) {
+      setMsg("Provider chat is not available right now.");
+      return;
+    }
+
+    navigate(`/chat?user=${ownerId}`);
+  }
+
   async function handleReviewVote(reviewId, voteType) {
     if (!isLoggedIn()) {
       navigate("/login");
@@ -178,9 +193,15 @@ export default function ProviderDetails() {
             </div>
 
             {!isOwner ? (
-              <button className="providerDetailsPrimaryBtn" onClick={goToBooking}>
-                Book Service
-              </button>
+              <div className="providerDetailsActionRow">
+                <button className="providerDetailsPrimaryBtn" onClick={goToBooking}>
+                  Book Service
+                </button>
+
+                <button className="providerDetailsGhostBtn" onClick={goToChat}>
+                  Chat with Provider
+                </button>
+              </div>
             ) : (
               <div className="providerDetailsNote">This is your own listing.</div>
             )}
