@@ -25,6 +25,7 @@
   font-weight: 760;
   color: var(--text);
   line-height: 1.2;
+  word-break: break-word;
 }
 
 .bookingHistoryHead p {
@@ -33,6 +34,7 @@
   line-height: 1.7;
   font-weight: 550;
   font-size: 16px;
+  word-break: break-word;
 }
 
 .bookingHistoryMessage {
@@ -44,6 +46,7 @@
   color: #0369a1;
   font-weight: 650;
   font-size: 16px;
+  word-break: break-word;
 }
 
 .bookingHistoryEmpty {
@@ -61,15 +64,15 @@
 .bookingHistoryGrid {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 420px);
+  grid-template-columns: repeat(3, minmax(320px, 420px));
   justify-content: start;
   gap: 16px;
   align-items: stretch;
 }
 
 .bookingHistoryCard {
-  width: 420px;
-  min-width: 420px;
+  width: 100%;
+  min-width: 0;
   max-width: 420px;
   min-height: 430px;
   height: 100%;
@@ -207,6 +210,7 @@
   font-size: 16px;
   font-weight: 650;
   line-height: 1.5;
+  word-break: break-word;
 }
 
 .bookingHistoryAlertDanger {
@@ -223,19 +227,38 @@
 
 @media (max-width: 1400px) {
   .bookingHistoryGrid {
-    grid-template-columns: repeat(2, 420px);
+    grid-template-columns: repeat(2, minmax(320px, 420px));
   }
 }
 
 @media (max-width: 930px) {
   .bookingHistoryGrid {
-    grid-template-columns: 420px;
+    grid-template-columns: minmax(320px, 420px);
+  }
+
+  .bookingHistoryPage {
+    margin-left: 0;
   }
 }
 
 @media (max-width: 520px) {
   .bookingHistoryPage {
     max-width: 100%;
+    margin-left: 0;
+    gap: 16px;
+  }
+
+  .bookingHistoryHead h1 {
+    font-size: 26px;
+  }
+
+  .bookingHistoryHead p,
+  .bookingHistoryMessage,
+  .bookingHistoryEmpty,
+  .bookingHistoryTop p,
+  .bookingHistoryInfo,
+  .bookingHistoryAlert {
+    font-size: 14px;
   }
 
   .bookingHistoryGrid {
@@ -247,6 +270,9 @@
     min-width: 0;
     max-width: 100%;
     min-height: 0;
+    padding: 16px;
+    border-radius: 16px;
+    gap: 16px;
   }
 
   .bookingHistoryTop {
@@ -256,6 +282,7 @@
 
   .bookingHistoryPrice {
     white-space: normal;
+    font-size: 16px;
   }
 
   .bookingHistoryActions {
@@ -264,5 +291,11 @@
 
   .bookingHistoryActionPlaceholder {
     display: none;
+  }
+
+  .bookingHistoryBtn,
+  .bookingHistoryReviewBtn,
+  .bookingHistoryEditBtn {
+    font-size: 14px;
   }
 }
