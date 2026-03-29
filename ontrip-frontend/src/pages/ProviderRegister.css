@@ -9,6 +9,8 @@
   font-size: 32px;
   font-weight: 820;
   color: var(--text);
+  line-height: 1.2;
+  word-break: break-word;
 }
 
 .providerRegisterHead p {
@@ -16,12 +18,14 @@
   color: var(--muted);
   line-height: 1.65;
   font-weight: 550;
+  word-break: break-word;
 }
 
 .providerRegisterMessage {
   padding: 12px 14px;
   border-radius: 14px;
   font-weight: 650;
+  word-break: break-word;
 }
 
 .providerRegisterMessage.error {
@@ -44,12 +48,14 @@
   padding: 20px;
   display: grid;
   gap: 18px;
+  min-width: 0;
 }
 
 .providerRegisterGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+  min-width: 0;
 }
 
 .providerRegisterForm > .providerRegisterGrid label,
@@ -58,6 +64,7 @@
   margin-bottom: 8px;
   font-weight: 650;
   color: #12212f;
+  word-break: break-word;
 }
 
 .providerRegisterForm input:not([type="checkbox"]):not([type="file"]),
@@ -73,6 +80,7 @@
   color: #12212f;
   background: #fff;
   outline: none;
+  box-sizing: border-box;
 }
 
 .providerRegisterForm textarea {
@@ -94,6 +102,7 @@
   background: #ffffff;
   padding: 10px 12px;
   font: inherit;
+  box-sizing: border-box;
 }
 
 .providerRegisterForm input[type="file"]::file-selector-button {
@@ -113,12 +122,15 @@
   border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 14px;
   padding: 16px;
+  min-width: 0;
 }
 
 .providerRegisterBlock h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 760;
+  line-height: 1.2;
+  word-break: break-word;
 }
 
 .providerRegisterBlockHead,
@@ -128,6 +140,7 @@
   align-items: center;
   margin-bottom: 12px;
   gap: 12px;
+  min-width: 0;
 }
 
 .providerRegisterVehicleList,
@@ -142,6 +155,7 @@
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 14px;
   padding: 14px;
+  min-width: 0;
 }
 
 .providerRegisterCheckField {
@@ -181,6 +195,8 @@
   color: #12212f;
   display: block;
   margin: 0;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .providerRegisterPrimaryBtn,
@@ -193,6 +209,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
+  box-sizing: border-box;
 }
 
 .providerRegisterPrimaryBtn {
@@ -229,5 +246,47 @@
 @media (max-width: 980px) {
   .providerRegisterGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .providerRegisterPage {
+    gap: 16px;
+  }
+
+  .providerRegisterHead h1 {
+    font-size: 24px;
+  }
+
+  .providerRegisterHead p {
+    font-size: 14px;
+  }
+
+  .providerRegisterForm {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .providerRegisterBlock,
+  .providerRegisterVehicleCard,
+  .providerRegisterTripCard {
+    padding: 14px;
+  }
+
+  .providerRegisterBlockHead,
+  .providerRegisterVehicleTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .providerRegisterCheck {
+    white-space: normal;
+    align-items: flex-start;
+  }
+
+  .providerRegisterPrimaryBtn,
+  .providerRegisterGhostBtn,
+  .providerRegisterDangerBtn {
+    width: 100%;
   }
 }
