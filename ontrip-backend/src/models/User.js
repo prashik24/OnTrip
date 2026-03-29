@@ -59,6 +59,17 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "provider", "admin"],
       default: "user",
     },
+
+    isOnline: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
+    lastSeenAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
