@@ -5,22 +5,22 @@
   width: 100%;
 }
 
-/* 🔥 CENTER + EQUAL SIDE GAP */
 .providerDashboardPage.container {
   width: 100%;
   max-width: 1800px;
-  margin: 0 auto;          /* center */
-  padding: 0 32px;         /* equal left-right spacing */
+  margin: 0 auto;
+  padding: 0 32px;
   box-sizing: border-box;
   margin-left: -10px;
 }
 
-/* HEADER */
 .providerDashboardHead h1 {
   margin: 0;
   font-size: 32px;
   font-weight: 760;
   color: var(--text);
+  line-height: 1.2;
+  word-break: break-word;
 }
 
 .providerDashboardHead p {
@@ -28,9 +28,9 @@
   color: var(--muted);
   line-height: 1.65;
   font-weight: 550;
+  word-break: break-word;
 }
 
-/* MESSAGE */
 .providerDashboardMessage {
   padding: 12px 14px;
   border-radius: 14px;
@@ -38,9 +38,9 @@
   border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
   font-weight: 650;
+  word-break: break-word;
 }
 
-/* EMPTY */
 .providerDashboardEmpty {
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.12);
@@ -51,46 +51,31 @@
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
 }
 
-/* 🔥 GRID */
 .providerDashboardGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
 }
 
-/* RESPONSIVE */
-@media (max-width: 1200px) {
-  .providerDashboardGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 700px) {
-  .providerDashboardGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* CARD */
 .providerDashboardCard {
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 18px;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
   padding: 18px;
-
   display: flex;
-  flex-direction: column;   /* 🔥 important */
+  flex-direction: column;
   gap: 14px;
   height: 100%;
+  min-width: 0;
 }
 
-/* TOP */
 .providerDashboardTop {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 14px;
+  min-width: 0;
 }
 
 .providerDashboardTop h3 {
@@ -98,29 +83,35 @@
   font-size: 20px;
   font-weight: 740;
   color: var(--text);
+  word-break: break-word;
 }
 
 .providerDashboardTop p {
   margin: 6px 0 0;
   color: var(--muted);
   font-weight: 550;
+  word-break: break-word;
 }
 
 .providerDashboardPrice {
   font-size: 21px;
   font-weight: 740;
   color: #0369a1;
+  word-break: break-word;
 }
 
-/* INFO */
 .providerDashboardInfo {
   display: grid;
   gap: 8px;
   color: rgba(11, 27, 42, 0.8);
   font-weight: 550;
+  min-width: 0;
 }
 
-/* TEXTAREA */
+.providerDashboardInfo > * {
+  word-break: break-word;
+}
+
 .providerDashboardCard textarea {
   width: 100%;
   min-height: 90px;
@@ -138,15 +129,13 @@
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
 }
 
-/* 🔥 BUTTON AREA (ALWAYS BOTTOM) */
 .providerDashboardActions {
-  margin-top: auto; /* 🔥 pushes buttons to bottom */
+  margin-top: auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
-/* BUTTON */
 .providerDashboardBtn {
   width: 100%;
   height: 44px;
@@ -159,10 +148,10 @@
   background: #ffffff;
   color: var(--text);
   transition: 0.18s ease;
-
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
 }
 
 .providerDashboardBtn:hover {
@@ -174,21 +163,62 @@
   cursor: not-allowed;
 }
 
-/* DANGER */
 .providerDashboardBtn.danger {
   background: rgba(255, 98, 98, 0.08);
   color: #b42318;
   border-color: rgba(255, 98, 98, 0.16);
 }
 
-/* 🔥 SINGLE BUTTON (Service Cancelled FIX) */
 .providerDashboardActions .providerDashboardBtn:only-child {
   grid-column: 1 / -1;
 }
 
-/* MOBILE BUTTON STACK */
+@media (max-width: 1200px) {
+  .providerDashboardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 820px) {
   .providerDashboardActions {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .providerDashboardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .providerDashboardPage.container {
+    padding: 0 14px;
+    margin-left: 0;
+  }
+
+  .providerDashboardHead h1 {
+    font-size: 24px;
+  }
+
+  .providerDashboardHead p {
+    font-size: 14px;
+  }
+
+  .providerDashboardCard {
+    padding: 16px;
+  }
+
+  .providerDashboardTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .providerDashboardTop h3 {
+    font-size: 18px;
+  }
+
+  .providerDashboardPrice {
+    font-size: 18px;
   }
 }
