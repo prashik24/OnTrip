@@ -1,8 +1,7 @@
-const API_URL = import.meta.env.VITE_API_URL;
+export const API_URL = import.meta.env.VITE_API_URL;
 
 export async function apiFetch(path, options = {}) {
   const token = localStorage.getItem("ontrip_token");
-
   const isFormData = options.body instanceof FormData;
 
   const res = await fetch(`${API_URL}${path}`, {
@@ -43,6 +42,10 @@ export function clearAuth() {
 export function getUser() {
   const raw = localStorage.getItem("ontrip_user");
   return raw ? JSON.parse(raw) : null;
+}
+
+export function getToken() {
+  return localStorage.getItem("ontrip_token") || "";
 }
 
 export function isLoggedIn() {
