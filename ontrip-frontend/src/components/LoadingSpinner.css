@@ -4,6 +4,8 @@
   place-items: center;
   gap: 14px;
   padding: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .loadingSpinner {
@@ -13,16 +15,38 @@
   border: 4px solid rgba(0, 184, 241, 0.16);
   border-top-color: #00b8f1;
   animation: otSpin 0.8s linear infinite;
+  flex-shrink: 0;
 }
 
 .loadingText {
   font-size: 15px;
   font-weight: 700;
   color: rgba(11, 27, 42, 0.7);
+  text-align: center;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 @keyframes otSpin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .loadingWrap {
+    min-height: 220px;
+    gap: 12px;
+    padding: 18px;
+  }
+
+  .loadingSpinner {
+    width: 38px;
+    height: 38px;
+    border-width: 3.5px;
+  }
+
+  .loadingText {
+    font-size: 14px;
   }
 }
