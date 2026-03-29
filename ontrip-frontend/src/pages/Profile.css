@@ -1,5 +1,4 @@
-
-  .profilePage {
+.profilePage {
   padding-bottom: 32px;
   max-width: 1400px;
   width: 100%;
@@ -33,6 +32,7 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  min-width: 0;
 }
 
 .profileAvatar {
@@ -79,6 +79,7 @@
   font-weight: 780;
   letter-spacing: -0.3px;
   color: var(--text);
+  word-break: break-word;
 }
 
 .profileIdentity p {
@@ -162,6 +163,7 @@
   font-size: 14px;
   font-weight: 650;
   border: 1px solid rgba(11, 27, 42, 0.08);
+  word-break: break-word;
 }
 
 .profileMessage.success {
@@ -191,6 +193,7 @@
   font-size: 20px;
   font-weight: 720;
   color: var(--text);
+  word-break: break-word;
 }
 
 .profileSection p {
@@ -198,6 +201,7 @@
   font-size: 15px;
   line-height: 1.75;
   color: rgba(15, 23, 42, 0.8);
+  word-break: break-word;
 }
 
 .profileInfoGrid {
@@ -214,6 +218,7 @@
   flex-direction: column;
   gap: 6px;
   border: 1px solid rgba(0, 184, 241, 0.1);
+  min-width: 0;
 }
 
 .profileInfoItem strong {
@@ -246,6 +251,7 @@
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
   display: grid;
   gap: 10px;
+  min-width: 0;
 }
 
 .profileQuickCard h3 {
@@ -253,6 +259,7 @@
   font-size: 18px;
   font-weight: 720;
   color: var(--text);
+  word-break: break-word;
 }
 
 .profileQuickCard p {
@@ -260,6 +267,7 @@
   color: var(--muted);
   line-height: 1.6;
   font-weight: 550;
+  word-break: break-word;
 }
 
 .profileFormGrid {
@@ -274,6 +282,7 @@
   font-size: 14px;
   font-weight: 650;
   color: var(--text);
+  word-break: break-word;
 }
 
 .profileForm input,
@@ -330,6 +339,11 @@
 }
 
 @media (max-width: 640px) {
+  .profilePage {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
   .profileAvatar {
     width: 104px;
     height: 104px;
@@ -342,5 +356,11 @@
   .profileInfoGrid,
   .profileFormGrid {
     grid-template-columns: 1fr;
+  }
+
+  .profilePrimaryBtn,
+  .profileGhostBtn,
+  .profileDangerBtn {
+    width: 100%;
   }
 }
