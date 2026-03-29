@@ -123,13 +123,6 @@
   color: var(--text);
   word-break: break-word;
 }
-.plannerResultProviderTitle-1{
-  font-size: 15px;
-  font-weight: 620;
-  color: var(--text);
-  
-
-}
 
 .plannerResultMutedBox {
   color: rgba(11, 27, 42, 0.78);
@@ -466,7 +459,6 @@
   word-break: break-word;
 }
 
-/* AIRPLANE / RAILWAY / ROAD: SAME SIZE + VERTICAL ORDER */
 .plannerResultTravelSimpleGrid {
   display: grid;
   grid-template-columns: 1fr;
@@ -516,7 +508,6 @@
   display: block;
 }
 
-/* BLUE BOX WRAP FIX */
 .plannerResultTravelMiniGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -739,6 +730,22 @@
     padding: 16px;
   }
 
+  .plannerResultHead h1 {
+    font-size: 24px;
+  }
+
+  .plannerResultHead p {
+    font-size: 14px;
+  }
+
+  .plannerResultBlock {
+    padding: 14px;
+  }
+
+  .plannerResultBlockTitle {
+    font-size: 20px;
+  }
+
   .plannerResultPrimaryBtn,
   .plannerResultSecondaryBtn {
     width: 100%;
@@ -751,5 +758,11 @@
   .plannerResultTravelSimpleItem,
   .plannerResultTravelMiniBox {
     min-height: auto;
+  }
+
+  .plannerResultInput {
+    min-height: 48px;
+    font-size: 14px;
+    border-radius: 14px;
   }
 }
