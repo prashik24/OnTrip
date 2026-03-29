@@ -10,6 +10,7 @@
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
   text-decoration: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  height: 100%;
 }
 
 .stateCard:hover {
@@ -56,6 +57,7 @@
   font-weight: 800;
   z-index: 2;
   max-width: calc(100% - 24px);
+  word-break: break-word;
 }
 
 .stateCardBody {
@@ -63,6 +65,7 @@
   display: grid;
   gap: 12px;
   min-width: 0;
+  align-content: start;
 }
 
 .stateCardTop h3 {
@@ -116,6 +119,7 @@
   color: rgba(11, 27, 42, 0.52);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  word-break: break-word;
 }
 
 .stateCardMeta span {
@@ -124,6 +128,7 @@
   font-weight: 700;
   line-height: 1.4;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .stateCardHighlights {
@@ -169,22 +174,26 @@
   transform: translateY(-1px);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
+  .stateCardBody {
+    padding: 14px;
+  }
+
   .stateCardTop h3 {
     font-size: 18px;
   }
 
   .stateCardShort {
-    font-size: 13.5px;
+    font-size: 14px;
+  }
+
+  .stateCardAction {
+    min-height: 42px;
+    font-size: 13px;
   }
 }
 
 @media (max-width: 640px) {
-  .stateCardBody {
-    padding: 14px;
-    gap: 10px;
-  }
-
   .stateCardMeta {
     grid-template-columns: 1fr;
   }
