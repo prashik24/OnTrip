@@ -12,6 +12,7 @@
   border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
   font-weight: 650;
+  word-break: break-word;
 }
 
 .chatLayout {
@@ -62,6 +63,14 @@
   border: 1px solid rgba(11, 27, 42, 0.12);
   background: #fff;
   font: inherit;
+  color: var(--text);
+  outline: none;
+}
+
+.chatSearch:focus,
+.chatInput:focus {
+  border-color: rgba(0, 184, 241, 0.28);
+  box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.08);
 }
 
 .chatSectionLabel {
@@ -109,6 +118,7 @@
   position: relative;
   width: 48px;
   height: 48px;
+  flex-shrink: 0;
 }
 
 .chatAvatar,
@@ -205,6 +215,7 @@
   border: 1px solid rgba(0, 184, 241, 0.12);
   color: rgba(11, 27, 42, 0.76);
   font-weight: 600;
+  word-break: break-word;
 }
 
 .chatMainCard {
@@ -243,15 +254,17 @@
   padding: 18px;
   overflow: auto;
   background:
-    radial-gradient(circle at top right, rgba(0,184,241,0.06), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(78,201,245,0.06), transparent 30%),
+    radial-gradient(circle at top right, rgba(0, 184, 241, 0.06), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(78, 201, 245, 0.06), transparent 30%),
     #fbfdff;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
 .chatBubbleRow {
   display: flex;
+  width: 100%;
 }
 
 .chatBubbleRow.me {
@@ -263,16 +276,18 @@
 }
 
 .chatBubble {
-  max-width: min(72%, 720px);
-  border-radius: 18px;
-  padding: 12px 14px;
+  width: fit-content;
+  max-width: min(70%, 420px);
+  border-radius: 20px;
+  padding: 10px 12px 8px;
   box-shadow: 0 8px 18px rgba(10, 22, 35, 0.04);
   border: 1px solid rgba(11, 27, 42, 0.06);
+  word-break: break-word;
 }
 
 .chatBubble.me {
-  background: linear-gradient(135deg, rgba(78,201,245,0.16), rgba(0,184,241,0.12));
-  border-color: rgba(0, 184, 241, 0.18);
+  background: linear-gradient(135deg, rgba(78, 201, 245, 0.16), rgba(0, 184, 241, 0.12));
+  border-color: rgba(0, 184, 241, 0.2);
 }
 
 .chatBubble.other {
@@ -282,45 +297,64 @@
 .chatBubbleText {
   color: var(--text);
   font-weight: 600;
-  line-height: 1.5;
+  line-height: 1.45;
   white-space: pre-wrap;
   word-break: break-word;
+  font-size: 15px;
 }
 
 .chatBubbleMeta {
-  margin-top: 8px;
+  margin-top: 6px;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 10px;
   font-size: 12px;
   color: rgba(11, 27, 42, 0.56);
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .chatMediaWrap {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .chatMediaImage,
 .chatMediaVideo {
   width: 100%;
-  max-width: 360px;
+  max-width: 320px;
   border-radius: 14px;
   display: block;
 }
 
 .chatFileLink {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  width: fit-content;
+  max-width: 100%;
   text-decoration: none;
   color: #0369a1;
   font-weight: 750;
   background: rgba(0, 184, 241, 0.08);
   border: 1px solid rgba(0, 184, 241, 0.14);
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: 14px;
+  padding: 12px 14px;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.chatFileLink::before {
+  content: "📎";
+  flex-shrink: 0;
+}
+
+.chatFileName {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
 }
 
 .chatTyping {
@@ -375,6 +409,7 @@
   cursor: pointer;
   font: inherit;
   font-weight: 800;
+  transition: 0.18s ease;
 }
 
 .chatAttachBtn {
@@ -388,9 +423,15 @@
   color: #fff;
 }
 
+.chatAttachBtn:hover,
+.chatSendBtn:hover {
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+}
+
 .chatSendBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .chatInput {
@@ -401,6 +442,8 @@
   border: 1px solid rgba(11, 27, 42, 0.12);
   background: #fff;
   font: inherit;
+  color: var(--text);
+  outline: none;
 }
 
 .chatHiddenFile {
@@ -434,7 +477,12 @@
 
 @media (max-width: 640px) {
   .chatBubble {
-    max-width: 90%;
+    max-width: 86%;
+  }
+
+  .chatMediaImage,
+  .chatMediaVideo {
+    max-width: 100%;
   }
 
   .chatComposerRow {
