@@ -599,3 +599,15 @@
     flex-direction: column;
   }
 }
+.providerDetailsActionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .providerDetailsActionRow {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
