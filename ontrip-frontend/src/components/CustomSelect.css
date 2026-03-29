@@ -23,6 +23,7 @@
   cursor: pointer;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-sizing: border-box;
 }
 
 .customSelectTrigger:hover {
@@ -43,10 +44,14 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .customSelectValue.placeholder {
-  color: #12212f; /* same as inputs */
+  color: #12212f;
   font-weight: 700;
   opacity: 1;
 }
@@ -88,6 +93,7 @@
   overflow-x: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  box-sizing: border-box;
 }
 
 .customSelectMenu::-webkit-scrollbar {
@@ -109,6 +115,7 @@
   color: #12212f;
   cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease;
+  word-break: break-word;
 }
 
 .customSelectOption:hover {
@@ -132,7 +139,30 @@
 }
 
 @media (max-width: 768px) {
+  .customSelect {
+    min-height: 46px;
+  }
+
+  .customSelectTrigger {
+    min-height: 46px;
+    border-radius: 14px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  .customSelectValue {
+    font-size: 14px;
+  }
+
   .customSelectMenu {
     max-height: 240px;
+    border-radius: 16px;
+    padding: 6px;
+  }
+
+  .customSelectOption {
+    border-radius: 12px;
+    padding: 11px 12px;
+    font-size: 14px;
   }
 }
