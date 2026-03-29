@@ -11,6 +11,7 @@
   border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
   font-weight: 650;
+  word-break: break-word;
 }
 
 .invoiceViewCard {
@@ -21,6 +22,7 @@
   padding: 22px;
   display: grid;
   gap: 18px;
+  min-width: 0;
 }
 
 .invoiceViewHeader {
@@ -34,6 +36,8 @@
   font-size: 28px;
   font-weight: 800;
   color: #00b8f1;
+  line-height: 1.1;
+  word-break: break-word;
 }
 
 .invoiceViewHeader h1 {
@@ -41,19 +45,23 @@
   font-size: 30px;
   font-weight: 760;
   color: var(--text);
+  line-height: 1.2;
+  word-break: break-word;
 }
 
 .invoiceViewHeader p {
   margin: 0;
   color: var(--muted);
   font-weight: 600;
+  line-height: 1.6;
+  word-break: break-word;
 }
 
-/* ✅ LIGHT STATUS (your theme style) */
 .invoiceViewStatus {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
 }
 
 .invoiceViewStatus .status {
@@ -62,30 +70,27 @@
   font-size: 13px;
   font-weight: 700;
   text-align: center;
+  word-break: break-word;
 }
 
-/* 🟢 PAID */
 .status.paid {
   background: rgba(22, 163, 74, 0.08);
   border: 1px solid rgba(22, 163, 74, 0.18);
   color: #15803d;
 }
 
-/* 🔴 CANCELLED */
 .status.cancelled {
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.18);
   color: #b42318;
 }
 
-/* 🔵 CONFIRMED (your brand blue) */
 .status.confirmed {
   background: rgba(0, 184, 241, 0.1);
   border: 1px solid rgba(0, 184, 241, 0.16);
   color: #0369a1;
 }
 
-/* 🟡 optional pending */
 .status.pending {
   background: rgba(245, 158, 11, 0.08);
   border: 1px solid rgba(245, 158, 11, 0.18);
@@ -96,6 +101,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+  min-width: 0;
 }
 
 .invoiceViewBox {
@@ -106,6 +112,7 @@
   flex-direction: column;
   gap: 6px;
   border: 1px solid rgba(0, 184, 241, 0.1);
+  min-width: 0;
 }
 
 .invoiceViewBox strong {
@@ -118,14 +125,17 @@
   font-size: 15px;
   font-weight: 650;
   color: rgba(15, 23, 42, 0.9);
+  word-break: break-word;
 }
 
 .invoiceTableWrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .invoiceTable {
   width: 100%;
+  min-width: 620px;
   border-collapse: collapse;
 }
 
@@ -143,6 +153,7 @@
   border-bottom: 1px solid rgba(11, 27, 42, 0.08);
   font-weight: 600;
   color: rgba(11, 27, 42, 0.84);
+  word-break: break-word;
 }
 
 .invoiceViewReason {
@@ -162,6 +173,7 @@
   margin: 0;
   color: rgba(11, 27, 42, 0.76);
   line-height: 1.7;
+  word-break: break-word;
 }
 
 .invoiceViewActions {
@@ -203,5 +215,43 @@
   .invoiceViewGrid {
     grid-template-columns: 1fr;
     display: grid;
+  }
+}
+
+@media (max-width: 640px) {
+  .invoiceViewPage {
+    gap: 16px;
+  }
+
+  .invoiceViewCard {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .invoiceViewBrand {
+    font-size: 24px;
+  }
+
+  .invoiceViewHeader h1 {
+    font-size: 24px;
+  }
+
+  .invoiceViewHeader p,
+  .invoiceViewMessage,
+  .invoiceViewReason p {
+    font-size: 14px;
+  }
+
+  .invoiceViewBox span {
+    font-size: 14px;
+  }
+
+  .invoiceViewActions {
+    flex-direction: column;
+  }
+
+  .invoiceViewPrimaryBtn,
+  .invoiceViewGhostBtn {
+    width: 100%;
   }
 }
