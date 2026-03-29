@@ -48,6 +48,7 @@
   padding: 20px;
   display: grid;
   gap: 18px;
+  box-sizing: border-box;
 }
 
 .plannerSectionTitle {
@@ -171,14 +172,21 @@
   }
 
   .plannerHead h1 {
-    font-size: 26px;
+    font-size: 24px;
   }
 
   .plannerHead p {
     font-size: 14px;
   }
 
+  .plannerSingleWrap {
+    justify-content: stretch;
+  }
+
   .plannerFormCard {
+    width: calc(100vw - 24px);
+    max-width: none;
+    margin: 0 auto;
     padding: 16px;
     border-radius: 16px;
     gap: 16px;
@@ -202,5 +210,12 @@
 
   .plannerPrimaryBtn {
     width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .plannerFormCard {
+    width: calc(100vw - 16px);
+    padding: 14px;
   }
 }
