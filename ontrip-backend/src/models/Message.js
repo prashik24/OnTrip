@@ -26,6 +26,82 @@ const mediaSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const deletedForSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    deletedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
+const replyToSchema = new mongoose.Schema(
+  {
+    messageId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+      default: null,
+    },
+    senderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    text: {
+      type: String,
+      default: "",
+    },
+    messageType: {
+      type: String,
+      enum: ["text", "image", "video", "file", "listing_card", "system"],
+      default: "text",
+    },
+  },
+  { _id: false }
+);
+
+const listingCardSchema = new mongoose.Schema(
+  {
+    providerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Provider",
+      default: null,
+    },
+    listingType: {
+      type: String,
+      enum: ["vehicle", "travel_planner"],
+      default: "travel_planner",
+    },
+    title: {
+      type: String,
+      default: "",
+    },
+    subtitle: {
+      type: String,
+      default: "",
+    },
+    priceText: {
+      type: String,
+      default: "",
+    },
+    imageUrl: {
+      type: String,
+      default: "",
+    },
+    targetUrl: {
+      type: String,
+      default: "",
+    },
+  },
+  { _id: false }
+);
+
 const messageSchema = new mongoose.Schema(
   {
     conversation: {
@@ -45,7 +121,7 @@ const messageSchema = new mongoose.Schema(
     receiver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      default: null,
       index: true,
     },
 
@@ -57,12 +133,22 @@ const messageSchema = new mongoose.Schema(
 
     messageType: {
       type: String,
-      enum: ["text", "image", "video", "file"],
+      enum: ["text", "image", "video", "file", "listing_card", "system"],
       default: "text",
     },
 
     media: {
       type: mediaSchema,
+      default: () => ({}),
+    },
+
+    listingCard: {
+      type: listingCardSchema,
+      default: () => ({}),
+    },
+
+    replyTo: {
+      type: replyToSchema,
       default: () => ({}),
     },
 
@@ -72,6 +158,27 @@ const messageSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+
+    editedAt: {
+      type: Date,
+      default: null,
+    },
+
+    isEdited: {
+      type: Boolean,
+      default: false,
+    },
+
+    forwardedFrom: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+      default: null,
+    },
+
+    deletedFor: {
+      type: [deletedForSchema],
+      default: [],
+    },
   },
   { timestamps: true }
 );
