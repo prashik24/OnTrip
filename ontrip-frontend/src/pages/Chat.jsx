@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import { disconnectSocket, getSocket } from "../lib/socket";
+import CustomSelect from "../components/CustomSelect";
+import LoadingSpinner from "../components/LoadingSpinner";
 import "./Chat.css";
 
 function formatLastSeen(value) {
@@ -432,8 +434,9 @@ export default function Chat() {
 
       setMessages((prev) => {
         if (!isCurrentConversation) return prev;
-        const exists = prev.some((item) => String(item.id) === String(message.id));
-        if (exists) return prev;
+        if (prev.some((m) => String(m.id) === String(message.id))) {
+          return prev;
+        }
         return [...prev, message];
       });
     });
@@ -887,15 +890,6 @@ export default function Chat() {
     activeConversation &&
     activeConversation.conversationType === "direct";
 
-  const providerToolsDisabledMessage =
-    user?.role !== "provider"
-      ? "Provider tools available only for provider account."
-      : myProviders.length === 0
-      ? "Create provider listing first to share listing card."
-      : activeConversation?.conversationType !== "direct"
-      ? "Listing share works in direct chat only."
-      : "";
-
   if (!isLoggedIn()) return null;
 
   return (
@@ -1106,14 +1100,9 @@ export default function Chat() {
         </aside>
 
         <section className="chatMain">
-          {!activeConversation ? (
-            <div className="chatMainEmpty">
-              <div className="chatMainEmptyCard">
-                <h3>Select a chat</h3>
-                <p>Choose recent chat, group, or any user.</p>
-              </div>
-            </div>
-          ) : (
+          {loading ? (
+            <LoadingSpinner text="Loading chats..." />
+          ) : !activeConversation ? null : (
             <div className="chatMainCard">
               <div className="chatHeaderBar">
                 <div className="chatHeaderUser">
@@ -1180,28 +1169,13 @@ export default function Chat() {
                 </div>
               </div>
 
-              {!canShowProviderTools && providerToolsDisabledMessage ? (
-                <div
-                  style={{
-                    padding: "10px 16px",
-                    borderBottom: "1px solid rgba(11, 27, 42, 0.08)",
-                    color: "#64748b",
-                    fontWeight: 600,
-                    fontSize: "13px",
-                    background: "#fff",
-                  }}
-                >
-                  {providerToolsDisabledMessage}
-                </div>
-              ) : null}
-
               <div
                 ref={messagesRef}
                 className="chatMessages noScrollbar"
                 onScroll={handleMessagesScroll}
               >
                 {loadingMessages ? (
-                  <div className="chatEmptyCard">Loading messages...</div>
+                  <LoadingSpinner text="Loading messages..." />
                 ) : messages.length === 0 ? (
                   <div className="chatEmptyCard">
                     {activeConversation.conversationType === "group"
@@ -1550,49 +1524,45 @@ export default function Chat() {
             </div>
 
             <div className="chatModalBody">
-              <select
-                className="chatSelect"
+              <CustomSelect
                 value={selectedProviderId}
                 onChange={(e) => {
                   setSelectedProviderId(e.target.value);
                   setSelectedPlanIndex(0);
                   setSelectedVehicleIndex(0);
                 }}
-              >
-                <option value="">Select your provider listing</option>
-                {myProviders.map((item) => (
-                  <option key={item._id} value={item._id}>
-                    {item.businessName} — {item.listingType}
-                  </option>
-                ))}
-              </select>
+                options={[
+                  { label: "Select your provider listing", value: "" },
+                  ...myProviders.map((item) => ({
+                    label: `${item.businessName} — ${item.listingType}`,
+                    value: item._id,
+                  })),
+                ]}
+                placeholder="Select your provider listing"
+              />
 
               {selectedProvider?.listingType === "travel_planner" ? (
-                <select
-                  className="chatSelect"
+                <CustomSelect
                   value={selectedPlanIndex}
                   onChange={(e) => setSelectedPlanIndex(Number(e.target.value))}
-                >
-                  {(selectedProvider.travelPlans || []).map((plan, index) => (
-                    <option key={index} value={index}>
-                      {plan.packageTitle || `Plan ${index + 1}`}
-                    </option>
-                  ))}
-                </select>
+                  options={(selectedProvider.travelPlans || []).map((plan, index) => ({
+                    label: plan.packageTitle || `Plan ${index + 1}`,
+                    value: index,
+                  }))}
+                  placeholder="Select trip"
+                />
               ) : null}
 
               {selectedProvider?.listingType === "vehicle" ? (
-                <select
-                  className="chatSelect"
+                <CustomSelect
                   value={selectedVehicleIndex}
                   onChange={(e) => setSelectedVehicleIndex(Number(e.target.value))}
-                >
-                  {(selectedProvider.vehicles || []).map((vehicle, index) => (
-                    <option key={index} value={index}>
-                      {vehicle.title || vehicle.vehicleType || `Vehicle ${index + 1}`}
-                    </option>
-                  ))}
-                </select>
+                  options={(selectedProvider.vehicles || []).map((vehicle, index) => ({
+                    label: vehicle.title || vehicle.vehicleType || `Vehicle ${index + 1}`,
+                    value: index,
+                  }))}
+                  placeholder="Select vehicle"
+                />
               ) : null}
             </div>
 
@@ -1617,18 +1587,18 @@ export default function Chat() {
             </div>
 
             <div className="chatModalBody">
-              <select
-                className="chatSelect"
+              <CustomSelect
                 value={selectedProviderId}
                 onChange={(e) => setSelectedProviderId(e.target.value)}
-              >
-                <option value="">Select your provider listing</option>
-                {myProviders.map((item) => (
-                  <option key={item._id} value={item._id}>
-                    {item.businessName}
-                  </option>
-                ))}
-              </select>
+                options={[
+                  { label: "Select your provider listing", value: "" },
+                  ...myProviders.map((item) => ({
+                    label: item.businessName,
+                    value: item._id,
+                  })),
+                ]}
+                placeholder="Select your provider listing"
+              />
 
               <textarea
                 className="chatModalTextarea"
