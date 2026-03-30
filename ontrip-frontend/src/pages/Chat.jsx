@@ -87,7 +87,7 @@ function buildMessageItems(messages) {
   return items;
 }
 
-function getConversationDisplayName(conversation, currentUserId) {
+function getConversationDisplayName(conversation) {
   if (!conversation) return "Chat";
   if (conversation.conversationType === "group") {
     return conversation.groupName || "Group";
@@ -108,7 +108,6 @@ function getConversationPresenceText(conversation) {
   if (conversation.conversationType === "group") {
     return `${conversation.participants?.length || 0} members`;
   }
-
   if (conversation.otherUser?.isOnline) return "Online";
   return formatLastSeen(conversation.otherUser?.lastSeenAt);
 }
@@ -156,8 +155,8 @@ export default function Chat() {
   const [editText, setEditText] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
 
-  const [activeDirectory, setActiveDirectory] = useState("");
-  const [directoryTitle, setDirectoryTitle] = useState("");
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelType, setPanelType] = useState("");
 
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [groupName, setGroupName] = useState("");
@@ -181,21 +180,29 @@ export default function Chat() {
     );
   }, [myProviders, selectedProviderId]);
 
-  const filteredRecentConversations = useMemo(() => {
+  const recentConversations = useMemo(() => {
     return conversations.filter(
       (item) => item && item.lastMessageAt && (item.lastMessageText || item.lastMessageType)
     );
   }, [conversations]);
 
-  const messageItems = useMemo(() => buildMessageItems(messages), [messages]);
-
-  const directoryItems = useMemo(() => {
-    if (activeDirectory === "recent") return filteredRecentConversations;
-    if (activeDirectory === "users") return users;
-    if (activeDirectory === "groups") return groups;
-    if (activeDirectory === "trip") return tripGroups;
+  const panelItems = useMemo(() => {
+    if (panelType === "recent") return recentConversations;
+    if (panelType === "users") return users;
+    if (panelType === "groups") return groups;
+    if (panelType === "trip") return tripGroups;
     return [];
-  }, [activeDirectory, filteredRecentConversations, users, groups, tripGroups]);
+  }, [panelType, recentConversations, users, groups, tripGroups]);
+
+  const panelTitle = useMemo(() => {
+    if (panelType === "recent") return "Recent Conversations";
+    if (panelType === "users") return "All Users";
+    if (panelType === "groups") return "Groups";
+    if (panelType === "trip") return "Trip Buddy Groups";
+    return "";
+  }, [panelType]);
+
+  const messageItems = useMemo(() => buildMessageItems(messages), [messages]);
 
   const canShowProviderTools =
     user?.role === "provider" &&
@@ -341,8 +348,8 @@ export default function Chat() {
         })
       );
 
-      const updateGroupPresence = (listSetter) => {
-        listSetter((prev) =>
+      const updateGroupPresence = (setter) => {
+        setter((prev) =>
           prev.map((item) => ({
             ...item,
             participants: (item.participants || []).map((p) =>
@@ -589,7 +596,7 @@ export default function Chat() {
       });
 
       await openConversation(conversation);
-      setActiveDirectory("");
+      setPanelOpen(false);
       navigate(`/chat?conversation=${conversation.id}`, { replace: true });
     } catch (err) {
       setError(err.message || "Failed to open chat");
@@ -889,24 +896,24 @@ export default function Chat() {
     );
   }
 
-  function openDirectory(type, title) {
-    setActiveDirectory(type);
-    setDirectoryTitle(title);
+  function openPanel(type) {
+    setPanelType(type);
+    setPanelOpen(true);
   }
 
-  function renderDirectoryItem(item) {
-    if (activeDirectory === "users") {
+  function renderPanelItem(item) {
+    if (panelType === "users") {
       return (
         <button
           key={item.id}
-          className="chatDirectoryItem"
+          className="chatSidePanelItem"
           onClick={() => openChatWithUser(item.id)}
         >
-          <div className="chatDirectoryItemLeft">
+          <div className="chatSidePanelItemLeft">
             {item.avatar ? (
-              <img src={item.avatar} alt={item.name} className="chatDirectoryAvatar" />
+              <img src={item.avatar} alt={item.name} className="chatSidePanelAvatar" />
             ) : (
-              <div className="chatDirectoryAvatar chatDirectoryAvatarFallback">
+              <div className="chatSidePanelAvatar chatSidePanelAvatarFallback">
                 {item.name?.charAt(0)?.toUpperCase() || "U"}
               </div>
             )}
@@ -916,34 +923,30 @@ export default function Chat() {
       );
     }
 
-    if (activeDirectory === "recent" || activeDirectory === "groups" || activeDirectory === "trip") {
-      const displayName = getConversationDisplayName(item, user?.id);
-      const displayAvatar = getConversationDisplayAvatar(item);
+    const displayName = getConversationDisplayName(item);
+    const displayAvatar = getConversationDisplayAvatar(item);
 
-      return (
-        <button
-          key={item.id}
-          className="chatDirectoryItem"
-          onClick={() => {
-            openConversation(item);
-            setActiveDirectory("");
-          }}
-        >
-          <div className="chatDirectoryItemLeft">
-            {displayAvatar ? (
-              <img src={displayAvatar} alt={displayName} className="chatDirectoryAvatar" />
-            ) : (
-              <div className="chatDirectoryAvatar chatDirectoryAvatarFallback">
-                {displayName?.charAt(0)?.toUpperCase() || "G"}
-              </div>
-            )}
-            <span>{displayName}</span>
-          </div>
-        </button>
-      );
-    }
-
-    return null;
+    return (
+      <button
+        key={item.id}
+        className="chatSidePanelItem"
+        onClick={() => {
+          openConversation(item);
+          setPanelOpen(false);
+        }}
+      >
+        <div className="chatSidePanelItemLeft">
+          {displayAvatar ? (
+            <img src={displayAvatar} alt={displayName} className="chatSidePanelAvatar" />
+          ) : (
+            <div className="chatSidePanelAvatar chatSidePanelAvatarFallback">
+              {displayName?.charAt(0)?.toUpperCase() || "G"}
+            </div>
+          )}
+          <span>{displayName}</span>
+        </div>
+      </button>
+    );
   }
 
   if (!isLoggedIn()) return null;
@@ -952,407 +955,391 @@ export default function Chat() {
     <div className="container chatPage">
       {error ? <div className="chatAlert">{error}</div> : null}
 
-      <div className="chatAdvancedLayout">
-        <aside className="chatLeftMenu">
-          <button
-            className="chatMenuSection"
-            onClick={() => openDirectory("recent", "Recent Conversations")}
-          >
-            <span>Recent Conversations</span>
-            <strong>{filteredRecentConversations.length}</strong>
+      <div className="chatPageWrap">
+        <div className="chatNavTabs">
+          <button className="chatNavTab" onClick={() => openPanel("recent")}>
+            Recent Conversations
           </button>
-
-          <button
-            className="chatMenuSection"
-            onClick={() => openDirectory("users", "All Users")}
-          >
-            <span>All Users</span>
-            <strong>{users.length}</strong>
+          <button className="chatNavTab" onClick={() => openPanel("users")}>
+            All Users
           </button>
-
-          <button
-            className="chatMenuSection"
-            onClick={() => openDirectory("groups", "Groups")}
-          >
-            <span>Groups</span>
-            <strong>{groups.length}</strong>
+          <button className="chatNavTab" onClick={() => openPanel("groups")}>
+            Groups
           </button>
-
-          <button
-            className="chatMenuSection"
-            onClick={() => openDirectory("trip", "Trip Buddy Groups")}
-          >
-            <span>Trip Buddy Groups</span>
-            <strong>{tripGroups.length}</strong>
+          <button className="chatNavTab" onClick={() => openPanel("trip")}>
+            Trip Buddy Groups
           </button>
+          <button className="chatNavTab action" onClick={() => setShowGroupModal(true)}>
+            + Create Group
+          </button>
+          <button
+            className="chatNavTab action"
+            onClick={() => {
+              setShowGroupModal(true);
+              setGroupDescription("Trip Buddy Group");
+            }}
+          >
+            + Trip Buddy Group
+          </button>
+        </div>
 
-          <div className="chatLeftActions">
-            <button className="chatMiniActionBtn" onClick={() => setShowGroupModal(true)}>
-              + Create Group
-            </button>
-
-            <button
-              className="chatMiniActionBtn"
-              onClick={() => {
-                setShowGroupModal(true);
-                setGroupDescription("Trip Buddy Group");
-              }}
-            >
-              + Trip Buddy Group
-            </button>
-          </div>
-        </aside>
-
-        {activeDirectory ? (
-          <aside className="chatDirectoryPanel">
-            <div className="chatDirectoryHeader">
-              <h3>{directoryTitle}</h3>
-              <button onClick={() => setActiveDirectory("")}>✕</button>
-            </div>
-
-            <div className="chatDirectoryList noScrollbar">
-              {directoryItems.length === 0 ? (
-                <div className="chatEmptyCard">No items found.</div>
-              ) : (
-                directoryItems.map(renderDirectoryItem)
-              )}
-            </div>
-          </aside>
-        ) : null}
-
-        <section className="chatMainArea">
-          {!activeConversation ? (
-            <div className="chatMainEmpty">
-              <div className="chatMainEmptyCard">
-                <h3>Select a chat</h3>
-                <p>Choose from recent conversations, users, groups, or trip buddy groups.</p>
-              </div>
-            </div>
-          ) : (
-            <div className="chatMainCard">
-              <div className="chatHeaderBar">
-                <div className="chatHeaderUser">
-                  <div className="chatAvatarWrap">
-                    {getConversationDisplayAvatar(activeConversation) ? (
-                      <img
-                        src={getConversationDisplayAvatar(activeConversation)}
-                        alt={getConversationDisplayName(activeConversation, user?.id)}
-                        className="chatAvatar large"
-                      />
-                    ) : (
-                      <div className="chatAvatarFallback large">
-                        {getConversationDisplayName(activeConversation, user?.id)
-                          ?.charAt(0)
-                          ?.toUpperCase() || "U"}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="chatHeaderContent">
-                    <div className="chatHeaderName">
-                      {getConversationDisplayName(activeConversation, user?.id)}
-                    </div>
-                    <div className="chatHeaderMeta">
-                      {getConversationPresenceText(activeConversation)}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="chatHeaderTools">
-                  {canShowProviderTools ? (
-                    <>
-                      <button
-                        className="chatHeaderGhostBtn"
-                        onClick={() => setShowListingModal(true)}
-                      >
-                        Send Listing Card
-                      </button>
-
-                      <button
-                        className="chatHeaderGhostBtn"
-                        onClick={() => setShowBroadcastModal(true)}
-                      >
-                        Broadcast Update
-                      </button>
-                    </>
-                  ) : null}
-
-                  <button className="chatHeaderGhostBtn" onClick={handleClearChat}>
-                    Clear Chat
-                  </button>
-                </div>
+        <div className="chatMainWrap">
+          {panelOpen ? (
+            <aside className="chatSidePanelFixed">
+              <div className="chatSidePanelHeader">
+                <h3>
+                  {panelType === "recent" ? "Recent Conversations" : ""}
+                  {panelType === "users" ? "All Users" : ""}
+                  {panelType === "groups" ? "Groups" : ""}
+                  {panelType === "trip" ? "Trip Buddy Groups" : ""}
+                </h3>
+                <button onClick={() => setPanelOpen(false)}>✕</button>
               </div>
 
-              <div
-                ref={messagesRef}
-                className="chatMessages noScrollbar"
-                onScroll={handleMessagesScroll}
-              >
-                {loadingMessages ? (
-                  <div className="chatEmptyCard">Loading messages...</div>
-                ) : messages.length === 0 ? (
-                  <div className="chatEmptyCard">No messages yet. Start the conversation.</div>
+              <div className="chatSidePanelList noScrollbar">
+                {panelItems.length === 0 ? (
+                  <div className="chatEmptyCard">No items found.</div>
                 ) : (
-                  messageItems.map((entry) => {
-                    if (entry.type === "separator") {
-                      return (
-                        <div key={entry.id} className="chatDateSeparator">
-                          <span>{entry.label}</span>
+                  panelItems.map(renderPanelItem)
+                )}
+              </div>
+            </aside>
+          ) : null}
+
+          <section className="chatMainAreaLarge">
+            {!activeConversation ? (
+              <div className="chatMainEmpty oldSize">
+                <div className="chatMainEmptyCard">
+                  <h3>Select a chat</h3>
+                  <p>Choose recent conversation, users, groups, or trip buddy groups.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="chatMainCard oldSize">
+                <div className="chatHeaderBar">
+                  <div className="chatHeaderUser">
+                    <div className="chatAvatarWrap">
+                      {getConversationDisplayAvatar(activeConversation) ? (
+                        <img
+                          src={getConversationDisplayAvatar(activeConversation)}
+                          alt={getConversationDisplayName(activeConversation)}
+                          className="chatAvatar large"
+                        />
+                      ) : (
+                        <div className="chatAvatarFallback large">
+                          {getConversationDisplayName(activeConversation)
+                            ?.charAt(0)
+                            ?.toUpperCase() || "U"}
                         </div>
-                      );
-                    }
+                      )}
+                    </div>
 
-                    const msg = entry.message;
-                    const isMe =
-                      String(msg.sender?._id || msg.sender?.id || msg.sender) ===
-                      String(user?.id);
+                    <div className="chatHeaderContent">
+                      <div className="chatHeaderName">
+                        {getConversationDisplayName(activeConversation)}
+                      </div>
+                      <div className="chatHeaderMeta">
+                        {getConversationPresenceText(activeConversation)}
+                      </div>
+                    </div>
+                  </div>
 
-                    return (
-                      <div key={msg.id} className={`chatBubbleRow ${isMe ? "me" : "other"}`}>
-                        <div className={`chatBubbleWrap ${isMe ? "me" : "other"}`}>
-                          <div className={`chatBubble ${isMe ? "me" : "other"}`}>
-                            {msg.replyTo?.messageId ? (
-                              <div className="chatReplyBlock">
-                                <strong>Reply</strong>
-                                <span>{getReplyPreviewText(msg.replyTo)}</span>
-                              </div>
-                            ) : null}
+                  <div className="chatHeaderTools">
+                    {canShowProviderTools ? (
+                      <>
+                        <button
+                          className="chatHeaderGhostBtn"
+                          onClick={() => setShowListingModal(true)}
+                        >
+                          Send Listing Card
+                        </button>
 
-                            {editingMessageId === String(msg.id) ? (
-                              <div className="chatEditWrap">
-                                <textarea
-                                  className="chatEditInput"
-                                  value={editText}
-                                  onChange={(e) => setEditText(e.target.value)}
-                                  rows={2}
-                                />
-                                <div className="chatEditActions">
-                                  <button onClick={handleSaveEdit}>Save</button>
-                                  <button
-                                    className="alt"
-                                    onClick={() => {
-                                      setEditingMessageId("");
-                                      setEditText("");
-                                    }}
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <>
-                                {msg.messageType === "text" ? (
-                                  <div className="chatBubbleText">{msg.text}</div>
-                                ) : null}
+                        <button
+                          className="chatHeaderGhostBtn"
+                          onClick={() => setShowBroadcastModal(true)}
+                        >
+                          Broadcast Update
+                        </button>
+                      </>
+                    ) : null}
 
-                                {msg.messageType === "image" ? (
-                                  <div className="chatMediaWrap">
-                                    {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
-                                    <img
-                                      src={msg.media?.url}
-                                      alt={msg.media?.originalName || "chat image"}
-                                      className="chatMediaImage"
-                                    />
-                                  </div>
-                                ) : null}
+                    <button className="chatHeaderGhostBtn" onClick={handleClearChat}>
+                      Clear Chat
+                    </button>
+                  </div>
+                </div>
 
-                                {msg.messageType === "video" ? (
-                                  <div className="chatMediaWrap">
-                                    {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
-                                    <video controls className="chatMediaVideo">
-                                      <source
-                                        src={msg.media?.url}
-                                        type={msg.media?.mimeType || "video/mp4"}
-                                      />
-                                    </video>
-                                  </div>
-                                ) : null}
-
-                                {msg.messageType === "file" ? (
-                                  <div className="chatMediaWrap">
-                                    {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
-                                    <a
-                                      href={msg.media?.url}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="chatFileLink"
-                                    >
-                                      📎 {msg.media?.originalName || "Open file"}
-                                    </a>
-                                  </div>
-                                ) : null}
-
-                                {msg.messageType === "listing_card" ? (
-                                  <div className="chatListingCard">
-                                    {msg.listingCard?.imageUrl ? (
-                                      <img
-                                        src={msg.listingCard.imageUrl}
-                                        alt={msg.listingCard.title || "Listing"}
-                                        className="chatListingCardImage"
-                                      />
-                                    ) : null}
-
-                                    <div className="chatListingCardBody">
-                                      <strong>{msg.listingCard?.title || "Listing"}</strong>
-                                      <span>{msg.listingCard?.subtitle || ""}</span>
-                                      <span className="chatListingCardPrice">
-                                        {msg.listingCard?.priceText || ""}
-                                      </span>
-
-                                      {msg.listingCard?.targetUrl ? (
-                                        <button
-                                          className="chatListingCardBtn"
-                                          onClick={() => navigate(msg.listingCard.targetUrl)}
-                                        >
-                                          View Listing
-                                        </button>
-                                      ) : null}
-                                    </div>
-                                  </div>
-                                ) : null}
-
-                                {msg.messageType === "system" ? (
-                                  <div className="chatSystemText">{msg.text}</div>
-                                ) : null}
-
-                                <div className="chatBubbleMeta">
-                                  <span>{formatMessageTime(msg.createdAt)}</span>
-                                  {msg.isEdited ? <span>Edited</span> : null}
-                                  {msg.forwardedFrom ? <span>Forwarded</span> : null}
-                                  {isMe ? (
-                                    <span>
-                                      {msg.seenBy?.some((id) => String(id) !== String(user?.id))
-                                        ? "Seen"
-                                        : "Sent"}
-                                    </span>
-                                  ) : null}
-                                </div>
-                              </>
-                            )}
+                <div
+                  ref={messagesRef}
+                  className="chatMessages noScrollbar"
+                  onScroll={handleMessagesScroll}
+                >
+                  {loadingMessages ? (
+                    <div className="chatEmptyCard">Loading messages...</div>
+                  ) : messages.length === 0 ? (
+                    <div className="chatEmptyCard">No messages yet. Start the conversation.</div>
+                  ) : (
+                    messageItems.map((entry) => {
+                      if (entry.type === "separator") {
+                        return (
+                          <div key={entry.id} className="chatDateSeparator">
+                            <span>{entry.label}</span>
                           </div>
+                        );
+                      }
 
-                          <div className="chatMessageActionsWrap">
-                            <button
-                              className="chatMessageMenuBtn"
-                              onClick={() =>
-                                setMenuOpenId((prev) =>
-                                  prev === String(msg.id) ? "" : String(msg.id)
-                                )
-                              }
-                            >
-                              ⋯
-                            </button>
+                      const msg = entry.message;
+                      const isMe =
+                        String(msg.sender?._id || msg.sender?.id || msg.sender) ===
+                        String(user?.id);
 
-                            {menuOpenId === String(msg.id) ? (
-                              <div className="chatMessageMenu">
-                                <button
-                                  onClick={() => {
-                                    setReplyingTo(msg);
-                                    setMenuOpenId("");
-                                  }}
-                                >
-                                  Reply
-                                </button>
+                      return (
+                        <div key={msg.id} className={`chatBubbleRow ${isMe ? "me" : "other"}`}>
+                          <div className={`chatBubbleWrap ${isMe ? "me" : "other"}`}>
+                            <div className={`chatBubble ${isMe ? "me" : "other"}`}>
+                              {msg.replyTo?.messageId ? (
+                                <div className="chatReplyBlock">
+                                  <strong>Reply</strong>
+                                  <span>{getReplyPreviewText(msg.replyTo)}</span>
+                                </div>
+                              ) : null}
 
-                                <button onClick={() => handleForwardMessage(msg.id)}>
-                                  Forward
-                                </button>
+                              {editingMessageId === String(msg.id) ? (
+                                <div className="chatEditWrap">
+                                  <textarea
+                                    className="chatEditInput"
+                                    value={editText}
+                                    onChange={(e) => setEditText(e.target.value)}
+                                    rows={2}
+                                  />
+                                  <div className="chatEditActions">
+                                    <button onClick={handleSaveEdit}>Save</button>
+                                    <button
+                                      className="alt"
+                                      onClick={() => {
+                                        setEditingMessageId("");
+                                        setEditText("");
+                                      }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <>
+                                  {msg.messageType === "text" ? (
+                                    <div className="chatBubbleText">{msg.text}</div>
+                                  ) : null}
 
-                                {isMe && msg.messageType === "text" ? (
+                                  {msg.messageType === "image" ? (
+                                    <div className="chatMediaWrap">
+                                      {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
+                                      <img
+                                        src={msg.media?.url}
+                                        alt={msg.media?.originalName || "chat image"}
+                                        className="chatMediaImage"
+                                      />
+                                    </div>
+                                  ) : null}
+
+                                  {msg.messageType === "video" ? (
+                                    <div className="chatMediaWrap">
+                                      {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
+                                      <video controls className="chatMediaVideo">
+                                        <source
+                                          src={msg.media?.url}
+                                          type={msg.media?.mimeType || "video/mp4"}
+                                        />
+                                      </video>
+                                    </div>
+                                  ) : null}
+
+                                  {msg.messageType === "file" ? (
+                                    <div className="chatMediaWrap">
+                                      {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
+                                      <a
+                                        href={msg.media?.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="chatFileLink"
+                                      >
+                                        📎 {msg.media?.originalName || "Open file"}
+                                      </a>
+                                    </div>
+                                  ) : null}
+
+                                  {msg.messageType === "listing_card" ? (
+                                    <div className="chatListingCard">
+                                      {msg.listingCard?.imageUrl ? (
+                                        <img
+                                          src={msg.listingCard.imageUrl}
+                                          alt={msg.listingCard.title || "Listing"}
+                                          className="chatListingCardImage"
+                                        />
+                                      ) : null}
+
+                                      <div className="chatListingCardBody">
+                                        <strong>{msg.listingCard?.title || "Listing"}</strong>
+                                        <span>{msg.listingCard?.subtitle || ""}</span>
+                                        <span className="chatListingCardPrice">
+                                          {msg.listingCard?.priceText || ""}
+                                        </span>
+
+                                        {msg.listingCard?.targetUrl ? (
+                                          <button
+                                            className="chatListingCardBtn"
+                                            onClick={() => navigate(msg.listingCard.targetUrl)}
+                                          >
+                                            View Listing
+                                          </button>
+                                        ) : null}
+                                      </div>
+                                    </div>
+                                  ) : null}
+
+                                  {msg.messageType === "system" ? (
+                                    <div className="chatSystemText">{msg.text}</div>
+                                  ) : null}
+
+                                  <div className="chatBubbleMeta">
+                                    <span>{formatMessageTime(msg.createdAt)}</span>
+                                    {msg.isEdited ? <span>Edited</span> : null}
+                                    {msg.forwardedFrom ? <span>Forwarded</span> : null}
+                                    {isMe ? (
+                                      <span>
+                                        {msg.seenBy?.some((id) => String(id) !== String(user?.id))
+                                          ? "Seen"
+                                          : "Sent"}
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+
+                            <div className="chatMessageActionsWrap">
+                              <button
+                                className="chatMessageMenuBtn"
+                                onClick={() =>
+                                  setMenuOpenId((prev) =>
+                                    prev === String(msg.id) ? "" : String(msg.id)
+                                  )
+                                }
+                              >
+                                ⋯
+                              </button>
+
+                              {menuOpenId === String(msg.id) ? (
+                                <div className="chatMessageMenu">
                                   <button
                                     onClick={() => {
-                                      setEditingMessageId(String(msg.id));
-                                      setEditText(msg.text || "");
+                                      setReplyingTo(msg);
                                       setMenuOpenId("");
                                     }}
                                   >
-                                    Edit
+                                    Reply
                                   </button>
-                                ) : null}
 
-                                <button
-                                  className="danger"
-                                  onClick={() => handleDeleteForMe(msg.id)}
-                                >
-                                  Delete for me
-                                </button>
-                              </div>
-                            ) : null}
+                                  <button onClick={() => handleForwardMessage(msg.id)}>
+                                    Forward
+                                  </button>
+
+                                  {isMe && msg.messageType === "text" ? (
+                                    <button
+                                      onClick={() => {
+                                        setEditingMessageId(String(msg.id));
+                                        setEditText(msg.text || "");
+                                        setMenuOpenId("");
+                                      }}
+                                    >
+                                      Edit
+                                    </button>
+                                  ) : null}
+
+                                  <button
+                                    className="danger"
+                                    onClick={() => handleDeleteForMe(msg.id)}
+                                  >
+                                    Delete for me
+                                  </button>
+                                </div>
+                              ) : null}
+                            </div>
                           </div>
                         </div>
+                      );
+                    })
+                  )}
+
+                  {Object.values(typingUsers).some(Boolean) ? (
+                    <div className="chatTyping">Typing...</div>
+                  ) : null}
+                </div>
+
+                <div className="chatComposerBar">
+                  {replyingTo ? (
+                    <div className="chatReplyComposer">
+                      <div>
+                        <strong>Replying</strong>
+                        <span>{getReplyPreviewText(replyingTo)}</span>
                       </div>
-                    );
-                  })
-                )}
-
-                {Object.values(typingUsers).some(Boolean) ? (
-                  <div className="chatTyping">Typing...</div>
-                ) : null}
-              </div>
-
-              <div className="chatComposerBar">
-                {replyingTo ? (
-                  <div className="chatReplyComposer">
-                    <div>
-                      <strong>Replying</strong>
-                      <span>{getReplyPreviewText(replyingTo)}</span>
+                      <button onClick={() => setReplyingTo(null)}>✕</button>
                     </div>
-                    <button onClick={() => setReplyingTo(null)}>✕</button>
-                  </div>
-                ) : null}
+                  ) : null}
 
-                {selectedFile ? (
-                  <div className="chatSelectedFile">
-                    <span>{selectedFile.name}</span>
-                    <button type="button" onClick={() => setSelectedFile(null)}>
-                      Remove
+                  {selectedFile ? (
+                    <div className="chatSelectedFile">
+                      <span>{selectedFile.name}</span>
+                      <button type="button" onClick={() => setSelectedFile(null)}>
+                        Remove
+                      </button>
+                    </div>
+                  ) : null}
+
+                  <div className="chatComposerRow">
+                    <button
+                      type="button"
+                      className="chatAttachBtn"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      +
+                    </button>
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      className="chatHiddenFile"
+                      onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                    />
+
+                    <textarea
+                      className="chatInput"
+                      value={text}
+                      onChange={(e) => handleInputChange(e.target.value)}
+                      placeholder="Type message..."
+                      rows={1}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSend();
+                        }
+                      }}
+                    />
+
+                    <button
+                      type="button"
+                      className="chatSendBtn"
+                      onClick={handleSend}
+                      disabled={sending || (!text.trim() && !selectedFile)}
+                    >
+                      {sending ? "Sending..." : "Send"}
                     </button>
                   </div>
-                ) : null}
-
-                <div className="chatComposerRow">
-                  <button
-                    type="button"
-                    className="chatAttachBtn"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    +
-                  </button>
-
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="chatHiddenFile"
-                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                  />
-
-                  <textarea
-                    className="chatInput"
-                    value={text}
-                    onChange={(e) => handleInputChange(e.target.value)}
-                    placeholder="Type message..."
-                    rows={1}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSend();
-                      }
-                    }}
-                  />
-
-                  <button
-                    type="button"
-                    className="chatSendBtn"
-                    onClick={handleSend}
-                    disabled={sending || (!text.trim() && !selectedFile)}
-                  >
-                    {sending ? "Sending..." : "Send"}
-                  </button>
                 </div>
               </div>
-            </div>
-          )}
-        </section>
+            )}
+          </section>
+        </div>
       </div>
 
       {showGroupModal ? (
