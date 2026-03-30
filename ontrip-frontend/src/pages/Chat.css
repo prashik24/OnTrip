@@ -38,16 +38,12 @@
 
 .chatSidebarCard {
   padding: 16px;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
   gap: 14px;
   min-height: calc(100vh - 180px);
   max-height: calc(100vh - 180px);
   overflow: hidden;
-}
-
-.chatSidebarHead {
-  flex-shrink: 0;
 }
 
 .chatSidebarHead h2 {
@@ -67,7 +63,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  flex-shrink: 0;
 }
 
 .chatMiniActionBtn {
@@ -95,6 +90,7 @@
   font: inherit;
   outline: none;
   box-sizing: border-box;
+  margin: 0;
 }
 
 .chatModalTextarea {
@@ -115,19 +111,18 @@
 
 .chatSidebarScroll {
   min-height: 0;
-  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  display: grid;
+  gap: 18px;
+  align-content: start;
   padding-right: 4px;
 }
 
 .chatSidebarSection {
   display: grid;
   gap: 10px;
-  min-height: 0;
+  align-content: start;
 }
 
 .chatSectionLabel {
@@ -136,6 +131,8 @@
   color: #0369a1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .chatConversationList,
@@ -144,15 +141,6 @@
 .chatModalUserList {
   display: grid;
   gap: 10px;
-  min-height: 0;
-}
-
-.chatConversationList,
-.chatGroupList {
-  align-content: start;
-}
-
-.chatUserList {
   align-content: start;
 }
 
@@ -176,6 +164,7 @@
   text-align: left;
   transition: 0.18s ease;
   box-sizing: border-box;
+  min-height: 92px;
 }
 
 .chatConversationItem,
@@ -187,6 +176,7 @@
 .chatModalUserItem {
   grid-template-columns: 1fr auto;
   align-items: center;
+  min-height: auto;
 }
 
 .chatConversationItem:hover,
@@ -204,6 +194,7 @@
   position: relative;
   width: 48px;
   height: 48px;
+  flex-shrink: 0;
 }
 
 .chatAvatar,
@@ -274,13 +265,14 @@
   min-width: 0;
   display: grid;
   gap: 4px;
+  align-content: center;
 }
 
 .chatConversationTop {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .chatConversationTopRight {
@@ -312,6 +304,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .chatConversationTop span,
@@ -323,6 +316,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .chatMainEmpty {
@@ -901,6 +895,10 @@
   .chatMainCard {
     min-height: auto;
     max-height: none;
+  }
+
+  .chatSidebarCard {
+    grid-template-rows: auto auto auto;
   }
 
   .chatSidebarScroll {
