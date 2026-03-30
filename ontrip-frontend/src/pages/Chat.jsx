@@ -113,37 +113,51 @@ function getConversationPresenceText(conversation) {
   return formatLastSeen(conversation.otherUser?.lastSeenAt);
 }
 
+function getReplyPreviewText(item) {
+  if (!item) return "";
+  if (item.messageType === "image") return "📷 Image";
+  if (item.messageType === "video") return "🎥 Video";
+  if (item.messageType === "file") return "📎 File";
+  if (item.messageType === "listing_card") return "📌 Listing";
+  if (item.messageType === "system") return "System update";
+  return item.text || "Message";
+}
+
 export default function Chat() {
   const user = getUser();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const fileInputRef = useRef(null);
   const messagesRef = useRef(null);
+  const fileInputRef = useRef(null);
   const shouldStickToBottomRef = useRef(true);
 
   const [loading, setLoading] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [sending, setSending] = useState(false);
 
-  const [menuOpenId, setMenuOpenId] = useState("");
-  const [editingMessageId, setEditingMessageId] = useState("");
-  const [editText, setEditText] = useState("");
-
   const [users, setUsers] = useState([]);
-  const [groups, setGroups] = useState([]);
   const [conversations, setConversations] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [tripGroups, setTripGroups] = useState([]);
+  const [myProviders, setMyProviders] = useState([]);
+
   const [activeConversation, setActiveConversation] = useState(null);
   const [messages, setMessages] = useState([]);
 
-  const [userSearch, setUserSearch] = useState("");
   const [text, setText] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-
   const [typingUsers, setTypingUsers] = useState({});
-  const [error, setError] = useState("");
   const [unreadCounts, setUnreadCounts] = useState({});
+  const [error, setError] = useState("");
+
+  const [menuOpenId, setMenuOpenId] = useState("");
+  const [editingMessageId, setEditingMessageId] = useState("");
+  const [editText, setEditText] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
+
+  const [activeDirectory, setActiveDirectory] = useState("");
+  const [directoryTitle, setDirectoryTitle] = useState("");
 
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [groupName, setGroupName] = useState("");
@@ -153,56 +167,35 @@ export default function Chat() {
   const [showBroadcastModal, setShowBroadcastModal] = useState(false);
   const [broadcastText, setBroadcastText] = useState("");
 
-  const [myProviders, setMyProviders] = useState([]);
   const [showListingModal, setShowListingModal] = useState(false);
   const [selectedProviderId, setSelectedProviderId] = useState("");
   const [selectedPlanIndex, setSelectedPlanIndex] = useState(0);
   const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(0);
 
-  const [sectionPanel, setSectionPanel] = useState("");
+  const activeOtherUser = useMemo(() => activeConversation?.otherUser || null, [activeConversation]);
 
-  const activeOtherUser = useMemo(() => {
-    return activeConversation?.otherUser || null;
-  }, [activeConversation]);
+  const selectedProvider = useMemo(() => {
+    return (
+      myProviders.find((item) => String(item._id) === String(selectedProviderId)) ||
+      null
+    );
+  }, [myProviders, selectedProviderId]);
 
-  const visibleConversations = useMemo(() => {
+  const filteredRecentConversations = useMemo(() => {
     return conversations.filter(
-      (item) =>
-        item &&
-        item.lastMessageAt &&
-        (item.lastMessageText || item.lastMessageType)
+      (item) => item && item.lastMessageAt && (item.lastMessageText || item.lastMessageType)
     );
   }, [conversations]);
 
-  const filteredUsers = useMemo(() => {
-    const q = userSearch.trim().toLowerCase();
-    if (!q) return users;
-
-    return users.filter((item) => {
-      const bag = `${item.name} ${item.email} ${item.city} ${item.role}`.toLowerCase();
-      return bag.includes(q);
-    });
-  }, [users, userSearch]);
-
-  const filteredGroups = useMemo(() => {
-    const q = userSearch.trim().toLowerCase();
-    if (!q) return groups;
-
-    return groups.filter((item) => {
-      const groupName = item.groupName || "";
-      const memberNames = (item.participants || [])
-        .map((p) => p.name || "")
-        .join(" ");
-      const bag = `${groupName} ${memberNames}`.toLowerCase();
-      return bag.includes(q);
-    });
-  }, [groups, userSearch]);
-
   const messageItems = useMemo(() => buildMessageItems(messages), [messages]);
 
-  const selectedProvider = useMemo(() => {
-    return myProviders.find((item) => String(item._id) === String(selectedProviderId)) || null;
-  }, [myProviders, selectedProviderId]);
+  const directoryItems = useMemo(() => {
+    if (activeDirectory === "recent") return filteredRecentConversations;
+    if (activeDirectory === "users") return users;
+    if (activeDirectory === "groups") return groups;
+    if (activeDirectory === "trip") return tripGroups;
+    return [];
+  }, [activeDirectory, filteredRecentConversations, users, groups, tripGroups]);
 
   const canShowProviderTools =
     user?.role === "provider" &&
@@ -243,6 +236,7 @@ export default function Chat() {
         setUsers(userRes.users || []);
         setConversations(convRes.conversations || []);
         setGroups(groupRes.groups || []);
+        setTripGroups(groupRes.tripBuddyGroups || []);
         setMyProviders(providerRes?.providers || []);
 
         const params = new URLSearchParams(location.search);
@@ -251,7 +245,10 @@ export default function Chat() {
 
         if (queryConversation) {
           const found =
-            [...(convRes.conversations || []), ...(groupRes.groups || [])].find(
+            (convRes.conversations || []).find(
+              (item) => String(item.id) === String(queryConversation)
+            ) ||
+            (groupRes.allGroups || []).find(
               (item) => String(item.id) === String(queryConversation)
             );
 
@@ -270,9 +267,7 @@ export default function Chat() {
           const conversation = openRes.conversation;
 
           setConversations((prev) => {
-            const exists = prev.some(
-              (item) => String(item.id) === String(conversation.id)
-            );
+            const exists = prev.some((item) => String(item.id) === String(conversation.id));
             if (exists) {
               return prev.map((item) =>
                 String(item.id) === String(conversation.id) ? conversation : item
@@ -320,17 +315,6 @@ export default function Chat() {
         )
       );
 
-      setGroups((prev) =>
-        prev.map((item) => ({
-          ...item,
-          participants: (item.participants || []).map((p) =>
-            String(p.id || p._id) === String(userId)
-              ? { ...p, isOnline, lastSeenAt }
-              : p
-          ),
-        }))
-      );
-
       setConversations((prev) =>
         prev.map((item) => {
           if (item.conversationType === "group") {
@@ -356,6 +340,22 @@ export default function Chat() {
             : item;
         })
       );
+
+      const updateGroupPresence = (listSetter) => {
+        listSetter((prev) =>
+          prev.map((item) => ({
+            ...item,
+            participants: (item.participants || []).map((p) =>
+              String(p.id || p._id) === String(userId)
+                ? { ...p, isOnline, lastSeenAt }
+                : p
+            ),
+          }))
+        );
+      };
+
+      updateGroupPresence(setGroups);
+      updateGroupPresence(setTripGroups);
 
       setActiveConversation((prev) => {
         if (!prev) return prev;
@@ -413,22 +413,19 @@ export default function Chat() {
       }
 
       if (conversation.conversationType === "group") {
-        setGroups((prev) => {
-          const exists = prev.some((item) => String(item.id) === incomingConversationId);
-          if (!exists) return [conversation, ...prev];
+        const setter =
+          conversation.groupCategory === "trip_buddy" ? setTripGroups : setGroups;
 
-          return prev.map((item) =>
-            String(item.id) === incomingConversationId ? conversation : item
-          );
+        setter((prev) => {
+          const exists = prev.some((item) => String(item.id) === incomingConversationId);
+          if (exists) {
+            return prev.map((item) =>
+              String(item.id) === incomingConversationId ? conversation : item
+            );
+          }
+          return [conversation, ...prev];
         });
       } else {
-        setConversations((prev) => {
-          const withoutCurrent = prev.filter(
-            (item) => String(item.id) !== incomingConversationId
-          );
-          return [conversation, ...withoutCurrent];
-        });
-
         setUsers((prev) =>
           prev.map((item) =>
             String(item.id) === String(conversation.otherUser?.id)
@@ -437,6 +434,13 @@ export default function Chat() {
           )
         );
       }
+
+      setConversations((prev) => {
+        const withoutCurrent = prev.filter(
+          (item) => String(item.id) !== incomingConversationId
+        );
+        return [conversation, ...withoutCurrent];
+      });
 
       setActiveConversation((prev) => {
         if (!prev) return prev;
@@ -585,51 +589,52 @@ export default function Chat() {
       });
 
       await openConversation(conversation);
+      setActiveDirectory("");
       navigate(`/chat?conversation=${conversation.id}`, { replace: true });
     } catch (err) {
       setError(err.message || "Failed to open chat");
     }
   }
 
-  async function handleCreateGroup(groupType = "group") {
+  async function handleCreateGroup(groupCategory = "standard") {
     if (!groupName.trim()) {
       setError("Group name is required");
       return;
     }
 
     if (selectedGroupUsers.length < 2) {
-      setError("Select at least 2 users for a group");
+      setError("Select at least 2 users");
       return;
     }
 
     try {
       setError("");
 
-      const finalName =
-        groupType === "trip_buddy" && !groupName.toLowerCase().includes("trip")
-          ? `${groupName} Trip Buddy`
-          : groupName;
-
       const res = await apiFetch("/api/chat/conversations/group", {
         method: "POST",
         body: JSON.stringify({
-          groupName: finalName.trim(),
-          groupDescription:
-            groupType === "trip_buddy"
-              ? groupDescription.trim() || "Trip Buddy Group"
-              : groupDescription.trim(),
+          groupName: groupName.trim(),
+          groupDescription: groupDescription.trim(),
           participantIds: selectedGroupUsers,
+          groupCategory,
         }),
       });
 
-      setGroups((prev) => [res.conversation, ...prev]);
+      const conversation = res.conversation;
+
+      if (groupCategory === "trip_buddy") {
+        setTripGroups((prev) => [conversation, ...prev]);
+      } else {
+        setGroups((prev) => [conversation, ...prev]);
+      }
+
       setShowGroupModal(false);
       setGroupName("");
       setGroupDescription("");
       setSelectedGroupUsers([]);
 
-      await openConversation(res.conversation);
-      navigate(`/chat?conversation=${res.conversation.id}`, { replace: true });
+      await openConversation(conversation);
+      navigate(`/chat?conversation=${conversation.id}`, { replace: true });
     } catch (err) {
       setError(err.message || "Failed to create group");
     }
@@ -671,22 +676,34 @@ export default function Chat() {
         return [...prev, res.data];
       });
 
-      if (res.conversation.conversationType === "group") {
-        setGroups((prev) =>
-          prev.map((item) =>
-            String(item.id) === String(res.conversation.id) ? res.conversation : item
-          )
+      setConversations((prev) => {
+        const exists = prev.some((item) => String(item.id) === String(res.conversation.id));
+        let updated = exists
+          ? prev.map((item) =>
+              String(item.id) === String(res.conversation.id) ? res.conversation : item
+            )
+          : [res.conversation, ...prev];
+
+        updated = updated.sort(
+          (a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0)
         );
-      } else {
-        setConversations((prev) => {
-          const updated = prev.map((item) =>
-            String(item.id) === String(res.conversation.id) ? res.conversation : item
+        return updated;
+      });
+
+      if (res.conversation.conversationType === "group") {
+        if (res.conversation.groupCategory === "trip_buddy") {
+          setTripGroups((prev) =>
+            prev.map((item) =>
+              String(item.id) === String(res.conversation.id) ? res.conversation : item
+            )
           );
-          updated.sort(
-            (a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0)
+        } else {
+          setGroups((prev) =>
+            prev.map((item) =>
+              String(item.id) === String(res.conversation.id) ? res.conversation : item
+            )
           );
-          return updated;
-        });
+        }
       }
 
       setActiveConversation((prev) => {
@@ -748,17 +765,7 @@ export default function Chat() {
   }
 
   async function handleForwardMessage(messageId) {
-    const allTargets = [...visibleConversations, ...groups];
-    if (!allTargets.length) return;
-
-    const options = allTargets
-      .map((item) => `${item.id} — ${getConversationDisplayName(item, user?.id)}`)
-      .join("\n");
-
-    const targetConversationId = window.prompt(
-      `Enter target conversation id:\n\n${options}`
-    );
-
+    const targetConversationId = window.prompt("Enter target conversation id");
     if (!targetConversationId?.trim()) return;
 
     try {
@@ -791,15 +798,20 @@ export default function Chat() {
       });
 
       setMessages([]);
+      setConversations((prev) =>
+        prev.filter((item) => String(item.id) !== String(activeConversation.id))
+      );
 
       if (activeConversation.conversationType === "group") {
-        setGroups((prev) =>
-          prev.filter((item) => String(item.id) !== String(activeConversation.id))
-        );
-      } else {
-        setConversations((prev) =>
-          prev.filter((item) => String(item.id) !== String(activeConversation.id))
-        );
+        if (activeConversation.groupCategory === "trip_buddy") {
+          setTripGroups((prev) =>
+            prev.filter((item) => String(item.id) !== String(activeConversation.id))
+          );
+        } else {
+          setGroups((prev) =>
+            prev.filter((item) => String(item.id) !== String(activeConversation.id))
+          );
+        }
       }
 
       setActiveConversation(null);
@@ -849,8 +861,8 @@ export default function Chat() {
       });
 
       setShowBroadcastModal(false);
-      setBroadcastText("");
       setSelectedProviderId("");
+      setBroadcastText("");
     } catch (err) {
       setError(err.message || "Failed to broadcast update");
     }
@@ -869,15 +881,6 @@ export default function Chat() {
     }
   }
 
-  function getReplyPreviewText(item) {
-    if (!item) return "";
-    if (item.messageType === "image") return "📷 Image";
-    if (item.messageType === "video") return "🎥 Video";
-    if (item.messageType === "file") return "📎 File";
-    if (item.messageType === "listing_card") return "📌 Listing";
-    return item.text || "Message";
-  }
-
   function toggleGroupUser(userId) {
     setSelectedGroupUsers((prev) =>
       prev.includes(userId)
@@ -886,143 +889,61 @@ export default function Chat() {
     );
   }
 
-  function renderSectionPanel() {
-    if (!sectionPanel) return null;
+  function openDirectory(type, title) {
+    setActiveDirectory(type);
+    setDirectoryTitle(title);
+  }
 
-    let title = "";
-    let data = [];
-
-    if (sectionPanel === "recent") {
-      title = "Recent Conversations";
-      data = visibleConversations;
+  function renderDirectoryItem(item) {
+    if (activeDirectory === "users") {
+      return (
+        <button
+          key={item.id}
+          className="chatDirectoryItem"
+          onClick={() => openChatWithUser(item.id)}
+        >
+          <div className="chatDirectoryItemLeft">
+            {item.avatar ? (
+              <img src={item.avatar} alt={item.name} className="chatDirectoryAvatar" />
+            ) : (
+              <div className="chatDirectoryAvatar chatDirectoryAvatarFallback">
+                {item.name?.charAt(0)?.toUpperCase() || "U"}
+              </div>
+            )}
+            <span>{item.name}</span>
+          </div>
+        </button>
+      );
     }
 
-    if (sectionPanel === "users") {
-      title = "All Users";
-      data = filteredUsers;
+    if (activeDirectory === "recent" || activeDirectory === "groups" || activeDirectory === "trip") {
+      const displayName = getConversationDisplayName(item, user?.id);
+      const displayAvatar = getConversationDisplayAvatar(item);
+
+      return (
+        <button
+          key={item.id}
+          className="chatDirectoryItem"
+          onClick={() => {
+            openConversation(item);
+            setActiveDirectory("");
+          }}
+        >
+          <div className="chatDirectoryItemLeft">
+            {displayAvatar ? (
+              <img src={displayAvatar} alt={displayName} className="chatDirectoryAvatar" />
+            ) : (
+              <div className="chatDirectoryAvatar chatDirectoryAvatarFallback">
+                {displayName?.charAt(0)?.toUpperCase() || "G"}
+              </div>
+            )}
+            <span>{displayName}</span>
+          </div>
+        </button>
+      );
     }
 
-    if (sectionPanel === "groups") {
-      title = "Groups / Trip Buddy Groups";
-      data = filteredGroups;
-    }
-
-    return (
-      <div className="chatSlidePanel">
-        <div className="chatSlidePanelHead">
-          <h3>{title}</h3>
-          <button onClick={() => setSectionPanel("")}>✕</button>
-        </div>
-
-        <div className="chatSlidePanelBody noScrollbar">
-          {sectionPanel === "recent" &&
-            data.map((item) => {
-              const displayName = getConversationDisplayName(item, user?.id);
-              const displayAvatar = getConversationDisplayAvatar(item);
-
-              return (
-                <button
-                  key={item.id}
-                  className="chatSlidePanelItem"
-                  onClick={() => {
-                    openConversation(item);
-                    setSectionPanel("");
-                  }}
-                >
-                  <div className="chatAvatarWrap">
-                    {displayAvatar ? (
-                      <img src={displayAvatar} alt={displayName} className="chatAvatar" />
-                    ) : (
-                      <div className="chatAvatarFallback">
-                        {displayName?.charAt(0)?.toUpperCase() || "U"}
-                      </div>
-                    )}
-
-                    {item.conversationType === "direct" ? (
-                      <span
-                        className={`chatPresenceDot ${
-                          item.otherUser?.isOnline ? "online" : "offline"
-                        }`}
-                      />
-                    ) : (
-                      <span className="chatGroupBadge">G</span>
-                    )}
-                  </div>
-
-                  <div className="chatUserBody">
-                    <strong>{displayName}</strong>
-                    <span>
-                      {item.conversationType === "direct"
-                        ? item.otherUser?.isOnline
-                          ? "Online"
-                          : formatLastSeen(item.otherUser?.lastSeenAt)
-                        : `${item.participants?.length || 0} members`}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-
-          {sectionPanel === "users" &&
-            data.map((item) => (
-              <button
-                key={item.id}
-                className="chatSlidePanelItem"
-                onClick={() => {
-                  openChatWithUser(item.id);
-                  setSectionPanel("");
-                }}
-              >
-                <div className="chatAvatarWrap">
-                  {item.avatar ? (
-                    <img src={item.avatar} alt={item.name} className="chatAvatar" />
-                  ) : (
-                    <div className="chatAvatarFallback">
-                      {item.name?.charAt(0)?.toUpperCase() || "U"}
-                    </div>
-                  )}
-                  <span
-                    className={`chatPresenceDot ${item.isOnline ? "online" : "offline"}`}
-                  />
-                </div>
-
-                <div className="chatUserBody">
-                  <strong>{item.name}</strong>
-                  <span>{item.isOnline ? "Online" : formatLastSeen(item.lastSeenAt)}</span>
-                </div>
-              </button>
-            ))}
-
-          {sectionPanel === "groups" &&
-            data.map((item) => (
-              <button
-                key={item.id}
-                className="chatSlidePanelItem"
-                onClick={() => {
-                  openConversation(item);
-                  setSectionPanel("");
-                }}
-              >
-                <div className="chatAvatarWrap">
-                  {item.groupAvatar ? (
-                    <img src={item.groupAvatar} alt={item.groupName} className="chatAvatar" />
-                  ) : (
-                    <div className="chatAvatarFallback">
-                      {item.groupName?.charAt(0)?.toUpperCase() || "G"}
-                    </div>
-                  )}
-                  <span className="chatGroupBadge">G</span>
-                </div>
-
-                <div className="chatUserBody">
-                  <strong>{item.groupName || "Group"}</strong>
-                  <span>{item.participants?.length || 0} members</span>
-                </div>
-              </button>
-            ))}
-        </div>
-      </div>
-    );
+    return null;
   }
 
   if (!isLoggedIn()) return null;
@@ -1031,210 +952,80 @@ export default function Chat() {
     <div className="container chatPage">
       {error ? <div className="chatAlert">{error}</div> : null}
 
-      <div className="chatLayout">
-        <aside className="chatSidebar">
-          <div className="chatSidebarCard">
-            <div className="chatSidebarHead">
-              <h2>Chats</h2>
-              <p>Conversations, groups and users</p>
-            </div>
+      <div className="chatAdvancedLayout">
+        <aside className="chatLeftMenu">
+          <button
+            className="chatMenuSection"
+            onClick={() => openDirectory("recent", "Recent Conversations")}
+          >
+            <span>Recent Conversations</span>
+            <strong>{filteredRecentConversations.length}</strong>
+          </button>
 
-            <div className="chatSidebarTopActions">
-              <button className="chatMiniActionBtn" onClick={() => setShowGroupModal(true)}>
-                + Create Group
-              </button>
+          <button
+            className="chatMenuSection"
+            onClick={() => openDirectory("users", "All Users")}
+          >
+            <span>All Users</span>
+            <strong>{users.length}</strong>
+          </button>
 
-              <button
-                className="chatMiniActionBtn"
-                onClick={() => {
-                  setShowGroupModal(true);
-                  setGroupDescription("Trip Buddy Group");
-                }}
-              >
-                + Trip Buddy Group
-              </button>
-            </div>
+          <button
+            className="chatMenuSection"
+            onClick={() => openDirectory("groups", "Groups")}
+          >
+            <span>Groups</span>
+            <strong>{groups.length}</strong>
+          </button>
 
-            <input
-              className="chatSearch"
-              placeholder="Search users and groups..."
-              value={userSearch}
-              onChange={(e) => setUserSearch(e.target.value)}
-            />
+          <button
+            className="chatMenuSection"
+            onClick={() => openDirectory("trip", "Trip Buddy Groups")}
+          >
+            <span>Trip Buddy Groups</span>
+            <strong>{tripGroups.length}</strong>
+          </button>
 
-            <div className="chatSectionLabelRow">
-              <div className="chatSectionLabel">Recent Conversations</div>
-              <button className="chatSectionOpenBtn" onClick={() => setSectionPanel("recent")}>
-                Open
-              </button>
-            </div>
+          <div className="chatLeftActions">
+            <button className="chatMiniActionBtn" onClick={() => setShowGroupModal(true)}>
+              + Create Group
+            </button>
 
-            <div className="chatConversationList noScrollbar">
-              {visibleConversations.length === 0 ? (
-                <div className="chatEmptyCard">No conversations yet.</div>
-              ) : (
-                visibleConversations.slice(0, 5).map((item) => {
-                  const displayName = getConversationDisplayName(item, user?.id);
-                  const displayAvatar = getConversationDisplayAvatar(item);
-
-                  return (
-                    <button
-                      key={item.id}
-                      className={`chatConversationItem ${
-                        activeConversation?.id === item.id ? "active" : ""
-                      }`}
-                      onClick={() => openConversation(item)}
-                    >
-                      <div className="chatAvatarWrap">
-                        {displayAvatar ? (
-                          <img
-                            src={displayAvatar}
-                            alt={displayName}
-                            className="chatAvatar"
-                          />
-                        ) : (
-                          <div className="chatAvatarFallback">
-                            {displayName?.charAt(0)?.toUpperCase() || "U"}
-                          </div>
-                        )}
-
-                        {item.conversationType === "direct" ? (
-                          <span
-                            className={`chatPresenceDot ${
-                              item.otherUser?.isOnline ? "online" : "offline"
-                            }`}
-                          />
-                        ) : (
-                          <span className="chatGroupBadge">G</span>
-                        )}
-                      </div>
-
-                      <div className="chatConversationBody">
-                        <div className="chatConversationTop">
-                          <strong>{displayName}</strong>
-
-                          <div className="chatConversationTopRight">
-                            <span>{formatMessageTime(item.lastMessageAt)}</span>
-                            {unreadCounts[String(item.id)] ? (
-                              <span className="chatUnreadBadge">
-                                {unreadCounts[String(item.id)]}
-                              </span>
-                            ) : null}
-                          </div>
-                        </div>
-
-                        <div className="chatConversationPreview">
-                          {getPreviewLabel(item)}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })
-              )}
-            </div>
-
-            <div className="chatSectionLabelRow">
-              <div className="chatSectionLabel">Groups / Trip Buddy Groups</div>
-              <button className="chatSectionOpenBtn" onClick={() => setSectionPanel("groups")}>
-                Open
-              </button>
-            </div>
-
-            <div className="chatConversationList noScrollbar">
-              {filteredGroups.length === 0 ? (
-                <div className="chatEmptyCard">No groups yet.</div>
-              ) : (
-                filteredGroups.slice(0, 5).map((item) => (
-                  <button
-                    key={item.id}
-                    className={`chatConversationItem ${
-                      activeConversation?.id === item.id ? "active" : ""
-                    }`}
-                    onClick={() => openConversation(item)}
-                  >
-                    <div className="chatAvatarWrap">
-                      {item.groupAvatar ? (
-                        <img
-                          src={item.groupAvatar}
-                          alt={item.groupName}
-                          className="chatAvatar"
-                        />
-                      ) : (
-                        <div className="chatAvatarFallback">
-                          {item.groupName?.charAt(0)?.toUpperCase() || "G"}
-                        </div>
-                      )}
-                      <span className="chatGroupBadge">G</span>
-                    </div>
-
-                    <div className="chatConversationBody">
-                      <div className="chatConversationTop">
-                        <strong>{item.groupName || "Group"}</strong>
-                        {item.lastMessageAt ? (
-                          <span>{formatMessageTime(item.lastMessageAt)}</span>
-                        ) : null}
-                      </div>
-
-                      <div className="chatConversationPreview">
-                        {item.lastMessageAt
-                          ? getPreviewLabel(item)
-                          : "You are added to this group"}
-                      </div>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
-
-            <div className="chatSectionLabelRow">
-              <div className="chatSectionLabel">All Users</div>
-              <button className="chatSectionOpenBtn" onClick={() => setSectionPanel("users")}>
-                Open
-              </button>
-            </div>
-
-            <div className="chatUserList noScrollbar">
-              {filteredUsers.length === 0 ? (
-                <div className="chatEmptyCard">No users found.</div>
-              ) : (
-                filteredUsers.slice(0, 5).map((item) => (
-                  <button
-                    key={item.id}
-                    className="chatUserItem"
-                    onClick={() => openChatWithUser(item.id)}
-                  >
-                    <div className="chatAvatarWrap">
-                      {item.avatar ? (
-                        <img src={item.avatar} alt={item.name} className="chatAvatar" />
-                      ) : (
-                        <div className="chatAvatarFallback">
-                          {item.name?.charAt(0)?.toUpperCase() || "U"}
-                        </div>
-                      )}
-                      <span
-                        className={`chatPresenceDot ${item.isOnline ? "online" : "offline"}`}
-                      />
-                    </div>
-
-                    <div className="chatUserBody">
-                      <strong>{item.name}</strong>
-                      <span>
-                        {item.isOnline ? "Online" : formatLastSeen(item.lastSeenAt)}
-                      </span>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
+            <button
+              className="chatMiniActionBtn"
+              onClick={() => {
+                setShowGroupModal(true);
+                setGroupDescription("Trip Buddy Group");
+              }}
+            >
+              + Trip Buddy Group
+            </button>
           </div>
         </aside>
 
-        <section className="chatMain">
+        {activeDirectory ? (
+          <aside className="chatDirectoryPanel">
+            <div className="chatDirectoryHeader">
+              <h3>{directoryTitle}</h3>
+              <button onClick={() => setActiveDirectory("")}>✕</button>
+            </div>
+
+            <div className="chatDirectoryList noScrollbar">
+              {directoryItems.length === 0 ? (
+                <div className="chatEmptyCard">No items found.</div>
+              ) : (
+                directoryItems.map(renderDirectoryItem)
+              )}
+            </div>
+          </aside>
+        ) : null}
+
+        <section className="chatMainArea">
           {!activeConversation ? (
             <div className="chatMainEmpty">
               <div className="chatMainEmptyCard">
                 <h3>Select a chat</h3>
-                <p>Choose a conversation, group, or start with any user.</p>
+                <p>Choose from recent conversations, users, groups, or trip buddy groups.</p>
               </div>
             </div>
           ) : (
@@ -1254,16 +1045,6 @@ export default function Chat() {
                           ?.charAt(0)
                           ?.toUpperCase() || "U"}
                       </div>
-                    )}
-
-                    {activeConversation.conversationType === "direct" ? (
-                      <span
-                        className={`chatPresenceDot ${
-                          activeOtherUser?.isOnline ? "online" : "offline"
-                        }`}
-                      />
-                    ) : (
-                      <span className="chatGroupBadge large">G</span>
                     )}
                   </div>
 
@@ -1310,11 +1091,7 @@ export default function Chat() {
                 {loadingMessages ? (
                   <div className="chatEmptyCard">Loading messages...</div>
                 ) : messages.length === 0 ? (
-                  <div className="chatEmptyCard">
-                    {activeConversation.conversationType === "group"
-                      ? "No group messages yet. Start the group conversation."
-                      : "No messages yet. Start the conversation."}
-                  </div>
+                  <div className="chatEmptyCard">No messages yet. Start the conversation.</div>
                 ) : (
                   messageItems.map((entry) => {
                     if (entry.type === "separator") {
@@ -1331,10 +1108,7 @@ export default function Chat() {
                       String(user?.id);
 
                     return (
-                      <div
-                        key={msg.id}
-                        className={`chatBubbleRow ${isMe ? "me" : "other"}`}
-                      >
+                      <div key={msg.id} className={`chatBubbleRow ${isMe ? "me" : "other"}`}>
                         <div className={`chatBubbleWrap ${isMe ? "me" : "other"}`}>
                           <div className={`chatBubble ${isMe ? "me" : "other"}`}>
                             {msg.replyTo?.messageId ? (
@@ -1367,28 +1141,24 @@ export default function Chat() {
                               </div>
                             ) : (
                               <>
-                                {msg.messageType === "text" && (
+                                {msg.messageType === "text" ? (
                                   <div className="chatBubbleText">{msg.text}</div>
-                                )}
+                                ) : null}
 
-                                {msg.messageType === "image" && (
+                                {msg.messageType === "image" ? (
                                   <div className="chatMediaWrap">
-                                    {msg.text ? (
-                                      <div className="chatBubbleText">{msg.text}</div>
-                                    ) : null}
+                                    {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
                                     <img
                                       src={msg.media?.url}
                                       alt={msg.media?.originalName || "chat image"}
                                       className="chatMediaImage"
                                     />
                                   </div>
-                                )}
+                                ) : null}
 
-                                {msg.messageType === "video" && (
+                                {msg.messageType === "video" ? (
                                   <div className="chatMediaWrap">
-                                    {msg.text ? (
-                                      <div className="chatBubbleText">{msg.text}</div>
-                                    ) : null}
+                                    {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
                                     <video controls className="chatMediaVideo">
                                       <source
                                         src={msg.media?.url}
@@ -1396,13 +1166,11 @@ export default function Chat() {
                                       />
                                     </video>
                                   </div>
-                                )}
+                                ) : null}
 
-                                {msg.messageType === "file" && (
+                                {msg.messageType === "file" ? (
                                   <div className="chatMediaWrap">
-                                    {msg.text ? (
-                                      <div className="chatBubbleText">{msg.text}</div>
-                                    ) : null}
+                                    {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
                                     <a
                                       href={msg.media?.url}
                                       target="_blank"
@@ -1412,7 +1180,7 @@ export default function Chat() {
                                       📎 {msg.media?.originalName || "Open file"}
                                     </a>
                                   </div>
-                                )}
+                                ) : null}
 
                                 {msg.messageType === "listing_card" ? (
                                   <div className="chatListingCard">
@@ -1443,9 +1211,9 @@ export default function Chat() {
                                   </div>
                                 ) : null}
 
-                                {msg.messageType === "system" && (
+                                {msg.messageType === "system" ? (
                                   <div className="chatSystemText">{msg.text}</div>
-                                )}
+                                ) : null}
 
                                 <div className="chatBubbleMeta">
                                   <span>{formatMessageTime(msg.createdAt)}</span>
@@ -1585,8 +1353,6 @@ export default function Chat() {
             </div>
           )}
         </section>
-
-        {renderSectionPanel()}
       </div>
 
       {showGroupModal ? (
@@ -1635,7 +1401,7 @@ export default function Chat() {
               <button className="chatHeaderGhostBtn" onClick={() => setShowGroupModal(false)}>
                 Cancel
               </button>
-              <button className="chatSendBtn" onClick={() => handleCreateGroup("group")}>
+              <button className="chatSendBtn" onClick={() => handleCreateGroup("standard")}>
                 Create Group
               </button>
               <button className="chatSendBtn" onClick={() => handleCreateGroup("trip_buddy")}>
@@ -1664,7 +1430,7 @@ export default function Chat() {
                   setSelectedVehicleIndex(0);
                 }}
               >
-                <option value="">Select your provider listing</option>
+                <option value="">Select provider listing</option>
                 {myProviders.map((item) => (
                   <option key={item._id} value={item._id}>
                     {item.businessName} — {item.listingType}
@@ -1727,7 +1493,7 @@ export default function Chat() {
                 value={selectedProviderId}
                 onChange={(e) => setSelectedProviderId(e.target.value)}
               >
-                <option value="">Select your provider listing</option>
+                <option value="">Select provider listing</option>
                 {myProviders.map((item) => (
                   <option key={item._id} value={item._id}>
                     {item.businessName}
