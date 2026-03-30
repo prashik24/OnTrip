@@ -76,7 +76,7 @@ function isDeletedForUser(doc, userId) {
 
 function normalizeConversation(conversation, meId) {
   const participants = (conversation.participants || []).map((p) => ({
-    id: p._id,
+    id: p._id || p.id,
     name: p.name,
     email: p.email,
     avatar: p.avatar || "",
@@ -223,6 +223,28 @@ export async function getMyConversations(req, res) {
   }
 }
 
+export async function getMyGroups(req, res) {
+  try {
+    const meId = req.user._id;
+
+    const groups = await Conversation.find({
+      conversationType: "group",
+      participants: meId,
+    })
+      .populate("participants", "name email avatar city role isOnline lastSeenAt")
+      .sort({ updatedAt: -1, createdAt: -1 });
+
+    const visible = groups.filter((item) => !isDeletedForUser(item, meId));
+
+    return res.json({
+      groups: visible.map((item) => normalizeConversation(item, meId)),
+    });
+  } catch (error) {
+    console.error("getMyGroups error", error);
+    return res.status(500).json({ message: "Failed to load groups" });
+  }
+}
+
 export async function getOrCreateConversation(req, res) {
   try {
     const meId = String(req.user._id);
@@ -278,8 +300,8 @@ export async function createGroupConversation(req, res) {
       mongoose.Types.ObjectId.isValid(id)
     );
 
-    if (cleanIds.length < 2) {
-      return res.status(400).json({ message: "Group must have at least 2 members" });
+    if (cleanIds.length < 3) {
+      return res.status(400).json({ message: "Group must have at least 3 total members including you" });
     }
 
     if (!groupName?.trim()) {
@@ -379,14 +401,11 @@ export async function sendMessage(req, res) {
       return res.status(400).json({ message: "Message text or file is required" });
     }
 
-    let conversation = null;
-    let otherUserId = receiverId;
-
     if (!conversationId || !mongoose.Types.ObjectId.isValid(conversationId)) {
       return res.status(400).json({ message: "Valid conversationId is required" });
     }
 
-    conversation = await Conversation.findById(conversationId);
+    const conversation = await Conversation.findById(conversationId);
 
     if (!conversation) {
       return res.status(404).json({ message: "Conversation not found" });
@@ -395,6 +414,8 @@ export async function sendMessage(req, res) {
     if (!conversation.participants.some((id) => String(id) === meId)) {
       return res.status(403).json({ message: "Not allowed" });
     }
+
+    let otherUserId = receiverId;
 
     if (conversation.conversationType === "direct") {
       otherUserId = conversation.participants.find((id) => String(id) !== meId);
@@ -433,10 +454,7 @@ export async function sendMessage(req, res) {
         replyTo = {
           messageId: originalMessage._id,
           senderId: originalMessage.sender?._id || null,
-          text:
-            originalMessage.text ||
-            getMessagePreview(originalMessage) ||
-            "Message",
+          text: originalMessage.text || getMessagePreview(originalMessage) || "Message",
           messageType: originalMessage.messageType,
         };
       }
@@ -747,8 +765,7 @@ export async function sendProviderListingCard(req, res) {
         title: trip.packageTitle || provider.businessName,
         subtitle: trip.durationText || provider.city || "",
         priceText: `₹${trip.priceFrom || 0}`,
-        imageUrl:
-          trip.images?.[0]?.url || provider.serviceImage?.url || "",
+        imageUrl: trip.images?.[0]?.url || provider.serviceImage?.url || "",
         targetUrl: `/providers/${provider._id}`,
       };
     } else {
@@ -759,8 +776,7 @@ export async function sendProviderListingCard(req, res) {
         title: vehicle.title || provider.businessName,
         subtitle: vehicle.vehicleType || provider.city || "",
         priceText: `₹${vehicle.price || 0}`,
-        imageUrl:
-          vehicle.images?.[0]?.url || provider.serviceImage?.url || "",
+        imageUrl: vehicle.images?.[0]?.url || provider.serviceImage?.url || "",
         targetUrl: `/providers/${provider._id}`,
       };
     }
