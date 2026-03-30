@@ -29,12 +29,21 @@ function getPreviewLabel(item) {
   return item.lastMessageText || "Start chatting";
 }
 
+function isNearBottom(element, threshold = 120) {
+  if (!element) return true;
+  const distanceFromBottom =
+    element.scrollHeight - element.scrollTop - element.clientHeight;
+  return distanceFromBottom <= threshold;
+}
+
 export default function Chat() {
   const user = getUser();
   const location = useLocation();
   const navigate = useNavigate();
-  const bottomRef = useRef(null);
+
   const fileInputRef = useRef(null);
+  const messagesRef = useRef(null);
+  const shouldStickToBottomRef = useRef(true);
 
   const [loading, setLoading] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
@@ -99,8 +108,11 @@ export default function Chat() {
           });
 
           const conversation = openRes.conversation;
+
           setConversations((prev) => {
-            const exists = prev.some((item) => String(item.id) === String(conversation.id));
+            const exists = prev.some(
+              (item) => String(item.id) === String(conversation.id)
+            );
             if (exists) {
               return prev.map((item) =>
                 String(item.id) === String(conversation.id) ? conversation : item
@@ -174,6 +186,27 @@ export default function Chat() {
     });
 
     socket.on("message:new", ({ conversation, message }) => {
+      const openedConversationId = activeConversation?.id
+        ? String(activeConversation.id)
+        : "";
+
+      const isCurrentConversation =
+        openedConversationId &&
+        openedConversationId === String(conversation.id);
+
+      const msgSenderId = String(
+        message.sender?._id || message.sender?.id || message.sender
+      );
+      const isMyMessage = String(msgSenderId) === String(user?.id);
+
+      if (isCurrentConversation) {
+        const container = messagesRef.current;
+        if (container) {
+          shouldStickToBottomRef.current =
+            isMyMessage || isNearBottom(container, 160);
+        }
+      }
+
       setConversations((prev) => {
         const withoutCurrent = prev.filter(
           (item) => String(item.id) !== String(conversation.id)
@@ -196,7 +229,7 @@ export default function Chat() {
       });
 
       setMessages((prev) => {
-        if (String(activeConversation?.id) !== String(conversation.id)) return prev;
+        if (!isCurrentConversation) return prev;
 
         const exists = prev.some((item) => String(item.id) === String(message.id));
         if (exists) return prev;
@@ -205,7 +238,9 @@ export default function Chat() {
     });
 
     socket.on("typing:update", ({ conversationId, userId, isTyping }) => {
-      if (!activeConversation || String(activeConversation.id) !== String(conversationId)) return;
+      if (!activeConversation || String(activeConversation.id) !== String(conversationId)) {
+        return;
+      }
       if (String(userId) === String(user?.id)) return;
 
       setTypingUsers((prev) => ({
@@ -215,7 +250,9 @@ export default function Chat() {
     });
 
     socket.on("conversation:seen", ({ conversationId, seenByUserId }) => {
-      if (!activeConversation || String(activeConversation.id) !== String(conversationId)) return;
+      if (!activeConversation || String(activeConversation.id) !== String(conversationId)) {
+        return;
+      }
 
       setMessages((prev) =>
         prev.map((msg) => {
@@ -237,8 +274,20 @@ export default function Chat() {
   }, [activeConversation, user?.id]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, activeConversation]);
+    if (!messagesRef.current) return;
+    if (!shouldStickToBottomRef.current) return;
+
+    messagesRef.current.scrollTo({
+      top: messagesRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages]);
+
+  function handleMessagesScroll() {
+    const container = messagesRef.current;
+    if (!container) return;
+    shouldStickToBottomRef.current = isNearBottom(container, 120);
+  }
 
   async function openConversation(conversation) {
     try {
@@ -252,6 +301,8 @@ export default function Chat() {
       }
 
       setActiveConversation(conversation);
+      setTypingUsers({});
+      shouldStickToBottomRef.current = true;
 
       socket.emit("conversation:join", { conversationId: conversation.id });
 
@@ -263,6 +314,15 @@ export default function Chat() {
 
       await apiFetch(`/api/chat/conversations/${conversation.id}/seen`, {
         method: "POST",
+      });
+
+      requestAnimationFrame(() => {
+        if (messagesRef.current) {
+          messagesRef.current.scrollTo({
+            top: messagesRef.current.scrollHeight,
+            behavior: "auto",
+          });
+        }
       });
     } catch (err) {
       setError(err.message || "Failed to open conversation");
@@ -305,6 +365,7 @@ export default function Chat() {
     try {
       setSending(true);
       setError("");
+      shouldStickToBottomRef.current = true;
 
       const formData = new FormData();
       formData.append("conversationId", activeConversation.id);
@@ -320,14 +381,26 @@ export default function Chat() {
         body: formData,
       });
 
-      setMessages((prev) => [...prev, res.data]);
+      setMessages((prev) => {
+        const exists = prev.some((item) => String(item.id) === String(res.data.id));
+        if (exists) return prev;
+        return [...prev, res.data];
+      });
 
       setConversations((prev) => {
         const updated = prev.map((item) =>
           String(item.id) === String(res.conversation.id) ? res.conversation : item
         );
-        updated.sort((a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0));
+        updated.sort(
+          (a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0)
+        );
         return updated;
+      });
+
+      setActiveConversation((prev) => {
+        if (!prev) return prev;
+        if (String(prev.id) !== String(res.conversation.id)) return prev;
+        return res.conversation;
       });
 
       setText("");
@@ -402,7 +475,11 @@ export default function Chat() {
                   >
                     <div className="chatAvatarWrap">
                       {item.otherUser?.avatar ? (
-                        <img src={item.otherUser.avatar} alt={item.otherUser.name} className="chatAvatar" />
+                        <img
+                          src={item.otherUser.avatar}
+                          alt={item.otherUser.name}
+                          className="chatAvatar"
+                        />
                       ) : (
                         <div className="chatAvatarFallback">
                           {item.otherUser?.name?.charAt(0)?.toUpperCase() || "U"}
@@ -509,14 +586,21 @@ export default function Chat() {
                 </div>
               </div>
 
-              <div className="chatMessages">
+              <div
+                ref={messagesRef}
+                className="chatMessages"
+                onScroll={handleMessagesScroll}
+              >
                 {loadingMessages ? (
                   <div className="chatEmptyCard">Loading messages...</div>
                 ) : messages.length === 0 ? (
                   <div className="chatEmptyCard">No messages yet. Start the conversation.</div>
                 ) : (
                   messages.map((msg) => {
-                    const isMe = String(msg.sender?._id || msg.sender?.id || msg.sender) === String(user?.id);
+                    const isMe =
+                      String(msg.sender?._id || msg.sender?.id || msg.sender) ===
+                      String(user?.id);
+
                     return (
                       <div
                         key={msg.id}
@@ -529,7 +613,9 @@ export default function Chat() {
 
                           {msg.messageType === "image" && (
                             <div className="chatMediaWrap">
-                              {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
+                              {msg.text ? (
+                                <div className="chatBubbleText">{msg.text}</div>
+                              ) : null}
                               <img
                                 src={msg.media?.url}
                                 alt={msg.media?.originalName || "chat image"}
@@ -540,16 +626,23 @@ export default function Chat() {
 
                           {msg.messageType === "video" && (
                             <div className="chatMediaWrap">
-                              {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
+                              {msg.text ? (
+                                <div className="chatBubbleText">{msg.text}</div>
+                              ) : null}
                               <video controls className="chatMediaVideo">
-                                <source src={msg.media?.url} type={msg.media?.mimeType || "video/mp4"} />
+                                <source
+                                  src={msg.media?.url}
+                                  type={msg.media?.mimeType || "video/mp4"}
+                                />
                               </video>
                             </div>
                           )}
 
                           {msg.messageType === "file" && (
                             <div className="chatMediaWrap">
-                              {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
+                              {msg.text ? (
+                                <div className="chatBubbleText">{msg.text}</div>
+                              ) : null}
                               <a
                                 href={msg.media?.url}
                                 target="_blank"
@@ -580,8 +673,6 @@ export default function Chat() {
                 {activeOtherUser && typingUsers[activeOtherUser.id] ? (
                   <div className="chatTyping">Typing...</div>
                 ) : null}
-
-                <div ref={bottomRef} />
               </div>
 
               <div className="chatComposerBar">
@@ -610,11 +701,12 @@ export default function Chat() {
                     onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
                   />
 
-                  <input
+                  <textarea
                     className="chatInput"
                     value={text}
                     onChange={(e) => handleInputChange(e.target.value)}
                     placeholder="Type message..."
+                    rows={1}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
