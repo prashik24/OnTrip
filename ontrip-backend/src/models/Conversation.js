@@ -24,6 +24,13 @@ const conversationSchema = new mongoose.Schema(
       index: true,
     },
 
+    groupCategory: {
+      type: String,
+      enum: ["standard", "trip_buddy"],
+      default: "standard",
+      index: true,
+    },
+
     participants: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -97,5 +104,6 @@ const conversationSchema = new mongoose.Schema(
 
 conversationSchema.index({ participants: 1 });
 conversationSchema.index({ conversationType: 1, lastMessageAt: -1 });
+conversationSchema.index({ conversationType: 1, groupCategory: 1 });
 
 export default mongoose.model("Conversation", conversationSchema);
