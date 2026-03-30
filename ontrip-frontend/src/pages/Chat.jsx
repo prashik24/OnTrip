@@ -130,11 +130,13 @@ export default function Chat() {
   const [editText, setEditText] = useState("");
 
   const [users, setUsers] = useState([]);
-  const [conversations, setConversations] = useState([]);
+  const [recentConversations, setRecentConversations] = useState([]);
+  const [groupConversations, setGroupConversations] = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
   const [messages, setMessages] = useState([]);
 
   const [userSearch, setUserSearch] = useState("");
+  const [groupSearch, setGroupSearch] = useState("");
   const [text, setText] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -161,14 +163,7 @@ export default function Chat() {
     return activeConversation?.otherUser || null;
   }, [activeConversation]);
 
-  const visibleConversations = useMemo(() => {
-    return conversations.filter(
-      (item) =>
-        item &&
-        item.lastMessageAt &&
-        (item.lastMessageText || item.lastMessageType)
-    );
-  }, [conversations]);
+  const messageItems = useMemo(() => buildMessageItems(messages), [messages]);
 
   const filteredUsers = useMemo(() => {
     const q = userSearch.trim().toLowerCase();
@@ -180,11 +175,24 @@ export default function Chat() {
     });
   }, [users, userSearch]);
 
-  const messageItems = useMemo(() => buildMessageItems(messages), [messages]);
+  const filteredGroups = useMemo(() => {
+    const q = groupSearch.trim().toLowerCase();
+    if (!q) return groupConversations;
+
+    return groupConversations.filter((item) => {
+      const members = (item.participants || []).map((p) => p.name).join(" ");
+      const bag = `${item.groupName || ""} ${item.groupDescription || ""} ${members}`.toLowerCase();
+      return bag.includes(q);
+    });
+  }, [groupConversations, groupSearch]);
 
   const selectedProvider = useMemo(() => {
     return myProviders.find((item) => String(item._id) === String(selectedProviderId)) || null;
   }, [myProviders, selectedProviderId]);
+
+  const allRecentAndGroups = useMemo(() => {
+    return [...recentConversations, ...groupConversations];
+  }, [recentConversations, groupConversations]);
 
   useEffect(() => {
     if (!isLoggedIn()) {
@@ -215,7 +223,8 @@ export default function Chat() {
         const providerRes = results[2];
 
         setUsers(userRes.users || []);
-        setConversations(convRes.conversations || []);
+        setRecentConversations(convRes.recentConversations || []);
+        setGroupConversations(convRes.groupConversations || []);
         setMyProviders(providerRes?.providers || []);
 
         const params = new URLSearchParams(location.search);
@@ -223,9 +232,15 @@ export default function Chat() {
         const queryUser = params.get("user");
 
         if (queryConversation) {
-          const found = (convRes.conversations || []).find(
+          const allConversations = [
+            ...(convRes.recentConversations || []),
+            ...(convRes.groupConversations || []),
+          ];
+
+          const found = allConversations.find(
             (item) => String(item.id) === String(queryConversation)
           );
+
           if (found) {
             await openConversation(found);
             return;
@@ -240,7 +255,7 @@ export default function Chat() {
 
           const conversation = openRes.conversation;
 
-          setConversations((prev) => {
+          setRecentConversations((prev) => {
             const exists = prev.some(
               (item) => String(item.id) === String(conversation.id)
             );
@@ -256,12 +271,13 @@ export default function Chat() {
           return;
         }
 
-        const firstRealConversation = (convRes.conversations || []).find(
-          (item) => item?.lastMessageAt
-        );
+        const firstRealConversation = (convRes.recentConversations || [])[0];
+        const firstGroupConversation = (convRes.groupConversations || [])[0];
 
         if (firstRealConversation) {
           await openConversation(firstRealConversation);
+        } else if (firstGroupConversation) {
+          await openConversation(firstGroupConversation);
         }
       } catch (err) {
         setError(err.message || "Failed to load chat");
@@ -291,20 +307,9 @@ export default function Chat() {
         )
       );
 
-      setConversations((prev) =>
-        prev.map((item) => {
-          if (item.conversationType === "group") {
-            return {
-              ...item,
-              participants: (item.participants || []).map((p) =>
-                String(p.id || p._id) === String(userId)
-                  ? { ...p, isOnline, lastSeenAt }
-                  : p
-              ),
-            };
-          }
-
-          return String(item.otherUser?.id) === String(userId)
+      setRecentConversations((prev) =>
+        prev.map((item) =>
+          String(item.otherUser?.id) === String(userId)
             ? {
                 ...item,
                 otherUser: {
@@ -313,8 +318,19 @@ export default function Chat() {
                   lastSeenAt,
                 },
               }
-            : item;
-        })
+            : item
+        )
+      );
+
+      setGroupConversations((prev) =>
+        prev.map((item) => ({
+          ...item,
+          participants: (item.participants || []).map((p) =>
+            String(p.id || p._id) === String(userId)
+              ? { ...p, isOnline, lastSeenAt }
+              : p
+          ),
+        }))
       );
 
       setActiveConversation((prev) => {
@@ -372,20 +388,29 @@ export default function Chat() {
         }));
       }
 
-      setConversations((prev) => {
-        const withoutCurrent = prev.filter(
-          (item) => String(item.id) !== incomingConversationId
-        );
-        return [conversation, ...withoutCurrent];
-      });
+      if (conversation.conversationType === "group") {
+        setGroupConversations((prev) => {
+          const withoutCurrent = prev.filter(
+            (item) => String(item.id) !== incomingConversationId
+          );
+          return [conversation, ...withoutCurrent];
+        });
+      } else {
+        setRecentConversations((prev) => {
+          const withoutCurrent = prev.filter(
+            (item) => String(item.id) !== incomingConversationId
+          );
+          return [conversation, ...withoutCurrent];
+        });
 
-      setUsers((prev) =>
-        prev.map((item) =>
-          String(item.id) === String(conversation.otherUser?.id)
-            ? { ...item, conversationId: conversation.id }
-            : item
-        )
-      );
+        setUsers((prev) =>
+          prev.map((item) =>
+            String(item.id) === String(conversation.otherUser?.id)
+              ? { ...item, conversationId: conversation.id }
+              : item
+          )
+        );
+      }
 
       setActiveConversation((prev) => {
         if (!prev) return prev;
@@ -523,7 +548,7 @@ export default function Chat() {
 
       const conversation = res.conversation;
 
-      setConversations((prev) => {
+      setRecentConversations((prev) => {
         const exists = prev.some((item) => String(item.id) === String(conversation.id));
         if (exists) {
           return prev.map((item) =>
@@ -571,7 +596,7 @@ export default function Chat() {
         }),
       });
 
-      setConversations((prev) => [res.conversation, ...prev]);
+      setGroupConversations((prev) => [res.conversation, ...prev]);
       setShowGroupModal(false);
       setGroupName("");
       setGroupDescription("");
@@ -620,15 +645,33 @@ export default function Chat() {
         return [...prev, res.data];
       });
 
-      setConversations((prev) => {
-        const updated = prev.map((item) =>
-          String(item.id) === String(res.conversation.id) ? res.conversation : item
-        );
-        updated.sort(
-          (a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0)
-        );
-        return updated;
-      });
+      if (res.conversation.conversationType === "group") {
+        setGroupConversations((prev) => {
+          const updated = prev.map((item) =>
+            String(item.id) === String(res.conversation.id) ? res.conversation : item
+          );
+          updated.sort((a, b) => {
+            const aDate = a.lastMessageAt || a.createdAt;
+            const bDate = b.lastMessageAt || b.createdAt;
+            return new Date(bDate) - new Date(aDate);
+          });
+          return updated;
+        });
+      } else {
+        setRecentConversations((prev) => {
+          const existing = prev.some((item) => String(item.id) === String(res.conversation.id));
+          const updated = existing
+            ? prev.map((item) =>
+                String(item.id) === String(res.conversation.id) ? res.conversation : item
+              )
+            : [res.conversation, ...prev];
+
+          updated.sort(
+            (a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0)
+          );
+          return updated;
+        });
+      }
 
       setActiveConversation((prev) => {
         if (!prev) return prev;
@@ -689,9 +732,9 @@ export default function Chat() {
   }
 
   async function handleForwardMessage(messageId) {
-    if (!visibleConversations.length) return;
+    if (!allRecentAndGroups.length) return;
 
-    const options = visibleConversations
+    const options = allRecentAndGroups
       .map((item) => `${item.id} — ${getConversationDisplayName(item, user?.id)}`)
       .join("\n");
 
@@ -731,9 +774,17 @@ export default function Chat() {
       });
 
       setMessages([]);
-      setConversations((prev) =>
-        prev.filter((item) => String(item.id) !== String(activeConversation.id))
-      );
+
+      if (activeConversation.conversationType === "group") {
+        setGroupConversations((prev) =>
+          prev.filter((item) => String(item.id) !== String(activeConversation.id))
+        );
+      } else {
+        setRecentConversations((prev) =>
+          prev.filter((item) => String(item.id) !== String(activeConversation.id))
+        );
+      }
+
       setActiveConversation(null);
       navigate("/chat", { replace: true });
     } catch (err) {
@@ -835,7 +886,7 @@ export default function Chat() {
           <div className="chatSidebarCard">
             <div className="chatSidebarHead">
               <h2>Chats</h2>
-              <p>Conversations, groups and users</p>
+              <p>Recent, groups and users</p>
             </div>
 
             <div className="chatSidebarTopActions">
@@ -854,80 +905,138 @@ export default function Chat() {
               </button>
             </div>
 
+            <div className="chatSectionLabel">Recent Conversations</div>
+
+            <div className="chatConversationList noScrollbar">
+              {recentConversations.length === 0 ? (
+                <div className="chatEmptyCard">No recent chats yet.</div>
+              ) : (
+                recentConversations.map((item) => (
+                  <button
+                    key={item.id}
+                    className={`chatConversationItem ${
+                      activeConversation?.id === item.id ? "active" : ""
+                    }`}
+                    onClick={() => openConversation(item)}
+                  >
+                    <div className="chatAvatarWrap">
+                      {item.otherUser?.avatar ? (
+                        <img
+                          src={item.otherUser.avatar}
+                          alt={item.otherUser.name}
+                          className="chatAvatar"
+                        />
+                      ) : (
+                        <div className="chatAvatarFallback">
+                          {item.otherUser?.name?.charAt(0)?.toUpperCase() || "U"}
+                        </div>
+                      )}
+
+                      <span
+                        className={`chatPresenceDot ${
+                          item.otherUser?.isOnline ? "online" : "offline"
+                        }`}
+                      />
+                    </div>
+
+                    <div className="chatConversationBody">
+                      <div className="chatConversationTop">
+                        <strong>{item.otherUser?.name || "User"}</strong>
+
+                        <div className="chatConversationTopRight">
+                          <span>{formatMessageTime(item.lastMessageAt)}</span>
+                          {unreadCounts[String(item.id)] ? (
+                            <span className="chatUnreadBadge">
+                              {unreadCounts[String(item.id)]}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      <div className="chatConversationPreview">
+                        {getPreviewLabel(item)}
+                      </div>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+
+            <div className="chatSectionLabel">Groups & Trip Buddy Groups</div>
+
+            <input
+              className="chatSearch"
+              placeholder="Search groups..."
+              value={groupSearch}
+              onChange={(e) => setGroupSearch(e.target.value)}
+            />
+
+            <div className="chatGroupList noScrollbar">
+              {filteredGroups.length === 0 ? (
+                <div className="chatEmptyCard">No groups yet.</div>
+              ) : (
+                filteredGroups.map((item) => (
+                  <button
+                    key={item.id}
+                    className={`chatConversationItem ${
+                      activeConversation?.id === item.id ? "active" : ""
+                    }`}
+                    onClick={() => openConversation(item)}
+                  >
+                    <div className="chatAvatarWrap">
+                      {item.groupAvatar ? (
+                        <img
+                          src={item.groupAvatar}
+                          alt={item.groupName || "Group"}
+                          className="chatAvatar"
+                        />
+                      ) : (
+                        <div className="chatAvatarFallback">
+                          {(item.groupName || "G").charAt(0).toUpperCase()}
+                        </div>
+                      )}
+
+                      <span className="chatGroupBadge">G</span>
+                    </div>
+
+                    <div className="chatConversationBody">
+                      <div className="chatConversationTop">
+                        <strong>{item.groupName || "Group"}</strong>
+
+                        <div className="chatConversationTopRight">
+                          {item.lastMessageAt ? (
+                            <span>{formatMessageTime(item.lastMessageAt)}</span>
+                          ) : (
+                            <span>New</span>
+                          )}
+
+                          {unreadCounts[String(item.id)] ? (
+                            <span className="chatUnreadBadge">
+                              {unreadCounts[String(item.id)]}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      <div className="chatConversationPreview">
+                        {item.lastMessageAt
+                          ? getPreviewLabel(item)
+                          : `You are added • ${item.participants?.length || 0} members`}
+                      </div>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+
+            <div className="chatSectionLabel">All Users</div>
+
             <input
               className="chatSearch"
               placeholder="Search users..."
               value={userSearch}
               onChange={(e) => setUserSearch(e.target.value)}
             />
-
-            <div className="chatSectionLabel">Recent Conversations</div>
-
-            <div className="chatConversationList noScrollbar">
-              {visibleConversations.length === 0 ? (
-                <div className="chatEmptyCard">No conversations yet.</div>
-              ) : (
-                visibleConversations.map((item) => {
-                  const displayName = getConversationDisplayName(item, user?.id);
-                  const displayAvatar = getConversationDisplayAvatar(item);
-
-                  return (
-                    <button
-                      key={item.id}
-                      className={`chatConversationItem ${
-                        activeConversation?.id === item.id ? "active" : ""
-                      }`}
-                      onClick={() => openConversation(item)}
-                    >
-                      <div className="chatAvatarWrap">
-                        {displayAvatar ? (
-                          <img
-                            src={displayAvatar}
-                            alt={displayName}
-                            className="chatAvatar"
-                          />
-                        ) : (
-                          <div className="chatAvatarFallback">
-                            {displayName?.charAt(0)?.toUpperCase() || "U"}
-                          </div>
-                        )}
-
-                        {item.conversationType === "direct" ? (
-                          <span
-                            className={`chatPresenceDot ${
-                              item.otherUser?.isOnline ? "online" : "offline"
-                            }`}
-                          />
-                        ) : (
-                          <span className="chatGroupBadge">G</span>
-                        )}
-                      </div>
-
-                      <div className="chatConversationBody">
-                        <div className="chatConversationTop">
-                          <strong>{displayName}</strong>
-
-                          <div className="chatConversationTopRight">
-                            <span>{formatMessageTime(item.lastMessageAt)}</span>
-                            {unreadCounts[String(item.id)] ? (
-                              <span className="chatUnreadBadge">
-                                {unreadCounts[String(item.id)]}
-                              </span>
-                            ) : null}
-                          </div>
-                        </div>
-
-                        <div className="chatConversationPreview">
-                          {getPreviewLabel(item)}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })
-              )}
-            </div>
-
-            <div className="chatSectionLabel">All Users</div>
 
             <div className="chatUserList noScrollbar">
               {filteredUsers.length === 0 ? (
@@ -970,7 +1079,7 @@ export default function Chat() {
             <div className="chatMainEmpty">
               <div className="chatMainEmptyCard">
                 <h3>Select a chat</h3>
-                <p>Choose a conversation, group, or start with any user.</p>
+                <p>Choose recent chat, group, or any user.</p>
               </div>
             </div>
           ) : (
@@ -1046,7 +1155,11 @@ export default function Chat() {
                 {loadingMessages ? (
                   <div className="chatEmptyCard">Loading messages...</div>
                 ) : messages.length === 0 ? (
-                  <div className="chatEmptyCard">No messages yet. Start the conversation.</div>
+                  <div className="chatEmptyCard">
+                    {activeConversation.conversationType === "group"
+                      ? "This group has no messages yet. Start the group chat."
+                      : "No messages yet. Start the conversation."}
+                  </div>
                 ) : (
                   messageItems.map((entry) => {
                     if (entry.type === "separator") {
