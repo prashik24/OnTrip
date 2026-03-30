@@ -87,7 +87,7 @@ function buildMessageItems(messages) {
   return items;
 }
 
-function getConversationDisplayName(conversation, currentUserId) {
+function getConversationDisplayName(conversation) {
   if (!conversation) return "Chat";
   if (conversation.conversationType === "group") {
     return conversation.groupName || "Group";
@@ -111,6 +111,12 @@ function getConversationPresenceText(conversation) {
 
   if (conversation.otherUser?.isOnline) return "Online";
   return formatLastSeen(conversation.otherUser?.lastSeenAt);
+}
+
+function getGroupBadgeLabel(name = "") {
+  const text = String(name || "").toLowerCase();
+  if (text.includes("trip")) return "T";
+  return "G";
 }
 
 export default function Chat() {
@@ -177,9 +183,15 @@ export default function Chat() {
 
   const filteredGroups = useMemo(() => {
     const q = groupSearch.trim().toLowerCase();
-    if (!q) return groupConversations;
+    const source = [...groupConversations].sort((a, b) => {
+      const aDate = a.lastMessageAt || a.createdAt;
+      const bDate = b.lastMessageAt || b.createdAt;
+      return new Date(bDate || 0) - new Date(aDate || 0);
+    });
 
-    return groupConversations.filter((item) => {
+    if (!q) return source;
+
+    return source.filter((item) => {
       const members = (item.participants || []).map((p) => p.name).join(" ");
       const bag = `${item.groupName || ""} ${item.groupDescription || ""} ${members}`.toLowerCase();
       return bag.includes(q);
@@ -735,7 +747,7 @@ export default function Chat() {
     if (!allRecentAndGroups.length) return;
 
     const options = allRecentAndGroups
-      .map((item) => `${item.id} — ${getConversationDisplayName(item, user?.id)}`)
+      .map((item) => `${item.id} — ${getConversationDisplayName(item)}`)
       .join("\n");
 
     const targetConversationId = window.prompt(
@@ -875,6 +887,15 @@ export default function Chat() {
     activeConversation &&
     activeConversation.conversationType === "direct";
 
+  const providerToolsDisabledMessage =
+    user?.role !== "provider"
+      ? "Provider tools available only for provider account."
+      : myProviders.length === 0
+      ? "Create provider listing first to share listing card."
+      : activeConversation?.conversationType !== "direct"
+      ? "Listing share works in direct chat only."
+      : "";
+
   if (!isLoggedIn()) return null;
 
   return (
@@ -886,7 +907,7 @@ export default function Chat() {
           <div className="chatSidebarCard">
             <div className="chatSidebarHead">
               <h2>Chats</h2>
-              <p>Recent, groups and users</p>
+              <p>Conversations, groups and users</p>
             </div>
 
             <div className="chatSidebarTopActions">
@@ -905,171 +926,181 @@ export default function Chat() {
               </button>
             </div>
 
-            <div className="chatSectionLabel">Recent Conversations</div>
+            <div className="chatSidebarScroll noScrollbar">
+              <div className="chatSidebarSection">
+                <div className="chatSectionLabel">Recent Conversations</div>
 
-            <div className="chatConversationList noScrollbar">
-              {recentConversations.length === 0 ? (
-                <div className="chatEmptyCard">No recent chats yet.</div>
-              ) : (
-                recentConversations.map((item) => (
-                  <button
-                    key={item.id}
-                    className={`chatConversationItem ${
-                      activeConversation?.id === item.id ? "active" : ""
-                    }`}
-                    onClick={() => openConversation(item)}
-                  >
-                    <div className="chatAvatarWrap">
-                      {item.otherUser?.avatar ? (
-                        <img
-                          src={item.otherUser.avatar}
-                          alt={item.otherUser.name}
-                          className="chatAvatar"
-                        />
-                      ) : (
-                        <div className="chatAvatarFallback">
-                          {item.otherUser?.name?.charAt(0)?.toUpperCase() || "U"}
-                        </div>
-                      )}
-
-                      <span
-                        className={`chatPresenceDot ${
-                          item.otherUser?.isOnline ? "online" : "offline"
+                <div className="chatConversationList">
+                  {recentConversations.length === 0 ? (
+                    <div className="chatEmptyCard">No recent chats yet.</div>
+                  ) : (
+                    recentConversations.map((item) => (
+                      <button
+                        key={item.id}
+                        className={`chatConversationItem ${
+                          activeConversation?.id === item.id ? "active" : ""
                         }`}
-                      />
-                    </div>
-
-                    <div className="chatConversationBody">
-                      <div className="chatConversationTop">
-                        <strong>{item.otherUser?.name || "User"}</strong>
-
-                        <div className="chatConversationTopRight">
-                          <span>{formatMessageTime(item.lastMessageAt)}</span>
-                          {unreadCounts[String(item.id)] ? (
-                            <span className="chatUnreadBadge">
-                              {unreadCounts[String(item.id)]}
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-
-                      <div className="chatConversationPreview">
-                        {getPreviewLabel(item)}
-                      </div>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
-
-            <div className="chatSectionLabel">Groups & Trip Buddy Groups</div>
-
-            <input
-              className="chatSearch"
-              placeholder="Search groups..."
-              value={groupSearch}
-              onChange={(e) => setGroupSearch(e.target.value)}
-            />
-
-            <div className="chatGroupList noScrollbar">
-              {filteredGroups.length === 0 ? (
-                <div className="chatEmptyCard">No groups yet.</div>
-              ) : (
-                filteredGroups.map((item) => (
-                  <button
-                    key={item.id}
-                    className={`chatConversationItem ${
-                      activeConversation?.id === item.id ? "active" : ""
-                    }`}
-                    onClick={() => openConversation(item)}
-                  >
-                    <div className="chatAvatarWrap">
-                      {item.groupAvatar ? (
-                        <img
-                          src={item.groupAvatar}
-                          alt={item.groupName || "Group"}
-                          className="chatAvatar"
-                        />
-                      ) : (
-                        <div className="chatAvatarFallback">
-                          {(item.groupName || "G").charAt(0).toUpperCase()}
-                        </div>
-                      )}
-
-                      <span className="chatGroupBadge">G</span>
-                    </div>
-
-                    <div className="chatConversationBody">
-                      <div className="chatConversationTop">
-                        <strong>{item.groupName || "Group"}</strong>
-
-                        <div className="chatConversationTopRight">
-                          {item.lastMessageAt ? (
-                            <span>{formatMessageTime(item.lastMessageAt)}</span>
+                        onClick={() => openConversation(item)}
+                      >
+                        <div className="chatAvatarWrap">
+                          {item.otherUser?.avatar ? (
+                            <img
+                              src={item.otherUser.avatar}
+                              alt={item.otherUser.name}
+                              className="chatAvatar"
+                            />
                           ) : (
-                            <span>New</span>
+                            <div className="chatAvatarFallback">
+                              {item.otherUser?.name?.charAt(0)?.toUpperCase() || "U"}
+                            </div>
                           )}
 
-                          {unreadCounts[String(item.id)] ? (
-                            <span className="chatUnreadBadge">
-                              {unreadCounts[String(item.id)]}
-                            </span>
-                          ) : null}
+                          <span
+                            className={`chatPresenceDot ${
+                              item.otherUser?.isOnline ? "online" : "offline"
+                            }`}
+                          />
                         </div>
-                      </div>
 
-                      <div className="chatConversationPreview">
-                        {item.lastMessageAt
-                          ? getPreviewLabel(item)
-                          : `You are added • ${item.participants?.length || 0} members`}
-                      </div>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
+                        <div className="chatConversationBody">
+                          <div className="chatConversationTop">
+                            <strong>{item.otherUser?.name || "User"}</strong>
 
-            <div className="chatSectionLabel">All Users</div>
+                            <div className="chatConversationTopRight">
+                              <span>{formatMessageTime(item.lastMessageAt)}</span>
+                              {unreadCounts[String(item.id)] ? (
+                                <span className="chatUnreadBadge">
+                                  {unreadCounts[String(item.id)]}
+                                </span>
+                              ) : null}
+                            </div>
+                          </div>
 
-            <input
-              className="chatSearch"
-              placeholder="Search users..."
-              value={userSearch}
-              onChange={(e) => setUserSearch(e.target.value)}
-            />
-
-            <div className="chatUserList noScrollbar">
-              {filteredUsers.length === 0 ? (
-                <div className="chatEmptyCard">No users found.</div>
-              ) : (
-                filteredUsers.map((item) => (
-                  <button
-                    key={item.id}
-                    className="chatUserItem"
-                    onClick={() => openChatWithUser(item.id)}
-                  >
-                    <div className="chatAvatarWrap">
-                      {item.avatar ? (
-                        <img src={item.avatar} alt={item.name} className="chatAvatar" />
-                      ) : (
-                        <div className="chatAvatarFallback">
-                          {item.name?.charAt(0)?.toUpperCase() || "U"}
+                          <div className="chatConversationPreview">
+                            {getPreviewLabel(item)}
+                          </div>
                         </div>
-                      )}
-                      <span
-                        className={`chatPresenceDot ${item.isOnline ? "online" : "offline"}`}
-                      />
-                    </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
 
-                    <div className="chatUserBody">
-                      <strong>{item.name}</strong>
-                      <span>
-                        {item.isOnline ? "Online" : formatLastSeen(item.lastSeenAt)}
-                      </span>
-                    </div>
-                  </button>
-                ))
-              )}
+              <div className="chatSidebarSection">
+                <div className="chatSectionLabel">Groups & Trip Buddy Groups</div>
+
+                <input
+                  className="chatSearch"
+                  placeholder="Search groups..."
+                  value={groupSearch}
+                  onChange={(e) => setGroupSearch(e.target.value)}
+                />
+
+                <div className="chatGroupList">
+                  {filteredGroups.length === 0 ? (
+                    <div className="chatEmptyCard">No groups yet.</div>
+                  ) : (
+                    filteredGroups.map((item) => (
+                      <button
+                        key={item.id}
+                        className={`chatConversationItem ${
+                          activeConversation?.id === item.id ? "active" : ""
+                        }`}
+                        onClick={() => openConversation(item)}
+                      >
+                        <div className="chatAvatarWrap">
+                          {item.groupAvatar ? (
+                            <img
+                              src={item.groupAvatar}
+                              alt={item.groupName || "Group"}
+                              className="chatAvatar"
+                            />
+                          ) : (
+                            <div className="chatAvatarFallback">
+                              {(item.groupName || "G").charAt(0).toUpperCase()}
+                            </div>
+                          )}
+
+                          <span className="chatGroupBadge">
+                            {getGroupBadgeLabel(item.groupName)}
+                          </span>
+                        </div>
+
+                        <div className="chatConversationBody">
+                          <div className="chatConversationTop">
+                            <strong>{item.groupName || "Group"}</strong>
+
+                            <div className="chatConversationTopRight">
+                              {item.lastMessageAt ? (
+                                <span>{formatMessageTime(item.lastMessageAt)}</span>
+                              ) : (
+                                <span>New</span>
+                              )}
+
+                              {unreadCounts[String(item.id)] ? (
+                                <span className="chatUnreadBadge">
+                                  {unreadCounts[String(item.id)]}
+                                </span>
+                              ) : null}
+                            </div>
+                          </div>
+
+                          <div className="chatConversationPreview">
+                            {item.lastMessageAt
+                              ? getPreviewLabel(item)
+                              : `You are added • ${item.participants?.length || 0} members`}
+                          </div>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="chatSidebarSection">
+                <div className="chatSectionLabel">All Users</div>
+
+                <input
+                  className="chatSearch"
+                  placeholder="Search users..."
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                />
+
+                <div className="chatUserList">
+                  {filteredUsers.length === 0 ? (
+                    <div className="chatEmptyCard">No users found.</div>
+                  ) : (
+                    filteredUsers.map((item) => (
+                      <button
+                        key={item.id}
+                        className="chatUserItem"
+                        onClick={() => openChatWithUser(item.id)}
+                      >
+                        <div className="chatAvatarWrap">
+                          {item.avatar ? (
+                            <img src={item.avatar} alt={item.name} className="chatAvatar" />
+                          ) : (
+                            <div className="chatAvatarFallback">
+                              {item.name?.charAt(0)?.toUpperCase() || "U"}
+                            </div>
+                          )}
+                          <span
+                            className={`chatPresenceDot ${item.isOnline ? "online" : "offline"}`}
+                          />
+                        </div>
+
+                        <div className="chatUserBody">
+                          <strong>{item.name}</strong>
+                          <span>
+                            {item.isOnline ? "Online" : formatLastSeen(item.lastSeenAt)}
+                          </span>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </aside>
@@ -1090,12 +1121,12 @@ export default function Chat() {
                     {getConversationDisplayAvatar(activeConversation) ? (
                       <img
                         src={getConversationDisplayAvatar(activeConversation)}
-                        alt={getConversationDisplayName(activeConversation, user?.id)}
+                        alt={getConversationDisplayName(activeConversation)}
                         className="chatAvatar large"
                       />
                     ) : (
                       <div className="chatAvatarFallback large">
-                        {getConversationDisplayName(activeConversation, user?.id)
+                        {getConversationDisplayName(activeConversation)
                           ?.charAt(0)
                           ?.toUpperCase() || "U"}
                       </div>
@@ -1108,13 +1139,15 @@ export default function Chat() {
                         }`}
                       />
                     ) : (
-                      <span className="chatGroupBadge large">G</span>
+                      <span className="chatGroupBadge large">
+                        {getGroupBadgeLabel(activeConversation.groupName)}
+                      </span>
                     )}
                   </div>
 
                   <div className="chatHeaderContent">
                     <div className="chatHeaderName">
-                      {getConversationDisplayName(activeConversation, user?.id)}
+                      {getConversationDisplayName(activeConversation)}
                     </div>
                     <div className="chatHeaderMeta">
                       {getConversationPresenceText(activeConversation)}
@@ -1129,7 +1162,7 @@ export default function Chat() {
                         className="chatHeaderGhostBtn"
                         onClick={() => setShowListingModal(true)}
                       >
-                        Send Listing Card
+                        Share Listing
                       </button>
 
                       <button
@@ -1146,6 +1179,21 @@ export default function Chat() {
                   </button>
                 </div>
               </div>
+
+              {!canShowProviderTools && providerToolsDisabledMessage ? (
+                <div
+                  style={{
+                    padding: "10px 16px",
+                    borderBottom: "1px solid rgba(11, 27, 42, 0.08)",
+                    color: "#64748b",
+                    fontWeight: 600,
+                    fontSize: "13px",
+                    background: "#fff",
+                  }}
+                >
+                  {providerToolsDisabledMessage}
+                </div>
+              ) : null}
 
               <div
                 ref={messagesRef}
@@ -1497,13 +1545,13 @@ export default function Chat() {
         <div className="chatModalOverlay" onClick={() => setShowListingModal(false)}>
           <div className="chatModalCard" onClick={(e) => e.stopPropagation()}>
             <div className="chatModalHead">
-              <h3>Send Provider Listing Card</h3>
+              <h3>Share Provider Listing</h3>
               <button onClick={() => setShowListingModal(false)}>✕</button>
             </div>
 
             <div className="chatModalBody">
               <select
-                className="chatModalInput"
+                className="chatSelect"
                 value={selectedProviderId}
                 onChange={(e) => {
                   setSelectedProviderId(e.target.value);
@@ -1521,7 +1569,7 @@ export default function Chat() {
 
               {selectedProvider?.listingType === "travel_planner" ? (
                 <select
-                  className="chatModalInput"
+                  className="chatSelect"
                   value={selectedPlanIndex}
                   onChange={(e) => setSelectedPlanIndex(Number(e.target.value))}
                 >
@@ -1535,7 +1583,7 @@ export default function Chat() {
 
               {selectedProvider?.listingType === "vehicle" ? (
                 <select
-                  className="chatModalInput"
+                  className="chatSelect"
                   value={selectedVehicleIndex}
                   onChange={(e) => setSelectedVehicleIndex(Number(e.target.value))}
                 >
@@ -1553,7 +1601,7 @@ export default function Chat() {
                 Cancel
               </button>
               <button className="chatSendBtn" onClick={handleSendListingCard}>
-                Send Card
+                Share Listing
               </button>
             </div>
           </div>
@@ -1570,7 +1618,7 @@ export default function Chat() {
 
             <div className="chatModalBody">
               <select
-                className="chatModalInput"
+                className="chatSelect"
                 value={selectedProviderId}
                 onChange={(e) => setSelectedProviderId(e.target.value)}
               >
