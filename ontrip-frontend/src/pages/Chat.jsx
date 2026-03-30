@@ -144,10 +144,11 @@ export default function Chat() {
     return activeConversation?.otherUser || null;
   }, [activeConversation]);
 
-  const visibleConversations = useMemo(() => {
+  const recentConversations = useMemo(() => {
     return conversations.filter(
       (item) =>
         item &&
+        item.conversationType !== "group" &&
         item.lastMessageAt &&
         (item.lastMessageText || item.lastMessageType)
     );
@@ -236,8 +237,14 @@ export default function Chat() {
         }
 
         const firstConversation =
-          (convRes.conversations || []).find((item) => item?.lastMessageAt) ||
-          (convRes.conversations || []).find((item) => item?.conversationType === "group");
+          (convRes.conversations || []).find(
+            (item) =>
+              item?.conversationType !== "group" &&
+              item?.lastMessageAt
+          ) ||
+          (convRes.conversations || []).find(
+            (item) => item?.conversationType === "group"
+          );
 
         if (firstConversation) {
           await openConversation(firstConversation);
@@ -858,10 +865,10 @@ export default function Chat() {
                 <div className="chatSectionLabel">Recent Conversations</div>
 
                 <div className="chatConversationList noScrollbar">
-                  {visibleConversations.length === 0 ? (
-                    <div className="chatEmptyCard">No conversations yet.</div>
+                  {recentConversations.length === 0 ? (
+                    <div className="chatEmptyCard">No recent conversations yet.</div>
                   ) : (
-                    visibleConversations.map((item) => (
+                    recentConversations.map((item) => (
                       <button
                         key={item.id}
                         className={`chatConversationItem ${
@@ -870,11 +877,7 @@ export default function Chat() {
                         onClick={() => openConversation(item)}
                       >
                         <div className="chatAvatarWrap">
-                          {item.conversationType === "group" ? (
-                            <div className="chatAvatarFallback">
-                              {(item.groupName || "G").charAt(0).toUpperCase()}
-                            </div>
-                          ) : item.otherUser?.avatar ? (
+                          {item.otherUser?.avatar ? (
                             <img
                               src={item.otherUser.avatar}
                               alt={item.otherUser.name}
@@ -886,13 +889,11 @@ export default function Chat() {
                             </div>
                           )}
 
-                          {item.conversationType === "direct" ? (
-                            <span
-                              className={`chatPresenceDot ${
-                                item.otherUser?.isOnline ? "online" : "offline"
-                              }`}
-                            />
-                          ) : null}
+                          <span
+                            className={`chatPresenceDot ${
+                              item.otherUser?.isOnline ? "online" : "offline"
+                            }`}
+                          />
                         </div>
 
                         <div className="chatConversationBody">
