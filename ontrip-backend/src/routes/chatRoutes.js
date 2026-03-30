@@ -4,6 +4,7 @@ import chatUpload from "../middleware/chatUpload.js";
 import {
   getChatUsers,
   getMyConversations,
+  getMyGroups,
   getOrCreateConversation,
   createGroupConversation,
   getConversationMessages,
@@ -21,6 +22,8 @@ const router = express.Router();
 
 router.get("/users", protect, getChatUsers);
 router.get("/conversations", protect, getMyConversations);
+router.get("/groups", protect, getMyGroups);
+
 router.post("/conversations/open", protect, getOrCreateConversation);
 router.post("/conversations/group", protect, createGroupConversation);
 router.get("/conversations/:conversationId/messages", protect, getConversationMessages);
