@@ -12,14 +12,14 @@
   border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
   font-weight: 650;
-  word-break: break-word;
 }
 
 .chatLayout {
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr);
   gap: 18px;
-  min-height: 78vh;
+  min-height: calc(100vh - 180px);
+  align-items: start;
 }
 
 .chatSidebar,
@@ -39,7 +39,9 @@
   padding: 16px;
   display: grid;
   gap: 14px;
-  height: 100%;
+  min-height: calc(100vh - 180px);
+  max-height: calc(100vh - 180px);
+  overflow: hidden;
 }
 
 .chatSidebarHead h2 {
@@ -57,20 +59,19 @@
 
 .chatSearch {
   width: 100%;
-  min-height: 44px;
+  min-height: 46px;
   padding: 0 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid rgba(11, 27, 42, 0.12);
   background: #fff;
   font: inherit;
-  color: var(--text);
   outline: none;
 }
 
 .chatSearch:focus,
 .chatInput:focus {
-  border-color: rgba(0, 184, 241, 0.28);
-  box-shadow: 0 0 0 3px rgba(0, 184, 241, 0.08);
+  border-color: rgba(0, 184, 241, 0.35);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
 }
 
 .chatSectionLabel {
@@ -85,9 +86,17 @@
 .chatUserList {
   display: grid;
   gap: 10px;
-  max-height: 260px;
   overflow: auto;
   padding-right: 2px;
+}
+
+.chatConversationList {
+  max-height: 240px;
+}
+
+.chatUserList {
+  min-height: 0;
+  flex: 1;
 }
 
 .chatConversationItem,
@@ -95,8 +104,8 @@
   width: 100%;
   border: 1px solid rgba(11, 27, 42, 0.08);
   background: rgba(248, 252, 255, 0.96);
-  border-radius: 14px;
-  padding: 12px;
+  border-radius: 16px;
+  padding: 14px;
   display: grid;
   grid-template-columns: 52px minmax(0, 1fr);
   gap: 12px;
@@ -118,7 +127,6 @@
   position: relative;
   width: 48px;
   height: 48px;
-  flex-shrink: 0;
 }
 
 .chatAvatar,
@@ -215,13 +223,13 @@
   border: 1px solid rgba(0, 184, 241, 0.12);
   color: rgba(11, 27, 42, 0.76);
   font-weight: 600;
-  word-break: break-word;
 }
 
 .chatMainCard {
   display: grid;
   grid-template-rows: auto 1fr auto;
-  min-height: 78vh;
+  min-height: calc(100vh - 180px);
+  max-height: calc(100vh - 180px);
   overflow: hidden;
 }
 
@@ -252,19 +260,20 @@
 
 .chatMessages {
   padding: 18px;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at top right, rgba(0, 184, 241, 0.06), transparent 30%),
     radial-gradient(circle at bottom left, rgba(78, 201, 245, 0.06), transparent 30%),
     #fbfdff;
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 12px;
+  align-content: start;
+  min-height: 0;
 }
 
 .chatBubbleRow {
   display: flex;
-  width: 100%;
 }
 
 .chatBubbleRow.me {
@@ -276,18 +285,20 @@
 }
 
 .chatBubble {
-  width: fit-content;
-  max-width: min(70%, 420px);
+  max-width: min(72%, 720px);
   border-radius: 20px;
-  padding: 10px 12px 8px;
+  padding: 12px 14px;
   box-shadow: 0 8px 18px rgba(10, 22, 35, 0.04);
   border: 1px solid rgba(11, 27, 42, 0.06);
-  word-break: break-word;
 }
 
 .chatBubble.me {
-  background: linear-gradient(135deg, rgba(78, 201, 245, 0.16), rgba(0, 184, 241, 0.12));
-  border-color: rgba(0, 184, 241, 0.2);
+  background: linear-gradient(
+    135deg,
+    rgba(78, 201, 245, 0.16),
+    rgba(0, 184, 241, 0.12)
+  );
+  border-color: rgba(0, 184, 241, 0.18);
 }
 
 .chatBubble.other {
@@ -297,64 +308,46 @@
 .chatBubbleText {
   color: var(--text);
   font-weight: 600;
-  line-height: 1.45;
+  line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
-  font-size: 15px;
 }
 
 .chatBubbleMeta {
-  margin-top: 6px;
+  margin-top: 8px;
   display: flex;
   justify-content: flex-end;
-  align-items: center;
   gap: 10px;
   font-size: 12px;
   color: rgba(11, 27, 42, 0.56);
-  font-weight: 700;
+  font-weight: 650;
 }
 
 .chatMediaWrap {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 .chatMediaImage,
 .chatMediaVideo {
   width: 100%;
-  max-width: 320px;
+  max-width: 360px;
   border-radius: 14px;
   display: block;
 }
 
 .chatFileLink {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  width: fit-content;
-  max-width: 100%;
+  gap: 8px;
   text-decoration: none;
   color: #0369a1;
   font-weight: 750;
   background: rgba(0, 184, 241, 0.08);
   border: 1px solid rgba(0, 184, 241, 0.14);
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 12px 14px;
-  line-height: 1.35;
   word-break: break-word;
-}
-
-.chatFileLink::before {
-  content: "📎";
-  flex-shrink: 0;
-}
-
-.chatFileName {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 220px;
 }
 
 .chatTyping {
@@ -385,6 +378,12 @@
   color: var(--text);
 }
 
+.chatSelectedFile span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .chatSelectedFile button {
   border: none;
   background: transparent;
@@ -396,15 +395,15 @@
 
 .chatComposerRow {
   display: grid;
-  grid-template-columns: 46px minmax(0, 1fr) 110px;
-  gap: 10px;
-  align-items: center;
+  grid-template-columns: 52px minmax(0, 1fr) 120px;
+  gap: 12px;
+  align-items: end;
 }
 
 .chatAttachBtn,
 .chatSendBtn {
-  min-height: 46px;
-  border-radius: 14px;
+  min-height: 52px;
+  border-radius: 16px;
   border: 1px solid rgba(0, 184, 241, 0.2);
   cursor: pointer;
   font: inherit;
@@ -415,7 +414,7 @@
 .chatAttachBtn {
   background: rgba(0, 184, 241, 0.08);
   color: #0369a1;
-  font-size: 22px;
+  font-size: 26px;
 }
 
 .chatSendBtn {
@@ -436,14 +435,17 @@
 
 .chatInput {
   width: 100%;
-  min-height: 46px;
-  padding: 0 14px;
-  border-radius: 14px;
+  min-height: 52px;
+  max-height: 140px;
+  padding: 14px 16px;
+  border-radius: 18px;
   border: 1px solid rgba(11, 27, 42, 0.12);
   background: #fff;
   font: inherit;
-  color: var(--text);
-  outline: none;
+  line-height: 1.5;
+  resize: none;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .chatHiddenFile {
@@ -459,10 +461,13 @@
 @media (max-width: 860px) {
   .chatLayout {
     grid-template-columns: 1fr;
+    min-height: auto;
   }
 
-  .chatSidebarCard {
-    height: auto;
+  .chatSidebarCard,
+  .chatMainCard {
+    min-height: auto;
+    max-height: none;
   }
 
   .chatConversationList,
@@ -470,26 +475,26 @@
     max-height: 220px;
   }
 
-  .chatMainCard {
-    min-height: 70vh;
+  .chatMessages {
+    min-height: 420px;
+    max-height: 420px;
   }
 }
 
 @media (max-width: 640px) {
   .chatBubble {
-    max-width: 86%;
-  }
-
-  .chatMediaImage,
-  .chatMediaVideo {
-    max-width: 100%;
+    max-width: 90%;
   }
 
   .chatComposerRow {
-    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-columns: 48px minmax(0, 1fr);
   }
 
   .chatSendBtn {
     grid-column: 1 / -1;
+  }
+
+  .chatInput {
+    min-height: 50px;
   }
 }
