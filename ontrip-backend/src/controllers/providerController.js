@@ -2,6 +2,7 @@ import { Readable } from "stream";
 import mongoose from "mongoose";
 import cloudinary from "../config/cloudinary.js";
 import Provider from "../models/Provider.js";
+import User from "../models/User.js";
 
 function safeJsonParse(value, fallback) {
   if (!value) return fallback;
@@ -207,6 +208,10 @@ export async function createProvider(req, res) {
       vehicles,
       travelPlans,
       travelPlanner,
+    });
+
+    await User.findByIdAndUpdate(req.user._id, {
+      role: "provider",
     });
 
     return res.status(201).json({
