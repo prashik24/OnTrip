@@ -125,11 +125,13 @@ export default function Chat() {
   const [loading, setLoading] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [sending, setSending] = useState(false);
+
   const [menuOpenId, setMenuOpenId] = useState("");
   const [editingMessageId, setEditingMessageId] = useState("");
   const [editText, setEditText] = useState("");
 
   const [users, setUsers] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -157,6 +159,8 @@ export default function Chat() {
   const [selectedPlanIndex, setSelectedPlanIndex] = useState(0);
   const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(0);
 
+  const [sectionPanel, setSectionPanel] = useState("");
+
   const activeOtherUser = useMemo(() => {
     return activeConversation?.otherUser || null;
   }, [activeConversation]);
@@ -180,11 +184,31 @@ export default function Chat() {
     });
   }, [users, userSearch]);
 
+  const filteredGroups = useMemo(() => {
+    const q = userSearch.trim().toLowerCase();
+    if (!q) return groups;
+
+    return groups.filter((item) => {
+      const groupName = item.groupName || "";
+      const memberNames = (item.participants || [])
+        .map((p) => p.name || "")
+        .join(" ");
+      const bag = `${groupName} ${memberNames}`.toLowerCase();
+      return bag.includes(q);
+    });
+  }, [groups, userSearch]);
+
   const messageItems = useMemo(() => buildMessageItems(messages), [messages]);
 
   const selectedProvider = useMemo(() => {
     return myProviders.find((item) => String(item._id) === String(selectedProviderId)) || null;
   }, [myProviders, selectedProviderId]);
+
+  const canShowProviderTools =
+    user?.role === "provider" &&
+    myProviders.length > 0 &&
+    activeConversation &&
+    activeConversation.conversationType === "direct";
 
   useEffect(() => {
     if (!isLoggedIn()) {
@@ -203,6 +227,7 @@ export default function Chat() {
         const requests = [
           apiFetch("/api/chat/users"),
           apiFetch("/api/chat/conversations"),
+          apiFetch("/api/chat/groups"),
         ];
 
         if (user?.role === "provider") {
@@ -212,10 +237,12 @@ export default function Chat() {
         const results = await Promise.all(requests);
         const userRes = results[0];
         const convRes = results[1];
-        const providerRes = results[2];
+        const groupRes = results[2];
+        const providerRes = results[3];
 
         setUsers(userRes.users || []);
         setConversations(convRes.conversations || []);
+        setGroups(groupRes.groups || []);
         setMyProviders(providerRes?.providers || []);
 
         const params = new URLSearchParams(location.search);
@@ -223,9 +250,11 @@ export default function Chat() {
         const queryUser = params.get("user");
 
         if (queryConversation) {
-          const found = (convRes.conversations || []).find(
-            (item) => String(item.id) === String(queryConversation)
-          );
+          const found =
+            [...(convRes.conversations || []), ...(groupRes.groups || [])].find(
+              (item) => String(item.id) === String(queryConversation)
+            );
+
           if (found) {
             await openConversation(found);
             return;
@@ -289,6 +318,17 @@ export default function Chat() {
             ? { ...item, isOnline, lastSeenAt }
             : item
         )
+      );
+
+      setGroups((prev) =>
+        prev.map((item) => ({
+          ...item,
+          participants: (item.participants || []).map((p) =>
+            String(p.id || p._id) === String(userId)
+              ? { ...p, isOnline, lastSeenAt }
+              : p
+          ),
+        }))
       );
 
       setConversations((prev) =>
@@ -372,20 +412,31 @@ export default function Chat() {
         }));
       }
 
-      setConversations((prev) => {
-        const withoutCurrent = prev.filter(
-          (item) => String(item.id) !== incomingConversationId
-        );
-        return [conversation, ...withoutCurrent];
-      });
+      if (conversation.conversationType === "group") {
+        setGroups((prev) => {
+          const exists = prev.some((item) => String(item.id) === incomingConversationId);
+          if (!exists) return [conversation, ...prev];
 
-      setUsers((prev) =>
-        prev.map((item) =>
-          String(item.id) === String(conversation.otherUser?.id)
-            ? { ...item, conversationId: conversation.id }
-            : item
-        )
-      );
+          return prev.map((item) =>
+            String(item.id) === incomingConversationId ? conversation : item
+          );
+        });
+      } else {
+        setConversations((prev) => {
+          const withoutCurrent = prev.filter(
+            (item) => String(item.id) !== incomingConversationId
+          );
+          return [conversation, ...withoutCurrent];
+        });
+
+        setUsers((prev) =>
+          prev.map((item) =>
+            String(item.id) === String(conversation.otherUser?.id)
+              ? { ...item, conversationId: conversation.id }
+              : item
+          )
+        );
+      }
 
       setActiveConversation((prev) => {
         if (!prev) return prev;
@@ -571,7 +622,7 @@ export default function Chat() {
         }),
       });
 
-      setConversations((prev) => [res.conversation, ...prev]);
+      setGroups((prev) => [res.conversation, ...prev]);
       setShowGroupModal(false);
       setGroupName("");
       setGroupDescription("");
@@ -620,15 +671,23 @@ export default function Chat() {
         return [...prev, res.data];
       });
 
-      setConversations((prev) => {
-        const updated = prev.map((item) =>
-          String(item.id) === String(res.conversation.id) ? res.conversation : item
+      if (res.conversation.conversationType === "group") {
+        setGroups((prev) =>
+          prev.map((item) =>
+            String(item.id) === String(res.conversation.id) ? res.conversation : item
+          )
         );
-        updated.sort(
-          (a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0)
-        );
-        return updated;
-      });
+      } else {
+        setConversations((prev) => {
+          const updated = prev.map((item) =>
+            String(item.id) === String(res.conversation.id) ? res.conversation : item
+          );
+          updated.sort(
+            (a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0)
+          );
+          return updated;
+        });
+      }
 
       setActiveConversation((prev) => {
         if (!prev) return prev;
@@ -689,9 +748,10 @@ export default function Chat() {
   }
 
   async function handleForwardMessage(messageId) {
-    if (!visibleConversations.length) return;
+    const allTargets = [...visibleConversations, ...groups];
+    if (!allTargets.length) return;
 
-    const options = visibleConversations
+    const options = allTargets
       .map((item) => `${item.id} — ${getConversationDisplayName(item, user?.id)}`)
       .join("\n");
 
@@ -731,9 +791,17 @@ export default function Chat() {
       });
 
       setMessages([]);
-      setConversations((prev) =>
-        prev.filter((item) => String(item.id) !== String(activeConversation.id))
-      );
+
+      if (activeConversation.conversationType === "group") {
+        setGroups((prev) =>
+          prev.filter((item) => String(item.id) !== String(activeConversation.id))
+        );
+      } else {
+        setConversations((prev) =>
+          prev.filter((item) => String(item.id) !== String(activeConversation.id))
+        );
+      }
+
       setActiveConversation(null);
       navigate("/chat", { replace: true });
     } catch (err) {
@@ -818,11 +886,83 @@ export default function Chat() {
     );
   }
 
-  const canShowProviderTools =
-    user?.role === "provider" &&
-    myProviders.length > 0 &&
-    activeConversation &&
-    activeConversation.conversationType === "direct";
+  function renderSectionPanel() {
+    if (!sectionPanel) return null;
+
+    let title = "";
+    let data = [];
+
+    if (sectionPanel === "recent") {
+      title = "Recent Conversations";
+      data = visibleConversations;
+    }
+
+    if (sectionPanel === "users") {
+      title = "All Users";
+      data = filteredUsers;
+    }
+
+    if (sectionPanel === "groups") {
+      title = "Groups / Trip Buddy Groups";
+      data = filteredGroups;
+    }
+
+    return (
+      <div className="chatSlidePanel">
+        <div className="chatSlidePanelHead">
+          <h3>{title}</h3>
+          <button onClick={() => setSectionPanel("")}>✕</button>
+        </div>
+
+        <div className="chatSlidePanelBody noScrollbar">
+          {sectionPanel === "recent" &&
+            data.map((item) => (
+              <button
+                key={item.id}
+                className="chatSlidePanelItem"
+                onClick={() => {
+                  openConversation(item);
+                  setSectionPanel("");
+                }}
+              >
+                <strong>{getConversationDisplayName(item, user?.id)}</strong>
+                <span>{getPreviewLabel(item)}</span>
+              </button>
+            ))}
+
+          {sectionPanel === "users" &&
+            data.map((item) => (
+              <button
+                key={item.id}
+                className="chatSlidePanelItem"
+                onClick={() => {
+                  openChatWithUser(item.id);
+                  setSectionPanel("");
+                }}
+              >
+                <strong>{item.name}</strong>
+                <span>{item.isOnline ? "Online" : formatLastSeen(item.lastSeenAt)}</span>
+              </button>
+            ))}
+
+          {sectionPanel === "groups" &&
+            data.map((item) => (
+              <button
+                key={item.id}
+                className="chatSlidePanelItem"
+                onClick={() => {
+                  openConversation(item);
+                  setSectionPanel("");
+                }}
+              >
+                <strong>{item.groupName || "Group"}</strong>
+                <span>You are added to this group</span>
+              </button>
+            ))}
+        </div>
+      </div>
+    );
+  }
 
   if (!isLoggedIn()) return null;
 
@@ -856,18 +996,23 @@ export default function Chat() {
 
             <input
               className="chatSearch"
-              placeholder="Search users..."
+              placeholder="Search users and groups..."
               value={userSearch}
               onChange={(e) => setUserSearch(e.target.value)}
             />
 
-            <div className="chatSectionLabel">Recent Conversations</div>
+            <div className="chatSectionLabelRow">
+              <div className="chatSectionLabel">Recent Conversations</div>
+              <button className="chatSectionOpenBtn" onClick={() => setSectionPanel("recent")}>
+                Open
+              </button>
+            </div>
 
             <div className="chatConversationList noScrollbar">
               {visibleConversations.length === 0 ? (
                 <div className="chatEmptyCard">No conversations yet.</div>
               ) : (
-                visibleConversations.map((item) => {
+                visibleConversations.slice(0, 5).map((item) => {
                   const displayName = getConversationDisplayName(item, user?.id);
                   const displayAvatar = getConversationDisplayAvatar(item);
 
@@ -927,13 +1072,71 @@ export default function Chat() {
               )}
             </div>
 
-            <div className="chatSectionLabel">All Users</div>
+            <div className="chatSectionLabelRow">
+              <div className="chatSectionLabel">Groups / Trip Buddy Groups</div>
+              <button className="chatSectionOpenBtn" onClick={() => setSectionPanel("groups")}>
+                Open
+              </button>
+            </div>
+
+            <div className="chatConversationList noScrollbar">
+              {filteredGroups.length === 0 ? (
+                <div className="chatEmptyCard">No groups yet.</div>
+              ) : (
+                filteredGroups.slice(0, 5).map((item) => (
+                  <button
+                    key={item.id}
+                    className={`chatConversationItem ${
+                      activeConversation?.id === item.id ? "active" : ""
+                    }`}
+                    onClick={() => openConversation(item)}
+                  >
+                    <div className="chatAvatarWrap">
+                      {item.groupAvatar ? (
+                        <img
+                          src={item.groupAvatar}
+                          alt={item.groupName}
+                          className="chatAvatar"
+                        />
+                      ) : (
+                        <div className="chatAvatarFallback">
+                          {item.groupName?.charAt(0)?.toUpperCase() || "G"}
+                        </div>
+                      )}
+                      <span className="chatGroupBadge">G</span>
+                    </div>
+
+                    <div className="chatConversationBody">
+                      <div className="chatConversationTop">
+                        <strong>{item.groupName || "Group"}</strong>
+                        {item.lastMessageAt ? (
+                          <span>{formatMessageTime(item.lastMessageAt)}</span>
+                        ) : null}
+                      </div>
+
+                      <div className="chatConversationPreview">
+                        {item.lastMessageAt
+                          ? getPreviewLabel(item)
+                          : "You are added to this group"}
+                      </div>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+
+            <div className="chatSectionLabelRow">
+              <div className="chatSectionLabel">All Users</div>
+              <button className="chatSectionOpenBtn" onClick={() => setSectionPanel("users")}>
+                Open
+              </button>
+            </div>
 
             <div className="chatUserList noScrollbar">
               {filteredUsers.length === 0 ? (
                 <div className="chatEmptyCard">No users found.</div>
               ) : (
-                filteredUsers.map((item) => (
+                filteredUsers.slice(0, 5).map((item) => (
                   <button
                     key={item.id}
                     className="chatUserItem"
@@ -1046,7 +1249,11 @@ export default function Chat() {
                 {loadingMessages ? (
                   <div className="chatEmptyCard">Loading messages...</div>
                 ) : messages.length === 0 ? (
-                  <div className="chatEmptyCard">No messages yet. Start the conversation.</div>
+                  <div className="chatEmptyCard">
+                    {activeConversation.conversationType === "group"
+                      ? "No group messages yet. Start the group conversation."
+                      : "No messages yet. Start the conversation."}
+                  </div>
                 ) : (
                   messageItems.map((entry) => {
                     if (entry.type === "separator") {
@@ -1218,11 +1425,7 @@ export default function Chat() {
                                   Reply
                                 </button>
 
-                                <button
-                                  onClick={() => {
-                                    handleForwardMessage(msg.id);
-                                  }}
-                                >
+                                <button onClick={() => handleForwardMessage(msg.id)}>
                                   Forward
                                 </button>
 
@@ -1321,6 +1524,8 @@ export default function Chat() {
             </div>
           )}
         </section>
+
+        {renderSectionPanel()}
       </div>
 
       {showGroupModal ? (
