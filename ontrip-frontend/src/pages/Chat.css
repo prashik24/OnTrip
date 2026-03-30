@@ -38,10 +38,25 @@
 .chatSidebarCard {
   padding: 16px;
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 14px;
   min-height: calc(100vh - 180px);
   max-height: calc(100vh - 180px);
   overflow: hidden;
+}
+
+.chatSidebarTopFixed {
+  display: grid;
+  gap: 14px;
+}
+
+.chatSidebarScrollArea {
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding-right: 2px;
 }
 
 .chatSidebarHead h2 {
@@ -139,17 +154,17 @@
 .chatUserList {
   display: grid;
   gap: 10px;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 2px;
 }
 
 .chatConversationList {
-  max-height: 240px;
+  max-height: 220px;
 }
 
-.chatUserList {
-  min-height: 0;
-  flex: 1;
+.chatUserListScrollable {
+  max-height: 320px;
 }
 
 .chatConversationItem,
@@ -899,9 +914,12 @@
     max-height: none;
   }
 
-  .chatConversationList,
-  .chatUserList {
-    max-height: 220px;
+  .chatConversationList {
+    max-height: 200px;
+  }
+
+  .chatUserListScrollable {
+    max-height: 240px;
   }
 
   .chatMessages {
