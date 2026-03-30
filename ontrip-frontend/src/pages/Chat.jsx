@@ -60,10 +60,20 @@ export default function Chat() {
 
   const [typingUsers, setTypingUsers] = useState({});
   const [error, setError] = useState("");
+  const [unreadCounts, setUnreadCounts] = useState({});
 
   const activeOtherUser = useMemo(() => {
     return activeConversation?.otherUser || null;
   }, [activeConversation]);
+
+  const visibleConversations = useMemo(() => {
+    return conversations.filter(
+      (item) =>
+        item &&
+        item.lastMessageAt &&
+        (item.lastMessageText || item.lastMessageType)
+    );
+  }, [conversations]);
 
   useEffect(() => {
     if (!isLoggedIn()) {
@@ -125,8 +135,12 @@ export default function Chat() {
           return;
         }
 
-        if ((convRes.conversations || []).length > 0) {
-          await openConversation(convRes.conversations[0]);
+        const firstRealConversation = (convRes.conversations || []).find(
+          (item) => item?.lastMessageAt
+        );
+
+        if (firstRealConversation) {
+          await openConversation(firstRealConversation);
         }
       } catch (err) {
         setError(err.message || "Failed to load chat");
@@ -190,9 +204,9 @@ export default function Chat() {
         ? String(activeConversation.id)
         : "";
 
+      const incomingConversationId = String(conversation.id);
       const isCurrentConversation =
-        openedConversationId &&
-        openedConversationId === String(conversation.id);
+        openedConversationId && openedConversationId === incomingConversationId;
 
       const msgSenderId = String(
         message.sender?._id || message.sender?.id || message.sender
@@ -207,9 +221,16 @@ export default function Chat() {
         }
       }
 
+      if (!isCurrentConversation && !isMyMessage) {
+        setUnreadCounts((prev) => ({
+          ...prev,
+          [incomingConversationId]: (prev[incomingConversationId] || 0) + 1,
+        }));
+      }
+
       setConversations((prev) => {
         const withoutCurrent = prev.filter(
-          (item) => String(item.id) !== String(conversation.id)
+          (item) => String(item.id) !== incomingConversationId
         );
         return [conversation, ...withoutCurrent];
       });
@@ -224,7 +245,7 @@ export default function Chat() {
 
       setActiveConversation((prev) => {
         if (!prev) return prev;
-        if (String(prev.id) !== String(conversation.id)) return prev;
+        if (String(prev.id) !== incomingConversationId) return prev;
         return conversation;
       });
 
@@ -303,6 +324,12 @@ export default function Chat() {
       setActiveConversation(conversation);
       setTypingUsers({});
       shouldStickToBottomRef.current = true;
+
+      setUnreadCounts((prev) => {
+        const next = { ...prev };
+        delete next[String(conversation.id)];
+        return next;
+      });
 
       socket.emit("conversation:join", { conversationId: conversation.id });
 
@@ -461,11 +488,11 @@ export default function Chat() {
 
             <div className="chatSectionLabel">Recent Conversations</div>
 
-            <div className="chatConversationList">
-              {conversations.length === 0 ? (
+            <div className="chatConversationList noScrollbar">
+              {visibleConversations.length === 0 ? (
                 <div className="chatEmptyCard">No conversations yet.</div>
               ) : (
-                conversations.map((item) => (
+                visibleConversations.map((item) => (
                   <button
                     key={item.id}
                     className={`chatConversationItem ${
@@ -495,8 +522,17 @@ export default function Chat() {
                     <div className="chatConversationBody">
                       <div className="chatConversationTop">
                         <strong>{item.otherUser?.name || "User"}</strong>
-                        <span>{formatMessageTime(item.lastMessageAt)}</span>
+
+                        <div className="chatConversationTopRight">
+                          <span>{formatMessageTime(item.lastMessageAt)}</span>
+                          {unreadCounts[String(item.id)] ? (
+                            <span className="chatUnreadBadge">
+                              {unreadCounts[String(item.id)]}
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
+
                       <div className="chatConversationPreview">
                         {getPreviewLabel(item)}
                       </div>
@@ -508,7 +544,7 @@ export default function Chat() {
 
             <div className="chatSectionLabel">All Users</div>
 
-            <div className="chatUserList">
+            <div className="chatUserList noScrollbar">
               {filteredUsers.length === 0 ? (
                 <div className="chatEmptyCard">No users found.</div>
               ) : (
@@ -588,7 +624,7 @@ export default function Chat() {
 
               <div
                 ref={messagesRef}
-                className="chatMessages"
+                className="chatMessages noScrollbar"
                 onScroll={handleMessagesScroll}
               >
                 {loadingMessages ? (
