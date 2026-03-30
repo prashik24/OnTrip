@@ -87,7 +87,7 @@ function buildMessageItems(messages) {
   return items;
 }
 
-function getConversationDisplayName(conversation) {
+function getConversationDisplayName(conversation, currentUserId) {
   if (!conversation) return "Chat";
   if (conversation.conversationType === "group") {
     return conversation.groupName || "Group";
@@ -108,18 +108,9 @@ function getConversationPresenceText(conversation) {
   if (conversation.conversationType === "group") {
     return `${conversation.participants?.length || 0} members`;
   }
+
   if (conversation.otherUser?.isOnline) return "Online";
   return formatLastSeen(conversation.otherUser?.lastSeenAt);
-}
-
-function getReplyPreviewText(item) {
-  if (!item) return "";
-  if (item.messageType === "image") return "📷 Image";
-  if (item.messageType === "video") return "🎥 Video";
-  if (item.messageType === "file") return "📎 File";
-  if (item.messageType === "listing_card") return "📌 Listing";
-  if (item.messageType === "system") return "System update";
-  return item.text || "Message";
 }
 
 export default function Chat() {
@@ -127,36 +118,30 @@ export default function Chat() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const messagesRef = useRef(null);
   const fileInputRef = useRef(null);
+  const messagesRef = useRef(null);
   const shouldStickToBottomRef = useRef(true);
 
   const [loading, setLoading] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [sending, setSending] = useState(false);
-
-  const [users, setUsers] = useState([]);
-  const [conversations, setConversations] = useState([]);
-  const [groups, setGroups] = useState([]);
-  const [tripGroups, setTripGroups] = useState([]);
-  const [myProviders, setMyProviders] = useState([]);
-
-  const [activeConversation, setActiveConversation] = useState(null);
-  const [messages, setMessages] = useState([]);
-
-  const [text, setText] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [typingUsers, setTypingUsers] = useState({});
-  const [unreadCounts, setUnreadCounts] = useState({});
-  const [error, setError] = useState("");
-
   const [menuOpenId, setMenuOpenId] = useState("");
   const [editingMessageId, setEditingMessageId] = useState("");
   const [editText, setEditText] = useState("");
-  const [replyingTo, setReplyingTo] = useState(null);
 
-  const [panelOpen, setPanelOpen] = useState(false);
-  const [panelType, setPanelType] = useState("");
+  const [users, setUsers] = useState([]);
+  const [conversations, setConversations] = useState([]);
+  const [activeConversation, setActiveConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
+
+  const [userSearch, setUserSearch] = useState("");
+  const [text, setText] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const [typingUsers, setTypingUsers] = useState({});
+  const [error, setError] = useState("");
+  const [unreadCounts, setUnreadCounts] = useState({});
+  const [replyingTo, setReplyingTo] = useState(null);
 
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [groupName, setGroupName] = useState("");
@@ -166,49 +151,40 @@ export default function Chat() {
   const [showBroadcastModal, setShowBroadcastModal] = useState(false);
   const [broadcastText, setBroadcastText] = useState("");
 
+  const [myProviders, setMyProviders] = useState([]);
   const [showListingModal, setShowListingModal] = useState(false);
   const [selectedProviderId, setSelectedProviderId] = useState("");
   const [selectedPlanIndex, setSelectedPlanIndex] = useState(0);
   const [selectedVehicleIndex, setSelectedVehicleIndex] = useState(0);
 
-  const activeOtherUser = useMemo(() => activeConversation?.otherUser || null, [activeConversation]);
+  const activeOtherUser = useMemo(() => {
+    return activeConversation?.otherUser || null;
+  }, [activeConversation]);
 
-  const selectedProvider = useMemo(() => {
-    return (
-      myProviders.find((item) => String(item._id) === String(selectedProviderId)) ||
-      null
-    );
-  }, [myProviders, selectedProviderId]);
-
-  const recentConversations = useMemo(() => {
+  const visibleConversations = useMemo(() => {
     return conversations.filter(
-      (item) => item && item.lastMessageAt && (item.lastMessageText || item.lastMessageType)
+      (item) =>
+        item &&
+        item.lastMessageAt &&
+        (item.lastMessageText || item.lastMessageType)
     );
   }, [conversations]);
 
-  const panelItems = useMemo(() => {
-    if (panelType === "recent") return recentConversations;
-    if (panelType === "users") return users;
-    if (panelType === "groups") return groups;
-    if (panelType === "trip") return tripGroups;
-    return [];
-  }, [panelType, recentConversations, users, groups, tripGroups]);
+  const filteredUsers = useMemo(() => {
+    const q = userSearch.trim().toLowerCase();
+    if (!q) return users;
 
-  const panelTitle = useMemo(() => {
-    if (panelType === "recent") return "Recent Conversations";
-    if (panelType === "users") return "All Users";
-    if (panelType === "groups") return "Groups";
-    if (panelType === "trip") return "Trip Buddy Groups";
-    return "";
-  }, [panelType]);
+    return users.filter((item) => {
+      const bag = `${item.name} ${item.email} ${item.city} ${item.role}`.toLowerCase();
+      return bag.includes(q);
+    });
+  }, [users, userSearch]);
 
   const messageItems = useMemo(() => buildMessageItems(messages), [messages]);
 
-  const canShowProviderTools =
-    user?.role === "provider" &&
-    myProviders.length > 0 &&
-    activeConversation &&
-    activeConversation.conversationType === "direct";
+  const selectedProvider = useMemo(() => {
+    return myProviders.find((item) => String(item._id) === String(selectedProviderId)) || null;
+  }, [myProviders, selectedProviderId]);
 
   useEffect(() => {
     if (!isLoggedIn()) {
@@ -227,7 +203,6 @@ export default function Chat() {
         const requests = [
           apiFetch("/api/chat/users"),
           apiFetch("/api/chat/conversations"),
-          apiFetch("/api/chat/groups"),
         ];
 
         if (user?.role === "provider") {
@@ -237,13 +212,10 @@ export default function Chat() {
         const results = await Promise.all(requests);
         const userRes = results[0];
         const convRes = results[1];
-        const groupRes = results[2];
-        const providerRes = results[3];
+        const providerRes = results[2];
 
         setUsers(userRes.users || []);
         setConversations(convRes.conversations || []);
-        setGroups(groupRes.groups || []);
-        setTripGroups(groupRes.tripBuddyGroups || []);
         setMyProviders(providerRes?.providers || []);
 
         const params = new URLSearchParams(location.search);
@@ -251,14 +223,9 @@ export default function Chat() {
         const queryUser = params.get("user");
 
         if (queryConversation) {
-          const found =
-            (convRes.conversations || []).find(
-              (item) => String(item.id) === String(queryConversation)
-            ) ||
-            (groupRes.allGroups || []).find(
-              (item) => String(item.id) === String(queryConversation)
-            );
-
+          const found = (convRes.conversations || []).find(
+            (item) => String(item.id) === String(queryConversation)
+          );
           if (found) {
             await openConversation(found);
             return;
@@ -274,7 +241,9 @@ export default function Chat() {
           const conversation = openRes.conversation;
 
           setConversations((prev) => {
-            const exists = prev.some((item) => String(item.id) === String(conversation.id));
+            const exists = prev.some(
+              (item) => String(item.id) === String(conversation.id)
+            );
             if (exists) {
               return prev.map((item) =>
                 String(item.id) === String(conversation.id) ? conversation : item
@@ -348,22 +317,6 @@ export default function Chat() {
         })
       );
 
-      const updateGroupPresence = (setter) => {
-        setter((prev) =>
-          prev.map((item) => ({
-            ...item,
-            participants: (item.participants || []).map((p) =>
-              String(p.id || p._id) === String(userId)
-                ? { ...p, isOnline, lastSeenAt }
-                : p
-            ),
-          }))
-        );
-      };
-
-      updateGroupPresence(setGroups);
-      updateGroupPresence(setTripGroups);
-
       setActiveConversation((prev) => {
         if (!prev) return prev;
 
@@ -419,35 +372,20 @@ export default function Chat() {
         }));
       }
 
-      if (conversation.conversationType === "group") {
-        const setter =
-          conversation.groupCategory === "trip_buddy" ? setTripGroups : setGroups;
-
-        setter((prev) => {
-          const exists = prev.some((item) => String(item.id) === incomingConversationId);
-          if (exists) {
-            return prev.map((item) =>
-              String(item.id) === incomingConversationId ? conversation : item
-            );
-          }
-          return [conversation, ...prev];
-        });
-      } else {
-        setUsers((prev) =>
-          prev.map((item) =>
-            String(item.id) === String(conversation.otherUser?.id)
-              ? { ...item, conversationId: conversation.id }
-              : item
-          )
-        );
-      }
-
       setConversations((prev) => {
         const withoutCurrent = prev.filter(
           (item) => String(item.id) !== incomingConversationId
         );
         return [conversation, ...withoutCurrent];
       });
+
+      setUsers((prev) =>
+        prev.map((item) =>
+          String(item.id) === String(conversation.otherUser?.id)
+            ? { ...item, conversationId: conversation.id }
+            : item
+        )
+      );
 
       setActiveConversation((prev) => {
         if (!prev) return prev;
@@ -596,52 +534,51 @@ export default function Chat() {
       });
 
       await openConversation(conversation);
-      setPanelOpen(false);
       navigate(`/chat?conversation=${conversation.id}`, { replace: true });
     } catch (err) {
       setError(err.message || "Failed to open chat");
     }
   }
 
-  async function handleCreateGroup(groupCategory = "standard") {
+  async function handleCreateGroup(groupType = "group") {
     if (!groupName.trim()) {
       setError("Group name is required");
       return;
     }
 
     if (selectedGroupUsers.length < 2) {
-      setError("Select at least 2 users");
+      setError("Select at least 2 users for a group");
       return;
     }
 
     try {
       setError("");
 
+      const finalName =
+        groupType === "trip_buddy" && !groupName.toLowerCase().includes("trip")
+          ? `${groupName} Trip Buddy`
+          : groupName;
+
       const res = await apiFetch("/api/chat/conversations/group", {
         method: "POST",
         body: JSON.stringify({
-          groupName: groupName.trim(),
-          groupDescription: groupDescription.trim(),
+          groupName: finalName.trim(),
+          groupDescription:
+            groupType === "trip_buddy"
+              ? groupDescription.trim() || "Trip Buddy Group"
+              : groupDescription.trim(),
           participantIds: selectedGroupUsers,
-          groupCategory,
         }),
       });
 
-      const conversation = res.conversation;
-
-      if (groupCategory === "trip_buddy") {
-        setTripGroups((prev) => [conversation, ...prev]);
-      } else {
-        setGroups((prev) => [conversation, ...prev]);
-      }
-
+      setConversations((prev) => [res.conversation, ...prev]);
       setShowGroupModal(false);
       setGroupName("");
       setGroupDescription("");
       setSelectedGroupUsers([]);
 
-      await openConversation(conversation);
-      navigate(`/chat?conversation=${conversation.id}`, { replace: true });
+      await openConversation(res.conversation);
+      navigate(`/chat?conversation=${res.conversation.id}`, { replace: true });
     } catch (err) {
       setError(err.message || "Failed to create group");
     }
@@ -684,34 +621,14 @@ export default function Chat() {
       });
 
       setConversations((prev) => {
-        const exists = prev.some((item) => String(item.id) === String(res.conversation.id));
-        let updated = exists
-          ? prev.map((item) =>
-              String(item.id) === String(res.conversation.id) ? res.conversation : item
-            )
-          : [res.conversation, ...prev];
-
-        updated = updated.sort(
+        const updated = prev.map((item) =>
+          String(item.id) === String(res.conversation.id) ? res.conversation : item
+        );
+        updated.sort(
           (a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0)
         );
         return updated;
       });
-
-      if (res.conversation.conversationType === "group") {
-        if (res.conversation.groupCategory === "trip_buddy") {
-          setTripGroups((prev) =>
-            prev.map((item) =>
-              String(item.id) === String(res.conversation.id) ? res.conversation : item
-            )
-          );
-        } else {
-          setGroups((prev) =>
-            prev.map((item) =>
-              String(item.id) === String(res.conversation.id) ? res.conversation : item
-            )
-          );
-        }
-      }
 
       setActiveConversation((prev) => {
         if (!prev) return prev;
@@ -772,7 +689,16 @@ export default function Chat() {
   }
 
   async function handleForwardMessage(messageId) {
-    const targetConversationId = window.prompt("Enter target conversation id");
+    if (!visibleConversations.length) return;
+
+    const options = visibleConversations
+      .map((item) => `${item.id} — ${getConversationDisplayName(item, user?.id)}`)
+      .join("\n");
+
+    const targetConversationId = window.prompt(
+      `Enter target conversation id:\n\n${options}`
+    );
+
     if (!targetConversationId?.trim()) return;
 
     try {
@@ -808,19 +734,6 @@ export default function Chat() {
       setConversations((prev) =>
         prev.filter((item) => String(item.id) !== String(activeConversation.id))
       );
-
-      if (activeConversation.conversationType === "group") {
-        if (activeConversation.groupCategory === "trip_buddy") {
-          setTripGroups((prev) =>
-            prev.filter((item) => String(item.id) !== String(activeConversation.id))
-          );
-        } else {
-          setGroups((prev) =>
-            prev.filter((item) => String(item.id) !== String(activeConversation.id))
-          );
-        }
-      }
-
       setActiveConversation(null);
       navigate("/chat", { replace: true });
     } catch (err) {
@@ -868,8 +781,8 @@ export default function Chat() {
       });
 
       setShowBroadcastModal(false);
-      setSelectedProviderId("");
       setBroadcastText("");
+      setSelectedProviderId("");
     } catch (err) {
       setError(err.message || "Failed to broadcast update");
     }
@@ -888,6 +801,15 @@ export default function Chat() {
     }
   }
 
+  function getReplyPreviewText(item) {
+    if (!item) return "";
+    if (item.messageType === "image") return "📷 Image";
+    if (item.messageType === "video") return "🎥 Video";
+    if (item.messageType === "file") return "📎 File";
+    if (item.messageType === "listing_card") return "📌 Listing";
+    return item.text || "Message";
+  }
+
   function toggleGroupUser(userId) {
     setSelectedGroupUsers((prev) =>
       prev.includes(userId)
@@ -896,58 +818,11 @@ export default function Chat() {
     );
   }
 
-  function openPanel(type) {
-    setPanelType(type);
-    setPanelOpen(true);
-  }
-
-  function renderPanelItem(item) {
-    if (panelType === "users") {
-      return (
-        <button
-          key={item.id}
-          className="chatSidePanelItem"
-          onClick={() => openChatWithUser(item.id)}
-        >
-          <div className="chatSidePanelItemLeft">
-            {item.avatar ? (
-              <img src={item.avatar} alt={item.name} className="chatSidePanelAvatar" />
-            ) : (
-              <div className="chatSidePanelAvatar chatSidePanelAvatarFallback">
-                {item.name?.charAt(0)?.toUpperCase() || "U"}
-              </div>
-            )}
-            <span>{item.name}</span>
-          </div>
-        </button>
-      );
-    }
-
-    const displayName = getConversationDisplayName(item);
-    const displayAvatar = getConversationDisplayAvatar(item);
-
-    return (
-      <button
-        key={item.id}
-        className="chatSidePanelItem"
-        onClick={() => {
-          openConversation(item);
-          setPanelOpen(false);
-        }}
-      >
-        <div className="chatSidePanelItemLeft">
-          {displayAvatar ? (
-            <img src={displayAvatar} alt={displayName} className="chatSidePanelAvatar" />
-          ) : (
-            <div className="chatSidePanelAvatar chatSidePanelAvatarFallback">
-              {displayName?.charAt(0)?.toUpperCase() || "G"}
-            </div>
-          )}
-          <span>{displayName}</span>
-        </div>
-      </button>
-    );
-  }
+  const canShowProviderTools =
+    user?.role === "provider" &&
+    myProviders.length > 0 &&
+    activeConversation &&
+    activeConversation.conversationType === "direct";
 
   if (!isLoggedIn()) return null;
 
@@ -955,391 +830,497 @@ export default function Chat() {
     <div className="container chatPage">
       {error ? <div className="chatAlert">{error}</div> : null}
 
-      <div className="chatPageWrap">
-        <div className="chatNavTabs">
-          <button className="chatNavTab" onClick={() => openPanel("recent")}>
-            Recent Conversations
-          </button>
-          <button className="chatNavTab" onClick={() => openPanel("users")}>
-            All Users
-          </button>
-          <button className="chatNavTab" onClick={() => openPanel("groups")}>
-            Groups
-          </button>
-          <button className="chatNavTab" onClick={() => openPanel("trip")}>
-            Trip Buddy Groups
-          </button>
-          <button className="chatNavTab action" onClick={() => setShowGroupModal(true)}>
-            + Create Group
-          </button>
-          <button
-            className="chatNavTab action"
-            onClick={() => {
-              setShowGroupModal(true);
-              setGroupDescription("Trip Buddy Group");
-            }}
-          >
-            + Trip Buddy Group
-          </button>
-        </div>
+      <div className="chatLayout">
+        <aside className="chatSidebar">
+          <div className="chatSidebarCard">
+            <div className="chatSidebarHead">
+              <h2>Chats</h2>
+              <p>Conversations, groups and users</p>
+            </div>
 
-        <div className="chatMainWrap">
-          {panelOpen ? (
-            <aside className="chatSidePanelFixed">
-              <div className="chatSidePanelHeader">
-                <h3>
-                  {panelType === "recent" ? "Recent Conversations" : ""}
-                  {panelType === "users" ? "All Users" : ""}
-                  {panelType === "groups" ? "Groups" : ""}
-                  {panelType === "trip" ? "Trip Buddy Groups" : ""}
-                </h3>
-                <button onClick={() => setPanelOpen(false)}>✕</button>
-              </div>
+            <div className="chatSidebarTopActions">
+              <button className="chatMiniActionBtn" onClick={() => setShowGroupModal(true)}>
+                + Create Group
+              </button>
 
-              <div className="chatSidePanelList noScrollbar">
-                {panelItems.length === 0 ? (
-                  <div className="chatEmptyCard">No items found.</div>
-                ) : (
-                  panelItems.map(renderPanelItem)
-                )}
-              </div>
-            </aside>
-          ) : null}
+              <button
+                className="chatMiniActionBtn"
+                onClick={() => {
+                  setShowGroupModal(true);
+                  setGroupDescription("Trip Buddy Group");
+                }}
+              >
+                + Trip Buddy Group
+              </button>
+            </div>
 
-          <section className="chatMainAreaLarge">
-            {!activeConversation ? (
-              <div className="chatMainEmpty oldSize">
-                <div className="chatMainEmptyCard">
-                  <h3>Select a chat</h3>
-                  <p>Choose recent conversation, users, groups, or trip buddy groups.</p>
-                </div>
-              </div>
-            ) : (
-              <div className="chatMainCard oldSize">
-                <div className="chatHeaderBar">
-                  <div className="chatHeaderUser">
+            <input
+              className="chatSearch"
+              placeholder="Search users..."
+              value={userSearch}
+              onChange={(e) => setUserSearch(e.target.value)}
+            />
+
+            <div className="chatSectionLabel">Recent Conversations</div>
+
+            <div className="chatConversationList noScrollbar">
+              {visibleConversations.length === 0 ? (
+                <div className="chatEmptyCard">No conversations yet.</div>
+              ) : (
+                visibleConversations.map((item) => {
+                  const displayName = getConversationDisplayName(item, user?.id);
+                  const displayAvatar = getConversationDisplayAvatar(item);
+
+                  return (
+                    <button
+                      key={item.id}
+                      className={`chatConversationItem ${
+                        activeConversation?.id === item.id ? "active" : ""
+                      }`}
+                      onClick={() => openConversation(item)}
+                    >
+                      <div className="chatAvatarWrap">
+                        {displayAvatar ? (
+                          <img
+                            src={displayAvatar}
+                            alt={displayName}
+                            className="chatAvatar"
+                          />
+                        ) : (
+                          <div className="chatAvatarFallback">
+                            {displayName?.charAt(0)?.toUpperCase() || "U"}
+                          </div>
+                        )}
+
+                        {item.conversationType === "direct" ? (
+                          <span
+                            className={`chatPresenceDot ${
+                              item.otherUser?.isOnline ? "online" : "offline"
+                            }`}
+                          />
+                        ) : (
+                          <span className="chatGroupBadge">G</span>
+                        )}
+                      </div>
+
+                      <div className="chatConversationBody">
+                        <div className="chatConversationTop">
+                          <strong>{displayName}</strong>
+
+                          <div className="chatConversationTopRight">
+                            <span>{formatMessageTime(item.lastMessageAt)}</span>
+                            {unreadCounts[String(item.id)] ? (
+                              <span className="chatUnreadBadge">
+                                {unreadCounts[String(item.id)]}
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+
+                        <div className="chatConversationPreview">
+                          {getPreviewLabel(item)}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="chatSectionLabel">All Users</div>
+
+            <div className="chatUserList noScrollbar">
+              {filteredUsers.length === 0 ? (
+                <div className="chatEmptyCard">No users found.</div>
+              ) : (
+                filteredUsers.map((item) => (
+                  <button
+                    key={item.id}
+                    className="chatUserItem"
+                    onClick={() => openChatWithUser(item.id)}
+                  >
                     <div className="chatAvatarWrap">
-                      {getConversationDisplayAvatar(activeConversation) ? (
-                        <img
-                          src={getConversationDisplayAvatar(activeConversation)}
-                          alt={getConversationDisplayName(activeConversation)}
-                          className="chatAvatar large"
-                        />
+                      {item.avatar ? (
+                        <img src={item.avatar} alt={item.name} className="chatAvatar" />
                       ) : (
-                        <div className="chatAvatarFallback large">
-                          {getConversationDisplayName(activeConversation)
-                            ?.charAt(0)
-                            ?.toUpperCase() || "U"}
+                        <div className="chatAvatarFallback">
+                          {item.name?.charAt(0)?.toUpperCase() || "U"}
                         </div>
                       )}
+                      <span
+                        className={`chatPresenceDot ${item.isOnline ? "online" : "offline"}`}
+                      />
                     </div>
 
-                    <div className="chatHeaderContent">
-                      <div className="chatHeaderName">
-                        {getConversationDisplayName(activeConversation)}
-                      </div>
-                      <div className="chatHeaderMeta">
-                        {getConversationPresenceText(activeConversation)}
-                      </div>
+                    <div className="chatUserBody">
+                      <strong>{item.name}</strong>
+                      <span>
+                        {item.isOnline ? "Online" : formatLastSeen(item.lastSeenAt)}
+                      </span>
                     </div>
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </aside>
+
+        <section className="chatMain">
+          {!activeConversation ? (
+            <div className="chatMainEmpty">
+              <div className="chatMainEmptyCard">
+                <h3>Select a chat</h3>
+                <p>Choose a conversation, group, or start with any user.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="chatMainCard">
+              <div className="chatHeaderBar">
+                <div className="chatHeaderUser">
+                  <div className="chatAvatarWrap">
+                    {getConversationDisplayAvatar(activeConversation) ? (
+                      <img
+                        src={getConversationDisplayAvatar(activeConversation)}
+                        alt={getConversationDisplayName(activeConversation, user?.id)}
+                        className="chatAvatar large"
+                      />
+                    ) : (
+                      <div className="chatAvatarFallback large">
+                        {getConversationDisplayName(activeConversation, user?.id)
+                          ?.charAt(0)
+                          ?.toUpperCase() || "U"}
+                      </div>
+                    )}
+
+                    {activeConversation.conversationType === "direct" ? (
+                      <span
+                        className={`chatPresenceDot ${
+                          activeOtherUser?.isOnline ? "online" : "offline"
+                        }`}
+                      />
+                    ) : (
+                      <span className="chatGroupBadge large">G</span>
+                    )}
                   </div>
 
-                  <div className="chatHeaderTools">
-                    {canShowProviderTools ? (
-                      <>
-                        <button
-                          className="chatHeaderGhostBtn"
-                          onClick={() => setShowListingModal(true)}
-                        >
-                          Send Listing Card
-                        </button>
-
-                        <button
-                          className="chatHeaderGhostBtn"
-                          onClick={() => setShowBroadcastModal(true)}
-                        >
-                          Broadcast Update
-                        </button>
-                      </>
-                    ) : null}
-
-                    <button className="chatHeaderGhostBtn" onClick={handleClearChat}>
-                      Clear Chat
-                    </button>
+                  <div className="chatHeaderContent">
+                    <div className="chatHeaderName">
+                      {getConversationDisplayName(activeConversation, user?.id)}
+                    </div>
+                    <div className="chatHeaderMeta">
+                      {getConversationPresenceText(activeConversation)}
+                    </div>
                   </div>
                 </div>
 
-                <div
-                  ref={messagesRef}
-                  className="chatMessages noScrollbar"
-                  onScroll={handleMessagesScroll}
-                >
-                  {loadingMessages ? (
-                    <div className="chatEmptyCard">Loading messages...</div>
-                  ) : messages.length === 0 ? (
-                    <div className="chatEmptyCard">No messages yet. Start the conversation.</div>
-                  ) : (
-                    messageItems.map((entry) => {
-                      if (entry.type === "separator") {
-                        return (
-                          <div key={entry.id} className="chatDateSeparator">
-                            <span>{entry.label}</span>
-                          </div>
-                        );
-                      }
+                <div className="chatHeaderTools">
+                  {canShowProviderTools ? (
+                    <>
+                      <button
+                        className="chatHeaderGhostBtn"
+                        onClick={() => setShowListingModal(true)}
+                      >
+                        Send Listing Card
+                      </button>
 
-                      const msg = entry.message;
-                      const isMe =
-                        String(msg.sender?._id || msg.sender?.id || msg.sender) ===
-                        String(user?.id);
+                      <button
+                        className="chatHeaderGhostBtn"
+                        onClick={() => setShowBroadcastModal(true)}
+                      >
+                        Broadcast Update
+                      </button>
+                    </>
+                  ) : null}
 
+                  <button className="chatHeaderGhostBtn" onClick={handleClearChat}>
+                    Clear Chat
+                  </button>
+                </div>
+              </div>
+
+              <div
+                ref={messagesRef}
+                className="chatMessages noScrollbar"
+                onScroll={handleMessagesScroll}
+              >
+                {loadingMessages ? (
+                  <div className="chatEmptyCard">Loading messages...</div>
+                ) : messages.length === 0 ? (
+                  <div className="chatEmptyCard">No messages yet. Start the conversation.</div>
+                ) : (
+                  messageItems.map((entry) => {
+                    if (entry.type === "separator") {
                       return (
-                        <div key={msg.id} className={`chatBubbleRow ${isMe ? "me" : "other"}`}>
-                          <div className={`chatBubbleWrap ${isMe ? "me" : "other"}`}>
-                            <div className={`chatBubble ${isMe ? "me" : "other"}`}>
-                              {msg.replyTo?.messageId ? (
-                                <div className="chatReplyBlock">
-                                  <strong>Reply</strong>
-                                  <span>{getReplyPreviewText(msg.replyTo)}</span>
+                        <div key={entry.id} className="chatDateSeparator">
+                          <span>{entry.label}</span>
+                        </div>
+                      );
+                    }
+
+                    const msg = entry.message;
+                    const isMe =
+                      String(msg.sender?._id || msg.sender?.id || msg.sender) ===
+                      String(user?.id);
+
+                    return (
+                      <div
+                        key={msg.id}
+                        className={`chatBubbleRow ${isMe ? "me" : "other"}`}
+                      >
+                        <div className={`chatBubbleWrap ${isMe ? "me" : "other"}`}>
+                          <div className={`chatBubble ${isMe ? "me" : "other"}`}>
+                            {msg.replyTo?.messageId ? (
+                              <div className="chatReplyBlock">
+                                <strong>Reply</strong>
+                                <span>{getReplyPreviewText(msg.replyTo)}</span>
+                              </div>
+                            ) : null}
+
+                            {editingMessageId === String(msg.id) ? (
+                              <div className="chatEditWrap">
+                                <textarea
+                                  className="chatEditInput"
+                                  value={editText}
+                                  onChange={(e) => setEditText(e.target.value)}
+                                  rows={2}
+                                />
+                                <div className="chatEditActions">
+                                  <button onClick={handleSaveEdit}>Save</button>
+                                  <button
+                                    className="alt"
+                                    onClick={() => {
+                                      setEditingMessageId("");
+                                      setEditText("");
+                                    }}
+                                  >
+                                    Cancel
+                                  </button>
                                 </div>
-                              ) : null}
+                              </div>
+                            ) : (
+                              <>
+                                {msg.messageType === "text" && (
+                                  <div className="chatBubbleText">{msg.text}</div>
+                                )}
 
-                              {editingMessageId === String(msg.id) ? (
-                                <div className="chatEditWrap">
-                                  <textarea
-                                    className="chatEditInput"
-                                    value={editText}
-                                    onChange={(e) => setEditText(e.target.value)}
-                                    rows={2}
-                                  />
-                                  <div className="chatEditActions">
-                                    <button onClick={handleSaveEdit}>Save</button>
-                                    <button
-                                      className="alt"
-                                      onClick={() => {
-                                        setEditingMessageId("");
-                                        setEditText("");
-                                      }}
-                                    >
-                                      Cancel
-                                    </button>
-                                  </div>
-                                </div>
-                              ) : (
-                                <>
-                                  {msg.messageType === "text" ? (
-                                    <div className="chatBubbleText">{msg.text}</div>
-                                  ) : null}
-
-                                  {msg.messageType === "image" ? (
-                                    <div className="chatMediaWrap">
-                                      {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
-                                      <img
-                                        src={msg.media?.url}
-                                        alt={msg.media?.originalName || "chat image"}
-                                        className="chatMediaImage"
-                                      />
-                                    </div>
-                                  ) : null}
-
-                                  {msg.messageType === "video" ? (
-                                    <div className="chatMediaWrap">
-                                      {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
-                                      <video controls className="chatMediaVideo">
-                                        <source
-                                          src={msg.media?.url}
-                                          type={msg.media?.mimeType || "video/mp4"}
-                                        />
-                                      </video>
-                                    </div>
-                                  ) : null}
-
-                                  {msg.messageType === "file" ? (
-                                    <div className="chatMediaWrap">
-                                      {msg.text ? <div className="chatBubbleText">{msg.text}</div> : null}
-                                      <a
-                                        href={msg.media?.url}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="chatFileLink"
-                                      >
-                                        📎 {msg.media?.originalName || "Open file"}
-                                      </a>
-                                    </div>
-                                  ) : null}
-
-                                  {msg.messageType === "listing_card" ? (
-                                    <div className="chatListingCard">
-                                      {msg.listingCard?.imageUrl ? (
-                                        <img
-                                          src={msg.listingCard.imageUrl}
-                                          alt={msg.listingCard.title || "Listing"}
-                                          className="chatListingCardImage"
-                                        />
-                                      ) : null}
-
-                                      <div className="chatListingCardBody">
-                                        <strong>{msg.listingCard?.title || "Listing"}</strong>
-                                        <span>{msg.listingCard?.subtitle || ""}</span>
-                                        <span className="chatListingCardPrice">
-                                          {msg.listingCard?.priceText || ""}
-                                        </span>
-
-                                        {msg.listingCard?.targetUrl ? (
-                                          <button
-                                            className="chatListingCardBtn"
-                                            onClick={() => navigate(msg.listingCard.targetUrl)}
-                                          >
-                                            View Listing
-                                          </button>
-                                        ) : null}
-                                      </div>
-                                    </div>
-                                  ) : null}
-
-                                  {msg.messageType === "system" ? (
-                                    <div className="chatSystemText">{msg.text}</div>
-                                  ) : null}
-
-                                  <div className="chatBubbleMeta">
-                                    <span>{formatMessageTime(msg.createdAt)}</span>
-                                    {msg.isEdited ? <span>Edited</span> : null}
-                                    {msg.forwardedFrom ? <span>Forwarded</span> : null}
-                                    {isMe ? (
-                                      <span>
-                                        {msg.seenBy?.some((id) => String(id) !== String(user?.id))
-                                          ? "Seen"
-                                          : "Sent"}
-                                      </span>
+                                {msg.messageType === "image" && (
+                                  <div className="chatMediaWrap">
+                                    {msg.text ? (
+                                      <div className="chatBubbleText">{msg.text}</div>
                                     ) : null}
+                                    <img
+                                      src={msg.media?.url}
+                                      alt={msg.media?.originalName || "chat image"}
+                                      className="chatMediaImage"
+                                    />
                                   </div>
-                                </>
-                              )}
-                            </div>
+                                )}
 
-                            <div className="chatMessageActionsWrap">
-                              <button
-                                className="chatMessageMenuBtn"
-                                onClick={() =>
-                                  setMenuOpenId((prev) =>
-                                    prev === String(msg.id) ? "" : String(msg.id)
-                                  )
-                                }
-                              >
-                                ⋯
-                              </button>
+                                {msg.messageType === "video" && (
+                                  <div className="chatMediaWrap">
+                                    {msg.text ? (
+                                      <div className="chatBubbleText">{msg.text}</div>
+                                    ) : null}
+                                    <video controls className="chatMediaVideo">
+                                      <source
+                                        src={msg.media?.url}
+                                        type={msg.media?.mimeType || "video/mp4"}
+                                      />
+                                    </video>
+                                  </div>
+                                )}
 
-                              {menuOpenId === String(msg.id) ? (
-                                <div className="chatMessageMenu">
+                                {msg.messageType === "file" && (
+                                  <div className="chatMediaWrap">
+                                    {msg.text ? (
+                                      <div className="chatBubbleText">{msg.text}</div>
+                                    ) : null}
+                                    <a
+                                      href={msg.media?.url}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="chatFileLink"
+                                    >
+                                      📎 {msg.media?.originalName || "Open file"}
+                                    </a>
+                                  </div>
+                                )}
+
+                                {msg.messageType === "listing_card" ? (
+                                  <div className="chatListingCard">
+                                    {msg.listingCard?.imageUrl ? (
+                                      <img
+                                        src={msg.listingCard.imageUrl}
+                                        alt={msg.listingCard.title || "Listing"}
+                                        className="chatListingCardImage"
+                                      />
+                                    ) : null}
+
+                                    <div className="chatListingCardBody">
+                                      <strong>{msg.listingCard?.title || "Listing"}</strong>
+                                      <span>{msg.listingCard?.subtitle || ""}</span>
+                                      <span className="chatListingCardPrice">
+                                        {msg.listingCard?.priceText || ""}
+                                      </span>
+
+                                      {msg.listingCard?.targetUrl ? (
+                                        <button
+                                          className="chatListingCardBtn"
+                                          onClick={() => navigate(msg.listingCard.targetUrl)}
+                                        >
+                                          View Listing
+                                        </button>
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                ) : null}
+
+                                {msg.messageType === "system" && (
+                                  <div className="chatSystemText">{msg.text}</div>
+                                )}
+
+                                <div className="chatBubbleMeta">
+                                  <span>{formatMessageTime(msg.createdAt)}</span>
+                                  {msg.isEdited ? <span>Edited</span> : null}
+                                  {msg.forwardedFrom ? <span>Forwarded</span> : null}
+                                  {isMe ? (
+                                    <span>
+                                      {msg.seenBy?.some((id) => String(id) !== String(user?.id))
+                                        ? "Seen"
+                                        : "Sent"}
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </>
+                            )}
+                          </div>
+
+                          <div className="chatMessageActionsWrap">
+                            <button
+                              className="chatMessageMenuBtn"
+                              onClick={() =>
+                                setMenuOpenId((prev) =>
+                                  prev === String(msg.id) ? "" : String(msg.id)
+                                )
+                              }
+                            >
+                              ⋯
+                            </button>
+
+                            {menuOpenId === String(msg.id) ? (
+                              <div className="chatMessageMenu">
+                                <button
+                                  onClick={() => {
+                                    setReplyingTo(msg);
+                                    setMenuOpenId("");
+                                  }}
+                                >
+                                  Reply
+                                </button>
+
+                                <button
+                                  onClick={() => {
+                                    handleForwardMessage(msg.id);
+                                  }}
+                                >
+                                  Forward
+                                </button>
+
+                                {isMe && msg.messageType === "text" ? (
                                   <button
                                     onClick={() => {
-                                      setReplyingTo(msg);
+                                      setEditingMessageId(String(msg.id));
+                                      setEditText(msg.text || "");
                                       setMenuOpenId("");
                                     }}
                                   >
-                                    Reply
+                                    Edit
                                   </button>
+                                ) : null}
 
-                                  <button onClick={() => handleForwardMessage(msg.id)}>
-                                    Forward
-                                  </button>
-
-                                  {isMe && msg.messageType === "text" ? (
-                                    <button
-                                      onClick={() => {
-                                        setEditingMessageId(String(msg.id));
-                                        setEditText(msg.text || "");
-                                        setMenuOpenId("");
-                                      }}
-                                    >
-                                      Edit
-                                    </button>
-                                  ) : null}
-
-                                  <button
-                                    className="danger"
-                                    onClick={() => handleDeleteForMe(msg.id)}
-                                  >
-                                    Delete for me
-                                  </button>
-                                </div>
-                              ) : null}
-                            </div>
+                                <button
+                                  className="danger"
+                                  onClick={() => handleDeleteForMe(msg.id)}
+                                >
+                                  Delete for me
+                                </button>
+                              </div>
+                            ) : null}
                           </div>
                         </div>
-                      );
-                    })
-                  )}
-
-                  {Object.values(typingUsers).some(Boolean) ? (
-                    <div className="chatTyping">Typing...</div>
-                  ) : null}
-                </div>
-
-                <div className="chatComposerBar">
-                  {replyingTo ? (
-                    <div className="chatReplyComposer">
-                      <div>
-                        <strong>Replying</strong>
-                        <span>{getReplyPreviewText(replyingTo)}</span>
                       </div>
-                      <button onClick={() => setReplyingTo(null)}>✕</button>
+                    );
+                  })
+                )}
+
+                {Object.values(typingUsers).some(Boolean) ? (
+                  <div className="chatTyping">Typing...</div>
+                ) : null}
+              </div>
+
+              <div className="chatComposerBar">
+                {replyingTo ? (
+                  <div className="chatReplyComposer">
+                    <div>
+                      <strong>Replying</strong>
+                      <span>{getReplyPreviewText(replyingTo)}</span>
                     </div>
-                  ) : null}
+                    <button onClick={() => setReplyingTo(null)}>✕</button>
+                  </div>
+                ) : null}
 
-                  {selectedFile ? (
-                    <div className="chatSelectedFile">
-                      <span>{selectedFile.name}</span>
-                      <button type="button" onClick={() => setSelectedFile(null)}>
-                        Remove
-                      </button>
-                    </div>
-                  ) : null}
-
-                  <div className="chatComposerRow">
-                    <button
-                      type="button"
-                      className="chatAttachBtn"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      +
-                    </button>
-
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      className="chatHiddenFile"
-                      onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                    />
-
-                    <textarea
-                      className="chatInput"
-                      value={text}
-                      onChange={(e) => handleInputChange(e.target.value)}
-                      placeholder="Type message..."
-                      rows={1}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSend();
-                        }
-                      }}
-                    />
-
-                    <button
-                      type="button"
-                      className="chatSendBtn"
-                      onClick={handleSend}
-                      disabled={sending || (!text.trim() && !selectedFile)}
-                    >
-                      {sending ? "Sending..." : "Send"}
+                {selectedFile ? (
+                  <div className="chatSelectedFile">
+                    <span>{selectedFile.name}</span>
+                    <button type="button" onClick={() => setSelectedFile(null)}>
+                      Remove
                     </button>
                   </div>
+                ) : null}
+
+                <div className="chatComposerRow">
+                  <button
+                    type="button"
+                    className="chatAttachBtn"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    +
+                  </button>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="chatHiddenFile"
+                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                  />
+
+                  <textarea
+                    className="chatInput"
+                    value={text}
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    placeholder="Type message..."
+                    rows={1}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSend();
+                      }
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    className="chatSendBtn"
+                    onClick={handleSend}
+                    disabled={sending || (!text.trim() && !selectedFile)}
+                  >
+                    {sending ? "Sending..." : "Send"}
+                  </button>
                 </div>
               </div>
-            )}
-          </section>
-        </div>
+            </div>
+          )}
+        </section>
       </div>
 
       {showGroupModal ? (
@@ -1388,7 +1369,7 @@ export default function Chat() {
               <button className="chatHeaderGhostBtn" onClick={() => setShowGroupModal(false)}>
                 Cancel
               </button>
-              <button className="chatSendBtn" onClick={() => handleCreateGroup("standard")}>
+              <button className="chatSendBtn" onClick={() => handleCreateGroup("group")}>
                 Create Group
               </button>
               <button className="chatSendBtn" onClick={() => handleCreateGroup("trip_buddy")}>
@@ -1417,7 +1398,7 @@ export default function Chat() {
                   setSelectedVehicleIndex(0);
                 }}
               >
-                <option value="">Select provider listing</option>
+                <option value="">Select your provider listing</option>
                 {myProviders.map((item) => (
                   <option key={item._id} value={item._id}>
                     {item.businessName} — {item.listingType}
@@ -1480,7 +1461,7 @@ export default function Chat() {
                 value={selectedProviderId}
                 onChange={(e) => setSelectedProviderId(e.target.value)}
               >
-                <option value="">Select provider listing</option>
+                <option value="">Select your provider listing</option>
                 {myProviders.map((item) => (
                   <option key={item._id} value={item._id}>
                     {item.businessName}
