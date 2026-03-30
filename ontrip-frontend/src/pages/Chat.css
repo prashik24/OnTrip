@@ -347,10 +347,10 @@
   padding: 16px 18px;
   border-bottom: 1px solid rgba(11, 27, 42, 0.08);
   background: rgba(248, 252, 255, 0.96);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 16px;
-  align-items: start;
   position: sticky;
   top: 0;
   z-index: 8;
@@ -383,15 +383,11 @@
 }
 
 .chatHeaderTools {
-  display: grid;
-  grid-template-columns: repeat(2, max-content);
-  gap: 10px;
-  align-content: start;
-  justify-content: end;
-}
-
-.chatHeaderTools .chatHeaderGhostBtn:last-child {
-  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 
 .chatHeaderGhostBtn,
@@ -890,24 +886,18 @@
   display: none;
 }
 
-@media (max-width: 1180px) {
-  .chatHeaderBar {
-    grid-template-columns: 1fr;
-  }
-
-  .chatHeaderTools {
-    grid-template-columns: repeat(3, max-content);
-    justify-content: start;
-  }
-
-  .chatHeaderTools .chatHeaderGhostBtn:last-child {
-    grid-column: auto;
-  }
-}
-
 @media (max-width: 1080px) {
   .chatLayout {
     grid-template-columns: 320px minmax(0, 1fr);
+  }
+
+  .chatHeaderBar {
+    align-items: flex-start;
+  }
+
+  .chatHeaderTools {
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 }
 
@@ -938,7 +928,8 @@
   }
 
   .chatHeaderBar {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .chatHeaderUser {
@@ -946,13 +937,8 @@
   }
 
   .chatHeaderTools {
-    grid-template-columns: 1fr;
-    justify-content: stretch;
-  }
-
-  .chatHeaderTools .chatHeaderGhostBtn,
-  .chatHeaderGhostBtn {
-    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 }
 
@@ -977,8 +963,14 @@
     min-height: 50px;
   }
 
-  .chatMiniActionBtn {
+  .chatMiniActionBtn,
+  .chatHeaderGhostBtn {
     width: 100%;
+  }
+
+  .chatHeaderTools {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .chatModalActions {
