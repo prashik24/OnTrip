@@ -346,11 +346,14 @@
 .chatHeaderBar {
   padding: 16px 18px;
   border-bottom: 1px solid rgba(11, 27, 42, 0.08);
-  background: rgba(248, 252, 255, 0.8);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
+  background: rgba(248, 252, 255, 0.96);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  position: sticky;
+  top: 0;
+  z-index: 8;
 }
 
 .chatHeaderUser {
@@ -368,6 +371,7 @@
   font-size: 18px;
   font-weight: 800;
   color: var(--text);
+  line-height: 1.2;
 }
 
 .chatHeaderMeta {
@@ -375,19 +379,25 @@
   color: var(--muted);
   font-weight: 550;
   font-size: 14px;
+  line-height: 1.25;
 }
 
 .chatHeaderTools {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
   gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  align-content: start;
+  justify-content: end;
+}
+
+.chatHeaderTools .chatHeaderGhostBtn:last-child {
+  grid-column: 2;
 }
 
 .chatHeaderGhostBtn,
 .chatListingCardBtn {
   min-height: 42px;
-  padding: 0 14px;
+  padding: 0 18px;
   border-radius: 12px;
   border: 1px solid rgba(11, 27, 42, 0.1);
   background: #fff;
@@ -396,6 +406,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
+  white-space: nowrap;
 }
 
 .chatMessages {
@@ -879,6 +890,21 @@
   display: none;
 }
 
+@media (max-width: 1180px) {
+  .chatHeaderBar {
+    grid-template-columns: 1fr;
+  }
+
+  .chatHeaderTools {
+    grid-template-columns: repeat(3, max-content);
+    justify-content: start;
+  }
+
+  .chatHeaderTools .chatHeaderGhostBtn:last-child {
+    grid-column: auto;
+  }
+}
+
 @media (max-width: 1080px) {
   .chatLayout {
     grid-template-columns: 320px minmax(0, 1fr);
@@ -912,12 +938,21 @@
   }
 
   .chatHeaderBar {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .chatHeaderUser {
+    align-items: flex-start;
   }
 
   .chatHeaderTools {
+    grid-template-columns: 1fr;
     justify-content: stretch;
+  }
+
+  .chatHeaderTools .chatHeaderGhostBtn,
+  .chatHeaderGhostBtn {
+    width: 100%;
   }
 }
 
@@ -942,7 +977,6 @@
     min-height: 50px;
   }
 
-  .chatHeaderGhostBtn,
   .chatMiniActionBtn {
     width: 100%;
   }
