@@ -144,24 +144,17 @@ export default function Chat() {
     return activeConversation?.otherUser || null;
   }, [activeConversation]);
 
-  const visibleDirectConversations = useMemo(() => {
+  const visibleConversations = useMemo(() => {
     return conversations.filter(
       (item) =>
         item &&
-        item.conversationType === "direct" &&
         item.lastMessageAt &&
         (item.lastMessageText || item.lastMessageType)
     );
   }, [conversations]);
 
-  const visibleGroupConversations = useMemo(() => {
-    return conversations.filter(
-      (item) =>
-        item &&
-        item.conversationType === "group" &&
-        item.lastMessageAt &&
-        (item.lastMessageText || item.lastMessageType)
-    );
+  const groupConversations = useMemo(() => {
+    return conversations.filter((item) => item?.conversationType === "group");
   }, [conversations]);
 
   const filteredUsers = useMemo(() => {
@@ -177,9 +170,9 @@ export default function Chat() {
   const messageItems = useMemo(() => buildMessageItems(messages), [messages]);
 
   const forwardTargets = useMemo(() => {
-    return conversations
-      .filter((item) => item.lastMessageAt)
-      .filter((item) => String(item.id) !== String(activeConversation?.id || ""));
+    return conversations.filter(
+      (item) => String(item.id) !== String(activeConversation?.id || "")
+    );
   }, [conversations, activeConversation]);
 
   useEffect(() => {
@@ -242,12 +235,12 @@ export default function Chat() {
           return;
         }
 
-        const firstRealConversation = (convRes.conversations || []).find(
-          (item) => item?.lastMessageAt
-        );
+        const firstConversation =
+          (convRes.conversations || []).find((item) => item?.lastMessageAt) ||
+          (convRes.conversations || []).find((item) => item?.conversationType === "group");
 
-        if (firstRealConversation) {
-          await openConversation(firstRealConversation);
+        if (firstConversation) {
+          await openConversation(firstConversation);
         }
       } catch (err) {
         setError(err.message || "Failed to load chat");
@@ -790,7 +783,7 @@ export default function Chat() {
   function getConversationSubtitle(item) {
     if (!item) return "";
     if (item.conversationType === "group") {
-      return `${item.participants?.length || 0} members`;
+      return `You are added to this group • ${item.participants?.length || 0} members`;
     }
     return item.otherUser?.isOnline
       ? "Online"
@@ -808,7 +801,7 @@ export default function Chat() {
           <div className="chatSidebarCard">
             <div className="chatSidebarHead">
               <h2>Chats</h2>
-              <p>Conversations and users</p>
+              <p>Conversations, groups and users</p>
             </div>
 
             <div className="chatSidebarActions">
@@ -860,140 +853,150 @@ export default function Chat() {
               onChange={(e) => setUserSearch(e.target.value)}
             />
 
-            <div className="chatSectionLabel">Recent Conversations</div>
+            <div className="chatSidebarSections">
+              <div className="chatSectionBlock">
+                <div className="chatSectionLabel">Recent Conversations</div>
 
-            <div className="chatConversationList scrollArea">
-              {visibleDirectConversations.length === 0 ? (
-                <div className="chatEmptyCard">No direct conversations yet.</div>
-              ) : (
-                visibleDirectConversations.map((item) => (
-                  <button
-                    key={item.id}
-                    className={`chatConversationItem ${
-                      activeConversation?.id === item.id ? "active" : ""
-                    }`}
-                    onClick={() => openConversation(item)}
-                  >
-                    <div className="chatAvatarWrap">
-                      {item.otherUser?.avatar ? (
-                        <img
-                          src={item.otherUser.avatar}
-                          alt={item.otherUser.name}
-                          className="chatAvatar"
-                        />
-                      ) : (
-                        <div className="chatAvatarFallback">
-                          {item.otherUser?.name?.charAt(0)?.toUpperCase() || "U"}
-                        </div>
-                      )}
-
-                      <span
-                        className={`chatPresenceDot ${
-                          item.otherUser?.isOnline ? "online" : "offline"
+                <div className="chatConversationList noScrollbar">
+                  {visibleConversations.length === 0 ? (
+                    <div className="chatEmptyCard">No conversations yet.</div>
+                  ) : (
+                    visibleConversations.map((item) => (
+                      <button
+                        key={item.id}
+                        className={`chatConversationItem ${
+                          activeConversation?.id === item.id ? "active" : ""
                         }`}
-                      />
-                    </div>
+                        onClick={() => openConversation(item)}
+                      >
+                        <div className="chatAvatarWrap">
+                          {item.conversationType === "group" ? (
+                            <div className="chatAvatarFallback">
+                              {(item.groupName || "G").charAt(0).toUpperCase()}
+                            </div>
+                          ) : item.otherUser?.avatar ? (
+                            <img
+                              src={item.otherUser.avatar}
+                              alt={item.otherUser.name}
+                              className="chatAvatar"
+                            />
+                          ) : (
+                            <div className="chatAvatarFallback">
+                              {item.otherUser?.name?.charAt(0)?.toUpperCase() || "U"}
+                            </div>
+                          )}
 
-                    <div className="chatConversationBody">
-                      <div className="chatConversationTop">
-                        <strong>{item.otherUser?.name || "User"}</strong>
-
-                        <div className="chatConversationTopRight">
-                          <span>{formatMessageTime(item.lastMessageAt)}</span>
-                          {unreadCounts[String(item.id)] ? (
-                            <span className="chatUnreadBadge">
-                              {unreadCounts[String(item.id)]}
-                            </span>
+                          {item.conversationType === "direct" ? (
+                            <span
+                              className={`chatPresenceDot ${
+                                item.otherUser?.isOnline ? "online" : "offline"
+                              }`}
+                            />
                           ) : null}
                         </div>
-                      </div>
 
-                      <div className="chatConversationPreview">
-                        {getPreviewLabel(item)}
-                      </div>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
+                        <div className="chatConversationBody">
+                          <div className="chatConversationTop">
+                            <strong>{getConversationDisplayName(item)}</strong>
 
-            <div className="chatSectionLabel">Groups</div>
+                            <div className="chatConversationTopRight">
+                              <span>{formatMessageTime(item.lastMessageAt)}</span>
+                              {unreadCounts[String(item.id)] ? (
+                                <span className="chatUnreadBadge">
+                                  {unreadCounts[String(item.id)]}
+                                </span>
+                              ) : null}
+                            </div>
+                          </div>
 
-            <div className="chatGroupList scrollArea">
-              {visibleGroupConversations.length === 0 ? (
-                <div className="chatEmptyCard">No group messages yet.</div>
-              ) : (
-                visibleGroupConversations.map((item) => (
-                  <button
-                    key={item.id}
-                    className={`chatConversationItem ${
-                      activeConversation?.id === item.id ? "active" : ""
-                    }`}
-                    onClick={() => openConversation(item)}
-                  >
-                    <div className="chatAvatarWrap">
-                      <div className="chatAvatarFallback">
-                        {(item.groupName || "G").charAt(0).toUpperCase()}
-                      </div>
-                    </div>
-
-                    <div className="chatConversationBody">
-                      <div className="chatConversationTop">
-                        <strong>{item.groupName || "Group"}</strong>
-
-                        <div className="chatConversationTopRight">
-                          <span>{formatMessageTime(item.lastMessageAt)}</span>
-                          {unreadCounts[String(item.id)] ? (
-                            <span className="chatUnreadBadge">
-                              {unreadCounts[String(item.id)]}
-                            </span>
-                          ) : null}
+                          <div className="chatConversationPreview">
+                            {getPreviewLabel(item)}
+                          </div>
                         </div>
-                      </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
 
-                      <div className="chatConversationPreview">
-                        {getPreviewLabel(item)}
-                      </div>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
+              <div className="chatSectionBlock">
+                <div className="chatSectionLabel">Groups</div>
 
-            <div className="chatSectionLabel">All Users</div>
-
-            <div className="chatUserList scrollArea">
-              {filteredUsers.length === 0 ? (
-                <div className="chatEmptyCard">No users found.</div>
-              ) : (
-                filteredUsers.map((item) => (
-                  <button
-                    key={item.id}
-                    className="chatUserItem"
-                    onClick={() => openChatWithUser(item.id)}
-                  >
-                    <div className="chatAvatarWrap">
-                      {item.avatar ? (
-                        <img src={item.avatar} alt={item.name} className="chatAvatar" />
-                      ) : (
-                        <div className="chatAvatarFallback">
-                          {item.name?.charAt(0)?.toUpperCase() || "U"}
+                <div className="chatGroupList noScrollbar">
+                  {groupConversations.length === 0 ? (
+                    <div className="chatEmptyCard">No groups yet.</div>
+                  ) : (
+                    groupConversations.map((item) => (
+                      <button
+                        key={item.id}
+                        className={`chatConversationItem ${
+                          activeConversation?.id === item.id ? "active" : ""
+                        }`}
+                        onClick={() => openConversation(item)}
+                      >
+                        <div className="chatAvatarWrap">
+                          <div className="chatAvatarFallback">
+                            {(item.groupName || "G").charAt(0).toUpperCase()}
+                          </div>
                         </div>
-                      )}
-                      <span
-                        className={`chatPresenceDot ${item.isOnline ? "online" : "offline"}`}
-                      />
-                    </div>
 
-                    <div className="chatUserBody">
-                      <strong>{item.name}</strong>
-                      <span>
-                        {item.isOnline ? "Online" : formatLastSeen(item.lastSeenAt)}
-                      </span>
-                    </div>
-                  </button>
-                ))
-              )}
+                        <div className="chatConversationBody">
+                          <div className="chatConversationTop">
+                            <strong>{item.groupName || "Group"}</strong>
+                            {unreadCounts[String(item.id)] ? (
+                              <span className="chatUnreadBadge">
+                                {unreadCounts[String(item.id)]}
+                              </span>
+                            ) : null}
+                          </div>
+
+                          <div className="chatConversationPreview">
+                            You are added to this group • {item.participants?.length || 0} members
+                          </div>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="chatSectionBlock chatSectionBlockFill">
+                <div className="chatSectionLabel">All Users</div>
+
+                <div className="chatUserList noScrollbar">
+                  {filteredUsers.length === 0 ? (
+                    <div className="chatEmptyCard">No users found.</div>
+                  ) : (
+                    filteredUsers.map((item) => (
+                      <button
+                        key={item.id}
+                        className="chatUserItem"
+                        onClick={() => openChatWithUser(item.id)}
+                      >
+                        <div className="chatAvatarWrap">
+                          {item.avatar ? (
+                            <img src={item.avatar} alt={item.name} className="chatAvatar" />
+                          ) : (
+                            <div className="chatAvatarFallback">
+                              {item.name?.charAt(0)?.toUpperCase() || "U"}
+                            </div>
+                          )}
+                          <span
+                            className={`chatPresenceDot ${item.isOnline ? "online" : "offline"}`}
+                          />
+                        </div>
+
+                        <div className="chatUserBody">
+                          <strong>{item.name}</strong>
+                          <span>
+                            {item.isOnline ? "Online" : formatLastSeen(item.lastSeenAt)}
+                          </span>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </aside>
@@ -1003,7 +1006,7 @@ export default function Chat() {
             <div className="chatMainEmpty">
               <div className="chatMainEmptyCard">
                 <h3>Select a chat</h3>
-                <p>Choose a conversation, group, or start with any user.</p>
+                <p>Choose a conversation, group or user.</p>
               </div>
             </div>
           ) : (
@@ -1053,7 +1056,7 @@ export default function Chat() {
 
               <div
                 ref={messagesRef}
-                className="chatMessages scrollArea"
+                className="chatMessages noScrollbar"
                 onScroll={handleMessagesScroll}
               >
                 {loadingMessages ? (
@@ -1346,7 +1349,7 @@ export default function Chat() {
               rows={3}
             />
 
-            <div className="chatUserSelect scrollArea">
+            <div className="chatUserSelect noScrollbar">
               {users.map((u) => (
                 <label key={u.id} className="chatUserSelectItem">
                   <input
@@ -1385,7 +1388,7 @@ export default function Chat() {
           <div className="chatModalCard">
             <h3>Forward to</h3>
 
-            <div className="chatForwardList scrollArea">
+            <div className="chatForwardList noScrollbar">
               {forwardTargets.length === 0 ? (
                 <div className="chatEmptyCard">No other conversations available.</div>
               ) : (
