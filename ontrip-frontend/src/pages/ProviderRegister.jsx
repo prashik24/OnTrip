@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiFetch, isLoggedIn } from "../lib/api";
+import { apiFetch, isLoggedIn, saveUserOnly } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
 import "./ProviderRegister.css";
 
@@ -211,6 +211,9 @@ export default function ProviderRegister() {
         method: "POST",
         body: fd,
       });
+
+      const me = await apiFetch("/api/auth/me");
+      saveUserOnly(me.user);
 
       setMsg({ text: data.message, type: "success" });
       navigate("/profile/my-listings");
