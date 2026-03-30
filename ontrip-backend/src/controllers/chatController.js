@@ -207,17 +207,10 @@ export async function getMyConversations(req, res) {
 
     const conversations = await Conversation.find({
       participants: meId,
-      $or: [
-        { conversationType: "group" },
-        { conversationType: "broadcast" },
-        {
-          conversationType: "direct",
-          lastMessageAt: { $ne: null },
-        },
-      ],
+      lastMessageAt: { $ne: null },
     })
       .populate("participants", "name email avatar city role isOnline lastSeenAt")
-      .sort({ updatedAt: -1, lastMessageAt: -1 });
+      .sort({ lastMessageAt: -1, updatedAt: -1 });
 
     const visible = conversations.filter((item) => !isDeletedForUser(item, meId));
 
@@ -754,7 +747,8 @@ export async function sendProviderListingCard(req, res) {
         title: trip.packageTitle || provider.businessName,
         subtitle: trip.durationText || provider.city || "",
         priceText: `₹${trip.priceFrom || 0}`,
-        imageUrl: trip.images?.[0]?.url || provider.serviceImage?.url || "",
+        imageUrl:
+          trip.images?.[0]?.url || provider.serviceImage?.url || "",
         targetUrl: `/providers/${provider._id}`,
       };
     } else {
@@ -765,7 +759,8 @@ export async function sendProviderListingCard(req, res) {
         title: vehicle.title || provider.businessName,
         subtitle: vehicle.vehicleType || provider.city || "",
         priceText: `₹${vehicle.price || 0}`,
-        imageUrl: vehicle.images?.[0]?.url || provider.serviceImage?.url || "",
+        imageUrl:
+          vehicle.images?.[0]?.url || provider.serviceImage?.url || "",
         targetUrl: `/providers/${provider._id}`,
       };
     }
