@@ -76,7 +76,7 @@ function isDeletedForUser(doc, userId) {
 
 function normalizeConversation(conversation, meId) {
   const participants = (conversation.participants || []).map((p) => ({
-    id: p._id,
+    id: p._id || p.id,
     name: p.name,
     email: p.email,
     avatar: p.avatar || "",
@@ -99,13 +99,14 @@ function normalizeConversation(conversation, meId) {
     groupName: conversation.groupName || "",
     groupAvatar: conversation.groupAvatar || "",
     groupDescription: conversation.groupDescription || "",
-    admins: conversation.admins || [],
+    admins: (conversation.admins || []).map((id) => String(id)),
     lastMessageText: conversation.lastMessageText || "",
     lastMessageType: conversation.lastMessageType || "text",
-    lastMessageAt: conversation.lastMessageAt || conversation.updatedAt,
+    lastMessageAt: conversation.lastMessageAt || conversation.updatedAt || null,
     lastMessageSender: conversation.lastMessageSender || null,
     createdAt: conversation.createdAt,
     updatedAt: conversation.updatedAt,
+    createdBy: conversation.createdBy || null,
   };
 }
 
@@ -207,15 +208,35 @@ export async function getMyConversations(req, res) {
 
     const conversations = await Conversation.find({
       participants: meId,
-      lastMessageAt: { $ne: null },
     })
       .populate("participants", "name email avatar city role isOnline lastSeenAt")
-      .sort({ lastMessageAt: -1, updatedAt: -1 });
+      .sort({ updatedAt: -1, createdAt: -1 });
 
     const visible = conversations.filter((item) => !isDeletedForUser(item, meId));
 
+    const recentConversations = visible
+      .filter(
+        (item) =>
+          item.conversationType === "direct" &&
+          item.lastMessageAt &&
+          (item.lastMessageText || item.lastMessageType)
+      )
+      .sort((a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0))
+      .map((item) => normalizeConversation(item, meId));
+
+    const groupConversations = visible
+      .filter((item) => item.conversationType === "group")
+      .sort((a, b) => {
+        const aDate = a.lastMessageAt || a.createdAt;
+        const bDate = b.lastMessageAt || b.createdAt;
+        return new Date(bDate) - new Date(aDate);
+      })
+      .map((item) => normalizeConversation(item, meId));
+
     return res.json({
-      conversations: visible.map((item) => normalizeConversation(item, meId)),
+      recentConversations,
+      groupConversations,
+      conversations: recentConversations,
     });
   } catch (error) {
     console.error("getMyConversations error", error);
@@ -293,6 +314,7 @@ export async function createGroupConversation(req, res) {
       groupName: groupName.trim(),
       groupDescription: groupDescription.trim(),
       createdBy: meId,
+      lastMessageAt: null,
     });
 
     const populated = await Conversation.findById(conversation._id).populate(
@@ -466,7 +488,6 @@ export async function sendMessage(req, res) {
     );
 
     const messagePayload = normalizeMessage(populatedMessage);
-    const conversationPayload = normalizeConversation(populatedConversation, meId);
 
     const io = req.app.get("io");
 
@@ -479,7 +500,7 @@ export async function sendMessage(req, res) {
 
     return res.status(201).json({
       message: "Message sent",
-      conversation: conversationPayload,
+      conversation: normalizeConversation(populatedConversation, meId),
       data: messagePayload,
     });
   } catch (error) {
@@ -747,8 +768,7 @@ export async function sendProviderListingCard(req, res) {
         title: trip.packageTitle || provider.businessName,
         subtitle: trip.durationText || provider.city || "",
         priceText: `₹${trip.priceFrom || 0}`,
-        imageUrl:
-          trip.images?.[0]?.url || provider.serviceImage?.url || "",
+        imageUrl: trip.images?.[0]?.url || provider.serviceImage?.url || "",
         targetUrl: `/providers/${provider._id}`,
       };
     } else {
@@ -759,8 +779,7 @@ export async function sendProviderListingCard(req, res) {
         title: vehicle.title || provider.businessName,
         subtitle: vehicle.vehicleType || provider.city || "",
         priceText: `₹${vehicle.price || 0}`,
-        imageUrl:
-          vehicle.images?.[0]?.url || provider.serviceImage?.url || "",
+        imageUrl: vehicle.images?.[0]?.url || provider.serviceImage?.url || "",
         targetUrl: `/providers/${provider._id}`,
       };
     }
