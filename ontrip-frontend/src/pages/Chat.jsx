@@ -916,19 +916,52 @@ export default function Chat() {
 
         <div className="chatSlidePanelBody noScrollbar">
           {sectionPanel === "recent" &&
-            data.map((item) => (
-              <button
-                key={item.id}
-                className="chatSlidePanelItem"
-                onClick={() => {
-                  openConversation(item);
-                  setSectionPanel("");
-                }}
-              >
-                <strong>{getConversationDisplayName(item, user?.id)}</strong>
-                <span>{getPreviewLabel(item)}</span>
-              </button>
-            ))}
+            data.map((item) => {
+              const displayName = getConversationDisplayName(item, user?.id);
+              const displayAvatar = getConversationDisplayAvatar(item);
+
+              return (
+                <button
+                  key={item.id}
+                  className="chatSlidePanelItem"
+                  onClick={() => {
+                    openConversation(item);
+                    setSectionPanel("");
+                  }}
+                >
+                  <div className="chatAvatarWrap">
+                    {displayAvatar ? (
+                      <img src={displayAvatar} alt={displayName} className="chatAvatar" />
+                    ) : (
+                      <div className="chatAvatarFallback">
+                        {displayName?.charAt(0)?.toUpperCase() || "U"}
+                      </div>
+                    )}
+
+                    {item.conversationType === "direct" ? (
+                      <span
+                        className={`chatPresenceDot ${
+                          item.otherUser?.isOnline ? "online" : "offline"
+                        }`}
+                      />
+                    ) : (
+                      <span className="chatGroupBadge">G</span>
+                    )}
+                  </div>
+
+                  <div className="chatUserBody">
+                    <strong>{displayName}</strong>
+                    <span>
+                      {item.conversationType === "direct"
+                        ? item.otherUser?.isOnline
+                          ? "Online"
+                          : formatLastSeen(item.otherUser?.lastSeenAt)
+                        : `${item.participants?.length || 0} members`}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
 
           {sectionPanel === "users" &&
             data.map((item) => (
@@ -940,8 +973,23 @@ export default function Chat() {
                   setSectionPanel("");
                 }}
               >
-                <strong>{item.name}</strong>
-                <span>{item.isOnline ? "Online" : formatLastSeen(item.lastSeenAt)}</span>
+                <div className="chatAvatarWrap">
+                  {item.avatar ? (
+                    <img src={item.avatar} alt={item.name} className="chatAvatar" />
+                  ) : (
+                    <div className="chatAvatarFallback">
+                      {item.name?.charAt(0)?.toUpperCase() || "U"}
+                    </div>
+                  )}
+                  <span
+                    className={`chatPresenceDot ${item.isOnline ? "online" : "offline"}`}
+                  />
+                </div>
+
+                <div className="chatUserBody">
+                  <strong>{item.name}</strong>
+                  <span>{item.isOnline ? "Online" : formatLastSeen(item.lastSeenAt)}</span>
+                </div>
               </button>
             ))}
 
@@ -955,8 +1003,21 @@ export default function Chat() {
                   setSectionPanel("");
                 }}
               >
-                <strong>{item.groupName || "Group"}</strong>
-                <span>You are added to this group</span>
+                <div className="chatAvatarWrap">
+                  {item.groupAvatar ? (
+                    <img src={item.groupAvatar} alt={item.groupName} className="chatAvatar" />
+                  ) : (
+                    <div className="chatAvatarFallback">
+                      {item.groupName?.charAt(0)?.toUpperCase() || "G"}
+                    </div>
+                  )}
+                  <span className="chatGroupBadge">G</span>
+                </div>
+
+                <div className="chatUserBody">
+                  <strong>{item.groupName || "Group"}</strong>
+                  <span>{item.participants?.length || 0} members</span>
+                </div>
               </button>
             ))}
         </div>
