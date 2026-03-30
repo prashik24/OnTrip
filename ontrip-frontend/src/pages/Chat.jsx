@@ -26,6 +26,8 @@ function getPreviewLabel(item) {
   if (item.lastMessageType === "image") return "📷 Image";
   if (item.lastMessageType === "video") return "🎥 Video";
   if (item.lastMessageType === "file") return "📎 File";
+  if (item.lastMessageType === "listing_card") return "📌 Listing";
+  if (item.lastMessageType === "system") return item.lastMessageText || "System update";
   return item.lastMessageText || "Start chatting";
 }
 
@@ -34,6 +36,65 @@ function isNearBottom(element, threshold = 120) {
   const distanceFromBottom =
     element.scrollHeight - element.scrollTop - element.clientHeight;
   return distanceFromBottom <= threshold;
+}
+
+function isSameDay(a, b) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+function getDateSeparatorLabel(dateValue) {
+  const date = new Date(dateValue);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  if (isSameDay(date, today)) return "Today";
+  if (isSameDay(date, yesterday)) return "Yesterday";
+
+  return date.toLocaleDateString([], {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function buildMessageItems(messages) {
+  const items = [];
+  let lastDateLabel = "";
+
+  for (const msg of messages) {
+    const label = getDateSeparatorLabel(msg.createdAt);
+    if (label !== lastDateLabel) {
+      items.push({
+        type: "separator",
+        id: `sep-${label}-${msg.id}`,
+        label,
+      });
+      lastDateLabel = label;
+    }
+
+    items.push({
+      type: "message",
+      id: msg.id,
+      message: msg,
+    });
+  }
+
+  return items;
+}
+
+function getReplyPreviewText(item) {
+  if (!item) return "";
+  if (item.messageType === "image") return "📷 Image";
+  if (item.messageType === "video") return "🎥 Video";
+  if (item.messageType === "file") return "📎 File";
+  if (item.messageType === "listing_card") return "📌 Listing";
+  if (item.messageType === "system") return "System update";
+  return item.text || "Message";
 }
 
 export default function Chat() {
@@ -62,6 +123,23 @@ export default function Chat() {
   const [error, setError] = useState("");
   const [unreadCounts, setUnreadCounts] = useState({});
 
+  const [menuOpenId, setMenuOpenId] = useState("");
+  const [editingMessageId, setEditingMessageId] = useState("");
+  const [editText, setEditText] = useState("");
+  const [replyingTo, setReplyingTo] = useState(null);
+
+  const [showGroupModal, setShowGroupModal] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [groupDescription, setGroupDescription] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState([]);
+
+  const [showForwardModal, setShowForwardModal] = useState(false);
+  const [forwardMessageId, setForwardMessageId] = useState("");
+
+  const [showProviderPanel, setShowProviderPanel] = useState(false);
+  const [providerIdInput, setProviderIdInput] = useState("");
+  const [providerBroadcastText, setProviderBroadcastText] = useState("");
+
   const activeOtherUser = useMemo(() => {
     return activeConversation?.otherUser || null;
   }, [activeConversation]);
@@ -74,6 +152,24 @@ export default function Chat() {
         (item.lastMessageText || item.lastMessageType)
     );
   }, [conversations]);
+
+  const filteredUsers = useMemo(() => {
+    const q = userSearch.trim().toLowerCase();
+    if (!q) return users;
+
+    return users.filter((item) => {
+      const bag = `${item.name} ${item.email} ${item.city} ${item.role}`.toLowerCase();
+      return bag.includes(q);
+    });
+  }, [users, userSearch]);
+
+  const messageItems = useMemo(() => buildMessageItems(messages), [messages]);
+
+  const forwardTargets = useMemo(() => {
+    return visibleConversations.filter(
+      (item) => String(item.id) !== String(activeConversation?.id || "")
+    );
+  }, [visibleConversations, activeConversation]);
 
   useEffect(() => {
     if (!isLoggedIn()) {
@@ -171,30 +267,53 @@ export default function Chat() {
       );
 
       setConversations((prev) =>
-        prev.map((item) =>
-          String(item.otherUser?.id) === String(userId)
-            ? {
-                ...item,
-                otherUser: {
-                  ...item.otherUser,
-                  isOnline,
-                  lastSeenAt,
-                },
-              }
-            : item
-        )
+        prev.map((item) => {
+          if (item.conversationType === "direct") {
+            return String(item.otherUser?.id) === String(userId)
+              ? {
+                  ...item,
+                  otherUser: {
+                    ...item.otherUser,
+                    isOnline,
+                    lastSeenAt,
+                  },
+                }
+              : item;
+          }
+
+          return {
+            ...item,
+            participants: (item.participants || []).map((p) =>
+              String(p.id || p._id) === String(userId)
+                ? { ...p, isOnline, lastSeenAt }
+                : p
+            ),
+          };
+        })
       );
 
       setActiveConversation((prev) => {
         if (!prev) return prev;
-        if (String(prev.otherUser?.id) !== String(userId)) return prev;
+
+        if (prev.conversationType === "direct") {
+          if (String(prev.otherUser?.id) !== String(userId)) return prev;
+          return {
+            ...prev,
+            otherUser: {
+              ...prev.otherUser,
+              isOnline,
+              lastSeenAt,
+            },
+          };
+        }
+
         return {
           ...prev,
-          otherUser: {
-            ...prev.otherUser,
-            isOnline,
-            lastSeenAt,
-          },
+          participants: (prev.participants || []).map((p) =>
+            String(p.id || p._id) === String(userId)
+              ? { ...p, isOnline, lastSeenAt }
+              : p
+          ),
         };
       });
     });
@@ -235,13 +354,15 @@ export default function Chat() {
         return [conversation, ...withoutCurrent];
       });
 
-      setUsers((prev) =>
-        prev.map((item) =>
-          String(item.id) === String(conversation.otherUser?.id)
-            ? { ...item, conversationId: conversation.id }
-            : item
-        )
-      );
+      if (conversation.conversationType === "direct") {
+        setUsers((prev) =>
+          prev.map((item) =>
+            String(item.id) === String(conversation.otherUser?.id)
+              ? { ...item, conversationId: conversation.id }
+              : item
+          )
+        );
+      }
 
       setActiveConversation((prev) => {
         if (!prev) return prev;
@@ -251,11 +372,16 @@ export default function Chat() {
 
       setMessages((prev) => {
         if (!isCurrentConversation) return prev;
-
         const exists = prev.some((item) => String(item.id) === String(message.id));
         if (exists) return prev;
         return [...prev, message];
       });
+    });
+
+    socket.on("message:updated", ({ message }) => {
+      setMessages((prev) =>
+        prev.map((item) => (String(item.id) === String(message.id) ? message : item))
+      );
     });
 
     socket.on("typing:update", ({ conversationId, userId, isTyping }) => {
@@ -288,6 +414,7 @@ export default function Chat() {
       socket.off("connect_error");
       socket.off("presence:update");
       socket.off("message:new");
+      socket.off("message:updated");
       socket.off("typing:update");
       socket.off("conversation:seen");
       disconnectSocket();
@@ -314,6 +441,12 @@ export default function Chat() {
     try {
       setLoadingMessages(true);
       setError("");
+      setMenuOpenId("");
+      setEditingMessageId("");
+      setEditText("");
+      setReplyingTo(null);
+      setShowForwardModal(false);
+      setForwardMessageId("");
 
       const socket = getSocket();
 
@@ -396,8 +529,16 @@ export default function Chat() {
 
       const formData = new FormData();
       formData.append("conversationId", activeConversation.id);
-      formData.append("receiverId", activeConversation.otherUser.id);
+
+      if (activeConversation.otherUser?.id) {
+        formData.append("receiverId", activeConversation.otherUser.id);
+      }
+
       formData.append("text", text.trim());
+
+      if (replyingTo?.id) {
+        formData.append("replyToMessageId", replyingTo.id);
+      }
 
       if (selectedFile) {
         formData.append("file", selectedFile);
@@ -432,6 +573,7 @@ export default function Chat() {
 
       setText("");
       setSelectedFile(null);
+      setReplyingTo(null);
 
       const socket = getSocket();
       socket.emit("typing:stop", { conversationId: activeConversation.id });
@@ -439,6 +581,93 @@ export default function Chat() {
       setError(err.message || "Failed to send message");
     } finally {
       setSending(false);
+    }
+  }
+
+  async function handleSaveEdit() {
+    if (!editingMessageId || !editText.trim()) return;
+
+    try {
+      setError("");
+
+      const res = await apiFetch(`/api/chat/messages/${editingMessageId}`, {
+        method: "PUT",
+        body: JSON.stringify({ text: editText.trim() }),
+      });
+
+      setMessages((prev) =>
+        prev.map((item) =>
+          String(item.id) === String(editingMessageId) ? res.data : item
+        )
+      );
+
+      setEditingMessageId("");
+      setEditText("");
+      setMenuOpenId("");
+    } catch (err) {
+      setError(err.message || "Failed to edit message");
+    }
+  }
+
+  async function handleDeleteForMe(messageId) {
+    try {
+      setError("");
+      await apiFetch(`/api/chat/messages/${messageId}/delete-for-me`, {
+        method: "DELETE",
+      });
+
+      setMessages((prev) => prev.filter((item) => String(item.id) !== String(messageId)));
+      setMenuOpenId("");
+    } catch (err) {
+      setError(err.message || "Failed to delete message");
+    }
+  }
+
+  function openForwardModal(messageId) {
+    setForwardMessageId(String(messageId));
+    setShowForwardModal(true);
+    setMenuOpenId("");
+  }
+
+  async function handleForwardToConversation(conversationId) {
+    try {
+      setError("");
+
+      await apiFetch(`/api/chat/messages/${forwardMessageId}/forward`, {
+        method: "POST",
+        body: JSON.stringify({
+          targetConversationId: conversationId,
+        }),
+      });
+
+      setShowForwardModal(false);
+      setForwardMessageId("");
+    } catch (err) {
+      setError(err.message || "Failed to forward message");
+    }
+  }
+
+  async function handleClearChat() {
+    if (!activeConversation?.id) return;
+
+    const ok = window.confirm("Clear this chat for you?");
+    if (!ok) return;
+
+    try {
+      setError("");
+
+      await apiFetch(`/api/chat/conversations/${activeConversation.id}/clear`, {
+        method: "DELETE",
+      });
+
+      setMessages([]);
+      setConversations((prev) =>
+        prev.filter((item) => String(item.id) !== String(activeConversation.id))
+      );
+      setActiveConversation(null);
+      navigate("/chat", { replace: true });
+    } catch (err) {
+      setError(err.message || "Failed to clear chat");
     }
   }
 
@@ -455,15 +684,107 @@ export default function Chat() {
     }
   }
 
-  const filteredUsers = useMemo(() => {
-    const q = userSearch.trim().toLowerCase();
-    if (!q) return users;
+  async function handleCreateGroup() {
+    if (!groupName.trim() || selectedUsers.length === 0) {
+      setError("Please enter group name and choose members");
+      return;
+    }
 
-    return users.filter((item) => {
-      const bag = `${item.name} ${item.email} ${item.city} ${item.role}`.toLowerCase();
-      return bag.includes(q);
-    });
-  }, [users, userSearch]);
+    try {
+      setError("");
+
+      const res = await apiFetch("/api/chat/conversations/group", {
+        method: "POST",
+        body: JSON.stringify({
+          groupName: groupName.trim(),
+          groupDescription: groupDescription.trim(),
+          participantIds: selectedUsers,
+        }),
+      });
+
+      setConversations((prev) => [res.conversation, ...prev]);
+      setShowGroupModal(false);
+      setGroupName("");
+      setGroupDescription("");
+      setSelectedUsers([]);
+
+      await openConversation(res.conversation);
+      navigate(`/chat?conversation=${res.conversation.id}`, { replace: true });
+    } catch (err) {
+      setError(err.message || "Failed to create group");
+    }
+  }
+
+  async function sendListingCard() {
+    if (!activeConversation?.id || !providerIdInput.trim()) {
+      setError("Enter provider id first");
+      return;
+    }
+
+    try {
+      setError("");
+
+      await apiFetch("/api/chat/provider/send-listing-card", {
+        method: "POST",
+        body: JSON.stringify({
+          conversationId: activeConversation.id,
+          providerId: providerIdInput.trim(),
+        }),
+      });
+
+      setShowProviderPanel(false);
+    } catch (err) {
+      setError(err.message || "Failed to send listing card");
+    }
+  }
+
+  async function sendBroadcast() {
+    if (!providerIdInput.trim() || !providerBroadcastText.trim()) {
+      setError("Enter provider id and broadcast text");
+      return;
+    }
+
+    try {
+      setError("");
+
+      await apiFetch("/api/chat/provider/broadcast", {
+        method: "POST",
+        body: JSON.stringify({
+          providerId: providerIdInput.trim(),
+          text: providerBroadcastText.trim(),
+        }),
+      });
+
+      setProviderBroadcastText("");
+      setShowProviderPanel(false);
+    } catch (err) {
+      setError(err.message || "Failed to send broadcast");
+    }
+  }
+
+  function toggleSelectedUser(userId) {
+    setSelectedUsers((prev) =>
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
+        : [...prev, userId]
+    );
+  }
+
+  function getConversationDisplayName(item) {
+    if (!item) return "Chat";
+    if (item.conversationType === "group") return item.groupName || "Group";
+    return item.otherUser?.name || "User";
+  }
+
+  function getConversationSubtitle(item) {
+    if (!item) return "";
+    if (item.conversationType === "group") {
+      return `${item.participants?.length || 0} members`;
+    }
+    return item.otherUser?.isOnline
+      ? "Online"
+      : formatLastSeen(item.otherUser?.lastSeenAt);
+  }
 
   if (!isLoggedIn()) return null;
 
@@ -478,6 +799,48 @@ export default function Chat() {
               <h2>Chats</h2>
               <p>Conversations and users</p>
             </div>
+
+            <div className="chatSidebarActions">
+              <button className="chatSmallPrimaryBtn" onClick={() => setShowGroupModal(true)}>
+                + New Group
+              </button>
+
+              {user?.role === "provider" ? (
+                <button
+                  className="chatSmallGhostBtn"
+                  onClick={() => setShowProviderPanel((s) => !s)}
+                >
+                  Provider Tools
+                </button>
+              ) : null}
+            </div>
+
+            {showProviderPanel ? (
+              <div className="chatProviderPanel">
+                <input
+                  className="chatSearch"
+                  placeholder="Provider id"
+                  value={providerIdInput}
+                  onChange={(e) => setProviderIdInput(e.target.value)}
+                />
+
+                <button className="chatSmallPrimaryBtn" onClick={sendListingCard}>
+                  Send Listing Card
+                </button>
+
+                <textarea
+                  className="chatProviderTextarea"
+                  placeholder="Broadcast update text..."
+                  value={providerBroadcastText}
+                  onChange={(e) => setProviderBroadcastText(e.target.value)}
+                  rows={3}
+                />
+
+                <button className="chatSmallGhostBtn" onClick={sendBroadcast}>
+                  Broadcast Update
+                </button>
+              </div>
+            ) : null}
 
             <input
               className="chatSearch"
@@ -501,7 +864,11 @@ export default function Chat() {
                     onClick={() => openConversation(item)}
                   >
                     <div className="chatAvatarWrap">
-                      {item.otherUser?.avatar ? (
+                      {item.conversationType === "group" ? (
+                        <div className="chatAvatarFallback">
+                          {(item.groupName || "G").charAt(0).toUpperCase()}
+                        </div>
+                      ) : item.otherUser?.avatar ? (
                         <img
                           src={item.otherUser.avatar}
                           alt={item.otherUser.name}
@@ -512,16 +879,19 @@ export default function Chat() {
                           {item.otherUser?.name?.charAt(0)?.toUpperCase() || "U"}
                         </div>
                       )}
-                      <span
-                        className={`chatPresenceDot ${
-                          item.otherUser?.isOnline ? "online" : "offline"
-                        }`}
-                      />
+
+                      {item.conversationType === "direct" ? (
+                        <span
+                          className={`chatPresenceDot ${
+                            item.otherUser?.isOnline ? "online" : "offline"
+                          }`}
+                        />
+                      ) : null}
                     </div>
 
                     <div className="chatConversationBody">
                       <div className="chatConversationTop">
-                        <strong>{item.otherUser?.name || "User"}</strong>
+                        <strong>{getConversationDisplayName(item)}</strong>
 
                         <div className="chatConversationTopRight">
                           <span>{formatMessageTime(item.lastMessageAt)}</span>
@@ -593,7 +963,11 @@ export default function Chat() {
               <div className="chatHeaderBar">
                 <div className="chatHeaderUser">
                   <div className="chatAvatarWrap">
-                    {activeOtherUser?.avatar ? (
+                    {activeConversation.conversationType === "group" ? (
+                      <div className="chatAvatarFallback large">
+                        {(activeConversation.groupName || "G").charAt(0).toUpperCase()}
+                      </div>
+                    ) : activeOtherUser?.avatar ? (
                       <img
                         src={activeOtherUser.avatar}
                         alt={activeOtherUser.name}
@@ -604,22 +978,29 @@ export default function Chat() {
                         {activeOtherUser?.name?.charAt(0)?.toUpperCase() || "U"}
                       </div>
                     )}
-                    <span
-                      className={`chatPresenceDot ${
-                        activeOtherUser?.isOnline ? "online" : "offline"
-                      }`}
-                    />
+
+                    {activeConversation.conversationType === "direct" ? (
+                      <span
+                        className={`chatPresenceDot ${
+                          activeOtherUser?.isOnline ? "online" : "offline"
+                        }`}
+                      />
+                    ) : null}
                   </div>
 
-                  <div>
-                    <div className="chatHeaderName">{activeOtherUser?.name || "User"}</div>
+                  <div className="chatHeaderContent">
+                    <div className="chatHeaderName">
+                      {getConversationDisplayName(activeConversation)}
+                    </div>
                     <div className="chatHeaderMeta">
-                      {activeOtherUser?.isOnline
-                        ? "Online"
-                        : formatLastSeen(activeOtherUser?.lastSeenAt)}
+                      {getConversationSubtitle(activeConversation)}
                     </div>
                   </div>
                 </div>
+
+                <button className="chatHeaderGhostBtn" onClick={handleClearChat}>
+                  Clear Chat
+                </button>
               </div>
 
               <div
@@ -632,7 +1013,16 @@ export default function Chat() {
                 ) : messages.length === 0 ? (
                   <div className="chatEmptyCard">No messages yet. Start the conversation.</div>
                 ) : (
-                  messages.map((msg) => {
+                  messageItems.map((entry) => {
+                    if (entry.type === "separator") {
+                      return (
+                        <div key={entry.id} className="chatDateSeparator">
+                          <span>{entry.label}</span>
+                        </div>
+                      );
+                    }
+
+                    const msg = entry.message;
                     const isMe =
                       String(msg.sender?._id || msg.sender?.id || msg.sender) ===
                       String(user?.id);
@@ -642,62 +1032,172 @@ export default function Chat() {
                         key={msg.id}
                         className={`chatBubbleRow ${isMe ? "me" : "other"}`}
                       >
-                        <div className={`chatBubble ${isMe ? "me" : "other"}`}>
-                          {msg.messageType === "text" && (
-                            <div className="chatBubbleText">{msg.text}</div>
-                          )}
+                        <div className={`chatBubbleWrap ${isMe ? "me" : "other"}`}>
+                          <div className={`chatBubble ${isMe ? "me" : "other"}`}>
+                            {msg.replyTo?.messageId ? (
+                              <div className="chatReplyBlock">
+                                <strong>Reply</strong>
+                                <span>{getReplyPreviewText(msg.replyTo)}</span>
+                              </div>
+                            ) : null}
 
-                          {msg.messageType === "image" && (
-                            <div className="chatMediaWrap">
-                              {msg.text ? (
-                                <div className="chatBubbleText">{msg.text}</div>
-                              ) : null}
-                              <img
-                                src={msg.media?.url}
-                                alt={msg.media?.originalName || "chat image"}
-                                className="chatMediaImage"
-                              />
-                            </div>
-                          )}
-
-                          {msg.messageType === "video" && (
-                            <div className="chatMediaWrap">
-                              {msg.text ? (
-                                <div className="chatBubbleText">{msg.text}</div>
-                              ) : null}
-                              <video controls className="chatMediaVideo">
-                                <source
-                                  src={msg.media?.url}
-                                  type={msg.media?.mimeType || "video/mp4"}
+                            {editingMessageId === String(msg.id) ? (
+                              <div className="chatEditWrap">
+                                <textarea
+                                  className="chatEditInput"
+                                  value={editText}
+                                  onChange={(e) => setEditText(e.target.value)}
+                                  rows={2}
                                 />
-                              </video>
-                            </div>
-                          )}
+                                <div className="chatEditActions">
+                                  <button onClick={handleSaveEdit}>Save</button>
+                                  <button
+                                    className="alt"
+                                    onClick={() => {
+                                      setEditingMessageId("");
+                                      setEditText("");
+                                    }}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                {msg.messageType === "text" && (
+                                  <div className="chatBubbleText">{msg.text}</div>
+                                )}
 
-                          {msg.messageType === "file" && (
-                            <div className="chatMediaWrap">
-                              {msg.text ? (
-                                <div className="chatBubbleText">{msg.text}</div>
-                              ) : null}
-                              <a
-                                href={msg.media?.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="chatFileLink"
-                              >
-                                📎 {msg.media?.originalName || "Open file"}
-                              </a>
-                            </div>
-                          )}
+                                {msg.messageType === "image" && (
+                                  <div className="chatMediaWrap">
+                                    {msg.text ? (
+                                      <div className="chatBubbleText">{msg.text}</div>
+                                    ) : null}
+                                    <img
+                                      src={msg.media?.url}
+                                      alt={msg.media?.originalName || "chat image"}
+                                      className="chatMediaImage"
+                                    />
+                                  </div>
+                                )}
 
-                          <div className="chatBubbleMeta">
-                            <span>{formatMessageTime(msg.createdAt)}</span>
-                            {isMe ? (
-                              <span>
-                                {msg.seenBy?.some((id) => String(id) !== String(user?.id))
-                                  ? "Seen"
-                                  : "Sent"}
-                              </span>
+                                {msg.messageType === "video" && (
+                                  <div className="chatMediaWrap">
+                                    {msg.text ? (
+                                      <div className="chatBubbleText">{msg.text}</div>
+                                    ) : null}
+                                    <video controls className="chatMediaVideo">
+                                      <source
+                                        src={msg.media?.url}
+                                        type={msg.media?.mimeType || "video/mp4"}
+                                      />
+                                    </video>
+                                  </div>
+                                )}
+
+                                {msg.messageType === "file" && (
+                                  <div className="chatMediaWrap">
+                                    {msg.text ? (
+                                      <div className="chatBubbleText">{msg.text}</div>
+                                    ) : null}
+                                    <a
+                                      href={msg.media?.url}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="chatFileLink"
+                                    >
+                                      📎 {msg.media?.originalName || "Open file"}
+                                    </a>
+                                  </div>
+                                )}
+
+                                {msg.messageType === "listing_card" && (
+                                  <div className="chatListingCard">
+                                    {msg.listingCard?.imageUrl ? (
+                                      <img
+                                        src={msg.listingCard.imageUrl}
+                                        alt={msg.listingCard.title || "Listing"}
+                                      />
+                                    ) : null}
+                                    <h4>{msg.listingCard?.title || "Listing"}</h4>
+                                    <p>{msg.listingCard?.subtitle || ""}</p>
+                                    <strong>{msg.listingCard?.priceText || ""}</strong>
+
+                                    {msg.listingCard?.targetUrl ? (
+                                      <button
+                                        onClick={() => navigate(msg.listingCard.targetUrl)}
+                                      >
+                                        View
+                                      </button>
+                                    ) : null}
+                                  </div>
+                                )}
+
+                                {msg.messageType === "system" && (
+                                  <div className="chatSystemText">{msg.text}</div>
+                                )}
+
+                                <div className="chatBubbleMeta">
+                                  <span>{formatMessageTime(msg.createdAt)}</span>
+                                  {msg.isEdited ? <span>Edited</span> : null}
+                                  {isMe ? (
+                                    <span>
+                                      {msg.seenBy?.some((id) => String(id) !== String(user?.id))
+                                        ? "Seen"
+                                        : "Sent"}
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </>
+                            )}
+                          </div>
+
+                          <div className="chatMessageActionsWrap">
+                            <button
+                              className="chatMessageMenuBtn"
+                              onClick={() =>
+                                setMenuOpenId((prev) =>
+                                  prev === String(msg.id) ? "" : String(msg.id)
+                                )
+                              }
+                            >
+                              ⋯
+                            </button>
+
+                            {menuOpenId === String(msg.id) ? (
+                              <div className="chatMessageMenu">
+                                <button
+                                  onClick={() => {
+                                    setReplyingTo(msg);
+                                    setMenuOpenId("");
+                                  }}
+                                >
+                                  Reply
+                                </button>
+
+                                <button onClick={() => openForwardModal(msg.id)}>
+                                  Forward
+                                </button>
+
+                                {isMe && msg.messageType === "text" ? (
+                                  <button
+                                    onClick={() => {
+                                      setEditingMessageId(String(msg.id));
+                                      setEditText(msg.text || "");
+                                      setMenuOpenId("");
+                                    }}
+                                  >
+                                    Edit
+                                  </button>
+                                ) : null}
+
+                                <button
+                                  className="danger"
+                                  onClick={() => handleDeleteForMe(msg.id)}
+                                >
+                                  Delete for me
+                                </button>
+                              </div>
                             ) : null}
                           </div>
                         </div>
@@ -706,12 +1206,24 @@ export default function Chat() {
                   })
                 )}
 
-                {activeOtherUser && typingUsers[activeOtherUser.id] ? (
+                {activeConversation.conversationType === "direct" &&
+                activeOtherUser &&
+                typingUsers[activeOtherUser.id] ? (
                   <div className="chatTyping">Typing...</div>
                 ) : null}
               </div>
 
               <div className="chatComposerBar">
+                {replyingTo ? (
+                  <div className="chatReplyComposer">
+                    <div>
+                      <strong>Replying</strong>
+                      <span>{getReplyPreviewText(replyingTo)}</span>
+                    </div>
+                    <button onClick={() => setReplyingTo(null)}>✕</button>
+                  </div>
+                ) : null}
+
                 {selectedFile ? (
                   <div className="chatSelectedFile">
                     <span>{selectedFile.name}</span>
@@ -765,6 +1277,97 @@ export default function Chat() {
           )}
         </section>
       </div>
+
+      {showGroupModal ? (
+        <div className="chatModal">
+          <div className="chatModalCard">
+            <h3>Create Group</h3>
+
+            <input
+              className="chatSearch"
+              placeholder="Group name"
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+            />
+
+            <textarea
+              className="chatProviderTextarea"
+              placeholder="Group description (optional)"
+              value={groupDescription}
+              onChange={(e) => setGroupDescription(e.target.value)}
+              rows={3}
+            />
+
+            <div className="chatUserSelect noScrollbar">
+              {users.map((u) => (
+                <label key={u.id} className="chatUserSelectItem">
+                  <input
+                    type="checkbox"
+                    checked={selectedUsers.includes(u.id)}
+                    onChange={() => toggleSelectedUser(u.id)}
+                  />
+                  <span>{u.name}</span>
+                </label>
+              ))}
+            </div>
+
+            <div className="chatModalActions">
+              <button className="chatSmallPrimaryBtn" onClick={handleCreateGroup}>
+                Create
+              </button>
+
+              <button
+                className="chatSmallGhostBtn"
+                onClick={() => {
+                  setShowGroupModal(false);
+                  setGroupName("");
+                  setGroupDescription("");
+                  setSelectedUsers([]);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {showForwardModal ? (
+        <div className="chatModal">
+          <div className="chatModalCard">
+            <h3>Forward to</h3>
+
+            <div className="chatForwardList noScrollbar">
+              {forwardTargets.length === 0 ? (
+                <div className="chatEmptyCard">No other conversations available.</div>
+              ) : (
+                forwardTargets.map((c) => (
+                  <button
+                    key={c.id}
+                    className="chatForwardItem"
+                    onClick={() => handleForwardToConversation(c.id)}
+                  >
+                    <strong>{getConversationDisplayName(c)}</strong>
+                    <span>{getConversationSubtitle(c)}</span>
+                  </button>
+                ))
+              )}
+            </div>
+
+            <div className="chatModalActions">
+              <button
+                className="chatSmallGhostBtn"
+                onClick={() => {
+                  setShowForwardModal(false);
+                  setForwardMessageId("");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
