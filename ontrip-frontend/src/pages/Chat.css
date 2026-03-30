@@ -16,7 +16,7 @@
 
 .chatLayout {
   display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
+  grid-template-columns: 360px minmax(0, 1fr);
   gap: 18px;
   min-height: calc(100vh - 180px);
   align-items: start;
@@ -38,11 +38,16 @@
 
 .chatSidebarCard {
   padding: 16px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
   min-height: calc(100vh - 180px);
   max-height: calc(100vh - 180px);
   overflow: hidden;
+}
+
+.chatSidebarHead {
+  flex-shrink: 0;
 }
 
 .chatSidebarHead h2 {
@@ -62,6 +67,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .chatMiniActionBtn {
@@ -78,7 +84,8 @@
 
 .chatSearch,
 .chatModalInput,
-.chatModalTextarea {
+.chatModalTextarea,
+.chatSelect {
   width: 100%;
   min-height: 46px;
   padding: 0 14px;
@@ -100,9 +107,27 @@
 .chatInput:focus,
 .chatEditInput:focus,
 .chatModalInput:focus,
-.chatModalTextarea:focus {
+.chatModalTextarea:focus,
+.chatSelect:focus {
   border-color: rgba(0, 184, 241, 0.35);
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
+}
+
+.chatSidebarScroll {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-right: 4px;
+}
+
+.chatSidebarSection {
+  display: grid;
+  gap: 10px;
+  min-height: 0;
 }
 
 .chatSectionLabel {
@@ -119,27 +144,22 @@
 .chatModalUserList {
   display: grid;
   gap: 10px;
-  overflow: auto;
-  padding-right: 2px;
+  min-height: 0;
 }
 
-.chatConversationList {
-  max-height: 180px;
-  min-height: 120px;
-}
-
+.chatConversationList,
 .chatGroupList {
-  max-height: 220px;
-  min-height: 120px;
+  align-content: start;
 }
 
 .chatUserList {
-  min-height: 0;
-  flex: 1;
+  align-content: start;
 }
 
 .chatModalUserList {
   max-height: 260px;
+  overflow: auto;
+  padding-right: 2px;
 }
 
 .chatConversationItem,
@@ -867,7 +887,7 @@
 
 @media (max-width: 1080px) {
   .chatLayout {
-    grid-template-columns: 300px minmax(0, 1fr);
+    grid-template-columns: 320px minmax(0, 1fr);
   }
 }
 
@@ -883,10 +903,9 @@
     max-height: none;
   }
 
-  .chatConversationList,
-  .chatGroupList,
-  .chatUserList {
-    max-height: 220px;
+  .chatSidebarScroll {
+    max-height: none;
+    overflow: visible;
   }
 
   .chatMessages {
