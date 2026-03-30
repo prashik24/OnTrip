@@ -66,6 +66,7 @@
   background: #fff;
   font: inherit;
   outline: none;
+  box-sizing: border-box;
 }
 
 .chatSearch:focus,
@@ -113,6 +114,7 @@
   cursor: pointer;
   text-align: left;
   transition: 0.18s ease;
+  box-sizing: border-box;
 }
 
 .chatConversationItem:hover,
@@ -185,7 +187,28 @@
   display: flex;
   justify-content: space-between;
   gap: 10px;
+  align-items: flex-start;
+}
+
+.chatConversationTopRight {
+  display: flex;
   align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.chatUnreadBadge {
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  padding: 0 6px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .chatConversationTop strong,
@@ -446,9 +469,21 @@
   resize: none;
   overflow-y: auto;
   box-sizing: border-box;
+  outline: none;
 }
 
 .chatHiddenFile {
+  display: none;
+}
+
+.noScrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.noScrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
   display: none;
 }
 
