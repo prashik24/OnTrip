@@ -92,8 +92,9 @@ function normalizeConversation(conversation, meId) {
       : null;
 
   return {
-    id: conversation._id,
+    id: conversation._id || conversation.id,
     conversationType: conversation.conversationType,
+    groupCategory: conversation.groupCategory || "standard",
     participants,
     otherUser,
     groupName: conversation.groupName || "",
@@ -102,7 +103,7 @@ function normalizeConversation(conversation, meId) {
     admins: conversation.admins || [],
     lastMessageText: conversation.lastMessageText || "",
     lastMessageType: conversation.lastMessageType || "text",
-    lastMessageAt: conversation.lastMessageAt || conversation.updatedAt,
+    lastMessageAt: conversation.lastMessageAt || null,
     lastMessageSender: conversation.lastMessageSender || null,
     createdAt: conversation.createdAt,
     updatedAt: conversation.updatedAt,
@@ -174,7 +175,7 @@ export async function getChatUsers(req, res) {
       .select("name email avatar city role isOnline lastSeenAt")
       .sort({ isOnline: -1, name: 1 });
 
-    const myConversations = await Conversation.find({
+    const myDirectConversations = await Conversation.find({
       participants: meId,
       conversationType: "direct",
       lastMessageAt: { $ne: null },
@@ -182,7 +183,7 @@ export async function getChatUsers(req, res) {
 
     const conversationMap = new Map();
 
-    for (const c of myConversations) {
+    for (const c of myDirectConversations) {
       const otherId = c.participants.find((id) => String(id) !== String(meId));
       if (otherId) {
         conversationMap.set(String(otherId), String(c._id));
@@ -228,16 +229,26 @@ export async function getMyGroups(req, res) {
     const meId = req.user._id;
 
     const groups = await Conversation.find({
-      conversationType: "group",
       participants: meId,
+      conversationType: "group",
     })
       .populate("participants", "name email avatar city role isOnline lastSeenAt")
       .sort({ updatedAt: -1, createdAt: -1 });
 
     const visible = groups.filter((item) => !isDeletedForUser(item, meId));
 
+    const standardGroups = visible
+      .filter((item) => (item.groupCategory || "standard") === "standard")
+      .map((item) => normalizeConversation(item, meId));
+
+    const tripBuddyGroups = visible
+      .filter((item) => item.groupCategory === "trip_buddy")
+      .map((item) => normalizeConversation(item, meId));
+
     return res.json({
-      groups: visible.map((item) => normalizeConversation(item, meId)),
+      groups: standardGroups,
+      tripBuddyGroups,
+      allGroups: [...standardGroups, ...tripBuddyGroups],
     });
   } catch (error) {
     console.error("getMyGroups error", error);
@@ -294,27 +305,39 @@ export async function getOrCreateConversation(req, res) {
 export async function createGroupConversation(req, res) {
   try {
     const meId = String(req.user._id);
-    const { groupName, participantIds = [], groupDescription = "" } = req.body;
+    const {
+      groupName,
+      participantIds = [],
+      groupDescription = "",
+      groupCategory = "standard",
+    } = req.body;
 
     const cleanIds = [...new Set([meId, ...participantIds])].filter((id) =>
       mongoose.Types.ObjectId.isValid(id)
     );
 
     if (cleanIds.length < 3) {
-      return res.status(400).json({ message: "Group must have at least 3 total members including you" });
+      return res.status(400).json({
+        message: "Group must have you plus at least 2 selected users",
+      });
     }
 
     if (!groupName?.trim()) {
       return res.status(400).json({ message: "Group name is required" });
     }
 
+    const finalCategory =
+      groupCategory === "trip_buddy" ? "trip_buddy" : "standard";
+
     const conversation = await Conversation.create({
       conversationType: "group",
+      groupCategory: finalCategory,
       participants: cleanIds,
       admins: [meId],
       groupName: groupName.trim(),
       groupDescription: groupDescription.trim(),
       createdBy: meId,
+      lastMessageAt: null,
     });
 
     const populated = await Conversation.findById(conversation._id).populate(
@@ -416,7 +439,6 @@ export async function sendMessage(req, res) {
     }
 
     let otherUserId = receiverId;
-
     if (conversation.conversationType === "direct") {
       otherUserId = conversation.participants.find((id) => String(id) !== meId);
       otherUserId = otherUserId ? String(otherUserId) : null;
