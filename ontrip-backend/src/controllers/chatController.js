@@ -76,7 +76,7 @@ function isDeletedForUser(doc, userId) {
 
 function normalizeConversation(conversation, meId) {
   const participants = (conversation.participants || []).map((p) => ({
-    id: p._id || p.id,
+    id: p._id,
     name: p.name,
     email: p.email,
     avatar: p.avatar || "",
@@ -92,9 +92,8 @@ function normalizeConversation(conversation, meId) {
       : null;
 
   return {
-    id: conversation._id || conversation.id,
+    id: conversation._id,
     conversationType: conversation.conversationType,
-    groupCategory: conversation.groupCategory || "standard",
     participants,
     otherUser,
     groupName: conversation.groupName || "",
@@ -103,7 +102,7 @@ function normalizeConversation(conversation, meId) {
     admins: conversation.admins || [],
     lastMessageText: conversation.lastMessageText || "",
     lastMessageType: conversation.lastMessageType || "text",
-    lastMessageAt: conversation.lastMessageAt || null,
+    lastMessageAt: conversation.lastMessageAt || conversation.updatedAt,
     lastMessageSender: conversation.lastMessageSender || null,
     createdAt: conversation.createdAt,
     updatedAt: conversation.updatedAt,
@@ -175,7 +174,7 @@ export async function getChatUsers(req, res) {
       .select("name email avatar city role isOnline lastSeenAt")
       .sort({ isOnline: -1, name: 1 });
 
-    const myDirectConversations = await Conversation.find({
+    const myConversations = await Conversation.find({
       participants: meId,
       conversationType: "direct",
       lastMessageAt: { $ne: null },
@@ -183,7 +182,7 @@ export async function getChatUsers(req, res) {
 
     const conversationMap = new Map();
 
-    for (const c of myDirectConversations) {
+    for (const c of myConversations) {
       const otherId = c.participants.find((id) => String(id) !== String(meId));
       if (otherId) {
         conversationMap.set(String(otherId), String(c._id));
@@ -221,38 +220,6 @@ export async function getMyConversations(req, res) {
   } catch (error) {
     console.error("getMyConversations error", error);
     return res.status(500).json({ message: "Failed to load conversations" });
-  }
-}
-
-export async function getMyGroups(req, res) {
-  try {
-    const meId = req.user._id;
-
-    const groups = await Conversation.find({
-      participants: meId,
-      conversationType: "group",
-    })
-      .populate("participants", "name email avatar city role isOnline lastSeenAt")
-      .sort({ updatedAt: -1, createdAt: -1 });
-
-    const visible = groups.filter((item) => !isDeletedForUser(item, meId));
-
-    const standardGroups = visible
-      .filter((item) => (item.groupCategory || "standard") === "standard")
-      .map((item) => normalizeConversation(item, meId));
-
-    const tripBuddyGroups = visible
-      .filter((item) => item.groupCategory === "trip_buddy")
-      .map((item) => normalizeConversation(item, meId));
-
-    return res.json({
-      groups: standardGroups,
-      tripBuddyGroups,
-      allGroups: [...standardGroups, ...tripBuddyGroups],
-    });
-  } catch (error) {
-    console.error("getMyGroups error", error);
-    return res.status(500).json({ message: "Failed to load groups" });
   }
 }
 
@@ -305,39 +272,27 @@ export async function getOrCreateConversation(req, res) {
 export async function createGroupConversation(req, res) {
   try {
     const meId = String(req.user._id);
-    const {
-      groupName,
-      participantIds = [],
-      groupDescription = "",
-      groupCategory = "standard",
-    } = req.body;
+    const { groupName, participantIds = [], groupDescription = "" } = req.body;
 
     const cleanIds = [...new Set([meId, ...participantIds])].filter((id) =>
       mongoose.Types.ObjectId.isValid(id)
     );
 
-    if (cleanIds.length < 3) {
-      return res.status(400).json({
-        message: "Group must have you plus at least 2 selected users",
-      });
+    if (cleanIds.length < 2) {
+      return res.status(400).json({ message: "Group must have at least 2 members" });
     }
 
     if (!groupName?.trim()) {
       return res.status(400).json({ message: "Group name is required" });
     }
 
-    const finalCategory =
-      groupCategory === "trip_buddy" ? "trip_buddy" : "standard";
-
     const conversation = await Conversation.create({
       conversationType: "group",
-      groupCategory: finalCategory,
       participants: cleanIds,
       admins: [meId],
       groupName: groupName.trim(),
       groupDescription: groupDescription.trim(),
       createdBy: meId,
-      lastMessageAt: null,
     });
 
     const populated = await Conversation.findById(conversation._id).populate(
@@ -424,11 +379,14 @@ export async function sendMessage(req, res) {
       return res.status(400).json({ message: "Message text or file is required" });
     }
 
+    let conversation = null;
+    let otherUserId = receiverId;
+
     if (!conversationId || !mongoose.Types.ObjectId.isValid(conversationId)) {
       return res.status(400).json({ message: "Valid conversationId is required" });
     }
 
-    const conversation = await Conversation.findById(conversationId);
+    conversation = await Conversation.findById(conversationId);
 
     if (!conversation) {
       return res.status(404).json({ message: "Conversation not found" });
@@ -438,7 +396,6 @@ export async function sendMessage(req, res) {
       return res.status(403).json({ message: "Not allowed" });
     }
 
-    let otherUserId = receiverId;
     if (conversation.conversationType === "direct") {
       otherUserId = conversation.participants.find((id) => String(id) !== meId);
       otherUserId = otherUserId ? String(otherUserId) : null;
@@ -476,7 +433,10 @@ export async function sendMessage(req, res) {
         replyTo = {
           messageId: originalMessage._id,
           senderId: originalMessage.sender?._id || null,
-          text: originalMessage.text || getMessagePreview(originalMessage) || "Message",
+          text:
+            originalMessage.text ||
+            getMessagePreview(originalMessage) ||
+            "Message",
           messageType: originalMessage.messageType,
         };
       }
@@ -787,7 +747,8 @@ export async function sendProviderListingCard(req, res) {
         title: trip.packageTitle || provider.businessName,
         subtitle: trip.durationText || provider.city || "",
         priceText: `₹${trip.priceFrom || 0}`,
-        imageUrl: trip.images?.[0]?.url || provider.serviceImage?.url || "",
+        imageUrl:
+          trip.images?.[0]?.url || provider.serviceImage?.url || "",
         targetUrl: `/providers/${provider._id}`,
       };
     } else {
@@ -798,7 +759,8 @@ export async function sendProviderListingCard(req, res) {
         title: vehicle.title || provider.businessName,
         subtitle: vehicle.vehicleType || provider.city || "",
         priceText: `₹${vehicle.price || 0}`,
-        imageUrl: vehicle.images?.[0]?.url || provider.serviceImage?.url || "",
+        imageUrl:
+          vehicle.images?.[0]?.url || provider.serviceImage?.url || "",
         targetUrl: `/providers/${provider._id}`,
       };
     }
