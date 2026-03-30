@@ -16,7 +16,7 @@
 
 .chatLayout {
   display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
+  grid-template-columns: 360px minmax(0, 1fr);
   gap: 18px;
   min-height: calc(100vh - 180px);
   align-items: start;
@@ -42,7 +42,6 @@
   min-height: calc(100vh - 180px);
   max-height: calc(100vh - 180px);
   overflow: hidden;
-  grid-template-rows: auto auto auto auto auto minmax(120px, 1fr) auto minmax(120px, 1fr) auto minmax(120px, 1fr);
 }
 
 .chatSidebarHead h2 {
@@ -128,6 +127,23 @@
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
 }
 
+.chatSidebarSections {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 14px;
+}
+
+.chatSectionBlock {
+  min-height: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.chatSectionBlockFill {
+  min-height: 0;
+}
+
 .chatSectionLabel {
   font-size: 13px;
   font-weight: 800;
@@ -141,6 +157,20 @@
 .chatUserList {
   display: grid;
   gap: 10px;
+  overflow: auto;
+  padding-right: 2px;
+  min-height: 0;
+}
+
+.chatConversationList {
+  max-height: 180px;
+}
+
+.chatGroupList {
+  max-height: 180px;
+}
+
+.chatUserList {
   min-height: 0;
 }
 
@@ -353,6 +383,8 @@
 
 .chatMessages {
   padding: 18px;
+  overflow-y: auto;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at top right, rgba(0, 184, 241, 0.06), transparent 30%),
     radial-gradient(circle at bottom left, rgba(78, 201, 245, 0.06), transparent 30%),
@@ -785,6 +817,7 @@
 .chatModalCard {
   width: min(420px, 100%);
   max-height: 80vh;
+  overflow: auto;
   background: #fff;
   border-radius: 18px;
   border: 1px solid rgba(11, 27, 42, 0.08);
@@ -812,6 +845,7 @@
   display: grid;
   gap: 8px;
   max-height: 260px;
+  overflow: auto;
 }
 
 .chatUserSelectItem {
@@ -833,6 +867,7 @@
   display: grid;
   gap: 8px;
   max-height: 320px;
+  overflow: auto;
 }
 
 .chatForwardItem {
@@ -857,33 +892,20 @@
   font-weight: 550;
 }
 
-.scrollArea {
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 4px;
+.noScrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.scrollArea::-webkit-scrollbar {
-  width: 8px;
-}
-
-.scrollArea::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollArea::-webkit-scrollbar-thumb {
-  background: rgba(11, 27, 42, 0.16);
-  border-radius: 999px;
-}
-
-.scrollArea {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(11, 27, 42, 0.16) transparent;
+.noScrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 @media (max-width: 1080px) {
   .chatLayout {
-    grid-template-columns: 300px minmax(0, 1fr);
+    grid-template-columns: 320px minmax(0, 1fr);
   }
 }
 
@@ -910,8 +932,8 @@
     max-height: 420px;
   }
 
-  .chatSidebarCard {
-    grid-template-rows: auto auto auto auto auto minmax(140px, 220px) auto minmax(140px, 220px) auto minmax(140px, 220px);
+  .chatSidebarSections {
+    grid-template-rows: auto auto auto;
   }
 }
 
