@@ -16,10 +16,11 @@
 
 .chatLayout {
   display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
+  grid-template-columns: 340px minmax(0, 1fr) 320px;
   gap: 18px;
   min-height: calc(100vh - 180px);
-  align-items: start;
+  max-height: calc(100vh - 180px);
+  align-items: stretch;
 }
 
 .chatSidebar,
@@ -29,7 +30,8 @@
 
 .chatSidebarCard,
 .chatMainCard,
-.chatModalCard {
+.chatModalCard,
+.chatSlidePanel {
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 22px;
@@ -40,8 +42,8 @@
   padding: 16px;
   display: grid;
   gap: 14px;
-  min-height: calc(100vh - 180px);
-  max-height: calc(100vh - 180px);
+  min-height: 100%;
+  max-height: 100%;
   overflow: hidden;
 }
 
@@ -104,6 +106,13 @@
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
 }
 
+.chatSectionLabelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .chatSectionLabel {
   font-size: 13px;
   font-weight: 800;
@@ -112,9 +121,23 @@
   letter-spacing: 0.04em;
 }
 
+.chatSectionOpenBtn {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 184, 241, 0.14);
+  background: rgba(0, 184, 241, 0.08);
+  color: #0369a1;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .chatConversationList,
 .chatUserList,
-.chatModalUserList {
+.chatModalUserList,
+.chatSlidePanelBody {
   display: grid;
   gap: 10px;
   overflow: auto;
@@ -122,7 +145,7 @@
 }
 
 .chatConversationList {
-  max-height: 240px;
+  max-height: 180px;
 }
 
 .chatUserList {
@@ -136,7 +159,8 @@
 
 .chatConversationItem,
 .chatUserItem,
-.chatModalUserItem {
+.chatModalUserItem,
+.chatSlidePanelItem {
   width: 100%;
   border: 1px solid rgba(11, 27, 42, 0.08);
   background: rgba(248, 252, 255, 0.96);
@@ -161,11 +185,16 @@
   align-items: center;
 }
 
+.chatSlidePanelItem {
+  align-items: start;
+}
+
 .chatConversationItem:hover,
 .chatUserItem:hover,
 .chatConversationItem.active,
 .chatModalUserItem:hover,
-.chatModalUserItem.selected {
+.chatModalUserItem.selected,
+.chatSlidePanelItem:hover {
   border-color: rgba(0, 184, 241, 0.24);
   box-shadow: 0 8px 18px rgba(10, 22, 35, 0.06);
   background: rgba(235, 249, 255, 0.96);
@@ -276,7 +305,8 @@
 }
 
 .chatConversationTop strong,
-.chatUserBody strong {
+.chatUserBody strong,
+.chatSlidePanelItem strong {
   font-size: 15px;
   font-weight: 760;
   color: var(--text);
@@ -287,7 +317,8 @@
 
 .chatConversationTop span,
 .chatUserBody span,
-.chatConversationPreview {
+.chatConversationPreview,
+.chatSlidePanelItem span {
   font-size: 13px;
   color: var(--muted);
   font-weight: 550;
@@ -315,8 +346,8 @@
 .chatMainCard {
   display: grid;
   grid-template-rows: auto 1fr auto;
-  min-height: calc(100vh - 180px);
-  max-height: calc(100vh - 180px);
+  min-height: 100%;
+  max-height: 100%;
   overflow: hidden;
 }
 
@@ -759,7 +790,8 @@
 .chatSendBtn:hover,
 .chatHeaderGhostBtn:hover,
 .chatListingCardBtn:hover,
-.chatMiniActionBtn:hover {
+.chatMiniActionBtn:hover,
+.chatSectionOpenBtn:hover {
   box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
 }
 
@@ -844,6 +876,45 @@
   flex-wrap: wrap;
 }
 
+.chatSlidePanel {
+  padding: 16px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 14px;
+  min-height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.chatSlidePanelHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.chatSlidePanelHead h3 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.chatSlidePanelHead button {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 18px;
+}
+
+.chatSlidePanelBody {
+  min-height: 0;
+}
+
 .noScrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -853,6 +924,21 @@
   width: 0;
   height: 0;
   display: none;
+}
+
+@media (max-width: 1280px) {
+  .chatLayout {
+    grid-template-columns: 320px minmax(0, 1fr);
+  }
+
+  .chatSlidePanel {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    width: 320px;
+    height: calc(100vh - 120px);
+    z-index: 40;
+  }
 }
 
 @media (max-width: 1080px) {
@@ -865,6 +951,7 @@
   .chatLayout {
     grid-template-columns: 1fr;
     min-height: auto;
+    max-height: none;
   }
 
   .chatSidebarCard,
@@ -891,6 +978,14 @@
   .chatHeaderTools {
     justify-content: stretch;
   }
+
+  .chatSlidePanel {
+    position: fixed;
+    inset: 90px 14px 14px 14px;
+    width: auto;
+    height: auto;
+    z-index: 50;
+  }
 }
 
 @media (max-width: 640px) {
@@ -915,7 +1010,8 @@
   }
 
   .chatHeaderGhostBtn,
-  .chatMiniActionBtn {
+  .chatMiniActionBtn,
+  .chatSectionOpenBtn {
     width: 100%;
   }
 
@@ -926,5 +1022,10 @@
   .chatModalActions .chatHeaderGhostBtn,
   .chatModalActions .chatSendBtn {
     width: 100%;
+  }
+
+  .chatSectionLabelRow {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
