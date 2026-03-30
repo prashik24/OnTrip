@@ -16,7 +16,7 @@
 
 .chatLayout {
   display: grid;
-  grid-template-columns: 340px minmax(0, 1fr) 320px;
+  grid-template-columns: 320px minmax(0, 1fr);
   gap: 18px;
   min-height: calc(100vh - 180px);
   max-height: calc(100vh - 180px);
@@ -186,7 +186,8 @@
 }
 
 .chatSlidePanelItem {
-  align-items: start;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
 }
 
 .chatConversationItem:hover,
@@ -276,11 +277,15 @@
   gap: 4px;
 }
 
+.chatSlidePanelItem .chatUserBody {
+  min-width: 0;
+}
+
 .chatConversationTop {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .chatConversationTopRight {
@@ -451,11 +456,17 @@
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  max-width: min(76%, 760px);
+  width: 100%;
+  max-width: min(82%, 720px);
 }
 
 .chatBubbleWrap.me {
   flex-direction: row-reverse;
+  margin-left: auto;
+}
+
+.chatBubbleWrap.other {
+  margin-right: auto;
 }
 
 .chatBubble {
@@ -533,7 +544,7 @@
 .chatMediaImage,
 .chatMediaVideo {
   width: 100%;
-  max-width: 360px;
+  max-width: 320px;
   border-radius: 14px;
   display: block;
 }
@@ -563,7 +574,7 @@
 
 .chatListingCardImage {
   width: 100%;
-  max-width: 360px;
+  max-width: 320px;
   height: 180px;
   object-fit: cover;
   border-radius: 12px;
@@ -619,7 +630,7 @@
   position: absolute;
   top: 40px;
   right: 0;
-  min-width: 150px;
+  min-width: 160px;
   background: #fff;
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 14px;
@@ -763,7 +774,7 @@
 
 .chatComposerRow {
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr) 120px;
+  grid-template-columns: 52px minmax(0, 1fr) 110px;
   gap: 12px;
   align-items: end;
 }
@@ -804,7 +815,7 @@
 .chatInput {
   width: 100%;
   min-height: 52px;
-  max-height: 140px;
+  max-height: 120px;
   padding: 14px 16px;
   border-radius: 18px;
   border: 1px solid rgba(11, 27, 42, 0.12);
@@ -877,12 +888,17 @@
 }
 
 .chatSlidePanel {
+  position: fixed;
+  top: 90px;
+  left: 20px;
+  right: auto;
+  width: 320px;
+  height: calc(100vh - 120px);
   padding: 16px;
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 14px;
-  min-height: 100%;
-  max-height: 100%;
+  z-index: 60;
   overflow: hidden;
 }
 
@@ -931,10 +947,15 @@
     grid-template-columns: 320px minmax(0, 1fr);
   }
 
+  .chatBubbleWrap {
+    max-width: min(86%, 680px);
+  }
+
   .chatSlidePanel {
     position: fixed;
     top: 90px;
-    right: 20px;
+    left: 20px;
+    right: auto;
     width: 320px;
     height: calc(100vh - 120px);
     z-index: 40;
@@ -944,6 +965,12 @@
 @media (max-width: 1080px) {
   .chatLayout {
     grid-template-columns: 300px minmax(0, 1fr);
+  }
+
+  .chatSlidePanel {
+    left: 14px;
+    right: auto;
+    width: 300px;
   }
 }
 
@@ -984,7 +1011,7 @@
     inset: 90px 14px 14px 14px;
     width: auto;
     height: auto;
-    z-index: 50;
+    z-index: 70;
   }
 }
 
