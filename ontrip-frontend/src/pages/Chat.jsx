@@ -121,6 +121,12 @@ function getGroupBadgeLabel(name = "") {
   return "G";
 }
 
+function formatListingType(type = "") {
+  if (type === "travel_planner") return "Travel Planner";
+  if (type === "vehicle") return "Vehicle";
+  return type;
+}
+
 export default function Chat() {
   const user = getUser();
   const location = useLocation();
@@ -1534,7 +1540,7 @@ export default function Chat() {
                 options={[
                   { label: "Select your provider listing", value: "" },
                   ...myProviders.map((item) => ({
-                    label: `${item.businessName} — ${item.listingType}`,
+                    label: `${item.businessName} — ${formatListingType(item.listingType)}`,
                     value: item._id,
                   })),
                 ]}
@@ -1593,7 +1599,7 @@ export default function Chat() {
                 options={[
                   { label: "Select your provider listing", value: "" },
                   ...myProviders.map((item) => ({
-                    label: item.businessName,
+                    label: `${item.businessName} — ${formatListingType(item.listingType)}`,
                     value: item._id,
                   })),
                 ]}
