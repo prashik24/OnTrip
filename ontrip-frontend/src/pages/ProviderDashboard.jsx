@@ -3,6 +3,13 @@ import { apiFetch } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDashboard.css";
 
+function formatStatusLabel(value) {
+  if (!value) return "-";
+  return String(value)
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+}
+
 export default function ProviderDashboard() {
   const [bookings, setBookings] = useState([]);
   const [msg, setMsg] = useState("");
@@ -76,95 +83,140 @@ export default function ProviderDashboard() {
         <div className="providerDashboardGrid">
           {bookings.map((booking) => {
             const isCancelled = booking.bookingStatus === "cancelled";
+            const isLoadingThis = loadingId === booking._id;
 
             return (
               <div className="providerDashboardCard" key={booking._id}>
-                <div className="providerDashboardTop">
+                <div
+                  className={`providerDashboardTop ${
+                    isCancelled ? "cancelled" : ""
+                  }`}
+                >
                   <div>
                     <h3>{booking.serviceTitle}</h3>
-                    <p>Customer: {booking.user?.name || "User"}</p>
+                    <p>Customer: {booking.user?.name || booking.contactName || "User"}</p>
                   </div>
                   <div className="providerDashboardPrice">₹{booking.amount}</div>
                 </div>
 
-                <div className="providerDashboardInfo">
-                  <div>Email: {booking.user?.email || booking.contactEmail || "-"}</div>
-                  <div>Phone: {booking.contactPhone || "-"}</div>
-                  <div>Date: {new Date(booking.bookingDate).toLocaleDateString()}</div>
-                  <div>Payment: {booking.paymentStatus}</div>
-                  <div>Status: {booking.bookingStatus}</div>
-                  <div>People: {booking.peopleCount}</div>
-                  <div>Days: {booking.days}</div>
-                  {booking.destination ? <div>Destination: {booking.destination}</div> : null}
-                  {booking.place ? <div>Place: {booking.place}</div> : null}
-                  {isCancelled && booking.cancellationReason ? (
-                    <div>Cancellation Reason: {booking.cancellationReason}</div>
-                  ) : null}
-                </div>
-
-                {!isCancelled && (
-                  <div>
-                    <label style={{ display: "block", marginBottom: 8, fontWeight: 650 }}>
-                      Cancellation Reason
-                    </label>
-                    <textarea
-                      style={{
-                        width: "100%",
-                        minHeight: 90,
-                        border: "1px solid rgba(11, 27, 42, 0.12)",
-                        borderRadius: 12,
-                        padding: "12px 14px",
-                        font: "inherit",
-                        resize: "vertical",
-                        outline: "none",
-                        boxSizing: "border-box",
-                      }}
-                      value={cancelReasons[booking._id] || ""}
-                      onChange={(e) =>
-                        setCancelReasons((prev) => ({
-                          ...prev,
-                          [booking._id]: e.target.value,
-                        }))
-                      }
-                      placeholder="Reason only if cancelling..."
-                    />
+                <div className="providerDashboardBody">
+                  <div className="providerDashboardStatusRow">
+                    <span
+                      className={`providerDashboardStatusBadge ${booking.paymentStatus || ""}`}
+                    >
+                      {formatStatusLabel(booking.paymentStatus)}
+                    </span>
+                    <span
+                      className={`providerDashboardStatusBadge ${booking.bookingStatus || ""}`}
+                    >
+                      {formatStatusLabel(booking.bookingStatus)}
+                    </span>
                   </div>
-                )}
 
-                <div className="providerDashboardActions">
+                  <div className="providerDashboardInfo">
+                    <div>
+                      <strong>Email</strong>
+                      <span>{booking.user?.email || booking.contactEmail || "-"}</span>
+                    </div>
+
+                    <div>
+                      <strong>Phone</strong>
+                      <span>{booking.contactPhone || "-"}</span>
+                    </div>
+
+                    <div>
+                      <strong>Date</strong>
+                      <span>
+                        {booking.bookingDate
+                          ? new Date(booking.bookingDate).toLocaleDateString()
+                          : "-"}
+                      </span>
+                    </div>
+
+                    <div>
+                      <strong>People</strong>
+                      <span>{booking.peopleCount ?? "-"}</span>
+                    </div>
+
+                    <div>
+                      <strong>Days</strong>
+                      <span>{booking.days ?? "-"}</span>
+                    </div>
+
+                    {booking.destination ? (
+                      <div>
+                        <strong>Destination</strong>
+                        <span>{booking.destination}</span>
+                      </div>
+                    ) : null}
+
+                    {booking.place ? (
+                      <div>
+                        <strong>Place</strong>
+                        <span>{booking.place}</span>
+                      </div>
+                    ) : null}
+
+                    {isCancelled && booking.cancellationReason ? (
+                      <div className="providerDashboardInfoWide providerDashboardCancelInfo">
+                        <strong>Cancellation Reason</strong>
+                        <span>{booking.cancellationReason}</span>
+                      </div>
+                    ) : null}
+                  </div>
+
                   {!isCancelled && (
-                    <>
-                      <button
-                        className="providerDashboardBtn"
-                        onClick={() => updateStatus(booking._id, "confirmed")}
-                        disabled={loadingId === booking._id}
-                      >
-                        {loadingId === booking._id ? "Updating..." : "Confirm"}
-                      </button>
-
-                      <button
-                        className="providerDashboardBtn"
-                        onClick={() => updateStatus(booking._id, "completed")}
-                        disabled={loadingId === booking._id}
-                      >
-                        {loadingId === booking._id ? "Updating..." : "Complete"}
-                      </button>
-
-                      <button
-                        className="providerDashboardBtn danger"
-                        onClick={() => updateStatus(booking._id, "cancelled")}
-                        disabled={loadingId === booking._id}
-                      >
-                        {loadingId === booking._id ? "Updating..." : "Cancel"}
-                      </button>
-                    </>
+                    <div className="providerDashboardCancelWrap">
+                      <label htmlFor={`cancel-reason-${booking._id}`}>
+                        Cancellation Reason
+                      </label>
+                      <textarea
+                        id={`cancel-reason-${booking._id}`}
+                        value={cancelReasons[booking._id] || ""}
+                        onChange={(e) =>
+                          setCancelReasons((prev) => ({
+                            ...prev,
+                            [booking._id]: e.target.value,
+                          }))
+                        }
+                        placeholder="Reason only if cancelling..."
+                      />
+                    </div>
                   )}
 
-                  {isCancelled && (
-                    <button className="providerDashboardBtn danger" disabled>
-                      Service Cancelled
-                    </button>
-                  )}
+                  <div className="providerDashboardActions">
+                    {!isCancelled ? (
+                      <>
+                        <button
+                          className="providerDashboardBtn primary"
+                          onClick={() => updateStatus(booking._id, "confirmed")}
+                          disabled={isLoadingThis}
+                        >
+                          {isLoadingThis ? "Updating..." : "Confirm"}
+                        </button>
+
+                        <button
+                          className="providerDashboardBtn success"
+                          onClick={() => updateStatus(booking._id, "completed")}
+                          disabled={isLoadingThis}
+                        >
+                          {isLoadingThis ? "Updating..." : "Complete"}
+                        </button>
+
+                        <button
+                          className="providerDashboardBtn danger"
+                          onClick={() => updateStatus(booking._id, "cancelled")}
+                          disabled={isLoadingThis}
+                        >
+                          {isLoadingThis ? "Updating..." : "Cancel"}
+                        </button>
+                      </>
+                    ) : (
+                      <button className="providerDashboardBtn danger" disabled>
+                        Service Cancelled
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );
