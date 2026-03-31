@@ -383,3 +383,63 @@
     min-height: 42px;
   }
 }
+.providerDashboardActions {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.providerDashboardBtn {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  background: #ffffff;
+  transition: 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* 🔥 CONFIRM (BLUE STYLE) */
+.providerDashboardBtn.primary {
+  border: 1px solid rgba(0, 184, 241, 0.3);
+  color: #0369a1;
+  background: rgba(0, 184, 241, 0.08);
+}
+
+/* 🔥 COMPLETE (SAME BLUE / WHITE STYLE) */
+.providerDashboardBtn.success {
+  border: 1px solid rgba(0, 184, 241, 0.2);
+  color: #0369a1;
+  background: #ffffff;
+}
+
+/* 🔥 CANCEL (LIGHT RED TEXT ONLY) */
+.providerDashboardBtn.danger {
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #b42318;
+  background: #ffffff;
+}
+
+/* HOVER */
+.providerDashboardBtn:hover {
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+}
+
+/* DISABLED */
+.providerDashboardBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* SINGLE BUTTON */
+.providerDashboardActions .providerDashboardBtn:only-child {
+  grid-column: 1 / -1;
+}
