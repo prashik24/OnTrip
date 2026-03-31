@@ -4,7 +4,7 @@ import { apiFetch } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./BookingHistory.css";
 
-function formatStatusLabel(value) {
+function formatStatus(value) {
   if (!value) return "-";
   return String(value)
     .replaceAll("_", " ")
@@ -13,16 +13,19 @@ function formatStatusLabel(value) {
 
 export default function BookingHistory() {
   const navigate = useNavigate();
-
   const [bookings, setBookings] = useState([]);
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadBookings();
+  }, []);
 
   async function loadBookings() {
     try {
       setLoading(true);
       setMsg("");
-      const data = await apiFetch("/api/bookings/my");
+      const data = await apiFetch("/api/bookings/mine");
       setBookings(data.bookings || []);
     } catch (err) {
       setMsg(err.message || "Failed to load booking history.");
@@ -30,10 +33,6 @@ export default function BookingHistory() {
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    loadBookings();
-  }, []);
 
   if (loading) {
     return <LoadingSpinner text="Loading booking history..." />;
@@ -43,56 +42,53 @@ export default function BookingHistory() {
     <div className="bookingHistoryPage container">
       <div className="bookingHistoryHead">
         <h1>Booking History</h1>
-        <p>View your bookings, payment status, service details, and next actions.</p>
+        <p>Track bookings, invoices, status, and reviews.</p>
       </div>
 
-      {msg ? <div className="bookingHistoryMessage">{msg}</div> : null}
+      {msg && <div className="bookingHistoryMessage">{msg}</div>}
 
       {bookings.length === 0 ? (
-        <div className="bookingHistoryEmpty">No bookings found yet.</div>
+        <div className="bookingHistoryEmpty">
+          You have not booked any service yet.
+        </div>
       ) : (
         <div className="bookingHistoryGrid">
           {bookings.map((booking) => {
             const isCancelled = booking.bookingStatus === "cancelled";
-            const isConfirmed = booking.bookingStatus === "confirmed";
-            const canReview =
-              booking.bookingStatus === "completed" &&
-              !booking.reviewSubmitted &&
-              booking.paymentStatus === "paid";
-
-            const canEditReview =
-              booking.bookingStatus === "completed" &&
-              booking.reviewSubmitted;
 
             return (
               <div className="bookingHistoryCard" key={booking._id}>
                 <div className="bookingHistoryCardBody">
+
+                  {/* 🔥 TOP HEADER */}
                   <div className="bookingHistoryTop">
                     <div className="bookingHistoryTopLeft">
-                      <h3>{booking.serviceTitle || "Booking"}</h3>
+                      <h3>{booking.serviceTitle}</h3>
                       <p>{booking.provider?.businessName || "Provider"}</p>
                     </div>
 
-                    <div className="bookingHistoryPrice">₹{booking.amount}</div>
+                    <div>
+                      <div className="bookingHistoryPrice">
+                        ₹{booking.amount}
+                      </div>
+
+                      <div style={{ marginTop: 6, fontSize: 13 }}>
+                        {formatStatus(booking.paymentStatus)} •{" "}
+                        {formatStatus(booking.bookingStatus)}
+                      </div>
+                    </div>
                   </div>
 
+                  {/* 🔥 BODY CONTENT */}
                   <div className="bookingHistoryContent">
                     <div className="bookingHistoryInfo">
                       <div>
-                        Booking Ref: <span>{booking.bookingRef || "-"}</span>
+                        <strong>Booking Ref</strong>
+                        <span>{booking.bookingRef}</span>
                       </div>
 
                       <div>
-                        Service Type:{" "}
-                        <span>
-                          {booking.serviceType === "vehicle"
-                            ? "Vehicle Service"
-                            : "Travel Planner"}
-                        </span>
-                      </div>
-
-                      <div>
-                        Travel Date:{" "}
+                        <strong>Date</strong>
                         <span>
                           {booking.bookingDate
                             ? new Date(booking.bookingDate).toLocaleDateString()
@@ -101,99 +97,83 @@ export default function BookingHistory() {
                       </div>
 
                       <div>
-                        Payment: <span>{formatStatusLabel(booking.paymentStatus)}</span>
+                        <strong>People</strong>
+                        <span>{booking.peopleCount}</span>
                       </div>
 
                       <div>
-                        Booking Status:{" "}
-                        <span>{formatStatusLabel(booking.bookingStatus)}</span>
+                        <strong>Days</strong>
+                        <span>{booking.days}</span>
                       </div>
 
-                      <div>
-                        People: <span>{booking.peopleCount ?? "-"}</span>
-                      </div>
-
-                      <div>
-                        Days: <span>{booking.days ?? "-"}</span>
-                      </div>
-
-                      <div>
-                        Unit Price: <span>₹{booking.unitPrice ?? 0}</span>
-                      </div>
-
-                      {booking.destination ? (
+                      {booking.destination && (
                         <div>
-                          Destination: <span>{booking.destination}</span>
+                          <strong>Destination</strong>
+                          <span>{booking.destination}</span>
                         </div>
-                      ) : null}
+                      )}
 
-                      {booking.place ? (
+                      {booking.place && (
                         <div>
-                          Place: <span>{booking.place}</span>
+                          <strong>Place</strong>
+                          <span>{booking.place}</span>
                         </div>
-                      ) : null}
-
-                      {booking.selectedVehicleTitle ? (
-                        <div>
-                          Vehicle: <span>{booking.selectedVehicleTitle}</span>
-                        </div>
-                      ) : null}
-
-                      {booking.selectedPackageTitle ? (
-                        <div>
-                          Package: <span>{booking.selectedPackageTitle}</span>
-                        </div>
-                      ) : null}
+                      )}
                     </div>
 
-                    {isCancelled && booking.cancellationReason ? (
+                    {/* 🔥 ALERTS */}
+                    {booking.cancellationReason && (
                       <div className="bookingHistoryAlert bookingHistoryAlertDanger">
-                        Cancellation Reason: {booking.cancellationReason}
+                        <strong>Cancellation Reason:</strong>{" "}
+                        {booking.cancellationReason}
                       </div>
-                    ) : null}
+                    )}
 
-                    {isConfirmed ? (
+                    {isCancelled && (
                       <div className="bookingHistoryAlert bookingHistoryAlertSuccess">
-                        Your booking is confirmed and paid successfully.
+                        Your provider cancelled this service. They will refund your
+                        money soon.
                       </div>
-                    ) : null}
+                    )}
 
+                    {/* 🔥 ACTION BUTTONS */}
                     <div className="bookingHistoryActions">
                       <button
                         className="bookingHistoryBtn"
-                        onClick={() => navigate(`/profile/bookings/${booking._id}`)}
+                        onClick={() =>
+                          navigate(`/profile/bookings/${booking._id}`)
+                        }
                       >
                         View Details
                       </button>
 
-                      {canReview ? (
+                      <button
+                        className="bookingHistoryBtn"
+                        onClick={() =>
+                          navigate(`/profile/bookings/${booking._id}/invoice`)
+                        }
+                      >
+                        View Invoice
+                      </button>
+
+                      {!isCancelled && booking.canReview ? (
                         <button
-                          className="bookingHistoryReviewBtn"
+                          className={
+                            booking.existingReview
+                              ? "bookingHistoryEditBtn"
+                              : "bookingHistoryReviewBtn"
+                          }
                           onClick={() =>
                             navigate(`/profile/bookings/${booking._id}/review`)
                           }
                         >
-                          Write Review
-                        </button>
-                      ) : canEditReview ? (
-                        <button
-                          className="bookingHistoryEditBtn"
-                          onClick={() =>
-                            navigate(`/profile/bookings/${booking._id}/review`)
-                          }
-                        >
-                          Edit Review
+                          {booking.existingReview
+                            ? "Edit Review"
+                            : "Write Review"}
                         </button>
                       ) : (
                         <div className="bookingHistoryActionPlaceholder" />
                       )}
-
-                      <button
-                        className="bookingHistoryBtn"
-                        onClick={() => navigate(`/profile/bookings/${booking._id}/invoice`)}
-                      >
-                        Invoice
-                      </button>
                     </div>
                   </div>
                 </div>
