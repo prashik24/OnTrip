@@ -4,7 +4,6 @@
   gap: 18px;
 }
 
-/* same smaller centered feel like invoice / booking success */
 .providerDashboardPage.container {
   width: 100%;
   max-width: 980px;
@@ -79,7 +78,6 @@
   border-color: rgba(0, 184, 241, 0.18);
 }
 
-/* banner style like booking success */
 .providerDashboardTop {
   padding: 18px;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
@@ -89,6 +87,10 @@
   align-items: flex-start;
   gap: 14px;
   min-width: 0;
+}
+
+.providerDashboardTop.cancelled {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
 .providerDashboardTop > div:first-child {
@@ -124,18 +126,59 @@
   word-break: break-word;
 }
 
-/* main inner body spacing */
-.providerDashboardCard > :not(.providerDashboardTop) {
-  margin-left: 18px;
-  margin-right: 18px;
+.providerDashboardBody {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+
+.providerDashboardStatusRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.providerDashboardStatusBadge {
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.providerDashboardStatusBadge.paid,
+.providerDashboardStatusBadge.completed {
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.18);
+  color: #15803d;
+}
+
+.providerDashboardStatusBadge.pending {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+  color: #b45309;
+}
+
+.providerDashboardStatusBadge.failed,
+.providerDashboardStatusBadge.cancelled {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  color: #b42318;
+}
+
+.providerDashboardStatusBadge.confirmed {
+  background: rgba(0, 184, 241, 0.1);
+  border: 1px solid rgba(0, 184, 241, 0.16);
+  color: #0369a1;
 }
 
 .providerDashboardInfo {
-  margin-top: 16px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  min-width: 0;
 }
 
 .providerDashboardInfo > div {
@@ -143,6 +186,21 @@
   border-radius: 14px;
   padding: 14px 15px;
   border: 1px solid rgba(0, 184, 241, 0.1);
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.providerDashboardInfo > div strong {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: rgba(15, 23, 42, 0.46);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.providerDashboardInfo > div span {
   font-size: 14px;
   font-weight: 650;
   color: rgba(15, 23, 42, 0.88);
@@ -150,35 +208,27 @@
   word-break: break-word;
 }
 
-/* payment badge box */
-.providerDashboardInfo > div:nth-child(4) {
-  background: rgba(22, 163, 74, 0.08);
-  border: 1px solid rgba(22, 163, 74, 0.18);
-  color: #15803d;
-  font-weight: 700;
+.providerDashboardInfoWide {
+  grid-column: 1 / -1;
 }
 
-/* status badge box */
-.providerDashboardInfo > div:nth-child(5) {
-  background: rgba(0, 184, 241, 0.1);
-  border: 1px solid rgba(0, 184, 241, 0.16);
-  color: #0369a1;
-  font-weight: 700;
+.providerDashboardCancelInfo {
+  background: rgba(255, 247, 247, 1) !important;
+  border: 1px solid rgba(239, 68, 68, 0.14) !important;
 }
 
-/* if cancelled reason text box exists in info */
-.providerDashboardInfo > div:last-child {
-  word-break: break-word;
+.providerDashboardCancelInfo strong,
+.providerDashboardCancelInfo span {
+  color: #b42318 !important;
 }
 
-.providerDashboardCard > div:has(textarea),
-.providerDashboardCard > div:last-child {
-  margin-top: 2px;
+.providerDashboardCancelWrap {
+  display: grid;
+  gap: 8px;
 }
 
-.providerDashboardCard label {
+.providerDashboardCancelWrap label {
   display: block;
-  margin-bottom: 8px;
   color: var(--text);
   font-size: 14px;
   font-weight: 700;
@@ -211,7 +261,6 @@
 
 .providerDashboardActions {
   margin-top: auto;
-  margin-bottom: 18px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
@@ -246,16 +295,16 @@
   box-shadow: none;
 }
 
-.providerDashboardActions .providerDashboardBtn:nth-child(1) {
-  background: rgba(22, 163, 74, 0.08);
-  border-color: rgba(22, 163, 74, 0.18);
-  color: #15803d;
-}
-
-.providerDashboardActions .providerDashboardBtn:nth-child(2) {
+.providerDashboardBtn.primary {
   background: rgba(0, 184, 241, 0.1);
   border-color: rgba(0, 184, 241, 0.16);
   color: #0369a1;
+}
+
+.providerDashboardBtn.success {
+  background: rgba(22, 163, 74, 0.08);
+  border-color: rgba(22, 163, 74, 0.18);
+  color: #15803d;
 }
 
 .providerDashboardBtn.danger {
@@ -282,10 +331,6 @@
   .providerDashboardTop {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .providerDashboardPrice {
-    max-width: 100%;
   }
 }
 
@@ -318,14 +363,12 @@
     font-size: 18px;
   }
 
-  .providerDashboardCard > :not(.providerDashboardTop) {
-    margin-left: 16px;
-    margin-right: 16px;
+  .providerDashboardBody {
+    padding: 16px;
   }
 
   .providerDashboardActions {
     grid-template-columns: 1fr;
-    margin-bottom: 16px;
   }
 
   .providerDashboardBtn {
