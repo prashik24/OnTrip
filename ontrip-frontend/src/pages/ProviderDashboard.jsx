@@ -10,6 +10,24 @@ function formatStatusLabel(value) {
     .replace(/\b\w/g, (m) => m.toUpperCase());
 }
 
+function getTopBannerClass(booking) {
+  const payment = String(booking?.paymentStatus || "").toLowerCase();
+  const status = String(booking?.bookingStatus || "").toLowerCase();
+
+  if (status === "cancelled") return "cancelled";
+  if (status === "completed" || payment === "paid") return "completed";
+  return "default";
+}
+
+function getTopStatusText(booking) {
+  const payment = String(booking?.paymentStatus || "").toLowerCase();
+  const status = String(booking?.bookingStatus || "").toLowerCase();
+
+  if (status === "cancelled") return "Cancelled";
+  if (status === "completed" || payment === "paid") return "Paid";
+  return formatStatusLabel(booking?.bookingStatus || booking?.paymentStatus);
+}
+
 export default function ProviderDashboard() {
   const [bookings, setBookings] = useState([]);
   const [msg, setMsg] = useState("");
@@ -84,18 +102,20 @@ export default function ProviderDashboard() {
           {bookings.map((booking) => {
             const isCancelled = booking.bookingStatus === "cancelled";
             const isLoadingThis = loadingId === booking._id;
+            const topBannerClass = getTopBannerClass(booking);
+            const topStatusText = getTopStatusText(booking);
 
             return (
               <div className="providerDashboardCard" key={booking._id}>
-                <div
-                  className={`providerDashboardTop ${
-                    isCancelled ? "cancelled" : ""
-                  }`}
-                >
-                  <div>
+                <div className={`providerDashboardTop ${topBannerClass}`}>
+                  <div className="providerDashboardTopLeft">
+                    <div className="providerDashboardTopStatus">
+                      {topStatusText}
+                    </div>
                     <h3>{booking.serviceTitle}</h3>
                     <p>Customer: {booking.user?.name || booking.contactName || "User"}</p>
                   </div>
+
                   <div className="providerDashboardPrice">₹{booking.amount}</div>
                 </div>
 
