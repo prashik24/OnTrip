@@ -1,10 +1,16 @@
-.providerDashboardPage {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.bookingHistoryPage {
   padding-bottom: 32px;
   display: grid;
   gap: 18px;
 }
 
-.providerDashboardPage.container {
+.bookingHistoryPage.container {
   width: 100%;
   max-width: 980px;
   margin: 0 auto;
@@ -12,12 +18,12 @@
   box-sizing: border-box;
 }
 
-.providerDashboardHead {
+.bookingHistoryHead {
   display: grid;
   gap: 8px;
 }
 
-.providerDashboardHead h1 {
+.bookingHistoryHead h1 {
   margin: 0;
   font-size: 30px;
   font-weight: 760;
@@ -26,7 +32,7 @@
   word-break: break-word;
 }
 
-.providerDashboardHead p {
+.bookingHistoryHead p {
   margin: 0;
   color: var(--muted);
   line-height: 1.6;
@@ -34,17 +40,17 @@
   word-break: break-word;
 }
 
-.providerDashboardMessage {
+.bookingHistoryMessage {
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(255, 98, 98, 0.08);
-  border: 1px solid rgba(255, 98, 98, 0.16);
-  color: #b42318;
+  background: rgba(0, 184, 241, 0.08);
+  border: 1px solid rgba(0, 184, 241, 0.14);
+  color: #0369a1;
   font-weight: 650;
   word-break: break-word;
 }
 
-.providerDashboardEmpty {
+.bookingHistoryEmpty {
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 18px;
@@ -54,14 +60,14 @@
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
 }
 
-.providerDashboardGrid {
+.bookingHistoryGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   align-items: stretch;
 }
 
-.providerDashboardCard {
+.bookingHistoryCard {
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 18px;
@@ -73,12 +79,12 @@
   transition: 0.18s ease;
 }
 
-.providerDashboardCard:hover {
+.bookingHistoryCard:hover {
   box-shadow: 0 14px 28px rgba(10, 22, 35, 0.08);
   border-color: rgba(0, 184, 241, 0.18);
 }
 
-.providerDashboardTop {
+.bookingHistoryTop {
   padding: 18px;
   color: #ffffff;
   display: flex;
@@ -88,23 +94,23 @@
   min-width: 0;
 }
 
-.providerDashboardTop.active {
+.bookingHistoryTop.active {
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
 }
 
-.providerDashboardTop.completed {
+.bookingHistoryTop.completed {
   background: linear-gradient(135deg, #22c55e, #16a34a);
 }
 
-.providerDashboardTop.cancelled {
+.bookingHistoryTop.cancelled {
   background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
-.providerDashboardTopLeft {
+.bookingHistoryTopLeft {
   min-width: 0;
 }
 
-.providerDashboardTop h3 {
+.bookingHistoryTop h3 {
   margin: 0;
   font-size: 20px;
   font-weight: 760;
@@ -113,7 +119,7 @@
   word-break: break-word;
 }
 
-.providerDashboardTop p {
+.bookingHistoryTop p {
   margin: 6px 0 0;
   color: rgba(255, 255, 255, 0.94);
   font-weight: 600;
@@ -121,14 +127,14 @@
   word-break: break-word;
 }
 
-.providerDashboardTopRight {
+.bookingHistoryTopRight {
   flex-shrink: 0;
   display: grid;
   gap: 6px;
   justify-items: end;
 }
 
-.providerDashboardPrice {
+.bookingHistoryPrice {
   padding: 0;
   border-radius: 0;
   background: transparent;
@@ -140,7 +146,7 @@
   box-shadow: none;
 }
 
-.providerDashboardTopStatuses {
+.bookingHistoryTopStatuses {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -148,15 +154,7 @@
   justify-content: flex-end;
 }
 
-.providerDashboardBody {
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  height: 100%;
-}
-
-.providerDashboardStatusBadge {
+.bookingHistoryStatusBadge {
   padding: 7px 12px;
   border-radius: 10px;
   font-size: 13px;
@@ -165,7 +163,7 @@
   text-transform: capitalize;
 }
 
-.providerDashboardStatusBadge.top {
+.bookingHistoryStatusBadge.top {
   padding: 0;
   font-size: 13px;
   background: transparent;
@@ -175,13 +173,21 @@
   border-radius: 0;
 }
 
-.providerDashboardInfo {
+.bookingHistoryBody {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+
+.bookingHistoryInfo {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
-.providerDashboardInfo > div {
+.bookingHistoryInfo > div {
   background: rgba(244, 251, 255, 0.94);
   border-radius: 14px;
   padding: 14px 15px;
@@ -191,7 +197,7 @@
   gap: 4px;
 }
 
-.providerDashboardInfo > div strong {
+.bookingHistoryInfo > div strong {
   display: block;
   font-size: 12px;
   text-transform: uppercase;
@@ -200,7 +206,7 @@
   letter-spacing: 0.03em;
 }
 
-.providerDashboardInfo > div span {
+.bookingHistoryInfo > div span {
   font-size: 14px;
   font-weight: 650;
   color: rgba(15, 23, 42, 0.88);
@@ -208,76 +214,27 @@
   word-break: break-word;
 }
 
-.providerDashboardInfoWide {
-  grid-column: 1 / -1;
-}
-
-.providerDashboardCancelInfo {
-  background: rgba(255, 247, 247, 1) !important;
-  border: 1px solid rgba(239, 68, 68, 0.14) !important;
-}
-
-.providerDashboardCancelInfo strong,
-.providerDashboardCancelInfo span {
-  color: #b42318 !important;
-}
-
-.providerDashboardCancelWrap {
-  display: grid;
-  gap: 8px;
-}
-
-.providerDashboardCancelWrap label {
-  display: block;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.providerDashboardCard textarea {
-  width: 100%;
-  min-height: 90px;
-  border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 12px;
-  padding: 12px 14px;
-  font: inherit;
-  resize: vertical;
-  outline: none;
-  box-sizing: border-box;
-  background: #ffffff;
-  color: var(--text);
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
-}
-
-.providerDashboardCard textarea::placeholder {
-  color: rgba(11, 27, 42, 0.48);
-}
-
-.providerDashboardCard textarea:focus {
-  border-color: rgba(0, 184, 241, 0.35);
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
-}
-
-.providerDashboardActions {
+.bookingHistoryActions {
   margin-top: auto;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
 }
 
-.providerDashboardBtn {
+.bookingHistoryActionPlaceholder {
+  min-height: 42px;
   width: 100%;
-  min-height: 52px;
-  padding: 0 18px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 18px;
-  font: inherit;
-  font-size: 16px;
-  font-weight: 800;
+}
+
+.bookingHistoryBtn {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
   cursor: pointer;
-  background: #ffffff;
-  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
   transition: 0.18s ease;
   display: inline-flex;
   align-items: center;
@@ -287,104 +244,125 @@
   box-shadow: none;
 }
 
-.providerDashboardBtn:hover {
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
-}
-
-.providerDashboardBtn:disabled {
-  opacity: 0.75;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.providerDashboardBtn.primary {
+.bookingHistoryBtn.primary {
+  border: 1px solid rgba(0, 184, 241, 0.28);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  border-color: rgba(0, 184, 241, 0.3);
   color: #ffffff;
 }
 
-.providerDashboardBtn.success {
+.bookingHistoryBtn.secondary {
+  border: 1px solid rgba(15, 23, 42, 0.12);
   background: #ffffff;
-  border-color: rgba(15, 23, 42, 0.12);
   color: var(--text);
 }
 
-.providerDashboardBtn.danger {
-  background: #ffffff;
-  border-color: rgba(15, 23, 42, 0.12);
-  color: var(--text);
+.bookingHistoryBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(10, 22, 35, 0.08);
 }
 
-.providerDashboardActions .providerDashboardBtn:only-child {
-  grid-column: 1 / -1;
+.bookingHistoryBtn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.bookingHistoryAlert {
+  padding: 11px 13px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.bookingHistoryAlertDanger {
+  background: rgba(255, 98, 98, 0.08);
+  border: 1px solid rgba(255, 98, 98, 0.16);
+  color: #b42318;
+}
+
+.bookingHistoryAlertSuccess {
+  background: rgba(18, 183, 106, 0.1);
+  border: 1px solid rgba(18, 183, 106, 0.2);
+  color: #027a48;
 }
 
 @media (max-width: 900px) {
-  .providerDashboardGrid {
+  .bookingHistoryGrid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 760px) {
-  .providerDashboardInfo {
+  .bookingHistoryInfo {
     grid-template-columns: 1fr;
   }
 
-  .providerDashboardTop {
+  .bookingHistoryTop {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .providerDashboardTopRight {
+  .bookingHistoryTopRight {
     justify-items: start;
   }
 
-  .providerDashboardTopStatuses {
+  .bookingHistoryTopStatuses {
     justify-content: flex-start;
+  }
+
+  .bookingHistoryPrice {
+    white-space: normal;
   }
 }
 
 @media (max-width: 640px) {
-  .providerDashboardPage {
+  .bookingHistoryPage {
     gap: 16px;
   }
 
-  .providerDashboardPage.container {
+  .bookingHistoryPage.container {
     padding: 0 14px;
   }
 
-  .providerDashboardHead h1 {
+  .bookingHistoryHead h1 {
     font-size: 24px;
   }
 
-  .providerDashboardHead p {
+  .bookingHistoryHead p {
     font-size: 14px;
   }
 
-  .providerDashboardTop {
+  .bookingHistoryTop {
     padding: 16px;
   }
 
-  .providerDashboardTop h3 {
+  .bookingHistoryTop h3 {
     font-size: 18px;
   }
 
-  .providerDashboardPrice {
+  .bookingHistoryPrice {
     font-size: 18px;
   }
 
-  .providerDashboardBody {
+  .bookingHistoryBody {
     padding: 16px;
   }
 
-  .providerDashboardActions {
+  .bookingHistoryActions {
     grid-template-columns: 1fr;
     gap: 10px;
   }
 
-  .providerDashboardBtn {
-    min-height: 48px;
-    border-radius: 16px;
-    font-size: 15px;
+  .bookingHistoryActionPlaceholder {
+    display: none;
+  }
+
+  .bookingHistoryBtn {
+    min-height: 44px;
+    border-radius: 12px;
+    font-size: 14px;
   }
 }
