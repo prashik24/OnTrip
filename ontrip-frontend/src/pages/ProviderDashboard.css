@@ -80,7 +80,6 @@
 
 .providerDashboardTop {
   padding: 18px;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
   display: flex;
   justify-content: space-between;
@@ -89,12 +88,35 @@
   min-width: 0;
 }
 
+.providerDashboardTop.default {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+}
+
+.providerDashboardTop.completed {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
 .providerDashboardTop.cancelled {
   background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
-.providerDashboardTop > div:first-child {
+.providerDashboardTopLeft {
   min-width: 0;
+}
+
+.providerDashboardTopStatus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  backdrop-filter: blur(2px);
 }
 
 .providerDashboardTop h3 {
@@ -118,12 +140,12 @@
   flex-shrink: 0;
   padding: 8px 12px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.14);
   color: #ffffff;
   font-size: 20px;
   font-weight: 800;
   line-height: 1.2;
-  word-break: break-word;
+  border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .providerDashboardBody {
