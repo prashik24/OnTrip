@@ -6,22 +6,23 @@
 
 .bookingHistoryPage {
   width: 100%;
-  max-width: 1820px;
+  max-width: 980px;
   margin: 0 auto;
-  padding-bottom: 32px;
+  padding: 0 16px 32px;
   display: grid;
   gap: 18px;
   align-items: start;
-  margin-left: -55px;
 }
 
 .bookingHistoryHead {
   width: 100%;
+  display: grid;
+  gap: 8px;
 }
 
 .bookingHistoryHead h1 {
   margin: 0;
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 760;
   color: var(--text);
   line-height: 1.2;
@@ -29,17 +30,17 @@
 }
 
 .bookingHistoryHead p {
-  margin: 10px 0 0;
+  margin: 0;
   color: var(--muted);
-  line-height: 1.7;
-  font-weight: 550;
+  line-height: 1.6;
+  font-weight: 600;
   font-size: 16px;
   word-break: break-word;
 }
 
 .bookingHistoryMessage {
   width: 100%;
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-radius: 14px;
   background: rgba(0, 184, 241, 0.08);
   border: 1px solid rgba(0, 184, 241, 0.14);
@@ -51,10 +52,10 @@
 
 .bookingHistoryEmpty {
   width: 100%;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 18px;
-  padding: 24px;
+  padding: 22px;
   color: rgba(11, 27, 42, 0.72);
   font-weight: 650;
   font-size: 16px;
@@ -64,8 +65,7 @@
 .bookingHistoryGrid {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, minmax(320px, 420px));
-  justify-content: start;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   align-items: stretch;
 }
@@ -73,24 +73,29 @@
 .bookingHistoryCard {
   width: 100%;
   min-width: 0;
-  max-width: 420px;
-  min-height: 430px;
+  min-height: 420px;
   height: 100%;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 18px;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
-  padding: 20px;
-  display: grid;
-  grid-template-rows: 1fr auto;
-  gap: 18px;
+  display: flex;
+  flex-direction: column;
+  transition: 0.18s ease;
+}
+
+.bookingHistoryCard:hover {
+  box-shadow: 0 14px 28px rgba(10, 22, 35, 0.08);
+  border-color: rgba(0, 184, 241, 0.18);
 }
 
 .bookingHistoryCardBody {
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
+  padding: 18px;
+  height: 100%;
 }
 
 .bookingHistoryTop {
@@ -109,25 +114,26 @@
 
 .bookingHistoryTop h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 760;
   color: var(--text);
-  line-height: 1.3;
+  line-height: 1.25;
   word-break: break-word;
 }
 
 .bookingHistoryTop p {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   color: var(--muted);
-  font-weight: 550;
+  font-weight: 600;
   font-size: 16px;
+  line-height: 1.55;
   word-break: break-word;
 }
 
 .bookingHistoryPrice {
   flex: 0 0 auto;
-  font-size: 18px;
-  font-weight: 760;
+  font-size: 20px;
+  font-weight: 800;
   color: #0369a1;
   white-space: nowrap;
 }
@@ -136,16 +142,21 @@
   width: 100%;
   min-width: 0;
   display: grid;
-  gap: 9px;
-  color: rgba(11, 27, 42, 0.8);
-  font-weight: 550;
-  font-size: 16px;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 .bookingHistoryInfo div {
   min-width: 0;
   word-break: break-word;
   line-height: 1.5;
+  background: rgba(244, 251, 255, 0.94);
+  border-radius: 14px;
+  padding: 14px 15px;
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  color: rgba(11, 27, 42, 0.8);
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .bookingHistoryInfo span {
@@ -156,14 +167,14 @@
 .bookingHistoryActions {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
   align-items: stretch;
   margin-top: auto;
 }
 
 .bookingHistoryActionPlaceholder {
-  min-height: 46px;
+  min-height: 52px;
   width: 100%;
 }
 
@@ -171,21 +182,33 @@
 .bookingHistoryReviewBtn,
 .bookingHistoryEditBtn {
   width: 100%;
-  min-height: 46px;
-  padding: 0 10px;
-  border-radius: 12px;
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: 18px;
   cursor: pointer;
   font: inherit;
-  font-size: 15px;
-  font-weight: 720;
+  font-size: 16px;
+  font-weight: 800;
   transition: 0.18s ease;
-  border: 1px solid rgba(0, 184, 241, 0.32);
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #ffffff;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  box-sizing: border-box;
+  box-shadow: none;
+}
+
+.bookingHistoryBtn,
+.bookingHistoryReviewBtn {
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+}
+
+.bookingHistoryEditBtn {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: #ffffff;
+  color: var(--text);
 }
 
 .bookingHistoryBtn:hover,
@@ -207,7 +230,7 @@
 .bookingHistoryAlert {
   padding: 11px 13px;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 650;
   line-height: 1.5;
   word-break: break-word;
@@ -225,54 +248,15 @@
   color: #027a48;
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 900px) {
   .bookingHistoryGrid {
-    grid-template-columns: repeat(2, minmax(320px, 420px));
+    grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 930px) {
-  .bookingHistoryGrid {
-    grid-template-columns: minmax(320px, 420px);
-  }
-
-  .bookingHistoryPage {
-    margin-left: 0;
-  }
-}
-
-@media (max-width: 520px) {
-  .bookingHistoryPage {
-    max-width: 100%;
-    margin-left: 0;
-    gap: 16px;
-  }
-
-  .bookingHistoryHead h1 {
-    font-size: 26px;
-  }
-
-  .bookingHistoryHead p,
-  .bookingHistoryMessage,
-  .bookingHistoryEmpty,
-  .bookingHistoryTop p,
-  .bookingHistoryInfo,
-  .bookingHistoryAlert {
-    font-size: 14px;
-  }
-
-  .bookingHistoryGrid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .bookingHistoryCard {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    min-height: 0;
-    padding: 16px;
-    border-radius: 16px;
-    gap: 16px;
+@media (max-width: 760px) {
+  .bookingHistoryInfo {
+    grid-template-columns: 1fr;
   }
 
   .bookingHistoryTop {
@@ -282,11 +266,53 @@
 
   .bookingHistoryPrice {
     white-space: normal;
-    font-size: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .bookingHistoryPage {
+    max-width: 100%;
+    gap: 16px;
+    padding: 0 14px 32px;
+  }
+
+  .bookingHistoryHead h1 {
+    font-size: 24px;
+  }
+
+  .bookingHistoryHead p,
+  .bookingHistoryMessage,
+  .bookingHistoryEmpty {
+    font-size: 14px;
+  }
+
+  .bookingHistoryCard {
+    min-height: 0;
+    border-radius: 16px;
+  }
+
+  .bookingHistoryCardBody {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .bookingHistoryTop h3 {
+    font-size: 18px;
+  }
+
+  .bookingHistoryTop p,
+  .bookingHistoryInfo div,
+  .bookingHistoryAlert {
+    font-size: 14px;
+  }
+
+  .bookingHistoryPrice {
+    font-size: 18px;
   }
 
   .bookingHistoryActions {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .bookingHistoryActionPlaceholder {
@@ -296,6 +322,8 @@
   .bookingHistoryBtn,
   .bookingHistoryReviewBtn,
   .bookingHistoryEditBtn {
-    font-size: 14px;
+    min-height: 48px;
+    border-radius: 16px;
+    font-size: 15px;
   }
 }
