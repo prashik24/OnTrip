@@ -218,23 +218,23 @@
   margin-top: auto;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
 }
 
 .bookingHistoryActionPlaceholder {
-  min-height: 52px;
+  min-height: 42px;
   width: 100%;
 }
 
 .bookingHistoryBtn {
   width: 100%;
-  min-height: 52px;
-  padding: 0 18px;
-  border-radius: 18px;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
   cursor: pointer;
   font: inherit;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 700;
   transition: 0.18s ease;
   display: inline-flex;
   align-items: center;
@@ -245,7 +245,7 @@
 }
 
 .bookingHistoryBtn.primary {
-  border: 1px solid rgba(0, 184, 241, 0.32);
+  border: 1px solid rgba(0, 184, 241, 0.28);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
 }
@@ -258,7 +258,7 @@
 
 .bookingHistoryBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+  box-shadow: 0 6px 14px rgba(10, 22, 35, 0.08);
 }
 
 .bookingHistoryBtn:disabled {
@@ -361,8 +361,8 @@
   }
 
   .bookingHistoryBtn {
-    min-height: 48px;
-    border-radius: 16px;
-    font-size: 15px;
+    min-height: 44px;
+    border-radius: 12px;
+    font-size: 14px;
   }
 }
