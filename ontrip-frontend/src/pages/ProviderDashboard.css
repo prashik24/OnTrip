@@ -263,17 +263,18 @@
   margin-top: auto;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 14px;
 }
 
 .providerDashboardBtn {
   width: 100%;
-  min-height: 44px;
-  padding: 0 12px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  border-radius: 12px;
+  min-height: 52px;
+  padding: 0 18px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 18px;
   font: inherit;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   cursor: pointer;
   background: #ffffff;
   color: var(--text);
@@ -283,6 +284,7 @@
   justify-content: center;
   text-align: center;
   box-sizing: border-box;
+  box-shadow: none;
 }
 
 .providerDashboardBtn:hover {
@@ -296,21 +298,21 @@
 }
 
 .providerDashboardBtn.primary {
-  background: rgba(0, 184, 241, 0.1);
-  border-color: rgba(0, 184, 241, 0.16);
-  color: #0369a1;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  border-color: rgba(0, 184, 241, 0.3);
+  color: #ffffff;
 }
 
 .providerDashboardBtn.success {
-  background: rgba(22, 163, 74, 0.08);
-  border-color: rgba(22, 163, 74, 0.18);
-  color: #15803d;
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.12);
+  color: var(--text);
 }
 
 .providerDashboardBtn.danger {
-  background: rgba(239, 68, 68, 0.08);
-  color: #b42318;
-  border-color: rgba(239, 68, 68, 0.18);
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.12);
+  color: var(--text);
 }
 
 .providerDashboardActions .providerDashboardBtn:only-child {
@@ -377,69 +379,12 @@
 
   .providerDashboardActions {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .providerDashboardBtn {
-    min-height: 42px;
+    min-height: 48px;
+    border-radius: 16px;
+    font-size: 15px;
   }
-}
-.providerDashboardActions {
-  margin-top: auto;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.providerDashboardBtn {
-  width: 100%;
-  min-height: 44px;
-  padding: 0 12px;
-  border-radius: 12px;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-  background: #ffffff;
-  transition: 0.18s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-/* 🔥 CONFIRM (BLUE STYLE) */
-.providerDashboardBtn.primary {
-  border: 1px solid rgba(0, 184, 241, 0.3);
-  color: #0369a1;
-  background: rgba(0, 184, 241, 0.08);
-}
-
-/* 🔥 COMPLETE (SAME BLUE / WHITE STYLE) */
-.providerDashboardBtn.success {
-  border: 1px solid rgba(0, 184, 241, 0.2);
-  color: #0369a1;
-  background: #ffffff;
-}
-
-/* 🔥 CANCEL (LIGHT RED TEXT ONLY) */
-.providerDashboardBtn.danger {
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #b42318;
-  background: #ffffff;
-}
-
-/* HOVER */
-.providerDashboardBtn:hover {
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
-}
-
-/* DISABLED */
-.providerDashboardBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* SINGLE BUTTON */
-.providerDashboardActions .providerDashboardBtn:only-child {
-  grid-column: 1 / -1;
 }
