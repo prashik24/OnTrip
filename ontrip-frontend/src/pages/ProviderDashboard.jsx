@@ -10,24 +10,6 @@ function formatStatusLabel(value) {
     .replace(/\b\w/g, (m) => m.toUpperCase());
 }
 
-function getTopBannerClass(booking) {
-  const payment = String(booking?.paymentStatus || "").toLowerCase();
-  const status = String(booking?.bookingStatus || "").toLowerCase();
-
-  if (status === "cancelled") return "cancelled";
-  if (status === "completed" || payment === "paid") return "completed";
-  return "default";
-}
-
-function getTopStatusText(booking) {
-  const payment = String(booking?.paymentStatus || "").toLowerCase();
-  const status = String(booking?.bookingStatus || "").toLowerCase();
-
-  if (status === "cancelled") return "Cancelled";
-  if (status === "completed" || payment === "paid") return "Paid";
-  return formatStatusLabel(booking?.bookingStatus || booking?.paymentStatus);
-}
-
 export default function ProviderDashboard() {
   const [bookings, setBookings] = useState([]);
   const [msg, setMsg] = useState("");
@@ -101,38 +83,40 @@ export default function ProviderDashboard() {
         <div className="providerDashboardGrid">
           {bookings.map((booking) => {
             const isCancelled = booking.bookingStatus === "cancelled";
+            const isCompleted = booking.bookingStatus === "completed";
+            const topClass = isCancelled
+              ? "cancelled"
+              : isCompleted
+              ? "completed"
+              : "active";
             const isLoadingThis = loadingId === booking._id;
-            const topBannerClass = getTopBannerClass(booking);
-            const topStatusText = getTopStatusText(booking);
 
             return (
               <div className="providerDashboardCard" key={booking._id}>
-                <div className={`providerDashboardTop ${topBannerClass}`}>
+                <div className={`providerDashboardTop ${topClass}`}>
                   <div className="providerDashboardTopLeft">
-                    <div className="providerDashboardTopStatus">
-                      {topStatusText}
-                    </div>
                     <h3>{booking.serviceTitle}</h3>
                     <p>Customer: {booking.user?.name || booking.contactName || "User"}</p>
                   </div>
 
-                  <div className="providerDashboardPrice">₹{booking.amount}</div>
+                  <div className="providerDashboardTopRight">
+                    <div className="providerDashboardPrice">₹{booking.amount}</div>
+                    <div className="providerDashboardTopStatuses">
+                      <span
+                        className={`providerDashboardStatusBadge top ${booking.paymentStatus || ""}`}
+                      >
+                        {formatStatusLabel(booking.paymentStatus)}
+                      </span>
+                      <span
+                        className={`providerDashboardStatusBadge top ${booking.bookingStatus || ""}`}
+                      >
+                        {formatStatusLabel(booking.bookingStatus)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="providerDashboardBody">
-                  <div className="providerDashboardStatusRow">
-                    <span
-                      className={`providerDashboardStatusBadge ${booking.paymentStatus || ""}`}
-                    >
-                      {formatStatusLabel(booking.paymentStatus)}
-                    </span>
-                    <span
-                      className={`providerDashboardStatusBadge ${booking.bookingStatus || ""}`}
-                    >
-                      {formatStatusLabel(booking.bookingStatus)}
-                    </span>
-                  </div>
-
                   <div className="providerDashboardInfo">
                     <div>
                       <strong>Email</strong>
