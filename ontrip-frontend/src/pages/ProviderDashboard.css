@@ -2,37 +2,31 @@
   padding-bottom: 32px;
   display: grid;
   gap: 18px;
-  width: 100%;
 }
 
-/* ✅ SMALLER & CENTERED CONTAINER */
+/* 🔥 MATCH invoice + booking container */
 .providerDashboardPage.container {
   width: 100%;
-  max-width: 1100px;   /* 🔥 reduced from 1800 */
+  max-width: 1100px;   /* smaller like invoice */
   margin: 0 auto;
   padding: 0 20px;
   box-sizing: border-box;
 }
 
-/* HEADER */
-.providerDashboardHead {
-  display: grid;
-  gap: 8px;
-}
-
+/* HEAD */
 .providerDashboardHead h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 30px;   /* match invoice */
   font-weight: 760;
   color: var(--text);
   line-height: 1.2;
 }
 
 .providerDashboardHead p {
-  margin: 0;
+  margin: 6px 0 0;
   color: var(--muted);
-  line-height: 1.65;
-  font-weight: 550;
+  font-weight: 600;
+  line-height: 1.6;
 }
 
 /* MESSAGE */
@@ -47,25 +41,24 @@
 
 /* EMPTY */
 .providerDashboardEmpty {
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 18px;
-  padding: 22px;
-  color: rgba(11, 27, 42, 0.72);
+  padding: 20px;
   font-weight: 650;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
 }
 
-/* ✅ 2 GRID FIXED */
+/* 🔥 GRID = 2 */
 .providerDashboardGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 /* CARD */
 .providerDashboardCard {
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 18px;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
@@ -77,41 +70,39 @@
 }
 
 .providerDashboardCard:hover {
-  border-color: rgba(0, 184, 241, 0.2);
-  box-shadow: 0 14px 28px rgba(10, 22, 35, 0.08);
+  box-shadow: 0 14px 30px rgba(10, 22, 35, 0.08);
 }
 
 /* TOP */
 .providerDashboardTop {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 14px;
+  gap: 12px;
 }
 
 .providerDashboardTop h3 {
   margin: 0;
   font-size: 20px;
-  font-weight: 740;
-  color: var(--text);
+  font-weight: 760;
 }
 
 .providerDashboardTop p {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: var(--muted);
   font-weight: 550;
 }
 
+/* PRICE */
 .providerDashboardPrice {
   font-size: 20px;
   font-weight: 800;
   color: #0369a1;
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 6px 10px;
   background: rgba(0, 184, 241, 0.08);
+  border-radius: 10px;
 }
 
-/* ✅ CLEAN INFO BOX LIKE INVOICE */
+/* 🔥 INFO like invoice boxes */
 .providerDashboardInfo {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -121,24 +112,20 @@
 .providerDashboardInfo div {
   background: rgba(244, 251, 255, 0.94);
   border-radius: 12px;
-  padding: 12px 14px;
-  border: 1px solid rgba(0, 184, 241, 0.08);
-  font-weight: 550;
-  color: rgba(11, 27, 42, 0.8);
+  padding: 12px;
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  font-size: 14px;
+  font-weight: 650;
 }
 
 /* TEXTAREA */
 .providerDashboardCard textarea {
   width: 100%;
   min-height: 90px;
-  border: 1px solid rgba(11, 27, 42, 0.12);
   border-radius: 12px;
-  padding: 12px 14px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  padding: 12px;
   font: inherit;
-  resize: vertical;
-  outline: none;
-  box-sizing: border-box;
-  background: #fff;
 }
 
 .providerDashboardCard textarea:focus {
@@ -146,42 +133,42 @@
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
 }
 
-/* ACTION BUTTONS */
+/* ACTIONS */
 .providerDashboardActions {
   margin-top: auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 8px;
 }
 
 .providerDashboardBtn {
-  width: 100%;
-  height: 44px;
-  border: 1px solid rgba(11, 27, 42, 0.1);
-  border-radius: 12px;
-  font: inherit;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #fff;
   font-weight: 700;
   cursor: pointer;
-  background: #ffffff;
-  color: var(--text);
   transition: 0.18s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .providerDashboardBtn:hover {
   box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
 }
 
+/* STATUS COLORS LIKE INVOICE */
 .providerDashboardBtn.danger {
-  background: rgba(255, 98, 98, 0.08);
+  background: rgba(239, 68, 68, 0.08);
   color: #b42318;
-  border-color: rgba(255, 98, 98, 0.16);
 }
 
-.providerDashboardActions .providerDashboardBtn:only-child {
-  grid-column: 1 / -1;
+.providerDashboardBtn.success {
+  background: rgba(22, 163, 74, 0.08);
+  color: #15803d;
+}
+
+.providerDashboardBtn.primary {
+  background: rgba(0, 184, 241, 0.1);
+  color: #0369a1;
 }
 
 /* RESPONSIVE */
@@ -200,7 +187,11 @@
     padding: 0 14px;
   }
 
-  .providerDashboardActions {
-    grid-template-columns: 1fr;
+  .providerDashboardHead h1 {
+    font-size: 24px;
+  }
+
+  .providerDashboardCard {
+    padding: 16px;
   }
 }
