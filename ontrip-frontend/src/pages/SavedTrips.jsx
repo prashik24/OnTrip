@@ -91,7 +91,7 @@ export default function SavedTrips() {
         </div>
 
         <button
-          className="savedTripsSecondaryBtn"
+          className="savedTripsBtn secondary savedTripsBackBtn"
           onClick={() => navigate("/profile")}
         >
           Back to Profile
@@ -118,8 +118,8 @@ export default function SavedTrips() {
                   cardRefs.current[trip._id] = el;
                 }}
               >
-                <div className="savedTripTop">
-                  <div>
+                <div className="savedTripTop active">
+                  <div className="savedTripTopLeft">
                     <div className="savedTripTitle">
                       {trip.title || `${trip.destination} Trip`}
                     </div>
@@ -129,78 +129,88 @@ export default function SavedTrips() {
                     </div>
                   </div>
 
-                  <div className="savedTripBadge">{trip.days} Days</div>
-                </div>
-
-                <div className="savedTripMiniGrid">
-                  <div className="savedTripMiniItem">
-                    <span>Budget</span>
-                    <strong>{money(trip.budget)}</strong>
-                  </div>
-
-                  <div className="savedTripMiniItem">
-                    <span>People</span>
-                    <strong>{trip.peopleCount}</strong>
-                  </div>
-
-                  <div className="savedTripMiniItem">
-                    <span>Style</span>
-                    <strong>{trip.travelStyle}</strong>
-                  </div>
-
-                  <div className="savedTripMiniItem">
-                    <span>Saved On</span>
-                    <strong>
-                      {new Date(trip.createdAt).toLocaleDateString("en-IN")}
-                    </strong>
-                  </div>
-                </div>
-
-                <div className="savedTripSummary">
-                  {plan.summary || "Saved trip plan"}
-                </div>
-
-                {plan?.travelModes?.bestOption ? (
-                  <div className="savedTripBestBox">
-                    <div className="savedTripBestLabel">Best Option</div>
-                    <div className="savedTripBestText">
-                      {plan.travelModes.bestOption.title} •{" "}
-                      {plan.travelModes.bestOption.estimatedTime || "Time not available"}
+                  <div className="savedTripTopRight">
+                    <div className="savedTripPrice">{money(trip.budget)}</div>
+                    <div className="savedTripTopStatuses">
+                      <span className="savedTripStatusBadge top">{trip.days} Days</span>
+                      <span className="savedTripStatusBadge top">
+                        {trip.peopleCount} People
+                      </span>
                     </div>
                   </div>
-                ) : null}
+                </div>
 
-                {budgetStatus?.statusText ? (
-                  <div
-                    className={`savedTripBudgetStatus ${
-                      budgetStatus.isSufficient ? "isGood" : "isWarn"
-                    }`}
-                  >
-                    {budgetStatus.statusText}
+                <div className="savedTripBody">
+                  <div className="savedTripInfo">
+                    <div>
+                      <strong>Budget</strong>
+                      <span>{money(trip.budget)}</span>
+                    </div>
+
+                    <div>
+                      <strong>Style</strong>
+                      <span>{trip.travelStyle}</span>
+                    </div>
+
+                    <div>
+                      <strong>Saved On</strong>
+                      <span>
+                        {new Date(trip.createdAt).toLocaleDateString("en-IN")}
+                      </span>
+                    </div>
+
+                    <div>
+                      <strong>Duration</strong>
+                      <span>{trip.days} Days</span>
+                    </div>
                   </div>
-                ) : null}
 
-                <div className="savedTripActions">
-                  <button
-                    className="savedTripsPrimaryBtn"
-                    onClick={() => openTrip(trip)}
-                  >
-                    Open Trip
-                  </button>
+                  <div className="savedTripSummary">
+                    {plan.summary || "Saved trip plan"}
+                  </div>
 
-                  <button
-                    className="savedTripsSecondaryBtn"
-                    onClick={() => handleDownloadTrip(trip)}
-                  >
-                    Download PDF
-                  </button>
+                  {plan?.travelModes?.bestOption ? (
+                    <div className="savedTripBestBox">
+                      <div className="savedTripBestLabel">Best Option</div>
+                      <div className="savedTripBestText">
+                        {plan.travelModes.bestOption.title} •{" "}
+                        {plan.travelModes.bestOption.estimatedTime || "Time not available"}
+                      </div>
+                    </div>
+                  ) : null}
 
-                  <button
-                    className="savedTripsDangerBtn"
-                    onClick={() => handleDeleteTrip(trip._id)}
-                  >
-                    Delete
-                  </button>
+                  {budgetStatus?.statusText ? (
+                    <div
+                      className={`savedTripBudgetStatus ${
+                        budgetStatus.isSufficient ? "isGood" : "isWarn"
+                      }`}
+                    >
+                      {budgetStatus.statusText}
+                    </div>
+                  ) : null}
+
+                  <div className="savedTripActions">
+                    <button
+                      className="savedTripsBtn primary"
+                      onClick={() => openTrip(trip)}
+                    >
+                      Open Trip
+                    </button>
+
+                    <button
+                      className="savedTripsBtn secondary"
+                      onClick={() => handleDownloadTrip(trip)}
+                    >
+                      Download PDF
+                    </button>
+
+                    <button
+                      className="savedTripsBtn secondary"
+                      onClick={() => handleDeleteTrip(trip._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             );
