@@ -60,6 +60,10 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
 
+    socialProfileCreated: {
+      type: Boolean,
+      default: false,
+    },
     isOnline: {
       type: Boolean,
       default: false,
