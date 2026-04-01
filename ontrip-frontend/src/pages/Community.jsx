@@ -1,9 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./Community.css";
+
+const postTypeOptions = [
+  { label: "Normal Post", value: "post" },
+  { label: "Question", value: "question" },
+  { label: "Story", value: "story" },
+  { label: "Provider Offer", value: "provider_offer" },
+];
+
+const feedFilterOptions = [
+  { label: "All Posts", value: "all" },
+  { label: "Questions", value: "questions" },
+  { label: "Stories", value: "stories" },
+  { label: "Offers", value: "offers" },
+];
+
+function getInitial(name = "U") {
+  return String(name).trim().charAt(0).toUpperCase() || "U";
+}
 
 function formatTime(value) {
   if (!value) return "";
@@ -16,48 +34,261 @@ function formatTime(value) {
   });
 }
 
-function getInitial(name = "U") {
-  return String(name).trim().charAt(0).toUpperCase() || "U";
+function compactCount(value = 0) {
+  const num = Number(value || 0);
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+  return String(num);
 }
 
-function normalizeTagInput(value) {
-  return String(value || "")
-    .split(",")
-    .map((item) => item.trim().replace(/^#/, ""))
-    .filter(Boolean)
-    .join(", ");
-}
-
-const postTypeOptions = [
-  { label: "Normal Post", value: "post" },
-  { label: "Question", value: "question" },
-  { label: "Trip Story", value: "trip_story" },
-  { label: "Provider Offer", value: "provider_offer" },
-  { label: "Poll", value: "poll" },
-];
-
-const filterOptions = [
-  { label: "All Feed", value: "all" },
-  { label: "Questions", value: "questions" },
-  { label: "Stories", value: "stories" },
-  { label: "Provider Offers", value: "offers" },
-  { label: "Polls", value: "polls" },
-];
-
-function PostCard({
-  post,
+function PostComposer({
   me,
-  onLike,
-  onSave,
-  onShare,
-  onDelete,
-  onComment,
-  onVote,
-  commentText,
-  setCommentText,
+  myProfile,
+  myProviders,
+  composer,
+  setComposer,
+  fileInputRef,
+  submitting,
+  onSubmit,
 }) {
-  const canDelete = post.isMine || me?.role === "admin";
+  const providerOptions = useMemo(
+    () => [
+      { label: "Select provider listing", value: "" },
+      ...myProviders.map((item) => ({
+        label: `${item.businessName} — ${
+          item.listingType === "travel_planner" ? "Travel Planner" : "Vehicle"
+        }`,
+        value: item._id,
+      })),
+    ],
+    [myProviders]
+  );
 
+  return (
+    <div className="communityComposerCard">
+      <div className="communityComposerTop">
+        {me?.avatar ? (
+          <img src={me.avatar} alt={me.name} className="communityAvatar large" />
+        ) : (
+          <div className="communityAvatarFallback large">{getInitial(me?.name)}</div>
+        )}
+
+        <div className="communityComposerMain">
+          <div className="communityComposerHeader">
+            <div>
+              <strong>{me?.name || "Traveler"}</strong>
+              <span>
+                {myProfile?.followersCount || 0} followers •{" "}
+                {myProfile?.followingCount || 0} following
+              </span>
+            </div>
+
+            <CustomSelect
+              value={composer.postType}
+              onChange={(e) =>
+                setComposer((prev) => ({ ...prev, postType: e.target.value }))
+              }
+              options={postTypeOptions}
+              placeholder="Post type"
+              className="communitySmallSelect"
+            />
+          </div>
+
+          <textarea
+            className="communityComposerTextarea"
+            placeholder="Share your travel story, ask a question, post an update, or promote your service..."
+            value={composer.text}
+            onChange={(e) =>
+              setComposer((prev) => ({ ...prev, text: e.target.value }))
+            }
+            rows={5}
+          />
+
+          <div className="communityComposerGrid">
+            <input
+              className="communityInput"
+              placeholder="Hashtags (example: goa, solo, budget)"
+              value={composer.hashtags}
+              onChange={(e) =>
+                setComposer((prev) => ({ ...prev, hashtags: e.target.value }))
+              }
+            />
+
+            <input
+              className="communityInput"
+              placeholder='Tag users JSON later, for now type names "@amit @riya"'
+              value={composer.tagNames}
+              onChange={(e) =>
+                setComposer((prev) => ({ ...prev, tagNames: e.target.value }))
+              }
+            />
+          </div>
+
+          {composer.postType === "provider_offer" ? (
+            <CustomSelect
+              value={composer.providerId}
+              onChange={(e) =>
+                setComposer((prev) => ({ ...prev, providerId: e.target.value }))
+              }
+              options={providerOptions}
+              placeholder="Select provider listing"
+            />
+          ) : null}
+
+          <div className="communityComposerActions">
+            <button
+              type="button"
+              className="communityGhostBtn"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Add Photo / Video
+            </button>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              className="communityHiddenInput"
+              onChange={(e) =>
+                setComposer((prev) => ({
+                  ...prev,
+                  mediaFiles: Array.from(e.target.files || []),
+                }))
+              }
+            />
+
+            <div className="communitySelectedFiles">
+              {composer.mediaFiles.length
+                ? `${composer.mediaFiles.length} file(s) selected`
+                : "No media selected"}
+            </div>
+
+            <button
+              type="button"
+              className="communityPrimaryBtn"
+              onClick={onSubmit}
+              disabled={submitting}
+            >
+              {submitting ? "Posting..." : "Post"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReplyComposer({ value, onChange, onSubmit }) {
+  return (
+    <div className="communityReplyComposer">
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Write a reply..."
+      />
+      <button type="button" onClick={onSubmit}>
+        Reply
+      </button>
+    </div>
+  );
+}
+
+function CommentItem({
+  postId,
+  comment,
+  onLikeComment,
+  onReplyComment,
+  replyDraft,
+  setReplyDraft,
+}) {
+  const [showReplyBox, setShowReplyBox] = useState(false);
+
+  return (
+    <div className="communityCommentItem">
+      {comment.user?.avatar ? (
+        <img
+          src={comment.user.avatar}
+          alt={comment.user.name}
+          className="communityCommentAvatar"
+        />
+      ) : (
+        <div className="communityCommentAvatarFallback">
+          {getInitial(comment.user?.name)}
+        </div>
+      )}
+
+      <div className="communityCommentBody">
+        <div className="communityCommentTop">
+          <strong>{comment.user?.name || "User"}</strong>
+          <span>{formatTime(comment.createdAt)}</span>
+        </div>
+
+        <div className="communityCommentText">{comment.text}</div>
+
+        <div className="communityCommentActions">
+          <button type="button" onClick={() => onLikeComment(postId, comment.id)}>
+            ❤️ {compactCount(comment.likesCount)}
+          </button>
+          <button type="button" onClick={() => setShowReplyBox((prev) => !prev)}>
+            Reply
+          </button>
+        </div>
+
+        {showReplyBox ? (
+          <ReplyComposer
+            value={replyDraft}
+            onChange={setReplyDraft}
+            onSubmit={() => {
+              onReplyComment(postId, comment.id);
+              setShowReplyBox(false);
+            }}
+          />
+        ) : null}
+
+        {comment.replies?.length ? (
+          <div className="communityReplyList">
+            {comment.replies.map((reply) => (
+              <div key={reply.id} className="communityReplyItem">
+                {reply.user?.avatar ? (
+                  <img
+                    src={reply.user.avatar}
+                    alt={reply.user.name}
+                    className="communityReplyAvatar"
+                  />
+                ) : (
+                  <div className="communityReplyAvatarFallback">
+                    {getInitial(reply.user?.name)}
+                  </div>
+                )}
+                <div className="communityReplyBody">
+                  <div className="communityCommentTop">
+                    <strong>{reply.user?.name || "User"}</strong>
+                    <span>{formatTime(reply.createdAt)}</span>
+                  </div>
+                  <div className="communityCommentText">{reply.text}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function FeedPost({
+  post,
+  onLikePost,
+  onBookmarkPost,
+  onAddComment,
+  onLikeComment,
+  onReplyComment,
+  commentDraft,
+  setCommentDraft,
+  replyDrafts,
+  setReplyDraft,
+}) {
   return (
     <article className="communityPostCard">
       <div className="communityPostHead">
@@ -81,191 +312,97 @@ function PostCard({
                 {post.author?.role === "provider" ? "Provider" : "Traveler"}
               </span>
             </div>
-            <div className="communityPostMeta">
+
+            <div className="communityMetaLine">
               <span>{post.author?.city || "OnTrip"}</span>
               <span>•</span>
               <span>{formatTime(post.createdAt)}</span>
-              {post.postType !== "post" ? (
-                <>
-                  <span>•</span>
-                  <span className="communityPostType">
-                    {post.postType === "question"
-                      ? "Question"
-                      : post.postType === "trip_story"
-                      ? "Trip Story"
-                      : post.postType === "provider_offer"
-                      ? "Provider Offer"
-                      : post.postType === "poll"
-                      ? "Poll"
-                      : "Post"}
-                  </span>
-                </>
-              ) : null}
+              <span>•</span>
+              <span className="communityTypeBadge">{post.postType}</span>
             </div>
           </div>
         </div>
-
-        {canDelete ? (
-          <button
-            type="button"
-            className="communityPostDelete"
-            onClick={() => onDelete(post.id)}
-          >
-            Delete
-          </button>
-        ) : null}
       </div>
 
       {post.text ? <div className="communityPostText">{post.text}</div> : null}
 
-      {post.tags?.length ? (
+      {post.hashtags?.length ? (
         <div className="communityTagRow">
-          {post.tags.map((tag) => (
-            <span key={tag} className="communityTagChip">
+          {post.hashtags.map((tag) => (
+            <button key={tag} type="button" className="communityTagChip">
               #{tag}
-            </span>
-          ))}
-        </div>
-      ) : null}
-
-      {post.locationText ? (
-        <div className="communityLocationLine">📍 {post.locationText}</div>
-      ) : null}
-
-      {post.linkedListingTitle ? (
-        <div className="communityLinkedCard">
-          {post.linkedListingImage ? (
-            <img
-              src={post.linkedListingImage}
-              alt={post.linkedListingTitle}
-              className="communityLinkedImage"
-            />
-          ) : null}
-          <div className="communityLinkedBody">
-            <strong>{post.linkedListingTitle}</strong>
-            <span>
-              {post.linkedListingType === "travel_planner"
-                ? "Travel Planner"
-                : post.linkedListingType === "vehicle"
-                ? "Vehicle"
-                : ""}
-            </span>
-            {post.linkedListingPriceText ? (
-              <b>{post.linkedListingPriceText}</b>
-            ) : null}
-            {post.providerId ? (
-              <Link to={`/providers/${post.providerId}`} className="communityLinkedBtn">
-                View Listing
-              </Link>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
-
-      {post.poll ? (
-        <div className="communityPollBox">
-          {(post.poll.options || []).map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              className={`communityPollOption ${option.isVotedByMe ? "voted" : ""}`}
-              onClick={() => onVote(post.id, option.id)}
-            >
-              <div className="communityPollTop">
-                <span>{option.text}</span>
-                <strong>{option.percentage}%</strong>
-              </div>
-              <div className="communityPollTrack">
-                <div
-                  className="communityPollFill"
-                  style={{ width: `${option.percentage}%` }}
-                />
-              </div>
-              <div className="communityPollVotes">{option.votesCount} votes</div>
             </button>
           ))}
-          <div className="communityPollTotal">
-            Total votes: {post.poll.totalVotes}
-          </div>
         </div>
       ) : null}
 
-      {post.images?.length ? (
+      {post.media?.length ? (
         <div
-          className={`communityImageGrid ${
-            post.images.length === 1 ? "single" : post.images.length === 2 ? "double" : "multi"
+          className={`communityMediaGrid ${
+            post.media.length === 1 ? "single" : post.media.length === 2 ? "double" : "multi"
           }`}
         >
-          {post.images.map((image, index) => (
-            <img
-              key={`${image.url}-${index}`}
-              src={image.url}
-              alt="community"
-              className="communityPostImage"
-            />
-          ))}
+          {post.media.map((item, index) =>
+            item.mediaType === "video" ? (
+              <video key={`${item.url}-${index}`} controls className="communityPostMedia">
+                <source src={item.url} />
+              </video>
+            ) : (
+              <img
+                key={`${item.url}-${index}`}
+                src={item.url}
+                alt="community media"
+                className="communityPostMedia"
+              />
+            )
+          )}
         </div>
       ) : null}
 
-      <div className="communityActionRow">
+      <div className="communityPostActions">
         <button
           type="button"
-          className={`communityActionBtn ${post.isLikedByMe ? "active" : ""}`}
-          onClick={() => onLike(post.id)}
+          className={post.isLikedByMe ? "active" : ""}
+          onClick={() => onLikePost(post.id)}
         >
-          ❤️ {post.likesCount}
+          ❤️ {compactCount(post.likesCount)}
         </button>
 
         <button
           type="button"
-          className={`communityActionBtn ${post.isSavedByMe ? "active" : ""}`}
-          onClick={() => onSave(post.id)}
+          className={post.isBookmarkedByMe ? "active" : ""}
+          onClick={() => onBookmarkPost(post.id)}
         >
-          🔖 {post.savesCount}
+          🔖 {compactCount(post.bookmarksCount)}
         </button>
 
-        <button type="button" className="communityActionBtn" onClick={() => onShare(post.id)}>
-          🔁 {post.sharesCount}
-        </button>
-
-        <div className="communityActionStatic">💬 {post.commentsCount}</div>
+        <div>💬 {compactCount(post.commentsCount)}</div>
+        <div>🔁 {compactCount(post.sharesCount)}</div>
       </div>
 
       <div className="communityCommentComposer">
         <input
-          value={commentText}
-          onChange={(e) => setCommentText(post.id, e.target.value)}
+          value={commentDraft}
+          onChange={(e) => setCommentDraft(post.id, e.target.value)}
           placeholder="Write a comment..."
         />
-        <button type="button" onClick={() => onComment(post.id)}>
+        <button type="button" onClick={() => onAddComment(post.id)}>
           Comment
         </button>
       </div>
 
       {post.comments?.length ? (
         <div className="communityCommentList">
-          {post.comments.slice(0, 4).map((comment) => (
-            <div key={comment.id} className="communityCommentItem">
-              {comment.user?.avatar ? (
-                <img
-                  src={comment.user.avatar}
-                  alt={comment.user.name}
-                  className="communityCommentAvatar"
-                />
-              ) : (
-                <div className="communityCommentAvatarFallback">
-                  {getInitial(comment.user?.name)}
-                </div>
-              )}
-
-              <div className="communityCommentBody">
-                <div className="communityCommentTop">
-                  <strong>{comment.user?.name || "User"}</strong>
-                  <span>{formatTime(comment.createdAt)}</span>
-                </div>
-                <div className="communityCommentText">{comment.text}</div>
-              </div>
-            </div>
+          {post.comments.map((comment) => (
+            <CommentItem
+              key={comment.id}
+              postId={post.id}
+              comment={comment}
+              onLikeComment={onLikeComment}
+              onReplyComment={onReplyComment}
+              replyDraft={replyDrafts[comment.id] || ""}
+              setReplyDraft={(value) => setReplyDraft(comment.id, value)}
+            />
           ))}
         </div>
       ) : null}
@@ -273,48 +410,206 @@ function PostCard({
   );
 }
 
+function ProfileSidebar({
+  me,
+  myProfile,
+  notifications,
+  activeTab,
+  setActiveTab,
+}) {
+  return (
+    <div className="communitySidebarCard">
+      <div className="communityProfileBlock">
+        {myProfile?.user?.avatar ? (
+          <img
+            src={myProfile.user.avatar}
+            alt={myProfile.user.name}
+            className="communityProfileHeroAvatar"
+          />
+        ) : (
+          <div className="communityProfileHeroAvatarFallback">
+            {getInitial(myProfile?.user?.name || me?.name)}
+          </div>
+        )}
+
+        <div className="communityProfileName">{myProfile?.user?.name || me?.name || "User"}</div>
+        <div className="communityProfileMeta">
+          {myProfile?.user?.city || "OnTrip"} • {myProfile?.user?.role || "user"}
+        </div>
+
+        <div className="communityProfileStats">
+          <div>
+            <strong>{compactCount(myProfile?.followersCount || 0)}</strong>
+            <span>Followers</span>
+          </div>
+          <div>
+            <strong>{compactCount(myProfile?.followingCount || 0)}</strong>
+            <span>Following</span>
+          </div>
+          <div>
+            <strong>{compactCount(myProfile?.unreadNotifications || 0)}</strong>
+            <span>Alerts</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="communitySidebarMenu">
+        <button
+          type="button"
+          className={activeTab === "feed" ? "active" : ""}
+          onClick={() => setActiveTab("feed")}
+        >
+          Main Feed
+        </button>
+        <button
+          type="button"
+          className={activeTab === "profile" ? "active" : ""}
+          onClick={() => setActiveTab("profile")}
+        >
+          My Profile
+        </button>
+        <button
+          type="button"
+          className={activeTab === "posts" ? "active" : ""}
+          onClick={() => setActiveTab("posts")}
+        >
+          My Posts
+        </button>
+        <button
+          type="button"
+          className={activeTab === "bookmarks" ? "active" : ""}
+          onClick={() => setActiveTab("bookmarks")}
+        >
+          Bookmarks
+        </button>
+        <button
+          type="button"
+          className={activeTab === "liked" ? "active" : ""}
+          onClick={() => setActiveTab("liked")}
+        >
+          Liked Posts
+        </button>
+        <button
+          type="button"
+          className={activeTab === "notifications" ? "active" : ""}
+          onClick={() => setActiveTab("notifications")}
+        >
+          Notifications
+        </button>
+      </div>
+
+      <div className="communitySidebarHint">
+        Click profile to open your post section, bookmarks, likes, and notifications.
+      </div>
+
+      {notifications?.length ? (
+        <div className="communityQuickNotifications">
+          <div className="communitySidebarTitle">Recent Alerts</div>
+          {notifications.slice(0, 4).map((item) => (
+            <div key={item.id} className={`communityNotificationItem ${item.isRead ? "" : "unread"}`}>
+              <strong>{item.sender?.name || "Someone"}</strong>
+              <span>{item.text}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function RightPanel({ search, setSearch, hashtagResults, notifications, onMarkRead }) {
+  return (
+    <div className="communitySidebarCard">
+      <div className="communitySidebarTitle">Search Hashtags</div>
+      <input
+        className="communityInput"
+        placeholder="Search hashtag..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <div className="communityHashtagList">
+        {hashtagResults.length === 0 ? (
+          <div className="communityMutedCard">No hashtag match yet.</div>
+        ) : (
+          hashtagResults.map((tag) => (
+            <div key={tag} className="communityHashtagItem">
+              #{tag}
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="communitySidebarTitle withSpace">Notifications</div>
+      <button type="button" className="communityGhostBtn full" onClick={onMarkRead}>
+        Mark all as read
+      </button>
+
+      <div className="communityNotificationList">
+        {notifications.length === 0 ? (
+          <div className="communityMutedCard">No notifications.</div>
+        ) : (
+          notifications.map((item) => (
+            <div key={item.id} className={`communityNotificationCard ${item.isRead ? "" : "unread"}`}>
+              <div className="communityNotificationTop">
+                <strong>{item.sender?.name || "OnTrip"}</strong>
+                <span>{formatTime(item.createdAt)}</span>
+              </div>
+              <div className="communityNotificationText">{item.text}</div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Community() {
   const me = getUser();
+  const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const [searchParams] = useSearchParams();
 
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [posts, setPosts] = useState([]);
-  const [trendingTags, setTrendingTags] = useState([]);
-  const [trendingCities, setTrendingCities] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const [feed, setFeed] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     total: 0,
     hasMore: false,
   });
-  const [error, setError] = useState("");
-  const [filter, setFilter] = useState("all");
-  const [search, setSearch] = useState("");
+
+  const [feedFilter, setFeedFilter] = useState("all");
+  const [hashtagSearch, setHashtagSearch] = useState("");
+  const [activeTab, setActiveTab] = useState("feed");
+
+  const [myProfile, setMyProfile] = useState(null);
+  const [myPosts, setMyPosts] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
+  const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [myProviders, setMyProviders] = useState([]);
+
+  const [commentDrafts, setCommentDrafts] = useState({});
+  const [replyDrafts, setReplyDrafts] = useState({});
+
   const [composer, setComposer] = useState({
     postType: "post",
     text: "",
-    locationText: "",
-    tags: "",
+    hashtags: "",
+    tagNames: "",
     providerId: "",
-    pollOptions: ["", ""],
-    images: [],
+    mediaFiles: [],
   });
-  const [myProviders, setMyProviders] = useState([]);
-  const [commentDrafts, setCommentDrafts] = useState({});
 
-  const providerOptions = useMemo(() => {
-    return [
-      { label: "Select your provider listing", value: "" },
-      ...myProviders.map((item) => ({
-        label: `${item.businessName} — ${
-          item.listingType === "travel_planner" ? "Travel Planner" : "Vehicle"
-        }`,
-        value: item._id,
-      })),
-    ];
-  }, [myProviders]);
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) setActiveTab(tab);
+  }, [searchParams]);
 
   useEffect(() => {
     async function init() {
@@ -323,21 +618,48 @@ export default function Community() {
         setError("");
 
         const requests = [
-          apiFetch("/api/community?limit=10&page=1"),
-          apiFetch("/api/community/trending"),
+          apiFetch(`/api/community/feed?page=1&limit=10&filter=${feedFilter}`),
         ];
 
-        if (isLoggedIn() && me?.role === "provider") {
-          requests.push(apiFetch("/api/providers/mine"));
+        if (isLoggedIn()) {
+          requests.push(apiFetch("/api/community/me"));
+          requests.push(apiFetch("/api/community/notifications"));
+
+          if (me?.role === "provider") {
+            requests.push(apiFetch("/api/providers/mine"));
+          }
         }
 
-        const [feedRes, trendRes, providersRes] = await Promise.all(requests);
+        const results = await Promise.all(requests);
+        const feedRes = results[0];
+        const myProfileRes = results[1];
+        const notificationsRes = results[2];
+        const providersRes = results[3];
 
-        setPosts(feedRes.posts || []);
-        setPagination(feedRes.pagination || { page: 1, limit: 10, total: 0, hasMore: false });
-        setTrendingTags(trendRes.trendingTags || []);
-        setTrendingCities(trendRes.trendingCities || []);
-        setMyProviders(providersRes?.providers || []);
+        setFeed(feedRes.posts || []);
+        setPagination(
+          feedRes.pagination || {
+            page: 1,
+            limit: 10,
+            total: 0,
+            hasMore: false,
+          }
+        );
+
+        if (myProfileRes) {
+          setMyProfile(myProfileRes.profile || null);
+          setMyPosts(myProfileRes.myPosts || []);
+          setLikedPosts(myProfileRes.likedPosts || []);
+          setBookmarkedPosts(myProfileRes.bookmarkedPosts || []);
+        }
+
+        if (notificationsRes) {
+          setNotifications(notificationsRes.notifications || []);
+        }
+
+        if (providersRes) {
+          setMyProviders(providersRes.providers || []);
+        }
       } catch (err) {
         setError(err.message || "Failed to load community.");
       } finally {
@@ -346,55 +668,81 @@ export default function Community() {
     }
 
     init();
-  }, [me?.role]);
+  }, [feedFilter, me?.role]);
 
-  async function loadPosts(nextPage = 1, append = false) {
-    const data = await apiFetch(
-      `/api/community?limit=10&page=${nextPage}&filter=${encodeURIComponent(filter)}&q=${encodeURIComponent(search)}`
+  const hashtagResults = useMemo(() => {
+    const allTags = new Set();
+
+    for (const post of feed) {
+      for (const tag of post.hashtags || []) {
+        allTags.add(tag);
+      }
+    }
+
+    const tags = [...allTags];
+    const q = hashtagSearch.trim().toLowerCase();
+    if (!q) return tags.slice(0, 12);
+
+    return tags.filter((tag) => tag.includes(q)).slice(0, 12);
+  }, [feed, hashtagSearch]);
+
+  const visiblePosts = useMemo(() => {
+    if (activeTab === "posts") return myPosts;
+    if (activeTab === "liked") return likedPosts;
+    if (activeTab === "bookmarks") return bookmarkedPosts;
+    return feed;
+  }, [activeTab, feed, myPosts, likedPosts, bookmarkedPosts]);
+
+  function updatePostCollections(nextPost) {
+    setFeed((prev) =>
+      prev.map((item) => (String(item.id) === String(nextPost.id) ? nextPost : item))
     );
-
-    setPosts((prev) => (append ? [...prev, ...(data.posts || [])] : data.posts || []));
-    setPagination(data.pagination || { page: nextPage, limit: 10, total: 0, hasMore: false });
+    setMyPosts((prev) =>
+      prev.map((item) => (String(item.id) === String(nextPost.id) ? nextPost : item))
+    );
+    setLikedPosts((prev) => {
+      const exists = prev.some((item) => String(item.id) === String(nextPost.id));
+      if (nextPost.isLikedByMe) {
+        return exists
+          ? prev.map((item) => (String(item.id) === String(nextPost.id) ? nextPost : item))
+          : [nextPost, ...prev];
+      }
+      return prev.filter((item) => String(item.id) !== String(nextPost.id));
+    });
+    setBookmarkedPosts((prev) => {
+      const exists = prev.some((item) => String(item.id) === String(nextPost.id));
+      if (nextPost.isBookmarkedByMe) {
+        return exists
+          ? prev.map((item) => (String(item.id) === String(nextPost.id) ? nextPost : item))
+          : [nextPost, ...prev];
+      }
+      return prev.filter((item) => String(item.id) !== String(nextPost.id));
+    });
   }
 
-  async function applyFilters() {
-    try {
-      setLoading(true);
-      setError("");
-      await loadPosts(1, false);
-    } catch (err) {
-      setError(err.message || "Failed to filter posts.");
-    } finally {
-      setLoading(false);
-    }
+  async function refreshProfileLite() {
+    if (!isLoggedIn()) return;
+
+    const data = await apiFetch("/api/community/me");
+    setMyProfile(data.profile || null);
+    setMyPosts(data.myPosts || []);
+    setLikedPosts(data.likedPosts || []);
+    setBookmarkedPosts(data.bookmarkedPosts || []);
   }
 
   async function handleCreatePost() {
     if (!isLoggedIn()) {
-      setError("Please login to post in community.");
+      navigate("/login");
       return;
     }
 
-    if (
-      !composer.text.trim() &&
-      composer.images.length === 0 &&
-      composer.postType !== "provider_offer" &&
-      composer.postType !== "poll"
-    ) {
-      setError("Write something or upload image.");
+    if (!composer.text.trim() && composer.mediaFiles.length === 0) {
+      setError("Write something or select media.");
       return;
     }
 
     if (composer.postType === "provider_offer" && !composer.providerId) {
-      setError("Select your provider listing.");
-      return;
-    }
-
-    if (
-      composer.postType === "poll" &&
-      composer.pollOptions.map((item) => item.trim()).filter(Boolean).length < 2
-    ) {
-      setError("Add at least 2 poll options.");
+      setError("Please select provider listing.");
       return;
     }
 
@@ -405,43 +753,50 @@ export default function Community() {
       const fd = new FormData();
       fd.append("postType", composer.postType);
       fd.append("text", composer.text.trim());
-      fd.append("locationText", composer.locationText.trim());
-      fd.append("tags", normalizeTagInput(composer.tags));
+      fd.append("hashtags", composer.hashtags.trim());
 
       if (composer.providerId) {
         fd.append("providerId", composer.providerId);
       }
 
-      if (composer.postType === "poll") {
-        fd.append(
-          "pollOptions",
-          JSON.stringify(composer.pollOptions.map((item) => item.trim()).filter(Boolean))
-        );
+      const taggedUsers = composer.tagNames
+        .split(" ")
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .map((item) => ({
+          user: "",
+          nameSnapshot: item.replace(/^@/, ""),
+        }));
+
+      fd.append("taggedUsers", JSON.stringify(taggedUsers));
+
+      for (const file of composer.mediaFiles) {
+        fd.append("media", file);
       }
 
-      composer.images.forEach((file) => {
-        fd.append("images", file);
-      });
-
-      const data = await apiFetch("/api/community", {
+      const data = await apiFetch("/api/community/post", {
         method: "POST",
         body: fd,
       });
 
-      setPosts((prev) => [data.post, ...prev]);
+      setFeed((prev) => [data.post, ...prev]);
+      setMyPosts((prev) => [data.post, ...prev]);
+
       setComposer({
         postType: "post",
         text: "",
-        locationText: "",
-        tags: "",
+        hashtags: "",
+        tagNames: "",
         providerId: "",
-        pollOptions: ["", ""],
-        images: [],
+        mediaFiles: [],
       });
 
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+
+      await refreshProfileLite();
+      setActiveTab("feed");
     } catch (err) {
       setError(err.message || "Failed to create post.");
     } finally {
@@ -449,111 +804,79 @@ export default function Community() {
     }
   }
 
-  async function handleLike(postId) {
+  async function handleLikePost(postId) {
     if (!isLoggedIn()) {
-      setError("Please login first.");
+      navigate("/login");
       return;
     }
 
     try {
-      const data = await apiFetch(`/api/community/${postId}/like`, {
+      const data = await apiFetch(`/api/community/post/${postId}/like`, {
         method: "POST",
       });
 
-      setPosts((prev) =>
-        prev.map((post) =>
-          String(post.id) === String(postId)
-            ? {
-                ...post,
-                likesCount: data.likesCount,
-                isLikedByMe: data.isLikedByMe,
-              }
-            : post
-        )
-      );
+      const allCollections = [...feed, ...myPosts, ...likedPosts, ...bookmarkedPosts];
+      const oldPost = allCollections.find((item) => String(item.id) === String(postId));
+      if (!oldPost) return;
+
+      const nextPost = {
+        ...oldPost,
+        likesCount: data.likesCount,
+        isLikedByMe: data.isLikedByMe,
+      };
+
+      updatePostCollections(nextPost);
+      await refreshProfileLite();
     } catch (err) {
       setError(err.message || "Failed to update like.");
     }
   }
 
-  async function handleSave(postId) {
+  async function handleBookmarkPost(postId) {
     if (!isLoggedIn()) {
-      setError("Please login first.");
+      navigate("/login");
       return;
     }
 
     try {
-      const data = await apiFetch(`/api/community/${postId}/save`, {
+      const data = await apiFetch(`/api/community/post/${postId}/bookmark`, {
         method: "POST",
       });
 
-      setPosts((prev) =>
-        prev.map((post) =>
-          String(post.id) === String(postId)
-            ? {
-                ...post,
-                savesCount: data.savesCount,
-                isSavedByMe: data.isSavedByMe,
-              }
-            : post
-        )
-      );
+      const allCollections = [...feed, ...myPosts, ...likedPosts, ...bookmarkedPosts];
+      const oldPost = allCollections.find((item) => String(item.id) === String(postId));
+      if (!oldPost) return;
+
+      const nextPost = {
+        ...oldPost,
+        bookmarksCount: data.bookmarksCount,
+        isBookmarkedByMe: data.isBookmarkedByMe,
+      };
+
+      updatePostCollections(nextPost);
+      await refreshProfileLite();
     } catch (err) {
-      setError(err.message || "Failed to update save.");
+      setError(err.message || "Failed to update bookmark.");
     }
   }
 
-  async function handleShare(postId) {
-    if (!isLoggedIn()) {
-      setError("Please login first.");
-      return;
-    }
-
-    try {
-      const data = await apiFetch(`/api/community/${postId}/share`, {
-        method: "POST",
-      });
-
-      setPosts((prev) =>
-        prev.map((post) =>
-          String(post.id) === String(postId)
-            ? {
-                ...post,
-                sharesCount: data.sharesCount,
-              }
-            : post
-        )
-      );
-    } catch (err) {
-      setError(err.message || "Failed to share post.");
-    }
-  }
-
-  async function handleDelete(postId) {
-    const ok = window.confirm("Delete this post?");
-    if (!ok) return;
-
-    try {
-      await apiFetch(`/api/community/${postId}`, {
-        method: "DELETE",
-      });
-
-      setPosts((prev) => prev.filter((post) => String(post.id) !== String(postId)));
-    } catch (err) {
-      setError(err.message || "Failed to delete post.");
-    }
-  }
-
-  function setCommentText(postId, value) {
+  function setCommentDraft(postId, value) {
     setCommentDrafts((prev) => ({
       ...prev,
       [postId]: value,
     }));
   }
 
-  async function handleComment(postId) {
+  function setReplyDraft(commentId, value) {
+    setReplyDrafts((prev) => ({
+      ...prev,
+      [commentId]: value,
+    }));
+  }
+
+  async function handleAddComment(postId) {
     if (!isLoggedIn()) {
-      setError("Please login first.");
+      navigate("/login");
       return;
     }
 
@@ -561,41 +884,69 @@ export default function Community() {
     if (!text) return;
 
     try {
-      const data = await apiFetch(`/api/community/${postId}/comment`, {
+      const data = await apiFetch(`/api/community/post/${postId}/comment`, {
         method: "POST",
         body: JSON.stringify({ text }),
       });
 
-      setPosts((prev) =>
-        prev.map((post) => (String(post.id) === String(postId) ? data.post : post))
-      );
-
+      updatePostCollections(data.post);
       setCommentDrafts((prev) => ({
         ...prev,
         [postId]: "",
       }));
+      await refreshProfileLite();
     } catch (err) {
       setError(err.message || "Failed to add comment.");
     }
   }
 
-  async function handleVote(postId, optionId) {
+  async function handleLikeComment(postId, commentId) {
     if (!isLoggedIn()) {
-      setError("Please login first.");
+      navigate("/login");
       return;
     }
 
     try {
-      const data = await apiFetch(`/api/community/${postId}/poll-vote`, {
-        method: "POST",
-        body: JSON.stringify({ optionId }),
-      });
-
-      setPosts((prev) =>
-        prev.map((post) => (String(post.id) === String(postId) ? data.post : post))
+      const data = await apiFetch(
+        `/api/community/post/${postId}/comment/${commentId}/like`,
+        {
+          method: "POST",
+        }
       );
+
+      updatePostCollections(data.post);
+      await refreshProfileLite();
     } catch (err) {
-      setError(err.message || "Failed to vote.");
+      setError(err.message || "Failed to update comment like.");
+    }
+  }
+
+  async function handleReplyComment(postId, commentId) {
+    if (!isLoggedIn()) {
+      navigate("/login");
+      return;
+    }
+
+    const text = String(replyDrafts[commentId] || "").trim();
+    if (!text) return;
+
+    try {
+      const data = await apiFetch(
+        `/api/community/post/${postId}/comment/${commentId}/reply`,
+        {
+          method: "POST",
+          body: JSON.stringify({ text }),
+        }
+      );
+
+      updatePostCollections(data.post);
+      setReplyDrafts((prev) => ({
+        ...prev,
+        [commentId]: "",
+      }));
+      await refreshProfileLite();
+    } catch (err) {
+      setError(err.message || "Failed to add reply.");
     }
   }
 
@@ -604,7 +955,14 @@ export default function Community() {
 
     try {
       setLoadingMore(true);
-      await loadPosts(pagination.page + 1, true);
+      const nextPage = pagination.page + 1;
+
+      const data = await apiFetch(
+        `/api/community/feed?page=${nextPage}&limit=${pagination.limit}&filter=${feedFilter}`
+      );
+
+      setFeed((prev) => [...prev, ...(data.posts || [])]);
+      setPagination(data.pagination || pagination);
     } catch (err) {
       setError(err.message || "Failed to load more posts.");
     } finally {
@@ -612,238 +970,169 @@ export default function Community() {
     }
   }
 
+  async function handleMarkNotificationsRead() {
+    if (!isLoggedIn()) return;
+
+    try {
+      await apiFetch("/api/community/notifications/read", {
+        method: "POST",
+      });
+
+      setNotifications((prev) => prev.map((item) => ({ ...item, isRead: true })));
+      setMyProfile((prev) =>
+        prev
+          ? {
+              ...prev,
+              unreadNotifications: 0,
+            }
+          : prev
+      );
+    } catch (err) {
+      setError(err.message || "Failed to mark notifications.");
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="container communityPage">
+        <LoadingSpinner text="Loading community..." />
+      </div>
+    );
+  }
+
   return (
     <div className="container communityPage">
-      <div className="communityHero">
+      {error ? <div className="communityAlert">{error}</div> : null}
+
+      <div className="communityTopBar">
         <div>
           <h1>OnTrip Community</h1>
-          <p>Share trip stories, ask questions, discover offers, and connect with travelers.</p>
+          <p>
+            Mini travel social network with posts, comments, replies, hashtags,
+            bookmarks, likes, notifications, followers, and media sharing.
+          </p>
         </div>
 
-        <div className="communityHeroFilters">
+        <div className="communityTopBarActions">
           <CustomSelect
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            options={filterOptions}
-            placeholder="Filter feed"
+            value={feedFilter}
+            onChange={(e) => setFeedFilter(e.target.value)}
+            options={feedFilterOptions}
+            placeholder="Feed filter"
+            className="communitySmallSelect"
           />
-          <input
-            className="communitySearch"
-            placeholder="Search posts, tags, places..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button className="communityApplyBtn" type="button" onClick={applyFilters}>
-            Apply
-          </button>
+          {isLoggedIn() ? (
+            <Link to="/community?tab=profile" className="communityProfileLinkBtn">
+              Open My Page
+            </Link>
+          ) : (
+            <Link to="/login" className="communityProfileLinkBtn">
+              Login to Post
+            </Link>
+          )}
         </div>
       </div>
 
-      {error ? <div className="communityAlert">{error}</div> : null}
-
       <div className="communityLayout">
         <aside className="communityLeft">
-          <div className="communitySideCard">
-            <div className="communitySideTitle">Trending Tags</div>
-            <div className="communityTrendList">
-              {trendingTags.length === 0 ? (
-                <div className="communityMutedCard">No trends yet.</div>
-              ) : (
-                trendingTags.map((item) => (
-                  <button
-                    type="button"
-                    key={item.tag}
-                    className="communityTrendItem"
-                    onClick={() => {
-                      setSearch(item.tag);
-                      setTimeout(() => applyFilters(), 0);
-                    }}
-                  >
-                    <strong>#{item.tag}</strong>
-                    <span>{item.count} posts</span>
-                  </button>
-                ))
-              )}
-            </div>
-          </div>
-
-          <div className="communitySideCard">
-            <div className="communitySideTitle">Popular Cities</div>
-            <div className="communityTrendList">
-              {trendingCities.length === 0 ? (
-                <div className="communityMutedCard">No city data yet.</div>
-              ) : (
-                trendingCities.map((item) => (
-                  <div key={item.city} className="communityTrendItem static">
-                    <strong>{item.city}</strong>
-                    <span>{item.count} posts</span>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+          <ProfileSidebar
+            me={me}
+            myProfile={myProfile}
+            notifications={notifications}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
         </aside>
 
         <main className="communityCenter">
-          <div className="communityComposerCard">
-            <div className="communityComposerTop">
-              {me?.avatar ? (
-                <img src={me.avatar} alt={me.name} className="communityAvatar large" />
-              ) : (
-                <div className="communityAvatarFallback large">{getInitial(me?.name)}</div>
-              )}
+          {isLoggedIn() ? (
+            <PostComposer
+              me={me}
+              myProfile={myProfile}
+              myProviders={myProviders}
+              composer={composer}
+              setComposer={setComposer}
+              fileInputRef={fileInputRef}
+              submitting={submitting}
+              onSubmit={handleCreatePost}
+            />
+          ) : null}
 
-              <div className="communityComposerFields">
-                <CustomSelect
-                  value={composer.postType}
-                  onChange={(e) =>
-                    setComposer((prev) => ({ ...prev, postType: e.target.value }))
-                  }
-                  options={postTypeOptions}
-                  placeholder="Select post type"
-                />
+          {activeTab === "profile" ? (
+            <div className="communityProfilePageCard">
+              <div className="communityProfilePageHead">
+                <h2>My Community Page</h2>
+                <p>
+                  This page shows your profile, follower count, following count,
+                  posts, bookmarks, liked posts, and notifications.
+                </p>
+              </div>
 
-                <textarea
-                  className="communityComposerTextarea"
-                  placeholder="Share your travel thought, ask a question, or promote your offer..."
-                  value={composer.text}
-                  onChange={(e) =>
-                    setComposer((prev) => ({ ...prev, text: e.target.value }))
-                  }
-                  rows={4}
-                />
-
-                <div className="communityComposerGrid">
-                  <input
-                    className="communityInput"
-                    placeholder="Location (optional)"
-                    value={composer.locationText}
-                    onChange={(e) =>
-                      setComposer((prev) => ({ ...prev, locationText: e.target.value }))
-                    }
-                  />
-
-                  <input
-                    className="communityInput"
-                    placeholder="Tags comma separated (goa, budget, solo)"
-                    value={composer.tags}
-                    onChange={(e) =>
-                      setComposer((prev) => ({ ...prev, tags: e.target.value }))
-                    }
-                  />
+              <div className="communityProfileCards">
+                <div className="communityMiniStatCard">
+                  <strong>{compactCount(myProfile?.followersCount || 0)}</strong>
+                  <span>Followers</span>
                 </div>
-
-                {composer.postType === "provider_offer" ? (
-                  <CustomSelect
-                    value={composer.providerId}
-                    onChange={(e) =>
-                      setComposer((prev) => ({ ...prev, providerId: e.target.value }))
-                    }
-                    options={providerOptions}
-                    placeholder="Select your provider listing"
-                  />
-                ) : null}
-
-                {composer.postType === "poll" ? (
-                  <div className="communityPollComposer">
-                    {composer.pollOptions.map((item, index) => (
-                      <input
-                        key={index}
-                        className="communityInput"
-                        placeholder={`Poll option ${index + 1}`}
-                        value={item}
-                        onChange={(e) => {
-                          const next = [...composer.pollOptions];
-                          next[index] = e.target.value;
-                          setComposer((prev) => ({ ...prev, pollOptions: next }));
-                        }}
-                      />
-                    ))}
-
-                    {composer.pollOptions.length < 4 ? (
-                      <button
-                        type="button"
-                        className="communityMiniBtn"
-                        onClick={() =>
-                          setComposer((prev) => ({
-                            ...prev,
-                            pollOptions: [...prev.pollOptions, ""],
-                          }))
-                        }
-                      >
-                        + Add Option
-                      </button>
-                    ) : null}
-                  </div>
-                ) : null}
-
-                <div className="communityComposerActions">
-                  <button
-                    type="button"
-                    className="communityUploadBtn"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    📷 Add Photos
-                  </button>
-
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    className="communityHiddenInput"
-                    onChange={(e) =>
-                      setComposer((prev) => ({
-                        ...prev,
-                        images: Array.from(e.target.files || []),
-                      }))
-                    }
-                  />
-
-                  <div className="communityFileNames">
-                    {composer.images.length > 0
-                      ? `${composer.images.length} image(s) selected`
-                      : "No images selected"}
-                  </div>
-
-                  <button
-                    type="button"
-                    className="communityPostBtn"
-                    onClick={handleCreatePost}
-                    disabled={submitting}
-                  >
-                    {submitting ? "Posting..." : "Post Now"}
-                  </button>
+                <div className="communityMiniStatCard">
+                  <strong>{compactCount(myProfile?.followingCount || 0)}</strong>
+                  <span>Following</span>
+                </div>
+                <div className="communityMiniStatCard">
+                  <strong>{compactCount(myPosts.length)}</strong>
+                  <span>Posts</span>
+                </div>
+                <div className="communityMiniStatCard">
+                  <strong>{compactCount(bookmarkedPosts.length)}</strong>
+                  <span>Bookmarks</span>
                 </div>
               </div>
             </div>
-          </div>
+          ) : null}
 
-          {loading ? (
-            <LoadingSpinner text="Loading community..." />
-          ) : posts.length === 0 ? (
-            <div className="communityEmptyCard">
-              No posts yet. Be the first to share something in the community.
+          {activeTab === "notifications" ? (
+            <div className="communityFeedList">
+              {notifications.length === 0 ? (
+                <div className="communityMutedCard">No notifications yet.</div>
+              ) : (
+                notifications.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`communityNotificationCard large ${item.isRead ? "" : "unread"}`}
+                  >
+                    <div className="communityNotificationTop">
+                      <strong>{item.sender?.name || "OnTrip"}</strong>
+                      <span>{formatTime(item.createdAt)}</span>
+                    </div>
+                    <div className="communityNotificationText">{item.text}</div>
+                  </div>
+                ))
+              )}
             </div>
           ) : (
-            <div className="communityFeed">
-              {posts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  me={me}
-                  onLike={handleLike}
-                  onSave={handleSave}
-                  onShare={handleShare}
-                  onDelete={handleDelete}
-                  onComment={handleComment}
-                  onVote={handleVote}
-                  commentText={commentDrafts[post.id] || ""}
-                  setCommentText={setCommentText}
-                />
-              ))}
+            <div className="communityFeedList">
+              {visiblePosts.length === 0 ? (
+                <div className="communityMutedCard">
+                  No posts found in this section.
+                </div>
+              ) : (
+                visiblePosts.map((post) => (
+                  <FeedPost
+                    key={post.id}
+                    post={post}
+                    onLikePost={handleLikePost}
+                    onBookmarkPost={handleBookmarkPost}
+                    onAddComment={handleAddComment}
+                    onLikeComment={handleLikeComment}
+                    onReplyComment={handleReplyComment}
+                    commentDraft={commentDrafts[post.id] || ""}
+                    setCommentDraft={setCommentDraft}
+                    replyDrafts={replyDrafts}
+                    setReplyDraft={setReplyDraft}
+                  />
+                ))
+              )}
 
-              {pagination.hasMore ? (
+              {activeTab === "feed" && pagination.hasMore ? (
                 <button
                   type="button"
                   className="communityLoadMoreBtn"
@@ -858,25 +1147,13 @@ export default function Community() {
         </main>
 
         <aside className="communityRight">
-          <div className="communitySideCard">
-            <div className="communitySideTitle">Posting Ideas</div>
-            <div className="communityIdeaList">
-              <div className="communityIdeaItem">Ask trip planning questions</div>
-              <div className="communityIdeaItem">Share your travel photos</div>
-              <div className="communityIdeaItem">Post provider offers</div>
-              <div className="communityIdeaItem">Run a poll for destinations</div>
-            </div>
-          </div>
-
-          <div className="communitySideCard">
-            <div className="communitySideTitle">Community Tips</div>
-            <div className="communityInfoList">
-              <div>Be clear and helpful in your posts.</div>
-              <div>Use tags like #goa #budget #solo.</div>
-              <div>Add images to get more engagement.</div>
-              <div>Providers can attach listing offers.</div>
-            </div>
-          </div>
+          <RightPanel
+            search={hashtagSearch}
+            setSearch={setHashtagSearch}
+            hashtagResults={hashtagResults}
+            notifications={notifications}
+            onMarkRead={handleMarkNotificationsRead}
+          />
         </aside>
       </div>
     </div>
