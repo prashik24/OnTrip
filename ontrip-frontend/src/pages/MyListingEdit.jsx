@@ -382,6 +382,24 @@ export default function MyListingEdit() {
         </button>
       </div>
 
+      {form.currentServiceImageUrl ? (
+        <div className="myListingEditHero">
+          <img src={form.currentServiceImageUrl} alt={form.businessName || "service"} />
+          <div className="myListingEditHeroOverlay">
+            <div className="myListingEditHeroContent">
+              <span className="myListingEditHeroBadge">
+                {form.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+              </span>
+              <h2>{form.businessName || "Your Listing"}</h2>
+              <p>
+                {form.city}
+                {form.state ? `, ${form.state}` : ""}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {msg && <div className="myListingEditMessage">{msg}</div>}
 
       <form className="myListingEditCard" onSubmit={saveEdit}>
@@ -492,7 +510,7 @@ export default function MyListingEdit() {
             <div className="myListingEditBlockHead">
               <h4>Vehicles</h4>
               <button
-                className="myListingEditBtn myListingEditBtnPrimary"
+                className="myListingEditBtn myListingEditBtnPrimary myListingEditAddBtn"
                 type="button"
                 onClick={addVehicle}
               >
@@ -646,7 +664,7 @@ export default function MyListingEdit() {
             <div className="myListingEditBlockHead">
               <h4>Travel Trips</h4>
               <button
-                className="myListingEditBtn myListingEditBtnPrimary"
+                className="myListingEditBtn myListingEditBtnPrimary myListingEditAddBtn"
                 type="button"
                 onClick={addTrip}
               >
