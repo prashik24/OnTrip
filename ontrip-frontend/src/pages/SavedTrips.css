@@ -39,12 +39,30 @@
   word-break: break-word;
 }
 
-/* keep base */
-.savedTripsBackBtn {
-  flex: 0 0 auto;
+.savedTripsBackOnly {
+  margin-left: auto;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: #ffffff;
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  width: auto;
+  box-sizing: border-box;
+  transition: 0.18s ease;
+  box-shadow: none;
 }
 
-/* rest unchanged */
+.savedTripsBackOnly:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(10, 22, 35, 0.08);
+}
 
 .savedTripsMessage {
   padding: 12px 14px;
@@ -309,18 +327,6 @@
   box-shadow: none;
 }
 
-/* ✅ FINAL FIX (must be at bottom) */
-.savedTripsBtn.savedTripsBackBtn {
-  width: auto !important;
-  min-width: fit-content;
-  min-height: 36px;
-  padding: 0 12px;
-  font-size: 13px;
-  border-radius: 10px;
-  flex: 0 0 auto;
-  margin-left: auto;
-}
-
 @media (max-width: 900px) {
   .savedTripsGrid {
     grid-template-columns: 1fr;
@@ -348,6 +354,10 @@
 
   .savedTripTopStatuses {
     justify-content: flex-start;
+  }
+
+  .savedTripsBackOnly {
+    margin-left: 0;
   }
 }
 
@@ -393,5 +403,10 @@
     min-height: 44px;
     border-radius: 12px;
     font-size: 14px;
+  }
+
+  .savedTripsBackOnly {
+    width: auto;
+    margin-left: 0;
   }
 }
