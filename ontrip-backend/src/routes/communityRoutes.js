@@ -2,28 +2,36 @@ import express from "express";
 import { protect } from "../middleware/auth.js";
 import upload from "../middleware/upload.js";
 import {
-  getCommunityPosts,
-  getCommunityTrending,
-  createCommunityPost,
-  togglePostLike,
-  togglePostSave,
-  addPostComment,
-  voteOnPoll,
-  incrementPostShare,
-  deleteCommunityPost,
+  getCommunityFeed,
+  createPost,
+  getMyCommunityProfile,
+  getUserCommunityProfile,
+  toggleLikePost,
+  toggleBookmarkPost,
+  addComment,
+  likeComment,
+  addReplyToComment,
+  toggleFollowUser,
+  getNotifications,
+  markNotificationsRead,
 } from "../controllers/communityController.js";
 
 const router = express.Router();
 
-router.get("/", getCommunityPosts);
-router.get("/trending", getCommunityTrending);
+router.get("/feed", getCommunityFeed);
+router.get("/profile/:userId", getUserCommunityProfile);
 
-router.post("/", protect, upload.any(), createCommunityPost);
-router.post("/:postId/like", protect, togglePostLike);
-router.post("/:postId/save", protect, togglePostSave);
-router.post("/:postId/comment", protect, addPostComment);
-router.post("/:postId/poll-vote", protect, voteOnPoll);
-router.post("/:postId/share", protect, incrementPostShare);
-router.delete("/:postId", protect, deleteCommunityPost);
+router.get("/me", protect, getMyCommunityProfile);
+router.get("/notifications", protect, getNotifications);
+
+router.post("/post", protect, upload.any(), createPost);
+router.post("/post/:postId/like", protect, toggleLikePost);
+router.post("/post/:postId/bookmark", protect, toggleBookmarkPost);
+router.post("/post/:postId/comment", protect, addComment);
+router.post("/post/:postId/comment/:commentId/like", protect, likeComment);
+router.post("/post/:postId/comment/:commentId/reply", protect, addReplyToComment);
+
+router.post("/follow/:userId", protect, toggleFollowUser);
+router.post("/notifications/read", protect, markNotificationsRead);
 
 export default router;
