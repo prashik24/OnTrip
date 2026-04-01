@@ -42,7 +42,7 @@
 .savedTripsBackOnly {
   margin-left: auto;
   padding: 6px 14px;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
   border-radius: 10px;
   border: 1px solid rgba(15, 23, 42, 0.12);
@@ -52,7 +52,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
+  min-height:62px;
   width: auto;
   box-sizing: border-box;
   transition: 0.18s ease;
