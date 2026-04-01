@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import providerRoutes from "./routes/providerRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import communityRoutes from "./routes/communityRoutes.js";
 import aiPlannerRoutes from "./routes/aiPlannerRoutes.js";
 import savedTripRoutes from "./routes/savedTripRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
@@ -32,6 +33,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/ai-planner", aiPlannerRoutes);
 app.use("/api/saved-trips", savedTripRoutes);
+app.use("/api/community", communityRoutes);
 app.use("/api/chat", chatRoutes);
 
 export default app;
