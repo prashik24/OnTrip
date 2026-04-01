@@ -382,27 +382,20 @@ export default function MyListingEdit() {
         </button>
       </div>
 
-      {form.currentServiceImageUrl ? (
-        <div className="myListingEditHero">
-          <img src={form.currentServiceImageUrl} alt={form.businessName || "service"} />
-          <div className="myListingEditHeroOverlay">
-            <div className="myListingEditHeroContent">
-              <span className="myListingEditHeroBadge">
-                {form.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
-              </span>
-              <h2>{form.businessName || "Your Listing"}</h2>
-              <p>
-                {form.city}
-                {form.state ? `, ${form.state}` : ""}
-              </p>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
       {msg && <div className="myListingEditMessage">{msg}</div>}
 
       <form className="myListingEditCard" onSubmit={saveEdit}>
+        <div className="myListingEditTopImageSection">
+          <label>Current Service Image</label>
+          {form.currentServiceImageUrl ? (
+            <div className="myListingEditSinglePreview">
+              <img src={form.currentServiceImageUrl} alt="service" />
+            </div>
+          ) : (
+            <div className="myListingEditEmptyPreview">No service image</div>
+          )}
+        </div>
+
         <div className="myListingEditFormGrid">
           <div className="fullSpan">
             <label>Business Name</label>
@@ -469,17 +462,6 @@ export default function MyListingEdit() {
           </div>
 
           <div className="fullSpan">
-            <label>Current Service Image</label>
-            {form.currentServiceImageUrl ? (
-              <div className="myListingEditSinglePreview">
-                <img src={form.currentServiceImageUrl} alt="service" />
-              </div>
-            ) : (
-              <div className="myListingEditEmptyPreview">No service image</div>
-            )}
-          </div>
-
-          <div className="fullSpan">
             <label>Change Service Card Image</label>
             <input
               type="file"
@@ -510,7 +492,7 @@ export default function MyListingEdit() {
             <div className="myListingEditBlockHead">
               <h4>Vehicles</h4>
               <button
-                className="myListingEditBtn myListingEditBtnPrimary myListingEditAddBtn"
+                className="myListingEditBtn myListingEditBtnPrimary"
                 type="button"
                 onClick={addVehicle}
               >
@@ -664,7 +646,7 @@ export default function MyListingEdit() {
             <div className="myListingEditBlockHead">
               <h4>Travel Trips</h4>
               <button
-                className="myListingEditBtn myListingEditBtnPrimary myListingEditAddBtn"
+                className="myListingEditBtn myListingEditBtnPrimary"
                 type="button"
                 onClick={addTrip}
               >
