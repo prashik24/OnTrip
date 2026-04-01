@@ -39,17 +39,16 @@
   word-break: break-word;
 }
 
-/* ✅ UPDATED BUTTON */
 .savedTripsBackBtn {
   flex: 0 0 auto;
-  margin-left: auto;              /* push to right */
-  padding: 6px 12px;              /* smaller size */
+  margin-left: auto;
+  width: auto;
+  min-width: fit-content;
+  min-height: 36px;
+  padding: 0 12px;
   font-size: 13px;
-  min-height: 34px;
   border-radius: 10px;
 }
-
-/* rest unchanged */
 
 .savedTripsMessage {
   padding: 12px 14px;
@@ -388,7 +387,6 @@
     font-size: 14px;
   }
 
-  /* ✅ FIX mobile full width */
   .savedTripsBackBtn {
     width: auto;
   }
