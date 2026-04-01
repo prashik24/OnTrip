@@ -1,13 +1,7 @@
 .myListingsPage {
-  padding-bottom: 48px;
+  padding-bottom: 32px;
   display: grid;
-  gap: 24px;
-  width: 100%;
-  max-width: 1380px;
-  margin: 0 auto;
-  padding-left: 24px;
-  padding-right: 24px;
-  box-sizing: border-box;
+  gap: 18px;
 }
 
 .myListingsHead h1 {
@@ -24,7 +18,7 @@
   color: var(--muted);
   line-height: 1.65;
   font-weight: 550;
-  max-width: 720px;
+  max-width: 780px;
   word-break: break-word;
 }
 
@@ -51,55 +45,57 @@
 
 .myListingsGrid {
   display: grid;
-  gap: 22px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
 }
 
 .myListingsCard {
-  overflow: hidden;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.96);
+  background: #ffffff;
+  border-radius: 20px;
   border: 1px solid rgba(0, 184, 241, 0.12);
-  box-shadow: 0 14px 32px rgba(10, 22, 35, 0.06);
+  box-shadow: 0 12px 30px rgba(10, 22, 35, 0.07);
+  padding: 14px;
+  transition: all 0.2s ease;
   min-width: 0;
 }
 
+.myListingsCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(10, 22, 35, 0.12);
+}
+
 .myListingsMedia {
-  width: 1060px;
-  max-width: 100%;
-  height: 710px;
-  background: #f8fcff;
-  overflow: hidden;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 15px;
-  background-color: transparent;
+  width: 100%;
+  min-width: 0;
 }
 
 .myListingsMedia img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
   display: block;
-  border-radius: 32px;
+  border-radius: 16px;
+  object-fit: contain;
 }
 
 .myListingsMediaEmpty {
   width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  font-weight: 650;
-  color: rgba(11, 27, 42, 0.5);
+  min-height: 220px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fbfd;
+  border: 1px dashed rgba(11, 27, 42, 0.12);
+  color: var(--muted);
+  font-weight: 700;
   text-align: center;
-  padding: 16px;
+  padding: 14px;
 }
 
 .myListingsBody {
-  padding: 22px;
+  padding-top: 14px;
   display: grid;
-  gap: 16px;
+  gap: 10px;
   min-width: 0;
 }
 
@@ -107,7 +103,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
 }
 
@@ -117,8 +113,9 @@
 
 .myListingsTop h3 {
   margin: 0;
-  font-size: 24px;
-  font-weight: 740;
+  font-size: 20px;
+  font-weight: 720;
+  color: #12212f;
   line-height: 1.2;
   word-break: break-word;
 }
@@ -127,27 +124,27 @@
   margin: 6px 0 0;
   color: var(--muted);
   font-weight: 550;
-  font-size: 15px;
   word-break: break-word;
 }
 
 .myListingsType {
-  padding: 7px 12px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 6px 10px;
   border-radius: 10px;
-  font-size: 12px;
-  font-weight: 700;
   background: rgba(0, 184, 241, 0.1);
   border: 1px solid rgba(0, 184, 241, 0.16);
-  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
   color: #0369a1;
+  word-break: break-word;
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
 .myListingsDesc {
-  color: rgba(11, 27, 42, 0.76);
-  line-height: 1.7;
-  font-weight: 550;
-  font-size: 15px;
+  color: rgba(11, 27, 42, 0.75);
+  line-height: 1.6;
   word-break: break-word;
 }
 
@@ -157,28 +154,31 @@
   flex-wrap: wrap;
 }
 
-.myListingsBtn {
+.myListingsBtn,
+.myListingsViewBtn {
   min-height: 44px;
-  padding: 0 18px;
-  border: 1px solid rgba(11, 27, 42, 0.1);
+  padding: 0 16px;
   border-radius: 12px;
-  font: inherit;
-  font-weight: 700;
   cursor: pointer;
-  background: #ffffff;
-  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  box-sizing: border-box;
   transition: 0.18s ease;
 }
 
-.myListingsBtn-1 {
-  margin-bottom: 10px;
+.myListingsBtn {
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  background: #ffffff;
+  color: var(--text);
 }
 
-.myListingsBtn:hover {
+.myListingsBtn:hover,
+.myListingsViewBtn:hover {
   box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
 }
 
-.myListingsBtn:disabled {
+.myListingsBtn:disabled,
+.myListingsViewBtn:disabled {
   opacity: 0.72;
   cursor: not-allowed;
 }
@@ -186,7 +186,14 @@
 .myListingsBtn.danger {
   background: rgba(255, 98, 98, 0.08);
   color: #b42318;
-  border-color: rgba(255, 98, 98, 0.16);
+  border: 1px solid rgba(255, 98, 98, 0.16);
+}
+
+.myListingsViewBtn,
+.myListingsBtnPrimary {
+  border: 1px solid rgba(0, 184, 241, 0.38);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
 }
 
 .myListingsEditForm {
@@ -366,16 +373,8 @@
   grid-column: 1 / -1;
 }
 
-.myListingsBtn-1 {
-  background-color: #4ec9f5;
-  color: #ffffff;
-}
-
 @media (max-width: 980px) {
-  .myListingsPage {
-    gap: 20px;
-  }
-
+  .myListingsGrid,
   .myListingsFormGrid {
     grid-template-columns: 1fr;
   }
@@ -386,89 +385,12 @@
     gap: 8px;
   }
 
-  .myListingsMedia {
-    width: 100%;
-    max-width: 100%;
-    height: 460px;
-    margin-top: 0;
-    border-radius: 24px;
-  }
-
-  .myListingsMedia img {
-    border-radius: 24px;
-  }
-
   .myListingsImageGrid {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .myListingsTop h3 {
-    font-size: 21px;
   }
 }
 
 @media (max-width: 768px) {
-  .myListingsPage {
-    padding-left: 16px;
-    padding-right: 16px;
-    gap: 18px;
-  }
-
-  .myListingsCard {
-    border-radius: 18px;
-  }
-
-  .myListingsBody {
-    padding: 18px;
-    gap: 14px;
-  }
-
-  .myListingsMedia {
-    height: 320px;
-    margin-top: 0;
-    border-radius: 20px;
-  }
-
-  .myListingsMedia img {
-    border-radius: 20px;
-  }
-
-  .myListingsTop h3 {
-    font-size: 20px;
-  }
-
-  .myListingsDesc {
-    font-size: 14px;
-  }
-
-  .myListingsActions {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .myListingsBtn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .myListingsImageGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .myListingsBlockHead,
-  .myListingsVehicleTop {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-@media (max-width: 480px) {
-  .myListingsPage {
-    padding-left: 12px;
-    padding-right: 12px;
-    gap: 16px;
-  }
-
   .myListingsHead h1 {
     font-size: 24px;
   }
@@ -479,45 +401,31 @@
 
   .myListingsCard {
     border-radius: 16px;
-  }
-
-  .myListingsBody {
-    padding: 16px;
-  }
-
-  .myListingsMedia {
-    height: 240px;
-    margin-top: 0;
-    border-radius: 16px;
-  }
-
-  .myListingsMedia img {
-    border-radius: 16px;
+    padding: 12px;
   }
 
   .myListingsTop h3 {
     font-size: 18px;
   }
 
-  .myListingsTop p {
-    font-size: 13px;
+  .myListingsActions {
+    flex-direction: column;
+    width: 100%;
   }
 
-  .myListingsDesc {
-    font-size: 13px;
+  .myListingsBtn,
+  .myListingsViewBtn {
+    width: 100%;
   }
 
-  .myListingsType {
-    font-size: 11px;
-    padding: 5px 10px;
-    white-space: normal;
+  .myListingsBlockHead,
+  .myListingsVehicleTop {
+    flex-direction: column;
+    align-items: flex-start;
   }
+}
 
-  .myListingsBtn {
-    min-height: 42px;
-    font-size: 14px;
-  }
-
+@media (max-width: 480px) {
   .myListingsImageGrid {
     grid-template-columns: 1fr;
   }
