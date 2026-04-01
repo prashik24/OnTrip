@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -41,6 +42,8 @@ function onlyPhone(value) {
 }
 
 export default function MyListings() {
+  const navigate = useNavigate();
+
   const [items, setItems] = useState([]);
   const [msg, setMsg] = useState("");
   const [editingId, setEditingId] = useState(null);
@@ -139,9 +142,15 @@ export default function MyListings() {
         days: trip.days || "",
         priceFrom: trip.priceFrom || "",
         pricePerPerson: trip.pricePerPerson || "",
-        placesCovered: (trip.placesCovered || []).join(", "),
-        inclusions: (trip.inclusions || []).join(", "),
-        exclusions: (trip.exclusions || []).join(", "),
+        placesCovered: Array.isArray(trip.placesCovered)
+          ? trip.placesCovered.join(", ")
+          : trip.placesCovered || "",
+        inclusions: Array.isArray(trip.inclusions)
+          ? trip.inclusions.join(", ")
+          : trip.inclusions || "",
+        exclusions: Array.isArray(trip.exclusions)
+          ? trip.exclusions.join(", ")
+          : trip.exclusions || "",
         images: null,
         existingImages: trip.images || [],
       })),
@@ -393,8 +402,7 @@ export default function MyListings() {
                   <div>
                     <h3>{item.businessName}</h3>
                     <p>
-                      {item.city} •{" "}
-                      {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+                      {item.city} • {item.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
                     </p>
                   </div>
 
@@ -408,6 +416,13 @@ export default function MyListings() {
                 </div>
 
                 <div className="myListingsActions">
+                  <button
+                    className="myListingsViewBtn"
+                    onClick={() => navigate(`/my-listings/${item._id}`)}
+                  >
+                    View Details
+                  </button>
+
                   <button className="myListingsBtn" onClick={() => openEdit(item)}>
                     {editingId === item._id ? "Editing" : "Edit"}
                   </button>
@@ -503,7 +518,7 @@ export default function MyListings() {
                       <div className="myListingsBlock">
                         <div className="myListingsBlockHead">
                           <h4>Vehicles</h4>
-                          <button className="myListingsBtn myListingsBtn-1" type="button" onClick={addVehicle}>
+                          <button className="myListingsBtn myListingsBtnPrimary" type="button" onClick={addVehicle}>
                             Add Vehicle
                           </button>
                         </div>
@@ -514,7 +529,11 @@ export default function MyListings() {
                               <div className="myListingsVehicleTop">
                                 <strong>Vehicle {index + 1}</strong>
                                 {form.vehicles.length > 1 && (
-                                  <button className="myListingsBtn danger" type="button" onClick={() => removeVehicle(index)}>
+                                  <button
+                                    className="myListingsBtn danger"
+                                    type="button"
+                                    onClick={() => removeVehicle(index)}
+                                  >
                                     Remove
                                   </button>
                                 )}
@@ -624,7 +643,7 @@ export default function MyListings() {
                       <div className="myListingsBlock">
                         <div className="myListingsBlockHead">
                           <h4>Travel Trips</h4>
-                          <button className="myListingsBtn myListingsBtn-1" type="button" onClick={addTrip}>
+                          <button className="myListingsBtn myListingsBtnPrimary" type="button" onClick={addTrip}>
                             Add Trip
                           </button>
                         </div>
@@ -635,7 +654,11 @@ export default function MyListings() {
                               <div className="myListingsVehicleTop">
                                 <strong>Trip {index + 1}</strong>
                                 {form.travelPlans.length > 1 && (
-                                  <button className="myListingsBtn danger" type="button" onClick={() => removeTrip(index)}>
+                                  <button
+                                    className="myListingsBtn danger"
+                                    type="button"
+                                    onClick={() => removeTrip(index)}
+                                  >
                                     Remove
                                   </button>
                                 )}
@@ -752,7 +775,7 @@ export default function MyListings() {
                     )}
 
                     <div className="myListingsActions">
-                      <button className="myListingsBtn myListingsBtn-1" type="submit" disabled={saveLoading}>
+                      <button className="myListingsBtn myListingsBtnPrimary" type="submit" disabled={saveLoading}>
                         {saveLoading ? "Saving..." : "Save Changes"}
                       </button>
                       <button className="myListingsBtn" type="button" onClick={closeEdit}>
