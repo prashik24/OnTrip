@@ -23,7 +23,7 @@ import Providers from "./pages/Providers";
 import ProviderDetails from "./pages/ProviderDetails";
 import ProviderRegister from "./pages/ProviderRegister";
 import MyListings from "./pages/MyListings";
-import MyListingDetails from "./pages/MyListingDetails";
+import MyListingDetails from "./pages/MyListingEdit";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import BookingHistory from "./pages/BookingHistory";
 import BookingReviewPage from "./pages/BookingReviewPage";
