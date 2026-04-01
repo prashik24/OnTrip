@@ -1,0 +1,462 @@
+.myListingDetailsPage {
+  width: 100%;
+  padding-bottom: 32px;
+  display: grid;
+  gap: 18px;
+}
+
+.myListingDetailsMessage {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 650;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  word-break: break-word;
+}
+
+.myListingDetailsMessage.error {
+  background: rgba(255, 98, 98, 0.08);
+  color: #b42318;
+  border-color: rgba(255, 98, 98, 0.16);
+}
+
+.myListingDetailsCard {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+  padding: 20px;
+  display: grid;
+  gap: 20px;
+}
+
+.myListingDetailsTop {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.myListingDetailsHeroImage {
+  width: 100%;
+  height: 320px;
+  min-height: 320px;
+  max-width: 100%;
+  box-sizing: border-box;
+  border-radius: 32px;
+  overflow: hidden;
+  background: rgba(244, 251, 255, 0.9);
+  border: 1px solid rgba(0, 184, 241, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.myListingDetailsHeroImage img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 28px;
+}
+
+.myListingDetailsImageEmpty {
+  width: 100%;
+  height: 300px;
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  color: rgba(11, 27, 42, 0.5);
+  font-weight: 650;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px dashed rgba(11, 27, 42, 0.12);
+  text-align: center;
+  padding: 16px;
+}
+
+.myListingDetailsTopContent {
+  width: 100%;
+  min-width: 0;
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.myListingDetailsType {
+  width: fit-content;
+  max-width: 100%;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(0, 184, 241, 0.1);
+  border: 1px solid rgba(0, 184, 241, 0.16);
+  font-size: 12px;
+  font-weight: 700;
+  color: #0369a1;
+  word-break: break-word;
+}
+
+.myListingDetailsTypeTop {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.myListingDetailsTopContent h1 {
+  margin: 0;
+  padding-right: 130px;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 820;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.myListingDetailsMeta {
+  color: var(--muted);
+  font-weight: 550;
+  word-break: break-word;
+}
+
+.myListingDetailsDesc {
+  margin: 0;
+  color: rgba(11, 27, 42, 0.76);
+  line-height: 1.7;
+  font-weight: 550;
+  word-break: break-word;
+}
+
+.myListingDetailsInfoRow {
+  display: grid;
+  gap: 6px;
+  color: rgba(11, 27, 42, 0.8);
+  font-weight: 550;
+}
+
+.myListingDetailsInfoRow span {
+  display: block;
+  word-break: break-word;
+}
+
+.myListingDetailsPrimaryBtn {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  transition: 0.18s ease;
+  width: fit-content;
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+}
+
+.myListingDetailsPrimaryBtn:hover {
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+}
+
+.myListingDetailsActionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.myListingDetailsSection {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.myListingDetailsSection h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 780;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.myListingDetailsTravelList,
+.myListingDetailsVehicleList {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.myListingDetailsTravelCard,
+.myListingDetailsVehicleCard {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  background: rgba(244, 251, 255, 0.72);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+}
+
+.myListingDetailsItemHeader {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.myListingDetailsItemTitle {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 780;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.myListingDetailsPackageHero,
+.myListingDetailsVehicleHero {
+  width: 480px;
+  max-width: 100%;
+  height: 320px;
+  min-height: 320px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  border-radius: 32px;
+  overflow: hidden;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 184, 241, 0.08);
+}
+
+.myListingDetailsPackageHero img,
+.myListingDetailsVehicleHero img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 32px;
+}
+
+.myListingDetailsGallery {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.myListingDetailsGalleryItem {
+  width: 100%;
+  height: 100px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(0, 184, 241, 0.1);
+}
+
+.myListingDetailsGalleryItem img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+.myListingDetailsDataGrid {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.myListingDetailsDataBox {
+  min-width: 0;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.myListingDetailsDataBox strong {
+  font-size: 13px;
+  color: rgba(11, 27, 42, 0.55);
+  font-weight: 650;
+}
+
+.myListingDetailsDataBox span {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 650;
+  word-break: break-word;
+}
+
+.myListingDetailsInfoBlocks {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.myListingDetailsInfoBlock {
+  min-width: 0;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.myListingDetailsInfoBlock h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 720;
+  word-break: break-word;
+}
+
+.myListingDetailsInfoBlock p {
+  margin: 0;
+  color: rgba(11, 27, 42, 0.76);
+  line-height: 1.65;
+  font-weight: 550;
+  word-break: break-word;
+}
+
+.myListingDetailsVehicleSummary {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.myListingDetailsVehicleMetaGrid {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.myListingDetailsMiniInfo {
+  min-width: 0;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.myListingDetailsMiniLabel {
+  font-size: 13px;
+  color: rgba(11, 27, 42, 0.55);
+  font-weight: 650;
+}
+
+.myListingDetailsMiniInfo strong {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 650;
+  word-break: break-word;
+}
+
+@media (max-width: 980px) {
+  .myListingDetailsTop,
+  .myListingDetailsDataGrid,
+  .myListingDetailsVehicleMetaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .myListingDetailsGallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .myListingDetailsHeroImage,
+  .myListingDetailsPackageHero,
+  .myListingDetailsVehicleHero,
+  .myListingDetailsImageEmpty {
+    width: 100%;
+    max-width: 100%;
+    height: 220px;
+    min-height: 220px;
+    margin: 0 auto;
+  }
+
+  .myListingDetailsTopContent h1 {
+    padding-right: 0;
+  }
+
+  .myListingDetailsTypeTop {
+    position: static;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .myListingDetailsCard {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .myListingDetailsTop {
+    gap: 16px;
+  }
+
+  .myListingDetailsSection h2 {
+    font-size: 20px;
+  }
+
+  .myListingDetailsTopContent h1 {
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  .myListingDetailsItemTitle {
+    font-size: 18px;
+  }
+
+  .myListingDetailsGallery {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .myListingDetailsGalleryItem {
+    height: 90px;
+  }
+
+  .myListingDetailsDataGrid,
+  .myListingDetailsVehicleMetaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .myListingDetailsPrimaryBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .myListingDetailsActionRow {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
