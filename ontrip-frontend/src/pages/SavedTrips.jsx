@@ -91,7 +91,7 @@ export default function SavedTrips() {
         </div>
 
         <button
-          className="savedTripsBtn secondary savedTripsBackBtn"
+          className="savedTripsBackOnly"
           onClick={() => navigate("/profile")}
         >
           Back to Profile
