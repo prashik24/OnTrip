@@ -70,7 +70,7 @@ export default function App() {
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/my-listings" element={<MyListings />} />
-            <Route path="/my-listings/:id" element={<MyListingDetails />} />
+           <Route path="/profile/my-listings/:id/edit" element={<MyListingEdit />} />
             <Route path="/profile/saved-trips" element={<SavedTrips />} />
             <Route path="/profile/bookings" element={<BookingHistory />} />
             <Route path="/profile/bookings/:bookingId/review" element={<BookingReviewPage />} />
