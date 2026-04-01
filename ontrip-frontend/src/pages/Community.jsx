@@ -1,27 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
 import LoadingSpinner from "../components/LoadingSpinner";
-import "./Community.css";
+import "./SocialLayout.css";
+import "./SocialHome.css";
 
-const postTypeOptions = [
-  { label: "Normal Post", value: "post" },
-  { label: "Question", value: "question" },
-  { label: "Story", value: "story" },
-  { label: "Provider Offer", value: "provider_offer" },
+const createPostTypeOptions = [
+  { label: "Text Post", value: "text" },
+  { label: "Photo Post", value: "photo" },
+  { label: "Video Post", value: "video" },
 ];
-
-const feedFilterOptions = [
-  { label: "All Posts", value: "all" },
-  { label: "Questions", value: "questions" },
-  { label: "Stories", value: "stories" },
-  { label: "Offers", value: "offers" },
-];
-
-function getInitial(name = "U") {
-  return String(name).trim().charAt(0).toUpperCase() || "U";
-}
 
 function formatTime(value) {
   if (!value) return "";
@@ -34,302 +23,158 @@ function formatTime(value) {
   });
 }
 
-function compactCount(value = 0) {
-  const num = Number(value || 0);
-  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-  return String(num);
+function getInitial(name = "U") {
+  return String(name || "U").trim().charAt(0).toUpperCase();
 }
 
-function PostComposer({
-  me,
-  myProfile,
-  myProviders,
-  composer,
-  setComposer,
-  fileInputRef,
-  submitting,
-  onSubmit,
-}) {
-  const providerOptions = useMemo(
-    () => [
-      { label: "Select provider listing", value: "" },
-      ...myProviders.map((item) => ({
-        label: `${item.businessName} — ${
-          item.listingType === "travel_planner" ? "Travel Planner" : "Vehicle"
-        }`,
-        value: item._id,
-      })),
-    ],
-    [myProviders]
-  );
+function extractUsernameFromProfile(profile) {
+  return profile?.username || profile?.handle || "";
+}
+
+function buildCommentPaginationMap(posts) {
+  const map = {};
+  for (const post of posts) {
+    map[post.id] = {
+      page: 1,
+      hasMore: !!post.hasMoreComments,
+      loading: false,
+    };
+  }
+  return map;
+}
+
+function SocialSidebar({ profile, notificationsCount = 0 }) {
+  const username = extractUsernameFromProfile(profile);
 
   return (
-    <div className="communityComposerCard">
-      <div className="communityComposerTop">
-        {me?.avatar ? (
-          <img src={me.avatar} alt={me.name} className="communityAvatar large" />
-        ) : (
-          <div className="communityAvatarFallback large">{getInitial(me?.name)}</div>
-        )}
-
-        <div className="communityComposerMain">
-          <div className="communityComposerHeader">
-            <div>
-              <strong>{me?.name || "Traveler"}</strong>
-              <span>
-                {myProfile?.followersCount || 0} followers •{" "}
-                {myProfile?.followingCount || 0} following
-              </span>
+    <aside className="socialSidebar">
+      <div className="socialCard socialProfileSummaryCard">
+        <div className="socialProfileSummaryTop">
+          {profile?.profileImage ? (
+            <img
+              src={profile.profileImage}
+              alt={profile.displayName || profile.username}
+              className="socialProfileAvatar large"
+            />
+          ) : (
+            <div className="socialProfileAvatarFallback large">
+              {getInitial(profile?.displayName || profile?.username)}
             </div>
+          )}
 
-            <CustomSelect
-              value={composer.postType}
-              onChange={(e) =>
-                setComposer((prev) => ({ ...prev, postType: e.target.value }))
-              }
-              options={postTypeOptions}
-              placeholder="Post type"
-              className="communitySmallSelect"
-            />
+          <div className="socialProfileSummaryText">
+            <strong>{profile?.displayName || "Your Profile"}</strong>
+            <span>@{username || "username"}</span>
+            {profile?.location ? <p>{profile.location}</p> : null}
           </div>
+        </div>
 
-          <textarea
-            className="communityComposerTextarea"
-            placeholder="Share your travel story, ask a question, post an update, or promote your service..."
-            value={composer.text}
-            onChange={(e) =>
-              setComposer((prev) => ({ ...prev, text: e.target.value }))
-            }
-            rows={5}
-          />
-
-          <div className="communityComposerGrid">
-            <input
-              className="communityInput"
-              placeholder="Hashtags (example: goa, solo, budget)"
-              value={composer.hashtags}
-              onChange={(e) =>
-                setComposer((prev) => ({ ...prev, hashtags: e.target.value }))
-              }
-            />
-
-            <input
-              className="communityInput"
-              placeholder='Tag users JSON later, for now type names "@amit @riya"'
-              value={composer.tagNames}
-              onChange={(e) =>
-                setComposer((prev) => ({ ...prev, tagNames: e.target.value }))
-              }
-            />
+        <div className="socialStatsRow">
+          <div className="socialStatBox">
+            <strong>{profile?.followersCount || 0}</strong>
+            <span>Followers</span>
           </div>
+          <div className="socialStatBox">
+            <strong>{profile?.followingCount || 0}</strong>
+            <span>Following</span>
+          </div>
+          <div className="socialStatBox">
+            <strong>{profile?.postsCount || 0}</strong>
+            <span>Posts</span>
+          </div>
+        </div>
+      </div>
 
-          {composer.postType === "provider_offer" ? (
-            <CustomSelect
-              value={composer.providerId}
-              onChange={(e) =>
-                setComposer((prev) => ({ ...prev, providerId: e.target.value }))
-              }
-              options={providerOptions}
-              placeholder="Select provider listing"
-            />
+      <nav className="socialCard socialNavCard">
+        <NavLink to="/community" end className="socialNavItem">
+          Home Feed
+        </NavLink>
+        <NavLink to="/social/posts/me" className="socialNavItem">
+          My Posts
+        </NavLink>
+        <NavLink to="/social/bookmarks" className="socialNavItem">
+          Bookmarks
+        </NavLink>
+        <NavLink to="/social/liked" className="socialNavItem">
+          Liked Posts
+        </NavLink>
+        <NavLink to="/social/notifications" className="socialNavItem">
+          Notifications
+          {notificationsCount > 0 ? (
+            <span className="socialNavBadge">{notificationsCount}</span>
           ) : null}
-
-          <div className="communityComposerActions">
-            <button
-              type="button"
-              className="communityGhostBtn"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Add Photo / Video
-            </button>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,video/*"
-              multiple
-              className="communityHiddenInput"
-              onChange={(e) =>
-                setComposer((prev) => ({
-                  ...prev,
-                  mediaFiles: Array.from(e.target.files || []),
-                }))
-              }
-            />
-
-            <div className="communitySelectedFiles">
-              {composer.mediaFiles.length
-                ? `${composer.mediaFiles.length} file(s) selected`
-                : "No media selected"}
-            </div>
-
-            <button
-              type="button"
-              className="communityPrimaryBtn"
-              onClick={onSubmit}
-              disabled={submitting}
-            >
-              {submitting ? "Posting..." : "Post"}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+        </NavLink>
+        <NavLink to="/social/create" className="socialNavItem">
+          Create Post
+        </NavLink>
+        <NavLink to={username ? `/social/profile/${username}` : "/social/profile/me"} className="socialNavItem">
+          Profile
+        </NavLink>
+      </nav>
+    </aside>
   );
 }
 
-function ReplyComposer({ value, onChange, onSubmit }) {
-  return (
-    <div className="communityReplyComposer">
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Write a reply..."
-      />
-      <button type="button" onClick={onSubmit}>
-        Reply
-      </button>
-    </div>
-  );
-}
-
-function CommentItem({
-  postId,
-  comment,
-  onLikeComment,
-  onReplyComment,
-  replyDraft,
-  setReplyDraft,
-}) {
-  const [showReplyBox, setShowReplyBox] = useState(false);
-
-  return (
-    <div className="communityCommentItem">
-      {comment.user?.avatar ? (
-        <img
-          src={comment.user.avatar}
-          alt={comment.user.name}
-          className="communityCommentAvatar"
-        />
-      ) : (
-        <div className="communityCommentAvatarFallback">
-          {getInitial(comment.user?.name)}
-        </div>
-      )}
-
-      <div className="communityCommentBody">
-        <div className="communityCommentTop">
-          <strong>{comment.user?.name || "User"}</strong>
-          <span>{formatTime(comment.createdAt)}</span>
-        </div>
-
-        <div className="communityCommentText">{comment.text}</div>
-
-        <div className="communityCommentActions">
-          <button type="button" onClick={() => onLikeComment(postId, comment.id)}>
-            ❤️ {compactCount(comment.likesCount)}
-          </button>
-          <button type="button" onClick={() => setShowReplyBox((prev) => !prev)}>
-            Reply
-          </button>
-        </div>
-
-        {showReplyBox ? (
-          <ReplyComposer
-            value={replyDraft}
-            onChange={setReplyDraft}
-            onSubmit={() => {
-              onReplyComment(postId, comment.id);
-              setShowReplyBox(false);
-            }}
-          />
-        ) : null}
-
-        {comment.replies?.length ? (
-          <div className="communityReplyList">
-            {comment.replies.map((reply) => (
-              <div key={reply.id} className="communityReplyItem">
-                {reply.user?.avatar ? (
-                  <img
-                    src={reply.user.avatar}
-                    alt={reply.user.name}
-                    className="communityReplyAvatar"
-                  />
-                ) : (
-                  <div className="communityReplyAvatarFallback">
-                    {getInitial(reply.user?.name)}
-                  </div>
-                )}
-                <div className="communityReplyBody">
-                  <div className="communityCommentTop">
-                    <strong>{reply.user?.name || "User"}</strong>
-                    <span>{formatTime(reply.createdAt)}</span>
-                  </div>
-                  <div className="communityCommentText">{reply.text}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-function FeedPost({
+function PostCard({
   post,
+  me,
+  commentDrafts,
+  replyDrafts,
+  replyBoxOpen,
+  commentPaging,
   onLikePost,
   onBookmarkPost,
-  onAddComment,
-  onLikeComment,
-  onReplyComment,
-  commentDraft,
-  setCommentDraft,
-  replyDrafts,
-  setReplyDraft,
+  onSubmitComment,
+  onSetCommentDraft,
+  onToggleCommentLike,
+  onToggleReplyBox,
+  onSetReplyDraft,
+  onSubmitReply,
+  onLoadMoreComments,
 }) {
+  const username = post.author?.username || "";
+  const pageState = commentPaging[post.id] || { hasMore: false, loading: false };
+
   return (
-    <article className="communityPostCard">
-      <div className="communityPostHead">
-        <div className="communityPostAuthor">
+    <article className="socialCard socialPostCard">
+      <div className="socialPostHeader">
+        <div className="socialPostAuthor">
           {post.author?.avatar ? (
             <img
               src={post.author.avatar}
               alt={post.author.name}
-              className="communityAvatar"
+              className="socialProfileAvatar"
             />
           ) : (
-            <div className="communityAvatarFallback">
+            <div className="socialProfileAvatarFallback">
               {getInitial(post.author?.name)}
             </div>
           )}
 
-          <div className="communityPostAuthorText">
-            <div className="communityPostAuthorTop">
+          <div className="socialPostAuthorText">
+            <div className="socialPostAuthorTop">
               <strong>{post.author?.name || "User"}</strong>
-              <span className={`communityRoleBadge ${post.author?.role || "user"}`}>
-                {post.author?.role === "provider" ? "Provider" : "Traveler"}
-              </span>
+              {username ? (
+                <Link to={`/social/profile/${username}`} className="socialInlineLink">
+                  @{username}
+                </Link>
+              ) : null}
             </div>
-
-            <div className="communityMetaLine">
+            <div className="socialPostMeta">
               <span>{post.author?.city || "OnTrip"}</span>
               <span>•</span>
               <span>{formatTime(post.createdAt)}</span>
-              <span>•</span>
-              <span className="communityTypeBadge">{post.postType}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {post.text ? <div className="communityPostText">{post.text}</div> : null}
+      {post.text ? <div className="socialPostText">{post.text}</div> : null}
 
       {post.hashtags?.length ? (
-        <div className="communityTagRow">
+        <div className="socialHashtagRow">
           {post.hashtags.map((tag) => (
-            <button key={tag} type="button" className="communityTagChip">
+            <button key={tag} type="button" className="socialTagBtn">
               #{tag}
             </button>
           ))}
@@ -338,278 +183,182 @@ function FeedPost({
 
       {post.media?.length ? (
         <div
-          className={`communityMediaGrid ${
+          className={`socialMediaGrid ${
             post.media.length === 1 ? "single" : post.media.length === 2 ? "double" : "multi"
           }`}
         >
           {post.media.map((item, index) =>
-            item.mediaType === "video" ? (
-              <video key={`${item.url}-${index}`} controls className="communityPostMedia">
+            item.type === "video" ? (
+              <video key={`${item.url}-${index}`} className="socialMediaItem" controls>
                 <source src={item.url} />
               </video>
             ) : (
               <img
                 key={`${item.url}-${index}`}
                 src={item.url}
-                alt="community media"
-                className="communityPostMedia"
+                alt="post media"
+                className="socialMediaItem"
               />
             )
           )}
         </div>
       ) : null}
 
-      <div className="communityPostActions">
+      <div className="socialActionBar">
         <button
           type="button"
-          className={post.isLikedByMe ? "active" : ""}
+          className={`socialActionBtn ${post.isLikedByMe ? "active" : ""}`}
           onClick={() => onLikePost(post.id)}
         >
-          ❤️ {compactCount(post.likesCount)}
+          ❤️ {post.likesCount}
         </button>
 
         <button
           type="button"
-          className={post.isBookmarkedByMe ? "active" : ""}
+          className={`socialActionBtn ${post.isBookmarkedByMe ? "active" : ""}`}
           onClick={() => onBookmarkPost(post.id)}
         >
-          🔖 {compactCount(post.bookmarksCount)}
+          🔖 {post.bookmarksCount || 0}
         </button>
 
-        <div>💬 {compactCount(post.commentsCount)}</div>
-        <div>🔁 {compactCount(post.sharesCount)}</div>
+        <div className="socialActionStatic">💬 {post.commentsCount}</div>
       </div>
 
-      <div className="communityCommentComposer">
+      <div className="socialCommentComposer">
         <input
-          value={commentDraft}
-          onChange={(e) => setCommentDraft(post.id, e.target.value)}
+          value={commentDrafts[post.id] || ""}
+          onChange={(e) => onSetCommentDraft(post.id, e.target.value)}
           placeholder="Write a comment..."
         />
-        <button type="button" onClick={() => onAddComment(post.id)}>
+        <button type="button" onClick={() => onSubmitComment(post.id)}>
           Comment
         </button>
       </div>
 
-      {post.comments?.length ? (
-        <div className="communityCommentList">
-          {post.comments.map((comment) => (
-            <CommentItem
-              key={comment.id}
-              postId={post.id}
-              comment={comment}
-              onLikeComment={onLikeComment}
-              onReplyComment={onReplyComment}
-              replyDraft={replyDrafts[comment.id] || ""}
-              setReplyDraft={(value) => setReplyDraft(comment.id, value)}
-            />
-          ))}
-        </div>
+      <div className="socialCommentList">
+        {(post.comments || []).map((comment) => (
+          <div key={comment.id} className="socialCommentItem">
+            <div className="socialCommentHead">
+              <div className="socialCommentAuthor">
+                {comment.user?.avatar ? (
+                  <img
+                    src={comment.user.avatar}
+                    alt={comment.user.name}
+                    className="socialCommentAvatar"
+                  />
+                ) : (
+                  <div className="socialCommentAvatarFallback">
+                    {getInitial(comment.user?.name)}
+                  </div>
+                )}
+
+                <div className="socialCommentAuthorText">
+                  <strong>{comment.user?.name || "User"}</strong>
+                  <span>{formatTime(comment.createdAt)}</span>
+                </div>
+              </div>
+
+              <div className="socialCommentActions">
+                <button
+                  type="button"
+                  className={`socialTinyBtn ${comment.isLikedByMe ? "active" : ""}`}
+                  onClick={() => onToggleCommentLike(post.id, comment.id)}
+                >
+                  ❤️ {comment.likesCount}
+                </button>
+
+                <button
+                  type="button"
+                  className="socialTinyBtn"
+                  onClick={() => onToggleReplyBox(comment.id)}
+                >
+                  Reply
+                </button>
+              </div>
+            </div>
+
+            <div className="socialCommentText">{comment.text}</div>
+
+            {replyBoxOpen[comment.id] ? (
+              <div className="socialReplyComposer">
+                <input
+                  value={replyDrafts[comment.id] || ""}
+                  onChange={(e) => onSetReplyDraft(comment.id, e.target.value)}
+                  placeholder="Write a reply..."
+                />
+                <button type="button" onClick={() => onSubmitReply(post.id, comment.id)}>
+                  Send
+                </button>
+              </div>
+            ) : null}
+
+            {(comment.replies || []).length ? (
+              <div className="socialReplyList">
+                {comment.replies.map((reply) => (
+                  <div key={reply.id} className="socialReplyItem">
+                    <div className="socialReplyTop">
+                      <strong>{reply.user?.name || "User"}</strong>
+                      <span>{formatTime(reply.createdAt)}</span>
+                    </div>
+                    <div className="socialReplyText">{reply.text}</div>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+
+      {pageState.hasMore ? (
+        <button
+          type="button"
+          className="socialLoadMoreCommentsBtn"
+          onClick={() => onLoadMoreComments(post.id)}
+          disabled={pageState.loading}
+        >
+          {pageState.loading ? "Loading..." : "Load more comments"}
+        </button>
       ) : null}
     </article>
-  );
-}
-
-function ProfileSidebar({
-  me,
-  myProfile,
-  notifications,
-  activeTab,
-  setActiveTab,
-}) {
-  return (
-    <div className="communitySidebarCard">
-      <div className="communityProfileBlock">
-        {myProfile?.user?.avatar ? (
-          <img
-            src={myProfile.user.avatar}
-            alt={myProfile.user.name}
-            className="communityProfileHeroAvatar"
-          />
-        ) : (
-          <div className="communityProfileHeroAvatarFallback">
-            {getInitial(myProfile?.user?.name || me?.name)}
-          </div>
-        )}
-
-        <div className="communityProfileName">{myProfile?.user?.name || me?.name || "User"}</div>
-        <div className="communityProfileMeta">
-          {myProfile?.user?.city || "OnTrip"} • {myProfile?.user?.role || "user"}
-        </div>
-
-        <div className="communityProfileStats">
-          <div>
-            <strong>{compactCount(myProfile?.followersCount || 0)}</strong>
-            <span>Followers</span>
-          </div>
-          <div>
-            <strong>{compactCount(myProfile?.followingCount || 0)}</strong>
-            <span>Following</span>
-          </div>
-          <div>
-            <strong>{compactCount(myProfile?.unreadNotifications || 0)}</strong>
-            <span>Alerts</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="communitySidebarMenu">
-        <button
-          type="button"
-          className={activeTab === "feed" ? "active" : ""}
-          onClick={() => setActiveTab("feed")}
-        >
-          Main Feed
-        </button>
-        <button
-          type="button"
-          className={activeTab === "profile" ? "active" : ""}
-          onClick={() => setActiveTab("profile")}
-        >
-          My Profile
-        </button>
-        <button
-          type="button"
-          className={activeTab === "posts" ? "active" : ""}
-          onClick={() => setActiveTab("posts")}
-        >
-          My Posts
-        </button>
-        <button
-          type="button"
-          className={activeTab === "bookmarks" ? "active" : ""}
-          onClick={() => setActiveTab("bookmarks")}
-        >
-          Bookmarks
-        </button>
-        <button
-          type="button"
-          className={activeTab === "liked" ? "active" : ""}
-          onClick={() => setActiveTab("liked")}
-        >
-          Liked Posts
-        </button>
-        <button
-          type="button"
-          className={activeTab === "notifications" ? "active" : ""}
-          onClick={() => setActiveTab("notifications")}
-        >
-          Notifications
-        </button>
-      </div>
-
-      <div className="communitySidebarHint">
-        Click profile to open your post section, bookmarks, likes, and notifications.
-      </div>
-
-      {notifications?.length ? (
-        <div className="communityQuickNotifications">
-          <div className="communitySidebarTitle">Recent Alerts</div>
-          {notifications.slice(0, 4).map((item) => (
-            <div key={item.id} className={`communityNotificationItem ${item.isRead ? "" : "unread"}`}>
-              <strong>{item.sender?.name || "Someone"}</strong>
-              <span>{item.text}</span>
-            </div>
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function RightPanel({ search, setSearch, hashtagResults, notifications, onMarkRead }) {
-  return (
-    <div className="communitySidebarCard">
-      <div className="communitySidebarTitle">Search Hashtags</div>
-      <input
-        className="communityInput"
-        placeholder="Search hashtag..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-
-      <div className="communityHashtagList">
-        {hashtagResults.length === 0 ? (
-          <div className="communityMutedCard">No hashtag match yet.</div>
-        ) : (
-          hashtagResults.map((tag) => (
-            <div key={tag} className="communityHashtagItem">
-              #{tag}
-            </div>
-          ))
-        )}
-      </div>
-
-      <div className="communitySidebarTitle withSpace">Notifications</div>
-      <button type="button" className="communityGhostBtn full" onClick={onMarkRead}>
-        Mark all as read
-      </button>
-
-      <div className="communityNotificationList">
-        {notifications.length === 0 ? (
-          <div className="communityMutedCard">No notifications.</div>
-        ) : (
-          notifications.map((item) => (
-            <div key={item.id} className={`communityNotificationCard ${item.isRead ? "" : "unread"}`}>
-              <div className="communityNotificationTop">
-                <strong>{item.sender?.name || "OnTrip"}</strong>
-                <span>{formatTime(item.createdAt)}</span>
-              </div>
-              <div className="communityNotificationText">{item.text}</div>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
   );
 }
 
 export default function Community() {
   const me = getUser();
   const navigate = useNavigate();
-  const fileInputRef = useRef(null);
-  const [searchParams] = useSearchParams();
 
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
+  const [profile, setProfile] = useState(null);
   const [feed, setFeed] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
+    hasMore: false,
     limit: 10,
     total: 0,
-    hasMore: false,
   });
+  const [notificationsCount, setNotificationsCount] = useState(0);
 
-  const [feedFilter, setFeedFilter] = useState("all");
-  const [hashtagSearch, setHashtagSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("feed");
+  const [loading, setLoading] = useState(true);
+  const [loadingMoreFeed, setLoadingMoreFeed] = useState(false);
+  const [error, setError] = useState("");
 
-  const [myProfile, setMyProfile] = useState(null);
-  const [myPosts, setMyPosts] = useState([]);
-  const [likedPosts, setLikedPosts] = useState([]);
-  const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
-  const [notifications, setNotifications] = useState([]);
-  const [myProviders, setMyProviders] = useState([]);
+  const [search, setSearch] = useState("");
+  const [searchResults, setSearchResults] = useState({ profiles: [], posts: [] });
+  const [searching, setSearching] = useState(false);
+
+  const [quickPost, setQuickPost] = useState({
+    postType: "text",
+    text: "",
+  });
 
   const [commentDrafts, setCommentDrafts] = useState({});
   const [replyDrafts, setReplyDrafts] = useState({});
+  const [replyBoxOpen, setReplyBoxOpen] = useState({});
+  const [commentPaging, setCommentPaging] = useState({});
 
-  const [composer, setComposer] = useState({
-    postType: "post",
-    text: "",
-    hashtags: "",
-    tagNames: "",
-    providerId: "",
-    mediaFiles: [],
-  });
+  const searchHasResults =
+    (searchResults.profiles || []).length > 0 || (searchResults.posts || []).length > 0;
 
-  useEffect(() => {
-    const tab = searchParams.get("tab");
-    if (tab) setActiveTab(tab);
-  }, [searchParams]);
+  const profileUsername = useMemo(() => extractUsernameFromProfile(profile), [profile]);
 
   useEffect(() => {
     async function init() {
@@ -617,190 +366,109 @@ export default function Community() {
         setLoading(true);
         setError("");
 
-        const requests = [
-          apiFetch(`/api/community/feed?page=1&limit=10&filter=${feedFilter}`),
-        ];
+        const requests = [apiFetch("/api/social/feed?limit=10&page=1")];
 
         if (isLoggedIn()) {
-          requests.push(apiFetch("/api/community/me"));
-          requests.push(apiFetch("/api/community/notifications"));
-
-          if (me?.role === "provider") {
-            requests.push(apiFetch("/api/providers/mine"));
-          }
+          requests.push(apiFetch("/api/social/profile/me"));
+          requests.push(apiFetch("/api/social/notifications"));
         }
 
-        const results = await Promise.all(requests);
-        const feedRes = results[0];
-        const myProfileRes = results[1];
-        const notificationsRes = results[2];
-        const providersRes = results[3];
+        const [feedRes, profileRes, notificationsRes] = await Promise.all(requests);
 
         setFeed(feedRes.posts || []);
-        setPagination(
-          feedRes.pagination || {
-            page: 1,
-            limit: 10,
-            total: 0,
-            hasMore: false,
-          }
-        );
+        setPagination(feedRes.pagination || { page: 1, hasMore: false, limit: 10, total: 0 });
+        setCommentPaging(buildCommentPaginationMap(feedRes.posts || []));
 
-        if (myProfileRes) {
-          setMyProfile(myProfileRes.profile || null);
-          setMyPosts(myProfileRes.myPosts || []);
-          setLikedPosts(myProfileRes.likedPosts || []);
-          setBookmarkedPosts(myProfileRes.bookmarkedPosts || []);
+        if (profileRes?.profile) {
+          setProfile(profileRes.profile);
         }
 
-        if (notificationsRes) {
-          setNotifications(notificationsRes.notifications || []);
-        }
-
-        if (providersRes) {
-          setMyProviders(providersRes.providers || []);
+        if (notificationsRes?.notifications) {
+          setNotificationsCount(
+            notificationsRes.notifications.filter((item) => !item.isRead).length
+          );
         }
       } catch (err) {
-        setError(err.message || "Failed to load community.");
+        setError(err.message || "Failed to load community feed.");
       } finally {
         setLoading(false);
       }
     }
 
     init();
-  }, [feedFilter, me?.role]);
+  }, []);
 
-  const hashtagResults = useMemo(() => {
-    const allTags = new Set();
+  async function handleLoadMoreFeed() {
+    if (!pagination.hasMore || loadingMoreFeed) return;
 
-    for (const post of feed) {
-      for (const tag of post.hashtags || []) {
-        allTags.add(tag);
-      }
+    try {
+      setLoadingMoreFeed(true);
+      const nextPage = pagination.page + 1;
+      const data = await apiFetch(`/api/social/feed?limit=10&page=${nextPage}`);
+
+      setFeed((prev) => [...prev, ...(data.posts || [])]);
+      setPagination(data.pagination || pagination);
+      setCommentPaging((prev) => ({
+        ...prev,
+        ...buildCommentPaginationMap(data.posts || []),
+      }));
+    } catch (err) {
+      setError(err.message || "Failed to load more posts.");
+    } finally {
+      setLoadingMoreFeed(false);
+    }
+  }
+
+  async function handleSearch() {
+    if (!search.trim()) {
+      setSearchResults({ profiles: [], posts: [] });
+      return;
     }
 
-    const tags = [...allTags];
-    const q = hashtagSearch.trim().toLowerCase();
-    if (!q) return tags.slice(0, 12);
-
-    return tags.filter((tag) => tag.includes(q)).slice(0, 12);
-  }, [feed, hashtagSearch]);
-
-  const visiblePosts = useMemo(() => {
-    if (activeTab === "posts") return myPosts;
-    if (activeTab === "liked") return likedPosts;
-    if (activeTab === "bookmarks") return bookmarkedPosts;
-    return feed;
-  }, [activeTab, feed, myPosts, likedPosts, bookmarkedPosts]);
-
-  function updatePostCollections(nextPost) {
-    setFeed((prev) =>
-      prev.map((item) => (String(item.id) === String(nextPost.id) ? nextPost : item))
-    );
-    setMyPosts((prev) =>
-      prev.map((item) => (String(item.id) === String(nextPost.id) ? nextPost : item))
-    );
-    setLikedPosts((prev) => {
-      const exists = prev.some((item) => String(item.id) === String(nextPost.id));
-      if (nextPost.isLikedByMe) {
-        return exists
-          ? prev.map((item) => (String(item.id) === String(nextPost.id) ? nextPost : item))
-          : [nextPost, ...prev];
-      }
-      return prev.filter((item) => String(item.id) !== String(nextPost.id));
-    });
-    setBookmarkedPosts((prev) => {
-      const exists = prev.some((item) => String(item.id) === String(nextPost.id));
-      if (nextPost.isBookmarkedByMe) {
-        return exists
-          ? prev.map((item) => (String(item.id) === String(nextPost.id) ? nextPost : item))
-          : [nextPost, ...prev];
-      }
-      return prev.filter((item) => String(item.id) !== String(nextPost.id));
-    });
+    try {
+      setSearching(true);
+      const data = await apiFetch(`/api/social/search?q=${encodeURIComponent(search.trim())}`);
+      setSearchResults({
+        profiles: data.profiles || [],
+        posts: data.posts || [],
+      });
+    } catch (err) {
+      setError(err.message || "Failed to search.");
+    } finally {
+      setSearching(false);
+    }
   }
 
-  async function refreshProfileLite() {
-    if (!isLoggedIn()) return;
-
-    const data = await apiFetch("/api/community/me");
-    setMyProfile(data.profile || null);
-    setMyPosts(data.myPosts || []);
-    setLikedPosts(data.likedPosts || []);
-    setBookmarkedPosts(data.bookmarkedPosts || []);
-  }
-
-  async function handleCreatePost() {
+  async function handleQuickCreate() {
     if (!isLoggedIn()) {
       navigate("/login");
       return;
     }
 
-    if (!composer.text.trim() && composer.mediaFiles.length === 0) {
-      setError("Write something or select media.");
-      return;
-    }
-
-    if (composer.postType === "provider_offer" && !composer.providerId) {
-      setError("Please select provider listing.");
+    if (!quickPost.text.trim()) {
+      setError("Write something first.");
       return;
     }
 
     try {
-      setSubmitting(true);
       setError("");
 
-      const fd = new FormData();
-      fd.append("postType", composer.postType);
-      fd.append("text", composer.text.trim());
-      fd.append("hashtags", composer.hashtags.trim());
+      const formData = new FormData();
+      formData.append("text", quickPost.text.trim());
 
-      if (composer.providerId) {
-        fd.append("providerId", composer.providerId);
-      }
-
-      const taggedUsers = composer.tagNames
-        .split(" ")
-        .map((item) => item.trim())
-        .filter(Boolean)
-        .map((item) => ({
-          user: "",
-          nameSnapshot: item.replace(/^@/, ""),
-        }));
-
-      fd.append("taggedUsers", JSON.stringify(taggedUsers));
-
-      for (const file of composer.mediaFiles) {
-        fd.append("media", file);
-      }
-
-      const data = await apiFetch("/api/community/post", {
+      await apiFetch("/api/social/posts", {
         method: "POST",
-        body: fd,
+        body: formData,
       });
 
-      setFeed((prev) => [data.post, ...prev]);
-      setMyPosts((prev) => [data.post, ...prev]);
+      setQuickPost({ postType: "text", text: "" });
 
-      setComposer({
-        postType: "post",
-        text: "",
-        hashtags: "",
-        tagNames: "",
-        providerId: "",
-        mediaFiles: [],
-      });
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-
-      await refreshProfileLite();
-      setActiveTab("feed");
+      const data = await apiFetch("/api/social/feed?limit=10&page=1");
+      setFeed(data.posts || []);
+      setPagination(data.pagination || { page: 1, hasMore: false, limit: 10, total: 0 });
+      setCommentPaging(buildCommentPaginationMap(data.posts || []));
     } catch (err) {
       setError(err.message || "Failed to create post.");
-    } finally {
-      setSubmitting(false);
     }
   }
 
@@ -811,24 +479,23 @@ export default function Community() {
     }
 
     try {
-      const data = await apiFetch(`/api/community/post/${postId}/like`, {
+      const data = await apiFetch(`/api/social/posts/${postId}/like`, {
         method: "POST",
       });
 
-      const allCollections = [...feed, ...myPosts, ...likedPosts, ...bookmarkedPosts];
-      const oldPost = allCollections.find((item) => String(item.id) === String(postId));
-      if (!oldPost) return;
-
-      const nextPost = {
-        ...oldPost,
-        likesCount: data.likesCount,
-        isLikedByMe: data.isLikedByMe,
-      };
-
-      updatePostCollections(nextPost);
-      await refreshProfileLite();
+      setFeed((prev) =>
+        prev.map((post) =>
+          String(post.id) === String(postId)
+            ? {
+                ...post,
+                likesCount: data.likesCount,
+                isLikedByMe: data.isLikedByMe,
+              }
+            : post
+        )
+      );
     } catch (err) {
-      setError(err.message || "Failed to update like.");
+      setError(err.message || "Failed to like post.");
     }
   }
 
@@ -839,24 +506,23 @@ export default function Community() {
     }
 
     try {
-      const data = await apiFetch(`/api/community/post/${postId}/bookmark`, {
+      const data = await apiFetch(`/api/social/posts/${postId}/bookmark`, {
         method: "POST",
       });
 
-      const allCollections = [...feed, ...myPosts, ...likedPosts, ...bookmarkedPosts];
-      const oldPost = allCollections.find((item) => String(item.id) === String(postId));
-      if (!oldPost) return;
-
-      const nextPost = {
-        ...oldPost,
-        bookmarksCount: data.bookmarksCount,
-        isBookmarkedByMe: data.isBookmarkedByMe,
-      };
-
-      updatePostCollections(nextPost);
-      await refreshProfileLite();
+      setFeed((prev) =>
+        prev.map((post) =>
+          String(post.id) === String(postId)
+            ? {
+                ...post,
+                bookmarksCount: data.bookmarksCount,
+                isBookmarkedByMe: data.isBookmarkedByMe,
+              }
+            : post
+        )
+      );
     } catch (err) {
-      setError(err.message || "Failed to update bookmark.");
+      setError(err.message || "Failed to bookmark post.");
     }
   }
 
@@ -867,14 +533,7 @@ export default function Community() {
     }));
   }
 
-  function setReplyDraft(commentId, value) {
-    setReplyDrafts((prev) => ({
-      ...prev,
-      [commentId]: value,
-    }));
-  }
-
-  async function handleAddComment(postId) {
+  async function handleSubmitComment(postId) {
     if (!isLoggedIn()) {
       navigate("/login");
       return;
@@ -884,23 +543,33 @@ export default function Community() {
     if (!text) return;
 
     try {
-      const data = await apiFetch(`/api/community/post/${postId}/comment`, {
+      const data = await apiFetch(`/api/social/posts/${postId}/comments`, {
         method: "POST",
         body: JSON.stringify({ text }),
       });
 
-      updatePostCollections(data.post);
+      setFeed((prev) =>
+        prev.map((post) => (String(post.id) === String(postId) ? data.post : post))
+      );
+
       setCommentDrafts((prev) => ({
         ...prev,
         [postId]: "",
       }));
-      await refreshProfileLite();
+
+      setCommentPaging((prev) => ({
+        ...prev,
+        [postId]: {
+          ...(prev[postId] || {}),
+          hasMore: false,
+        },
+      }));
     } catch (err) {
       setError(err.message || "Failed to add comment.");
     }
   }
 
-  async function handleLikeComment(postId, commentId) {
+  async function handleToggleCommentLike(postId, commentId) {
     if (!isLoggedIn()) {
       navigate("/login");
       return;
@@ -908,20 +577,48 @@ export default function Community() {
 
     try {
       const data = await apiFetch(
-        `/api/community/post/${postId}/comment/${commentId}/like`,
-        {
-          method: "POST",
-        }
+        `/api/social/posts/${postId}/comments/${commentId}/like`,
+        { method: "POST" }
       );
 
-      updatePostCollections(data.post);
-      await refreshProfileLite();
+      setFeed((prev) =>
+        prev.map((post) => {
+          if (String(post.id) !== String(postId)) return post;
+
+          return {
+            ...post,
+            comments: (post.comments || []).map((comment) =>
+              String(comment.id) === String(commentId)
+                ? {
+                    ...comment,
+                    likesCount: data.likesCount,
+                    isLikedByMe: data.isLikedByMe,
+                  }
+                : comment
+            ),
+          };
+        })
+      );
     } catch (err) {
-      setError(err.message || "Failed to update comment like.");
+      setError(err.message || "Failed to like comment.");
     }
   }
 
-  async function handleReplyComment(postId, commentId) {
+  function handleToggleReplyBox(commentId) {
+    setReplyBoxOpen((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId],
+    }));
+  }
+
+  function setReplyDraft(commentId, value) {
+    setReplyDrafts((prev) => ({
+      ...prev,
+      [commentId]: value,
+    }));
+  }
+
+  async function handleSubmitReply(postId, commentId) {
     if (!isLoggedIn()) {
       navigate("/login");
       return;
@@ -932,228 +629,299 @@ export default function Community() {
 
     try {
       const data = await apiFetch(
-        `/api/community/post/${postId}/comment/${commentId}/reply`,
+        `/api/social/posts/${postId}/comments/${commentId}/reply`,
         {
           method: "POST",
           body: JSON.stringify({ text }),
         }
       );
 
-      updatePostCollections(data.post);
+      setFeed((prev) =>
+        prev.map((post) => (String(post.id) === String(postId) ? data.post : post))
+      );
+
       setReplyDrafts((prev) => ({
         ...prev,
         [commentId]: "",
       }));
-      await refreshProfileLite();
+
+      setReplyBoxOpen((prev) => ({
+        ...prev,
+        [commentId]: false,
+      }));
     } catch (err) {
       setError(err.message || "Failed to add reply.");
     }
   }
 
-  async function handleLoadMore() {
-    if (!pagination.hasMore || loadingMore) return;
+  async function handleLoadMoreComments(postId) {
+    const currentState = commentPaging[postId] || { page: 1, hasMore: true, loading: false };
+    if (!currentState.hasMore || currentState.loading) return;
 
     try {
-      setLoadingMore(true);
-      const nextPage = pagination.page + 1;
+      setCommentPaging((prev) => ({
+        ...prev,
+        [postId]: {
+          ...currentState,
+          loading: true,
+        },
+      }));
 
-      const data = await apiFetch(
-        `/api/community/feed?page=${nextPage}&limit=${pagination.limit}&filter=${feedFilter}`
+      const nextPage = currentState.page + 1;
+      const data = await apiFetch(`/api/social/posts/${postId}/comments?page=${nextPage}&limit=5`);
+
+      setFeed((prev) =>
+        prev.map((post) =>
+          String(post.id) === String(postId)
+            ? {
+                ...post,
+                comments: [...(post.comments || []), ...(data.comments || [])],
+                hasMoreComments: data.pagination?.hasMore || false,
+              }
+            : post
+        )
       );
 
-      setFeed((prev) => [...prev, ...(data.posts || [])]);
-      setPagination(data.pagination || pagination);
+      setCommentPaging((prev) => ({
+        ...prev,
+        [postId]: {
+          page: nextPage,
+          hasMore: data.pagination?.hasMore || false,
+          loading: false,
+        },
+      }));
     } catch (err) {
-      setError(err.message || "Failed to load more posts.");
-    } finally {
-      setLoadingMore(false);
+      setError(err.message || "Failed to load more comments.");
+      setCommentPaging((prev) => ({
+        ...prev,
+        [postId]: {
+          ...(prev[postId] || {}),
+          loading: false,
+        },
+      }));
     }
-  }
-
-  async function handleMarkNotificationsRead() {
-    if (!isLoggedIn()) return;
-
-    try {
-      await apiFetch("/api/community/notifications/read", {
-        method: "POST",
-      });
-
-      setNotifications((prev) => prev.map((item) => ({ ...item, isRead: true })));
-      setMyProfile((prev) =>
-        prev
-          ? {
-              ...prev,
-              unreadNotifications: 0,
-            }
-          : prev
-      );
-    } catch (err) {
-      setError(err.message || "Failed to mark notifications.");
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="container communityPage">
-        <LoadingSpinner text="Loading community..." />
-      </div>
-    );
   }
 
   return (
-    <div className="container communityPage">
-      {error ? <div className="communityAlert">{error}</div> : null}
+    <div className="container socialPage">
+      {error ? <div className="socialAlert">{error}</div> : null}
 
-      <div className="communityTopBar">
-        <div>
-          <h1>OnTrip Community</h1>
-          <p>
-            Mini travel social network with posts, comments, replies, hashtags,
-            bookmarks, likes, notifications, followers, and media sharing.
-          </p>
-        </div>
+      <div className="socialLayout">
+        <SocialSidebar
+          profile={profile}
+          notificationsCount={notificationsCount}
+        />
 
-        <div className="communityTopBarActions">
-          <CustomSelect
-            value={feedFilter}
-            onChange={(e) => setFeedFilter(e.target.value)}
-            options={feedFilterOptions}
-            placeholder="Feed filter"
-            className="communitySmallSelect"
-          />
-          {isLoggedIn() ? (
-            <Link to="/community?tab=profile" className="communityProfileLinkBtn">
-              Open My Page
-            </Link>
-          ) : (
-            <Link to="/login" className="communityProfileLinkBtn">
-              Login to Post
-            </Link>
-          )}
-        </div>
-      </div>
+        <main className="socialMain">
+          <div className="socialCard socialTopBar">
+            <div className="socialTopBarLeft">
+              <h1>Community</h1>
+              <p>Share ideas, photos, videos, and travel stories.</p>
+            </div>
 
-      <div className="communityLayout">
-        <aside className="communityLeft">
-          <ProfileSidebar
-            me={me}
-            myProfile={myProfile}
-            notifications={notifications}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
-        </aside>
-
-        <main className="communityCenter">
-          {isLoggedIn() ? (
-            <PostComposer
-              me={me}
-              myProfile={myProfile}
-              myProviders={myProviders}
-              composer={composer}
-              setComposer={setComposer}
-              fileInputRef={fileInputRef}
-              submitting={submitting}
-              onSubmit={handleCreatePost}
-            />
-          ) : null}
-
-          {activeTab === "profile" ? (
-            <div className="communityProfilePageCard">
-              <div className="communityProfilePageHead">
-                <h2>My Community Page</h2>
-                <p>
-                  This page shows your profile, follower count, following count,
-                  posts, bookmarks, liked posts, and notifications.
-                </p>
-              </div>
-
-              <div className="communityProfileCards">
-                <div className="communityMiniStatCard">
-                  <strong>{compactCount(myProfile?.followersCount || 0)}</strong>
-                  <span>Followers</span>
-                </div>
-                <div className="communityMiniStatCard">
-                  <strong>{compactCount(myProfile?.followingCount || 0)}</strong>
-                  <span>Following</span>
-                </div>
-                <div className="communityMiniStatCard">
-                  <strong>{compactCount(myPosts.length)}</strong>
-                  <span>Posts</span>
-                </div>
-                <div className="communityMiniStatCard">
-                  <strong>{compactCount(bookmarkedPosts.length)}</strong>
-                  <span>Bookmarks</span>
-                </div>
+            <div className="socialTopBarRight">
+              <div className="socialSearchWrap">
+                <input
+                  className="socialSearchInput"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search people or #hashtags"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSearch();
+                  }}
+                />
+                <button type="button" className="socialPrimaryBtn" onClick={handleSearch}>
+                  {searching ? "Searching..." : "Search"}
+                </button>
               </div>
             </div>
-          ) : null}
+          </div>
 
-          {activeTab === "notifications" ? (
-            <div className="communityFeedList">
-              {notifications.length === 0 ? (
-                <div className="communityMutedCard">No notifications yet.</div>
-              ) : (
-                notifications.map((item) => (
-                  <div
-                    key={item.id}
-                    className={`communityNotificationCard large ${item.isRead ? "" : "unread"}`}
-                  >
-                    <div className="communityNotificationTop">
-                      <strong>{item.sender?.name || "OnTrip"}</strong>
-                      <span>{formatTime(item.createdAt)}</span>
-                    </div>
-                    <div className="communityNotificationText">{item.text}</div>
+          {search.trim() ? (
+            <div className="socialCard socialSearchResultCard">
+              <div className="socialSearchSection">
+                <h3>People</h3>
+                {(searchResults.profiles || []).length === 0 ? (
+                  <div className="socialMutedCard">No people found.</div>
+                ) : (
+                  <div className="socialProfileResultList">
+                    {searchResults.profiles.map((item) => (
+                      <Link
+                        key={item.id}
+                        to={`/social/profile/${extractUsernameFromProfile(item)}`}
+                        className="socialProfileResultItem"
+                      >
+                        {item.profileImage ? (
+                          <img
+                            src={item.profileImage}
+                            alt={item.displayName || item.username}
+                            className="socialCommentAvatar"
+                          />
+                        ) : (
+                          <div className="socialCommentAvatarFallback">
+                            {getInitial(item.displayName || item.username)}
+                          </div>
+                        )}
+                        <div>
+                          <strong>{item.displayName || item.username}</strong>
+                          <span>@{item.username}</span>
+                        </div>
+                      </Link>
+                    ))}
                   </div>
-                ))
-              )}
+                )}
+              </div>
+
+              <div className="socialSearchSection">
+                <h3>Posts</h3>
+                {!searchHasResults ? (
+                  <div className="socialMutedCard">No results found.</div>
+                ) : (searchResults.posts || []).length === 0 ? (
+                  <div className="socialMutedCard">No posts found.</div>
+                ) : (
+                  <div className="socialMiniPostList">
+                    {searchResults.posts.map((item) => (
+                      <div key={item.id} className="socialMiniPostItem">
+                        <strong>{item.author?.name || "User"}</strong>
+                        <p>{item.text || "Media post"}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : null}
+
+          {isLoggedIn() ? (
+            <div className="socialCard socialQuickComposerCard">
+              <div className="socialQuickComposerTop">
+                {profile?.profileImage ? (
+                  <img
+                    src={profile.profileImage}
+                    alt={profile.displayName || profile.username}
+                    className="socialProfileAvatar"
+                  />
+                ) : (
+                  <div className="socialProfileAvatarFallback">
+                    {getInitial(profile?.displayName || profile?.username)}
+                  </div>
+                )}
+
+                <div className="socialQuickComposerFields">
+                  <CustomSelect
+                    value={quickPost.postType}
+                    onChange={(e) =>
+                      setQuickPost((prev) => ({ ...prev, postType: e.target.value }))
+                    }
+                    options={createPostTypeOptions}
+                    placeholder="Choose type"
+                  />
+
+                  <textarea
+                    className="socialQuickComposerTextarea"
+                    value={quickPost.text}
+                    onChange={(e) =>
+                      setQuickPost((prev) => ({ ...prev, text: e.target.value }))
+                    }
+                    placeholder="What's happening in your trip world?"
+                    rows={4}
+                  />
+
+                  <div className="socialQuickComposerActions">
+                    <button
+                      type="button"
+                      className="socialGhostBtn"
+                      onClick={() => navigate("/social/create")}
+                    >
+                      Advanced Create Post
+                    </button>
+
+                    <button
+                      type="button"
+                      className="socialPrimaryBtn"
+                      onClick={handleQuickCreate}
+                    >
+                      Post Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {loading ? (
+            <LoadingSpinner text="Loading feed..." />
+          ) : feed.length === 0 ? (
+            <div className="socialCard socialEmptyState">
+              No posts yet. Start the conversation.
             </div>
           ) : (
-            <div className="communityFeedList">
-              {visiblePosts.length === 0 ? (
-                <div className="communityMutedCard">
-                  No posts found in this section.
-                </div>
-              ) : (
-                visiblePosts.map((post) => (
-                  <FeedPost
-                    key={post.id}
-                    post={post}
-                    onLikePost={handleLikePost}
-                    onBookmarkPost={handleBookmarkPost}
-                    onAddComment={handleAddComment}
-                    onLikeComment={handleLikeComment}
-                    onReplyComment={handleReplyComment}
-                    commentDraft={commentDrafts[post.id] || ""}
-                    setCommentDraft={setCommentDraft}
-                    replyDrafts={replyDrafts}
-                    setReplyDraft={setReplyDraft}
-                  />
-                ))
-              )}
+            <div className="socialFeedList">
+              {feed.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  me={me}
+                  commentDrafts={commentDrafts}
+                  replyDrafts={replyDrafts}
+                  replyBoxOpen={replyBoxOpen}
+                  commentPaging={commentPaging}
+                  onLikePost={handleLikePost}
+                  onBookmarkPost={handleBookmarkPost}
+                  onSubmitComment={handleSubmitComment}
+                  onSetCommentDraft={setCommentDraft}
+                  onToggleCommentLike={handleToggleCommentLike}
+                  onToggleReplyBox={handleToggleReplyBox}
+                  onSetReplyDraft={setReplyDraft}
+                  onSubmitReply={handleSubmitReply}
+                  onLoadMoreComments={handleLoadMoreComments}
+                />
+              ))}
 
-              {activeTab === "feed" && pagination.hasMore ? (
+              {pagination.hasMore ? (
                 <button
                   type="button"
-                  className="communityLoadMoreBtn"
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
+                  className="socialLoadMoreBtn"
+                  onClick={handleLoadMoreFeed}
+                  disabled={loadingMoreFeed}
                 >
-                  {loadingMore ? "Loading..." : "Load More"}
+                  {loadingMoreFeed ? "Loading..." : "Load More Posts"}
                 </button>
               ) : null}
             </div>
           )}
         </main>
 
-        <aside className="communityRight">
-          <RightPanel
-            search={hashtagSearch}
-            setSearch={setHashtagSearch}
-            hashtagResults={hashtagResults}
-            notifications={notifications}
-            onMarkRead={handleMarkNotificationsRead}
-          />
+        <aside className="socialRightBar">
+          <div className="socialCard socialTipsCard">
+            <h3>Tips</h3>
+            <div className="socialTipsList">
+              <div>Use hashtags like #goa #budget #roadtrip</div>
+              <div>Photo and video posts get more engagement</div>
+              <div>Reply to comments to grow your network</div>
+            </div>
+          </div>
+
+          <div className="socialCard socialShortcutCard">
+            <h3>Quick Shortcuts</h3>
+            <div className="socialShortcutList">
+              <Link to="/social/create" className="socialShortcutItem">
+                Create full post
+              </Link>
+              <Link
+                to={profileUsername ? `/social/profile/${profileUsername}` : "/social/profile/me"}
+                className="socialShortcutItem"
+              >
+                Open profile
+              </Link>
+              <Link to="/social/bookmarks" className="socialShortcutItem">
+                View bookmarks
+              </Link>
+              <Link to="/social/liked" className="socialShortcutItem">
+                View liked posts
+              </Link>
+            </div>
+          </div>
         </aside>
       </div>
     </div>
