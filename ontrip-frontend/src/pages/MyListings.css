@@ -4,17 +4,23 @@
   gap: 18px;
 }
 
+.myListingsHead {
+  display: grid;
+  gap: 6px;
+}
+
 .myListingsHead h1 {
   margin: 0;
   font-size: 32px;
   font-weight: 760;
+  letter-spacing: -0.4px;
   color: var(--text);
   line-height: 1.2;
   word-break: break-word;
 }
 
 .myListingsHead p {
-  margin: 8px 0 0;
+  margin: 0;
   color: var(--muted);
   line-height: 1.65;
   font-weight: 550;
@@ -25,11 +31,11 @@
 .myListingsMessage {
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(255, 98, 98, 0.08);
-  border: 1px solid rgba(255, 98, 98, 0.16);
-  color: #b42318;
   font-weight: 650;
   word-break: break-word;
+  background: rgba(255, 98, 98, 0.08);
+  color: #b42318;
+  border: 1px solid rgba(255, 98, 98, 0.18);
 }
 
 .myListingsEmpty {
@@ -154,8 +160,7 @@
   flex-wrap: wrap;
 }
 
-.myListingsBtn,
-.myListingsViewBtn {
+.myListingsBtn {
   min-height: 44px;
   padding: 0 16px;
   border-radius: 12px;
@@ -164,218 +169,34 @@
   font-weight: 700;
   box-sizing: border-box;
   transition: 0.18s ease;
-}
-
-.myListingsBtn {
   border: 1px solid rgba(11, 27, 42, 0.1);
   background: #ffffff;
   color: var(--text);
 }
 
-.myListingsBtn:hover,
-.myListingsViewBtn:hover {
+.myListingsBtn:hover {
   box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
 }
 
-.myListingsBtn:disabled,
-.myListingsViewBtn:disabled {
+.myListingsBtn:disabled {
   opacity: 0.72;
   cursor: not-allowed;
 }
 
-.myListingsBtn.danger {
-  background: rgba(255, 98, 98, 0.08);
-  color: #b42318;
-  border: 1px solid rgba(255, 98, 98, 0.16);
-}
-
-.myListingsViewBtn,
 .myListingsBtnPrimary {
   border: 1px solid rgba(0, 184, 241, 0.38);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
 }
 
-.myListingsEditForm {
-  margin-top: 12px;
-  padding-top: 22px;
-  border-top: 1px solid rgba(11, 27, 42, 0.08);
-  display: grid;
-  gap: 20px;
-}
-
-.myListingsFormGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.myListingsEditForm > .myListingsFormGrid label,
-.myListingsBlock label:not(.myListingsCheck) {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 650;
-  color: #12212f;
-  word-break: break-word;
-}
-
-.myListingsEditForm input:not([type="checkbox"]):not([type="file"]),
-.myListingsEditForm textarea {
-  width: 100%;
-  border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 12px;
-  padding: 12px 14px;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 550;
-  color: #12212f;
-  background: #fff;
-  outline: none;
-  min-height: 46px;
-  box-sizing: border-box;
-}
-
-.myListingsEditForm input:not([type="checkbox"]):not([type="file"]):focus,
-.myListingsEditForm textarea:focus {
-  border-color: #00b8f1;
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.1);
-}
-
-.myListingsEditForm textarea {
-  min-height: 110px;
-  resize: vertical;
-}
-
-.myListingsEditForm input[type="file"] {
-  width: 100%;
-  min-height: 46px;
-  border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 12px;
-  background: #ffffff;
-  padding: 10px 12px;
-  font: inherit;
-  box-sizing: border-box;
-}
-
-.myListingsEditForm input[type="file"]::file-selector-button {
-  border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #ffffff;
-  font: inherit;
-  font-weight: 700;
-  padding: 10px 14px;
-  margin-right: 12px;
-  cursor: pointer;
-}
-
-.myListingsBlock {
-  background: rgba(244, 251, 255, 0.94);
-  border: 1px solid rgba(0, 184, 241, 0.1);
-  border-radius: 16px;
-  padding: 18px;
-  min-width: 0;
-}
-
-.myListingsBlock h4 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 720;
-  line-height: 1.2;
-  word-break: break-word;
-}
-
-.myListingsBlockHead,
-.myListingsVehicleTop {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.myListingsVehicleList,
-.myListingsTripList {
-  display: grid;
-  gap: 16px;
-}
-
-.myListingsVehicleCard,
-.myListingsTripCard {
-  background: #fff;
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 16px;
-  padding: 16px;
-  min-width: 0;
-}
-
-.myListingsCheckField {
-  min-height: 46px;
-  border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 12px;
-  background: #fff;
-  padding: 0 14px;
-  display: flex;
-  align-items: center;
-}
-
-.myListingsCheck {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  font-weight: 650;
-  font-size: 15px;
-  cursor: pointer;
-  color: #12212f;
-  word-break: break-word;
-}
-
-.myListingsCheck input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: #00b8f1;
-  flex-shrink: 0;
-}
-
-.myListingsImageGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.myListingsThumb {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  min-height: 150px;
-  background: rgba(177, 227, 250, 0.14);
-}
-
-.myListingsThumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.myListingsRemoveImage {
-  position: absolute;
-  right: 8px;
-  top: 8px;
-  border: 1px solid rgba(11, 27, 42, 0.1);
-  border-radius: 10px;
-  padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.94);
-  font-size: 12px;
-  font-weight: 650;
-  cursor: pointer;
-}
-
-.fullSpan {
-  grid-column: 1 / -1;
+.myListingsBtn.danger {
+  background: rgba(255, 98, 98, 0.08);
+  color: #b42318;
+  border-color: rgba(255, 98, 98, 0.16);
 }
 
 @media (max-width: 980px) {
-  .myListingsGrid,
-  .myListingsFormGrid {
+  .myListingsGrid {
     grid-template-columns: 1fr;
   }
 
@@ -384,13 +205,9 @@
     align-items: flex-start;
     gap: 8px;
   }
-
-  .myListingsImageGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .myListingsHead h1 {
     font-size: 24px;
   }
@@ -413,30 +230,11 @@
     width: 100%;
   }
 
-  .myListingsBtn,
-  .myListingsViewBtn {
+  .myListingsBtn {
     width: 100%;
   }
 
-  .myListingsBlockHead,
-  .myListingsVehicleTop {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-@media (max-width: 480px) {
-  .myListingsImageGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .myListingsThumb {
-    min-height: 120px;
-  }
-
-  .myListingsBlock,
-  .myListingsVehicleCard,
-  .myListingsTripCard {
-    padding: 14px;
+  .myListingsMediaEmpty {
+    min-height: 180px;
   }
 }
