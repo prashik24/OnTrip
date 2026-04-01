@@ -23,7 +23,7 @@ import Providers from "./pages/Providers";
 import ProviderDetails from "./pages/ProviderDetails";
 import ProviderRegister from "./pages/ProviderRegister";
 import MyListings from "./pages/MyListings";
-import MyListingDetails from "./pages/MyListingEdit";
+import MyListingEdit from "./pages/MyListingEdit";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import BookingHistory from "./pages/BookingHistory";
 import BookingReviewPage from "./pages/BookingReviewPage";
@@ -70,12 +70,21 @@ export default function App() {
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/my-listings" element={<MyListings />} />
-            <Route path="/my-listings/:id" element={<MyListingDetails />} />
+            <Route
+              path="/profile/my-listings/:id/edit"
+              element={<MyListingEdit />}
+            />
             <Route path="/profile/saved-trips" element={<SavedTrips />} />
             <Route path="/profile/bookings" element={<BookingHistory />} />
-            <Route path="/profile/bookings/:bookingId/review" element={<BookingReviewPage />} />
+            <Route
+              path="/profile/bookings/:bookingId/review"
+              element={<BookingReviewPage />}
+            />
             <Route path="/profile/bookings/:id" element={<BookingSuccess />} />
-            <Route path="/profile/bookings/:id/invoice" element={<InvoiceView />} />
+            <Route
+              path="/profile/bookings/:id/invoice"
+              element={<InvoiceView />}
+            />
             <Route path="/provider/dashboard" element={<ProviderDashboard />} />
             <Route path="/providers" element={<Providers />} />
             <Route path="/providers/:id" element={<ProviderDetails />} />
