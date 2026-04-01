@@ -1,29 +1,9 @@
 import { Readable } from "stream";
-import mongoose from "mongoose";
 import cloudinary from "../config/cloudinary.js";
 import CommunityPost from "../models/CommunityPost.js";
-import Provider from "../models/Provider.js";
-
-function splitTags(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) {
-    return [...new Set(value.map((item) => String(item).trim().toLowerCase()).filter(Boolean))];
-  }
-
-  return [
-    ...new Set(
-      String(value)
-        .split(",")
-        .map((item) => item.trim().toLowerCase())
-        .filter(Boolean)
-    ),
-  ];
-}
-
-function extractHashTags(text = "") {
-  const matches = String(text).match(/#[a-zA-Z0-9_]+/g) || [];
-  return matches.map((tag) => tag.replace("#", "").toLowerCase());
-}
+import CommunityFollow from "../models/CommunityFollow.js";
+import CommunityNotification from "../models/CommunityNotification.js";
+import User from "../models/User.js";
 
 function safeJsonParse(value, fallback) {
   if (!value) return fallback;
@@ -35,10 +15,101 @@ function safeJsonParse(value, fallback) {
   }
 }
 
-function uploadBufferToCloudinary(buffer, folder = "ontrip/community") {
+function extractHashtags(text = "") {
+  const matches = String(text).match(/#[a-zA-Z0-9_]+/g) || [];
+  return [...new Set(matches.map((tag) => tag.slice(1).toLowerCase()))];
+}
+
+function parseTagArray(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return [...new Set(value.map((item) => String(item).trim().toLowerCase()).filter(Boolean))];
+  }
+
+  return [
+    ...new Set(
+      String(value)
+        .split(",")
+        .map((item) => item.trim().replace(/^#/, "").toLowerCase())
+        .filter(Boolean)
+    ),
+  ];
+}
+
+function toUserShape(user) {
+  if (!user) return null;
+  return {
+    id: user._id || user.id,
+    name: user.name || "User",
+    email: user.email || "",
+    avatar: user.avatar || "",
+    city: user.city || "",
+    role: user.role || "user",
+  };
+}
+
+function normalizeReply(reply, viewerId) {
+  const likeIds = (reply.likes || []).map((id) => String(id));
+  return {
+    id: reply._id,
+    user: toUserShape(reply.user),
+    text: reply.text || "",
+    likesCount: likeIds.length,
+    isLikedByMe: viewerId ? likeIds.includes(String(viewerId)) : false,
+    createdAt: reply.createdAt,
+    updatedAt: reply.updatedAt,
+  };
+}
+
+function normalizeComment(comment, viewerId) {
+  const likeIds = (comment.likes || []).map((id) => String(id));
+  return {
+    id: comment._id,
+    user: toUserShape(comment.user),
+    text: comment.text || "",
+    likesCount: likeIds.length,
+    isLikedByMe: viewerId ? likeIds.includes(String(viewerId)) : false,
+    replies: (comment.replies || []).map((reply) => normalizeReply(reply, viewerId)),
+    createdAt: comment.createdAt,
+    updatedAt: comment.updatedAt,
+  };
+}
+
+function normalizePost(post, viewerId) {
+  const likeIds = (post.likes || []).map((id) => String(id));
+  const bookmarkIds = (post.bookmarks || []).map((id) => String(id));
+
+  return {
+    id: post._id,
+    author: toUserShape(post.author),
+    postType: post.postType,
+    text: post.text || "",
+    media: post.media || [],
+    hashtags: post.hashtags || [],
+    taggedUsers: (post.taggedUsers || []).map((item) => ({
+      user: item.user?._id || item.user || null,
+      nameSnapshot: item.nameSnapshot || "",
+    })),
+    likesCount: likeIds.length,
+    bookmarksCount: bookmarkIds.length,
+    commentsCount: (post.comments || []).length,
+    sharesCount: post.sharesCount || 0,
+    isLikedByMe: viewerId ? likeIds.includes(String(viewerId)) : false,
+    isBookmarkedByMe: viewerId ? bookmarkIds.includes(String(viewerId)) : false,
+    isMine: viewerId ? String(post.author?._id || post.author) === String(viewerId) : false,
+    comments: (post.comments || []).map((comment) => normalizeComment(comment, viewerId)),
+    createdAt: post.createdAt,
+    updatedAt: post.updatedAt,
+  };
+}
+
+async function uploadBufferToCloudinary(buffer, folder = "ontrip/community", resourceType = "image") {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { folder, resource_type: "image" },
+      {
+        folder,
+        resource_type: resourceType,
+      },
       (error, result) => {
         if (error) return reject(error);
         resolve(result);
@@ -53,137 +124,61 @@ async function uploadMany(files = [], folder = "ontrip/community") {
   const uploaded = [];
 
   for (const file of files) {
-    const result = await uploadBufferToCloudinary(file.buffer, folder);
+    const resourceType = file.mimetype?.startsWith("video/") ? "video" : "image";
+    const result = await uploadBufferToCloudinary(file.buffer, folder, resourceType);
+
     uploaded.push({
       url: result.secure_url,
       publicId: result.public_id,
+      mediaType: resourceType === "video" ? "video" : "image",
+      originalName: file.originalname || "",
     });
   }
 
   return uploaded;
 }
 
-function normalizePost(post, viewerId = null) {
-  const likeIds = (post.likes || []).map((id) => String(id));
-  const saveIds = (post.saves || []).map((id) => String(id));
-  const comments = (post.comments || []).map((comment) => {
-    const commentLikeIds = (comment.likes || []).map((id) => String(id));
-    return {
-      id: comment._id,
-      user: comment.user
-        ? {
-            id: comment.user._id || comment.user.id,
-            name: comment.user.name,
-            avatar: comment.user.avatar || "",
-            city: comment.user.city || "",
-            role: comment.user.role || "user",
-          }
-        : null,
-      text: comment.text,
-      likesCount: commentLikeIds.length,
-      isLikedByMe: viewerId ? commentLikeIds.includes(String(viewerId)) : false,
-      parentComment: comment.parentComment || null,
-      isEdited: !!comment.isEdited,
-      editedAt: comment.editedAt || null,
-      createdAt: comment.createdAt,
-      updatedAt: comment.updatedAt,
-    };
+async function createNotification({ receiver, sender, type, post = null, commentId = "", replyId = "", text = "" }) {
+  if (!receiver) return;
+  if (String(receiver) === String(sender)) return;
+
+  await CommunityNotification.create({
+    receiver,
+    sender,
+    type,
+    post,
+    commentId,
+    replyId,
+    text,
   });
-
-  let poll = null;
-  if (post.postType === "poll") {
-    const options = post.pollOptions || [];
-    const totalVotes = options.reduce((sum, option) => sum + (option.votes?.length || 0), 0);
-
-    poll = {
-      totalVotes,
-      options: options.map((option) => ({
-        id: option._id,
-        text: option.text,
-        votesCount: option.votes?.length || 0,
-        percentage:
-          totalVotes > 0 ? Math.round(((option.votes?.length || 0) / totalVotes) * 100) : 0,
-        isVotedByMe: viewerId
-          ? (option.votes || []).some((id) => String(id) === String(viewerId))
-          : false,
-      })),
-    };
-  }
-
-  return {
-    id: post._id,
-    author: post.author
-      ? {
-          id: post.author._id || post.author.id,
-          name: post.author.name,
-          email: post.author.email || "",
-          avatar: post.author.avatar || "",
-          city: post.author.city || "",
-          role: post.author.role || post.authorRoleSnapshot || "user",
-        }
-      : null,
-    authorRoleSnapshot: post.authorRoleSnapshot || "user",
-    postType: post.postType,
-    text: post.text || "",
-    images: post.images || [],
-    locationText: post.locationText || "",
-    tags: post.tags || [],
-    providerId: post.providerId || null,
-    linkedListingType: post.linkedListingType || "",
-    linkedListingTitle: post.linkedListingTitle || "",
-    linkedListingPriceText: post.linkedListingPriceText || "",
-    linkedListingImage: post.linkedListingImage || "",
-    likesCount: likeIds.length,
-    savesCount: saveIds.length,
-    commentsCount: comments.length,
-    sharesCount: post.sharesCount || 0,
-    viewsCount: post.viewsCount || 0,
-    isLikedByMe: viewerId ? likeIds.includes(String(viewerId)) : false,
-    isSavedByMe: viewerId ? saveIds.includes(String(viewerId)) : false,
-    isMine: viewerId ? String(post.author?._id || post.author) === String(viewerId) : false,
-    city: post.city || "",
-    isPinned: !!post.isPinned,
-    poll,
-    comments,
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-  };
 }
 
-export async function getCommunityPosts(req, res) {
+export async function getCommunityFeed(req, res) {
   try {
-    const viewerId = req.user?._id || null;
     const page = Math.max(Number(req.query.page || 1), 1);
     const limit = Math.min(Math.max(Number(req.query.limit || 10), 1), 20);
-    const { filter = "all", city = "", q = "" } = req.query;
+    const filter = String(req.query.filter || "all");
+    const q = String(req.query.q || "").trim().toLowerCase();
+    const viewerId = req.user?._id || null;
 
-    const dbFilter = {
-      isDeleted: false,
-      isHidden: false,
-    };
+    const dbFilter = { isDeleted: false };
 
-    if (city.trim()) {
-      dbFilter.city = new RegExp(city.trim(), "i");
-    }
+    if (filter === "questions") dbFilter.postType = "question";
+    if (filter === "stories") dbFilter.postType = "story";
+    if (filter === "offers") dbFilter.postType = "provider_offer";
 
-    if (q.trim()) {
+    if (q) {
       dbFilter.$or = [
-        { text: new RegExp(q.trim(), "i") },
-        { tags: new RegExp(q.trim(), "i") },
-        { locationText: new RegExp(q.trim(), "i") },
-        { linkedListingTitle: new RegExp(q.trim(), "i") },
+        { text: new RegExp(q, "i") },
+        { hashtags: new RegExp(q, "i") },
       ];
     }
 
-    if (filter === "questions") dbFilter.postType = "question";
-    if (filter === "stories") dbFilter.postType = "trip_story";
-    if (filter === "offers") dbFilter.postType = "provider_offer";
-    if (filter === "polls") dbFilter.postType = "poll";
-
     const posts = await CommunityPost.find(dbFilter)
       .populate("author", "name email avatar city role")
-      .populate("comments.user", "name avatar city role")
-      .sort({ isPinned: -1, createdAt: -1 })
+      .populate("comments.user", "name email avatar city role")
+      .populate("comments.replies.user", "name email avatar city role")
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
 
@@ -199,186 +194,187 @@ export async function getCommunityPosts(req, res) {
       },
     });
   } catch (error) {
-    console.error("getCommunityPosts error", error);
+    console.error("getCommunityFeed error", error);
     return res.status(500).json({
-      message: "Failed to load community posts.",
+      message: "Failed to load community feed.",
     });
   }
 }
 
-export async function getCommunityTrending(req, res) {
+export async function createPost(req, res) {
   try {
-    const posts = await CommunityPost.find({
-      isDeleted: false,
-      isHidden: false,
-      createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-    }).select("tags city");
-
-    const tagMap = new Map();
-    const cityMap = new Map();
-
-    for (const post of posts) {
-      for (const tag of post.tags || []) {
-        tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
-      }
-      if (post.city) {
-        cityMap.set(post.city, (cityMap.get(post.city) || 0) + 1);
-      }
+    if (!req.user?._id) {
+      return res.status(401).json({ message: "Not authorized." });
     }
 
-    const trendingTags = [...tagMap.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
-      .map(([tag, count]) => ({ tag, count }));
-
-    const trendingCities = [...cityMap.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([city, count]) => ({ city, count }));
-
-    return res.json({
-      trendingTags,
-      trendingCities,
-    });
-  } catch (error) {
-    console.error("getCommunityTrending error", error);
-    return res.status(500).json({
-      message: "Failed to load trends.",
-    });
-  }
-}
-
-export async function createCommunityPost(req, res) {
-  try {
-    const user = req.user;
     const body = req.body || {};
-
     const postType = String(body.postType || "post");
     const text = String(body.text || "").trim();
-    const locationText = String(body.locationText || "").trim();
-    const manualTags = splitTags(body.tags);
-    const autoTags = extractHashTags(text);
-    const tags = [...new Set([...manualTags, ...autoTags])];
+    const manualTags = parseTagArray(body.hashtags);
+    const autoTags = extractHashtags(text);
+    const hashtags = [...new Set([...manualTags, ...autoTags])];
 
-    if (!text && (!req.files || req.files.length === 0) && postType !== "provider_offer" && postType !== "poll") {
+    const taggedUsers = safeJsonParse(body.taggedUsers, [])
+      .filter((item) => item?.user)
+      .map((item) => ({
+        user: item.user,
+        nameSnapshot: item.nameSnapshot || "",
+      }));
+
+    if (!text && (!req.files || req.files.length === 0)) {
       return res.status(400).json({
-        message: "Write something or upload image.",
+        message: "Post text or media is required.",
       });
     }
 
-    const images = await uploadMany(req.files || [], "ontrip/community/posts");
+    const media = await uploadMany(req.files || [], "ontrip/community/posts");
 
-    const postData = {
-      author: user._id,
-      authorRoleSnapshot: user.role || "user",
+    const created = await CommunityPost.create({
+      author: req.user._id,
       postType,
       text,
-      images,
-      locationText,
-      tags,
-      city: user.city || "",
-    };
+      media,
+      hashtags,
+      taggedUsers,
+    });
 
-    if (postType === "provider_offer") {
-      const providerId = body.providerId;
-
-      if (!providerId || !mongoose.Types.ObjectId.isValid(providerId)) {
-        return res.status(400).json({
-          message: "Valid provider is required for provider offer.",
-        });
-      }
-
-      const provider = await Provider.findById(providerId);
-      if (!provider) {
-        return res.status(404).json({
-          message: "Provider listing not found.",
-        });
-      }
-
-      if (String(provider.owner) !== String(user._id)) {
-        return res.status(403).json({
-          message: "You can post only your own listing offer.",
-        });
-      }
-
-      let linkedTitle = provider.businessName;
-      let linkedPriceText = "";
-      let linkedImage = provider.serviceImage?.url || "";
-      let linkedListingType = provider.listingType || "";
-
-      if (provider.listingType === "travel_planner") {
-        const plan = provider.travelPlans?.[0] || provider.travelPlanner || {};
-        linkedTitle = plan.packageTitle || provider.businessName;
-        linkedPriceText = plan.priceFrom ? `₹${plan.priceFrom}` : "";
-        linkedImage = plan.images?.[0]?.url || linkedImage;
-      }
-
-      if (provider.listingType === "vehicle") {
-        const vehicle = provider.vehicles?.[0] || {};
-        linkedTitle = vehicle.title || provider.businessName;
-        linkedPriceText = vehicle.price ? `₹${vehicle.price}` : "";
-        linkedImage = vehicle.images?.[0]?.url || linkedImage;
-      }
-
-      postData.providerId = provider._id;
-      postData.linkedListingType = linkedListingType;
-      postData.linkedListingTitle = linkedTitle;
-      postData.linkedListingPriceText = linkedPriceText;
-      postData.linkedListingImage = linkedImage;
+    for (const tag of taggedUsers) {
+      await createNotification({
+        receiver: tag.user,
+        sender: req.user._id,
+        type: "tag_post",
+        post: created._id,
+        text: `${req.user.name} tagged you in a post.`,
+      });
     }
-
-    if (postType === "poll") {
-      const pollOptions = safeJsonParse(body.pollOptions, []);
-      if (!Array.isArray(pollOptions) || pollOptions.filter(Boolean).length < 2) {
-        return res.status(400).json({
-          message: "Poll needs at least 2 options.",
-        });
-      }
-
-      postData.pollOptions = pollOptions
-        .map((item) => String(item || "").trim())
-        .filter(Boolean)
-        .slice(0, 4)
-        .map((item) => ({
-          text: item,
-          votes: [],
-        }));
-    }
-
-    const created = await CommunityPost.create(postData);
 
     const post = await CommunityPost.findById(created._id)
       .populate("author", "name email avatar city role")
-      .populate("comments.user", "name avatar city role");
+      .populate("comments.user", "name email avatar city role")
+      .populate("comments.replies.user", "name email avatar city role");
 
     return res.status(201).json({
       message: "Post created successfully.",
-      post: normalizePost(post, user._id),
+      post: normalizePost(post, req.user._id),
     });
   } catch (error) {
-    console.error("createCommunityPost error", error);
+    console.error("createPost error", error);
     return res.status(500).json({
-      message: "Failed to create community post.",
+      message: "Failed to create post.",
     });
   }
 }
 
-export async function togglePostLike(req, res) {
+export async function getMyCommunityProfile(req, res) {
   try {
-    const userId = String(req.user._id);
-    const { postId } = req.params;
+    const userId = req.user._id;
 
-    const post = await CommunityPost.findById(postId);
+    const [user, followersCount, followingCount, myPosts, likedPosts, bookmarkedPosts, unreadNotifications] =
+      await Promise.all([
+        User.findById(userId).select("name email avatar city bio role"),
+        CommunityFollow.countDocuments({ following: userId }),
+        CommunityFollow.countDocuments({ follower: userId }),
+        CommunityPost.find({ author: userId, isDeleted: false })
+          .populate("author", "name email avatar city role")
+          .populate("comments.user", "name email avatar city role")
+          .populate("comments.replies.user", "name email avatar city role")
+          .sort({ createdAt: -1 }),
+        CommunityPost.find({ likes: userId, isDeleted: false })
+          .populate("author", "name email avatar city role")
+          .populate("comments.user", "name email avatar city role")
+          .populate("comments.replies.user", "name email avatar city role")
+          .sort({ createdAt: -1 }),
+        CommunityPost.find({ bookmarks: userId, isDeleted: false })
+          .populate("author", "name email avatar city role")
+          .populate("comments.user", "name email avatar city role")
+          .populate("comments.replies.user", "name email avatar city role")
+          .sort({ createdAt: -1 }),
+        CommunityNotification.countDocuments({ receiver: userId, isRead: false }),
+      ]);
+
+    return res.json({
+      profile: {
+        user: toUserShape(user),
+        followersCount,
+        followingCount,
+        unreadNotifications,
+      },
+      myPosts: myPosts.map((post) => normalizePost(post, userId)),
+      likedPosts: likedPosts.map((post) => normalizePost(post, userId)),
+      bookmarkedPosts: bookmarkedPosts.map((post) => normalizePost(post, userId)),
+    });
+  } catch (error) {
+    console.error("getMyCommunityProfile error", error);
+    return res.status(500).json({
+      message: "Failed to load profile.",
+    });
+  }
+}
+
+export async function getUserCommunityProfile(req, res) {
+  try {
+    const targetUserId = req.params.userId;
+    const viewerId = req.user?._id || null;
+
+    const [user, followersCount, followingCount, isFollowing, posts] = await Promise.all([
+      User.findById(targetUserId).select("name email avatar city bio role"),
+      CommunityFollow.countDocuments({ following: targetUserId }),
+      CommunityFollow.countDocuments({ follower: targetUserId }),
+      viewerId
+        ? CommunityFollow.findOne({ follower: viewerId, following: targetUserId })
+        : null,
+      CommunityPost.find({ author: targetUserId, isDeleted: false })
+        .populate("author", "name email avatar city role")
+        .populate("comments.user", "name email avatar city role")
+        .populate("comments.replies.user", "name email avatar city role")
+        .sort({ createdAt: -1 }),
+    ]);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    return res.json({
+      profile: {
+        user: toUserShape(user),
+        followersCount,
+        followingCount,
+        isFollowing: !!isFollowing,
+      },
+      posts: posts.map((post) => normalizePost(post, viewerId)),
+    });
+  } catch (error) {
+    console.error("getUserCommunityProfile error", error);
+    return res.status(500).json({
+      message: "Failed to load user community profile.",
+    });
+  }
+}
+
+export async function toggleLikePost(req, res) {
+  try {
+    const { postId } = req.params;
+    const userId = req.user._id;
+
+    const post = await CommunityPost.findById(postId).populate("author", "name email avatar city role");
     if (!post || post.isDeleted) {
       return res.status(404).json({ message: "Post not found." });
     }
 
-    const alreadyLiked = post.likes.some((id) => String(id) === userId);
+    const alreadyLiked = post.likes.some((id) => String(id) === String(userId));
 
     if (alreadyLiked) {
-      post.likes = post.likes.filter((id) => String(id) !== userId);
+      post.likes = post.likes.filter((id) => String(id) !== String(userId));
     } else {
-      post.likes.push(req.user._id);
+      post.likes.push(userId);
+
+      await createNotification({
+        receiver: post.author?._id || post.author,
+        sender: userId,
+        type: "like_post",
+        post: post._id,
+        text: `${req.user.name} liked your post.`,
+      });
     }
 
     await post.save();
@@ -389,58 +385,56 @@ export async function togglePostLike(req, res) {
       isLikedByMe: !alreadyLiked,
     });
   } catch (error) {
-    console.error("togglePostLike error", error);
+    console.error("toggleLikePost error", error);
     return res.status(500).json({
-      message: "Failed to update like.",
+      message: "Failed to update post like.",
     });
   }
 }
 
-export async function togglePostSave(req, res) {
+export async function toggleBookmarkPost(req, res) {
   try {
-    const userId = String(req.user._id);
     const { postId } = req.params;
+    const userId = req.user._id;
 
     const post = await CommunityPost.findById(postId);
     if (!post || post.isDeleted) {
       return res.status(404).json({ message: "Post not found." });
     }
 
-    const alreadySaved = post.saves.some((id) => String(id) === userId);
+    const alreadyBookmarked = post.bookmarks.some((id) => String(id) === String(userId));
 
-    if (alreadySaved) {
-      post.saves = post.saves.filter((id) => String(id) !== userId);
+    if (alreadyBookmarked) {
+      post.bookmarks = post.bookmarks.filter((id) => String(id) !== String(userId));
     } else {
-      post.saves.push(req.user._id);
+      post.bookmarks.push(userId);
     }
 
     await post.save();
 
     return res.json({
-      message: alreadySaved ? "Post unsaved." : "Post saved.",
-      savesCount: post.saves.length,
-      isSavedByMe: !alreadySaved,
+      message: alreadyBookmarked ? "Bookmark removed." : "Post bookmarked.",
+      bookmarksCount: post.bookmarks.length,
+      isBookmarkedByMe: !alreadyBookmarked,
     });
   } catch (error) {
-    console.error("togglePostSave error", error);
+    console.error("toggleBookmarkPost error", error);
     return res.status(500).json({
-      message: "Failed to update save.",
+      message: "Failed to update bookmark.",
     });
   }
 }
 
-export async function addPostComment(req, res) {
+export async function addComment(req, res) {
   try {
     const { postId } = req.params;
     const text = String(req.body.text || "").trim();
 
     if (!text) {
-      return res.status(400).json({
-        message: "Comment text is required.",
-      });
+      return res.status(400).json({ message: "Comment text is required." });
     }
 
-    const post = await CommunityPost.findById(postId);
+    const post = await CommunityPost.findById(postId).populate("author", "name");
     if (!post || post.isDeleted) {
       return res.status(404).json({ message: "Post not found." });
     }
@@ -448,122 +442,235 @@ export async function addPostComment(req, res) {
     post.comments.push({
       user: req.user._id,
       text,
-      likes: [],
     });
 
     await post.save();
 
+    await createNotification({
+      receiver: post.author?._id || post.author,
+      sender: req.user._id,
+      type: "comment_post",
+      post: post._id,
+      text: `${req.user.name} commented on your post.`,
+    });
+
     const populated = await CommunityPost.findById(post._id)
       .populate("author", "name email avatar city role")
-      .populate("comments.user", "name avatar city role");
+      .populate("comments.user", "name email avatar city role")
+      .populate("comments.replies.user", "name email avatar city role");
 
     return res.status(201).json({
       message: "Comment added.",
       post: normalizePost(populated, req.user._id),
     });
   } catch (error) {
-    console.error("addPostComment error", error);
+    console.error("addComment error", error);
     return res.status(500).json({
       message: "Failed to add comment.",
     });
   }
 }
 
-export async function voteOnPoll(req, res) {
+export async function likeComment(req, res) {
   try {
-    const { postId } = req.params;
-    const { optionId } = req.body;
-    const userId = String(req.user._id);
+    const { postId, commentId } = req.params;
+    const userId = req.user._id;
 
-    const post = await CommunityPost.findById(postId);
+    const post = await CommunityPost.findById(postId).populate("comments.user", "name");
     if (!post || post.isDeleted) {
       return res.status(404).json({ message: "Post not found." });
     }
 
-    if (post.postType !== "poll") {
-      return res.status(400).json({ message: "This post is not a poll." });
+    const comment = post.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found." });
     }
 
-    for (const option of post.pollOptions) {
-      option.votes = option.votes.filter((id) => String(id) !== userId);
+    const alreadyLiked = comment.likes.some((id) => String(id) === String(userId));
+
+    if (alreadyLiked) {
+      comment.likes = comment.likes.filter((id) => String(id) !== String(userId));
+    } else {
+      comment.likes.push(userId);
+
+      await createNotification({
+        receiver: comment.user?._id || comment.user,
+        sender: userId,
+        type: "like_comment",
+        post: post._id,
+        commentId: String(comment._id),
+        text: `${req.user.name} liked your comment.`,
+      });
     }
 
-    const target = post.pollOptions.id(optionId);
-    if (!target) {
-      return res.status(404).json({ message: "Poll option not found." });
-    }
-
-    target.votes.push(req.user._id);
     await post.save();
 
     const populated = await CommunityPost.findById(post._id)
       .populate("author", "name email avatar city role")
-      .populate("comments.user", "name avatar city role");
+      .populate("comments.user", "name email avatar city role")
+      .populate("comments.replies.user", "name email avatar city role");
 
     return res.json({
-      message: "Vote recorded.",
+      message: alreadyLiked ? "Comment unliked." : "Comment liked.",
       post: normalizePost(populated, req.user._id),
     });
   } catch (error) {
-    console.error("voteOnPoll error", error);
+    console.error("likeComment error", error);
     return res.status(500).json({
-      message: "Failed to vote on poll.",
+      message: "Failed to update comment like.",
     });
   }
 }
 
-export async function incrementPostShare(req, res) {
+export async function addReplyToComment(req, res) {
   try {
-    const { postId } = req.params;
+    const { postId, commentId } = req.params;
+    const text = String(req.body.text || "").trim();
 
-    const post = await CommunityPost.findById(postId);
+    if (!text) {
+      return res.status(400).json({ message: "Reply text is required." });
+    }
+
+    const post = await CommunityPost.findById(postId).populate("comments.user", "name");
     if (!post || post.isDeleted) {
       return res.status(404).json({ message: "Post not found." });
     }
 
-    post.sharesCount += 1;
+    const comment = post.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found." });
+    }
+
+    comment.replies.push({
+      user: req.user._id,
+      text,
+    });
+
+    const latestReply = comment.replies[comment.replies.length - 1];
+
     await post.save();
 
-    return res.json({
-      message: "Share counted.",
-      sharesCount: post.sharesCount,
+    await createNotification({
+      receiver: comment.user?._id || comment.user,
+      sender: req.user._id,
+      type: "reply_comment",
+      post: post._id,
+      commentId: String(comment._id),
+      replyId: String(latestReply._id),
+      text: `${req.user.name} replied to your comment.`,
+    });
+
+    const populated = await CommunityPost.findById(post._id)
+      .populate("author", "name email avatar city role")
+      .populate("comments.user", "name email avatar city role")
+      .populate("comments.replies.user", "name email avatar city role");
+
+    return res.status(201).json({
+      message: "Reply added.",
+      post: normalizePost(populated, req.user._id),
     });
   } catch (error) {
-    console.error("incrementPostShare error", error);
+    console.error("addReplyToComment error", error);
     return res.status(500).json({
-      message: "Failed to count share.",
+      message: "Failed to add reply.",
     });
   }
 }
 
-export async function deleteCommunityPost(req, res) {
+export async function toggleFollowUser(req, res) {
   try {
-    const { postId } = req.params;
+    const follower = req.user._id;
+    const following = req.params.userId;
 
-    const post = await CommunityPost.findById(postId);
-    if (!post || post.isDeleted) {
-      return res.status(404).json({ message: "Post not found." });
-    }
-
-    const isOwner = String(post.author) === String(req.user._id);
-    const isAdmin = req.user.role === "admin";
-
-    if (!isOwner && !isAdmin) {
-      return res.status(403).json({
-        message: "You can remove only your own post.",
+    if (String(follower) === String(following)) {
+      return res.status(400).json({
+        message: "You cannot follow yourself.",
       });
     }
 
-    post.isDeleted = true;
-    await post.save();
+    const existing = await CommunityFollow.findOne({ follower, following });
+
+    if (existing) {
+      await CommunityFollow.findByIdAndDelete(existing._id);
+
+      return res.json({
+        message: "Unfollowed user.",
+        isFollowing: false,
+      });
+    }
+
+    await CommunityFollow.create({ follower, following });
+
+    await createNotification({
+      receiver: following,
+      sender: follower,
+      type: "follow_user",
+      text: `${req.user.name} started following you.`,
+    });
 
     return res.json({
-      message: "Post deleted.",
+      message: "User followed.",
+      isFollowing: true,
     });
   } catch (error) {
-    console.error("deleteCommunityPost error", error);
+    console.error("toggleFollowUser error", error);
     return res.status(500).json({
-      message: "Failed to delete post.",
+      message: "Failed to update follow status.",
+    });
+  }
+}
+
+export async function getNotifications(req, res) {
+  try {
+    const notifications = await CommunityNotification.find({
+      receiver: req.user._id,
+    })
+      .populate("sender", "name email avatar city role")
+      .populate("post", "text media")
+      .sort({ createdAt: -1 })
+      .limit(50);
+
+    return res.json({
+      notifications: notifications.map((item) => ({
+        id: item._id,
+        sender: toUserShape(item.sender),
+        type: item.type,
+        post: item.post
+          ? {
+              id: item.post._id,
+              text: item.post.text || "",
+              media: item.post.media || [],
+            }
+          : null,
+        commentId: item.commentId || "",
+        replyId: item.replyId || "",
+        text: item.text || "",
+        isRead: !!item.isRead,
+        createdAt: item.createdAt,
+      })),
+    });
+  } catch (error) {
+    console.error("getNotifications error", error);
+    return res.status(500).json({
+      message: "Failed to load notifications.",
+    });
+  }
+}
+
+export async function markNotificationsRead(req, res) {
+  try {
+    await CommunityNotification.updateMany(
+      { receiver: req.user._id, isRead: false },
+      { $set: { isRead: true } }
+    );
+
+    return res.json({
+      message: "Notifications marked as read.",
+    });
+  } catch (error) {
+    console.error("markNotificationsRead error", error);
+    return res.status(500).json({
+      message: "Failed to update notifications.",
     });
   }
 }
