@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const imageSchema = new mongoose.Schema(
+const mediaSchema = new mongoose.Schema(
   {
     url: {
       type: String,
@@ -12,35 +12,26 @@ const imageSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    mediaType: {
+      type: String,
+      enum: ["image", "video"],
+      default: "image",
+    },
+    originalName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
   },
   { _id: false }
 );
 
-const pollOptionSchema = new mongoose.Schema(
-  {
-    text: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 80,
-    },
-    votes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-  },
-  { timestamps: false }
-);
-
-const commentSchema = new mongoose.Schema(
+const replySchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
     },
     text: {
       type: String,
@@ -54,20 +45,51 @@ const commentSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    parentComment: {
+  },
+  { timestamps: true }
+);
+
+const commentSchema = new mongoose.Schema(
+  {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      default: null,
+      ref: "User",
+      required: true,
     },
-    isEdited: {
-      type: Boolean,
-      default: false,
+    text: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 1000,
     },
-    editedAt: {
-      type: Date,
-      default: null,
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    replies: {
+      type: [replySchema],
+      default: [],
     },
   },
   { timestamps: true }
+);
+
+const taggedUserSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    nameSnapshot: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+  },
+  { _id: false }
 );
 
 const communityPostSchema = new mongoose.Schema(
@@ -79,15 +101,9 @@ const communityPostSchema = new mongoose.Schema(
       index: true,
     },
 
-    authorRoleSnapshot: {
-      type: String,
-      enum: ["user", "provider", "admin"],
-      default: "user",
-    },
-
     postType: {
       type: String,
-      enum: ["post", "question", "provider_offer", "trip_story", "poll"],
+      enum: ["post", "question", "story", "provider_offer"],
       default: "post",
       index: true,
     },
@@ -96,61 +112,21 @@ const communityPostSchema = new mongoose.Schema(
       type: String,
       default: "",
       trim: true,
-      maxlength: 3000,
+      maxlength: 4000,
     },
 
-    images: {
-      type: [imageSchema],
+    media: {
+      type: [mediaSchema],
       default: [],
     },
 
-    locationText: {
-      type: String,
-      default: "",
-      trim: true,
-      maxlength: 120,
-    },
-
-    tags: {
+    hashtags: {
       type: [String],
       default: [],
     },
 
-    providerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Provider",
-      default: null,
-      index: true,
-    },
-
-    linkedListingType: {
-      type: String,
-      enum: ["", "vehicle", "travel_planner"],
-      default: "",
-    },
-
-    linkedListingTitle: {
-      type: String,
-      default: "",
-      trim: true,
-      maxlength: 180,
-    },
-
-    linkedListingPriceText: {
-      type: String,
-      default: "",
-      trim: true,
-      maxlength: 80,
-    },
-
-    linkedListingImage: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-
-    pollOptions: {
-      type: [pollOptionSchema],
+    taggedUsers: {
+      type: [taggedUserSchema],
       default: [],
     },
 
@@ -161,7 +137,7 @@ const communityPostSchema = new mongoose.Schema(
       },
     ],
 
-    saves: [
+    bookmarks: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -179,32 +155,17 @@ const communityPostSchema = new mongoose.Schema(
       min: 0,
     },
 
-    viewsCount: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-
-    city: {
-      type: String,
-      default: "",
-      trim: true,
-      index: true,
-    },
-
-    isPinned: {
+    isEdited: {
       type: Boolean,
       default: false,
-      index: true,
+    },
+
+    editedAt: {
+      type: Date,
+      default: null,
     },
 
     isDeleted: {
-      type: Boolean,
-      default: false,
-      index: true,
-    },
-
-    isHidden: {
       type: Boolean,
       default: false,
       index: true,
@@ -214,8 +175,8 @@ const communityPostSchema = new mongoose.Schema(
 );
 
 communityPostSchema.index({ createdAt: -1 });
-communityPostSchema.index({ postType: 1, createdAt: -1 });
-communityPostSchema.index({ city: 1, createdAt: -1 });
 communityPostSchema.index({ author: 1, createdAt: -1 });
+communityPostSchema.index({ hashtags: 1 });
+communityPostSchema.index({ postType: 1, createdAt: -1 });
 
 export default mongoose.model("CommunityPost", communityPostSchema);
