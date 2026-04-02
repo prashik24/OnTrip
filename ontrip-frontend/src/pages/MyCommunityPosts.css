@@ -1,0 +1,120 @@
+.myCommunityPostsPage {
+  padding-bottom: 32px;
+  display: grid;
+  gap: 18px;
+}
+
+.myCommunityPostsHero,
+.myCommunityPostsCard,
+.myCommunityPostsEmpty,
+.myCommunityPostsAlert {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 22px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+}
+
+.myCommunityPostsHero,
+.myCommunityPostsCard {
+  padding: 20px;
+}
+
+.myCommunityPostsEmpty,
+.myCommunityPostsAlert {
+  padding: 18px;
+}
+
+.myCommunityPostsHero h1 {
+  margin: 0;
+  font-size: 32px;
+  color: var(--text);
+}
+
+.myCommunityPostsHero p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-weight: 550;
+}
+
+.myCommunityPostsAlert {
+  color: #b42318;
+  background: rgba(255, 98, 98, 0.08);
+  border-color: rgba(255, 98, 98, 0.18);
+}
+
+.myCommunityPostsList {
+  display: grid;
+  gap: 16px;
+}
+
+.myCommunityPostsCard {
+  display: grid;
+  gap: 14px;
+}
+
+.myCommunityPostsHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.myCommunityPostsHead strong {
+  color: var(--text);
+}
+
+.myCommunityPostsHead span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.myCommunityPostsText {
+  color: var(--text);
+  line-height: 1.6;
+  font-weight: 600;
+  white-space: pre-wrap;
+}
+
+.myCommunityPostsMediaGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.myCommunityPostsMedia {
+  width: 100%;
+  max-height: 380px;
+  object-fit: cover;
+  border-radius: 18px;
+  display: block;
+}
+
+.myCommunityPostsActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.myCommunityPostsActions span,
+.myCommunityPostsActions button,
+.myCommunityPostsLoadBtn {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: rgba(248, 252, 255, 0.98);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+}
+
+.myCommunityPostsActions button,
+.myCommunityPostsLoadBtn {
+  cursor: pointer;
+}
+
+.myCommunityPostsLoadBtn {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  border: none;
+}
