@@ -56,7 +56,7 @@ export default function CommunitySidebar({
             className={`communitySidebarLink ${activeView === "home" ? "active" : ""}`}
             onClick={() => onChangeView("home")}
           >
-            <span>Community Main</span>
+            <span>Home</span>
           </button>
 
           <button
