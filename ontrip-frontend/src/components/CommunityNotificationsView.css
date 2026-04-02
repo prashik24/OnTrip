@@ -1,20 +1,20 @@
 .communityNotificationsView {
   display: grid;
-  gap: 18px;
+  gap: 16px;
 }
 
 .communityNotificationsHeroCard,
 .communityNotificationsEmptyCard,
 .communityNotificationsCard {
-  background: rgba(255, 255, 255, 0.97);
+  background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 24px;
+  border-radius: 22px;
   box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
 }
 
 .communityNotificationsHeroCard,
 .communityNotificationsCard {
-  padding: 20px;
+  padding: 18px;
 }
 
 .communityNotificationsEmptyCard {
@@ -25,7 +25,7 @@
 
 .communityNotificationsHeroCard h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 30px;
   color: var(--text);
 }
 
@@ -48,8 +48,8 @@
 }
 
 .communityNotificationsCard.unread {
-  border-color: rgba(0, 184, 241, 0.22);
-  background: rgba(235, 249, 255, 0.98);
+  border-color: rgba(0, 184, 241, 0.24);
+  background: rgba(235, 249, 255, 0.96);
 }
 
 .communityNotificationsAvatar,
