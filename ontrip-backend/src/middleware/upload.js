@@ -3,9 +3,23 @@ import multer from "multer";
 const storage = multer.memoryStorage();
 
 function fileFilter(req, file, cb) {
-  if (!file.mimetype.startsWith("image/")) {
-    return cb(new Error("Only image files are allowed"), false);
+  const allowedMimeTypes = [
+    // images
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+
+    // videos
+    "video/mp4",
+    "video/webm",
+    "video/quicktime",
+  ];
+
+  if (!allowedMimeTypes.includes(file.mimetype)) {
+    return cb(new Error("Only image and video files are allowed"), false);
   }
+
   cb(null, true);
 }
 
@@ -13,7 +27,7 @@ const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5 MB
+    fileSize: 25 * 1024 * 1024, // 25 MB
   },
 });
 
