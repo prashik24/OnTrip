@@ -5,16 +5,6 @@ import CommunityPost from "../models/CommunityPost.js";
 import Notification from "../models/Notification.js";
 import User from "../models/User.js";
 
-function safeJsonParse(value, fallback) {
-  if (!value) return fallback;
-  if (typeof value !== "string") return value;
-  try {
-    return JSON.parse(value);
-  } catch {
-    return fallback;
-  }
-}
-
 function extractHashTags(text = "") {
   const matches = String(text).match(/#[a-zA-Z0-9_]+/g) || [];
   return [...new Set(matches.map((tag) => tag.replace("#", "").toLowerCase()))];
@@ -395,7 +385,10 @@ export async function addPostComment(req, res) {
       return res.status(404).json({ message: "Post not found." });
     }
 
-    if (parentComment && !post.comments.some((item) => String(item._id) === String(parentComment))) {
+    if (
+      parentComment &&
+      !post.comments.some((item) => String(item._id) === String(parentComment))
+    ) {
       return res.status(400).json({
         message: "Parent comment not found.",
       });
@@ -416,7 +409,9 @@ export async function addPostComment(req, res) {
     await post.save();
 
     if (parentComment) {
-      const parent = post.comments.find((item) => String(item._id) === String(parentComment));
+      const parent = post.comments.find(
+        (item) => String(item._id) === String(parentComment)
+      );
       if (parent) {
         await createNotification({
           userId: parent.user,
@@ -465,6 +460,113 @@ export async function addPostComment(req, res) {
   }
 }
 
+export async function getPostComments(req, res) {
+  try {
+    const { postId } = req.params;
+    const page = Math.max(Number(req.query.page || 1), 1);
+    const limit = Math.min(Math.max(Number(req.query.limit || 10), 1), 20);
+
+    const post = await CommunityPost.findById(postId).populate(
+      "comments.user",
+      "name avatar city role"
+    );
+
+    if (!post || post.isDeleted) {
+      return res.status(404).json({
+        message: "Post not found.",
+      });
+    }
+
+    const rootComments = (post.comments || []).filter((item) => !item.parentComment);
+    const start = (page - 1) * limit;
+    const pagedRoot = rootComments.slice(start, start + limit);
+
+    const pagedIds = new Set(pagedRoot.map((item) => String(item._id)));
+    const relatedReplies = (post.comments || []).filter(
+      (item) => item.parentComment && pagedIds.has(String(item.parentComment))
+    );
+
+    const combined = [...pagedRoot, ...relatedReplies];
+    const nested = buildNestedComments(combined, req.user?._id || null);
+
+    return res.json({
+      comments: nested,
+      pagination: {
+        page,
+        limit,
+        total: rootComments.length,
+        hasMore: page * limit < rootComments.length,
+      },
+    });
+  } catch (error) {
+    console.error("getPostComments error", error);
+    return res.status(500).json({
+      message: "Failed to load comments.",
+    });
+  }
+}
+
+export async function getCommentReplies(req, res) {
+  try {
+    const { postId, commentId } = req.params;
+    const page = Math.max(Number(req.query.page || 1), 1);
+    const limit = Math.min(Math.max(Number(req.query.limit || 5), 1), 20);
+
+    const post = await CommunityPost.findById(postId).populate(
+      "comments.user",
+      "name avatar city role"
+    );
+
+    if (!post || post.isDeleted) {
+      return res.status(404).json({
+        message: "Post not found.",
+      });
+    }
+
+    const replies = (post.comments || []).filter(
+      (item) => String(item.parentComment) === String(commentId)
+    );
+
+    const start = (page - 1) * limit;
+    const paged = replies.slice(start, start + limit).map((comment) => ({
+      id: comment._id,
+      user: comment.user
+        ? {
+            id: comment.user._id || comment.user.id,
+            name: comment.user.name,
+            avatar: comment.user.avatar || "",
+            city: comment.user.city || "",
+            role: comment.user.role || "user",
+          }
+        : null,
+      text: comment.text,
+      parentComment: comment.parentComment || null,
+      likesCount: (comment.likes || []).length,
+      isLikedByMe: req.user?._id
+        ? (comment.likes || []).some((id) => String(id) === String(req.user._id))
+        : false,
+      isEdited: !!comment.isEdited,
+      editedAt: comment.editedAt || null,
+      createdAt: comment.createdAt,
+    }));
+
+    return res.json({
+      replies: paged,
+      pagination: {
+        page,
+        limit,
+        total: replies.length,
+        hasMore: page * limit < replies.length,
+      },
+    });
+  } catch (error) {
+    console.error("getCommentReplies error", error);
+    return res.status(500).json({
+      message: "Failed to load replies.",
+    });
+  }
+}
+
 export async function incrementPostShare(req, res) {
   try {
     const { postId } = req.params;
@@ -485,6 +587,40 @@ export async function incrementPostShare(req, res) {
     console.error("incrementPostShare error", error);
     return res.status(500).json({
       message: "Failed to count share.",
+    });
+  }
+}
+
+export async function deleteCommunityPost(req, res) {
+  try {
+    const { postId } = req.params;
+
+    const post = await CommunityPost.findById(postId);
+    if (!post || post.isDeleted) {
+      return res.status(404).json({
+        message: "Post not found.",
+      });
+    }
+
+    const isOwner = String(post.author) === String(req.user._id);
+    const isAdmin = req.user.role === "admin";
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({
+        message: "You can remove only your own post.",
+      });
+    }
+
+    post.isDeleted = true;
+    await post.save();
+
+    return res.json({
+      message: "Post deleted.",
+    });
+  } catch (error) {
+    console.error("deleteCommunityPost error", error);
+    return res.status(500).json({
+      message: "Failed to delete post.",
     });
   }
 }
@@ -757,11 +893,17 @@ export async function toggleFollowUser(req, res) {
       });
     }
 
-    const alreadyFollowing = me.following.some((id) => String(id) === String(target._id));
+    const alreadyFollowing = me.following.some(
+      (id) => String(id) === String(target._id)
+    );
 
     if (alreadyFollowing) {
-      me.following = me.following.filter((id) => String(id) !== String(target._id));
-      target.followers = target.followers.filter((id) => String(id) !== String(me._id));
+      me.following = me.following.filter(
+        (id) => String(id) !== String(target._id)
+      );
+      target.followers = target.followers.filter(
+        (id) => String(id) !== String(me._id)
+      );
     } else {
       me.following.push(target._id);
       target.followers.push(me._id);
@@ -779,7 +921,13 @@ export async function toggleFollowUser(req, res) {
 
     return res.json({
       message: alreadyFollowing ? "User unfollowed." : "User followed.",
-      profile: normalizeUser(target, req.user._id),
+      profile: {
+        ...normalizeUser(target, req.user._id),
+        postsCount: await CommunityPost.countDocuments({
+          author: target._id,
+          isDeleted: false,
+        }),
+      },
     });
   } catch (error) {
     console.error("toggleFollowUser error", error);
