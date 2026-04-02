@@ -15,6 +15,7 @@ function previewLabel(file) {
 }
 
 export default function CommunityComposer({
+  title = "Create Post",
   composer,
   setComposer,
   submitting,
@@ -25,7 +26,7 @@ export default function CommunityComposer({
   return (
     <div className="communityComposerCard">
       <div className="communityComposerHead">
-        <div className="communityComposerTitle">Create Post</div>
+        <div className="communityComposerTitle">{title}</div>
 
         <div className="communityComposerType">
           <CustomSelect
@@ -117,10 +118,7 @@ export default function CommunityComposer({
             const isVideo = String(file.type || "").startsWith("video/");
 
             return (
-              <div
-                className="communityComposerPreviewCard"
-                key={`${file.name}-${index}`}
-              >
+              <div className="communityComposerPreviewCard" key={`${file.name}-${index}`}>
                 <div className="communityComposerPreviewTop">
                   <span>{previewLabel(file)}</span>
                   <button
