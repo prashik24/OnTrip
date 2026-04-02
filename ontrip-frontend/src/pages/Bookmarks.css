@@ -1,0 +1,120 @@
+.bookmarksPage {
+  padding-bottom: 32px;
+  display: grid;
+  gap: 18px;
+}
+
+.bookmarksHero,
+.bookmarksCard,
+.bookmarksEmpty,
+.bookmarksAlert {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 22px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+}
+
+.bookmarksHero,
+.bookmarksCard {
+  padding: 20px;
+}
+
+.bookmarksEmpty,
+.bookmarksAlert {
+  padding: 18px;
+}
+
+.bookmarksHero h1 {
+  margin: 0;
+  font-size: 32px;
+  color: var(--text);
+}
+
+.bookmarksHero p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-weight: 550;
+}
+
+.bookmarksAlert {
+  color: #b42318;
+  background: rgba(255, 98, 98, 0.08);
+  border-color: rgba(255, 98, 98, 0.18);
+}
+
+.bookmarksList {
+  display: grid;
+  gap: 16px;
+}
+
+.bookmarksCard {
+  display: grid;
+  gap: 14px;
+}
+
+.bookmarksCardHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bookmarksCardHead strong {
+  color: var(--text);
+}
+
+.bookmarksCardHead span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.bookmarksText {
+  color: var(--text);
+  line-height: 1.6;
+  font-weight: 600;
+  white-space: pre-wrap;
+}
+
+.bookmarksMediaGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.bookmarksMedia {
+  width: 100%;
+  max-height: 380px;
+  object-fit: cover;
+  border-radius: 18px;
+  display: block;
+}
+
+.bookmarksActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bookmarksActions span,
+.bookmarksActions button,
+.bookmarksLoadBtn {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: rgba(248, 252, 255, 0.98);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+}
+
+.bookmarksActions button,
+.bookmarksLoadBtn {
+  cursor: pointer;
+}
+
+.bookmarksLoadBtn {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  border: none;
+}
