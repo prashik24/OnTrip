@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import CommunitySidebar from "../components/CommunitySidebar";
 import CommunityFeedView from "../components/CommunityFeedView";
@@ -108,6 +108,10 @@ export default function Community() {
     mediaFiles: [],
   });
 
+  const unreadNotificationsCount = useMemo(() => {
+    return (notifications || []).filter((item) => !item.isRead).length;
+  }, [notifications]);
+
   useEffect(() => {
     loadInitialHome();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -131,15 +135,14 @@ export default function Community() {
       setLoadingMain(true);
       setError("");
 
-      const requests = [
-        apiFetch("/api/community/feed?page=1&limit=10"),
-      ];
+      const requests = [apiFetch("/api/community/feed?page=1&limit=10")];
 
       if (me?.id) {
         requests.push(apiFetch(`/api/community/profile/${me.id}`));
+        requests.push(apiFetch("/api/community/me/notifications?page=1&limit=20"));
       }
 
-      const [feedRes, myProfileRes] = await Promise.all(requests);
+      const [feedRes, myProfileRes, notificationsRes] = await Promise.all(requests);
 
       setFeedPosts(enrichPosts(feedRes.posts || []));
       setFeedPagination(feedRes.pagination || { page: 1, hasMore: false });
@@ -151,6 +154,13 @@ export default function Community() {
           postsCount: myProfileRes.profile.postsCount || 0,
         });
         setSelectedProfile(myProfileRes.profile);
+      }
+
+      if (notificationsRes?.notifications) {
+        setNotifications(notificationsRes.notifications || []);
+        setNotificationsPagination(
+          notificationsRes.pagination || { page: 1, hasMore: false }
+        );
       }
     } catch (err) {
       setError(err.message || "Failed to load community.");
@@ -296,6 +306,7 @@ export default function Community() {
       if (reset) {
         setNotifications(res.notifications || []);
         await apiFetch("/api/community/me/notifications/read", { method: "POST" });
+        setNotifications((res.notifications || []).map((item) => ({ ...item, isRead: true })));
       } else {
         setNotifications((prev) => [...prev, ...(res.notifications || [])]);
       }
@@ -343,7 +354,9 @@ export default function Community() {
         ...res.post,
         ...normalizeCommentsForUi(res.post.comments || []),
         commentsPage: 1,
-        loadedRootCount: Array.isArray(res.post.comments) ? Math.min(res.post.comments.length, 3) : 0,
+        loadedRootCount: Array.isArray(res.post.comments)
+          ? Math.min(res.post.comments.length, 3)
+          : 0,
         rootCommentsTotal: Array.isArray(res.post.comments) ? res.post.comments.length : 0,
       };
 
@@ -366,7 +379,8 @@ export default function Community() {
         mediaFiles: [],
       });
 
-      setActiveView("home");
+      setActiveView("profile");
+      setSelectedProfileId(me?.id || "");
     } catch (err) {
       setError(err.message || "Failed to create post.");
     } finally {
@@ -386,7 +400,9 @@ export default function Community() {
       ...nextPost,
       ...normalizeCommentsForUi(nextPost.comments || []),
       commentsPage: 1,
-      loadedRootCount: Array.isArray(nextPost.comments) ? Math.min(nextPost.comments.length, 3) : 0,
+      loadedRootCount: Array.isArray(nextPost.comments)
+        ? Math.min(nextPost.comments.length, 3)
+        : 0,
       rootCommentsTotal: Array.isArray(nextPost.comments) ? nextPost.comments.length : 0,
     };
 
@@ -504,9 +520,7 @@ export default function Community() {
 
       const nextPage = (target?.commentsPage || 1) + 1;
 
-      const res = await apiFetch(
-        `/api/community/${postId}/comments?page=${nextPage}&limit=3`
-      );
+      const res = await apiFetch(`/api/community/${postId}/comments?page=${nextPage}&limit=3`);
 
       const comments = res.comments || [];
       const total = res.pagination?.total || comments.length;
@@ -588,11 +602,6 @@ export default function Community() {
     }
   }
 
-  async function handleOpenProfile(userId) {
-    setSelectedProfileId(userId);
-    setActiveView("profile");
-  }
-
   async function handleToggleFollow() {
     if (!selectedProfileId || !isLoggedIn()) {
       setError("Please login first.");
@@ -633,6 +642,7 @@ export default function Community() {
           me={me}
           profileStats={profileStats}
           activeView={activeView}
+          unreadNotificationsCount={unreadNotificationsCount}
           onChangeView={(view) => {
             if (view === "profile") {
               setSelectedProfileId(me?.id || "");
@@ -647,17 +657,7 @@ export default function Community() {
               search={search}
               setSearch={setSearch}
               onApplySearch={applySearch}
-              composer={composer}
-              setComposer={setComposer}
-              submitting={submitting}
-              onCreatePost={handleCreatePost}
-              posts={feedPosts.map((post) => ({
-                ...post,
-                author: {
-                  ...post.author,
-                  onOpenProfile: () => handleOpenProfile(post.author?.id),
-                },
-              }))}
+              posts={feedPosts}
               loading={loadingMain}
               pagination={feedPagination}
               loadingMore={loadingFeedMore}
@@ -669,6 +669,10 @@ export default function Community() {
           {activeView === "profile" ? (
             <CommunityProfileView
               profile={selectedProfile}
+              composer={composer}
+              setComposer={setComposer}
+              submitting={submitting}
+              onCreatePost={handleCreatePost}
               posts={profilePosts}
               pagination={profilePagination}
               loading={loadingProfile}
