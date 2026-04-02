@@ -21,15 +21,23 @@ export default function CommunityBookmarksView({
 }) {
   return (
     <div className="communityBookmarksView">
-      <div className="communityBookmarksHeroCard">
+      <div className="communityBookmarksHead">
         <h1>Bookmarks</h1>
         <p>All your saved community posts in one place.</p>
       </div>
 
       {loading ? (
-        <div className="communityBookmarksEmptyCard">Loading bookmarks...</div>
+        <div className="communityBookmarksEmptyState">
+          <div className="communityBookmarksEmptyIcon">🔖</div>
+          <h3>Loading bookmarks</h3>
+          <p>Please wait while your saved posts are loading.</p>
+        </div>
       ) : posts.length === 0 ? (
-        <div className="communityBookmarksEmptyCard">No bookmarked posts yet.</div>
+        <div className="communityBookmarksEmptyState">
+          <div className="communityBookmarksEmptyIcon">📂</div>
+          <h3>No bookmarked posts yet</h3>
+          <p>Posts you save will appear here.</p>
+        </div>
       ) : (
         <div className="communityBookmarksList">
           {posts.map((post) => (
