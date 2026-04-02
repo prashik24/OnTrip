@@ -21,15 +21,23 @@ export default function CommunityLikedView({
 }) {
   return (
     <div className="communityLikedView">
-      <div className="communityLikedHeroCard">
+      <div className="communityLikedHead">
         <h1>Liked Posts</h1>
         <p>Posts you liked in the community.</p>
       </div>
 
       {loading ? (
-        <div className="communityLikedEmptyCard">Loading liked posts...</div>
+        <div className="communityLikedEmptyState">
+          <div className="communityLikedEmptyIcon">❤️</div>
+          <h3>Loading liked posts</h3>
+          <p>Please wait while your liked posts are loading.</p>
+        </div>
       ) : posts.length === 0 ? (
-        <div className="communityLikedEmptyCard">No liked posts yet.</div>
+        <div className="communityLikedEmptyState">
+          <div className="communityLikedEmptyIcon">💬</div>
+          <h3>No liked posts yet</h3>
+          <p>Posts you like will appear here.</p>
+        </div>
       ) : (
         <div className="communityLikedList">
           {posts.map((post) => (
