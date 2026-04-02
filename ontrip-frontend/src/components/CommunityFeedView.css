@@ -1,0 +1,92 @@
+.communityFeedView {
+  display: grid;
+  gap: 18px;
+}
+
+.communityFeedHeroCard,
+.communityFeedEmptyCard {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+}
+
+.communityFeedHeroCard {
+  padding: 20px;
+}
+
+.communityFeedEmptyCard {
+  padding: 18px;
+  color: rgba(11, 27, 42, 0.76);
+  font-weight: 650;
+}
+
+.communityFeedHeroTop {
+  display: grid;
+  gap: 16px;
+}
+
+.communityFeedHeroTop h1 {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 850;
+  color: var(--text);
+}
+
+.communityFeedHeroTop p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-weight: 550;
+  line-height: 1.6;
+}
+
+.communityFeedSearchWrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  gap: 10px;
+}
+
+.communityFeedSearchWrap input {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  background: #fff;
+  font: inherit;
+  outline: none;
+  box-sizing: border-box;
+  padding: 0 14px;
+}
+
+.communityFeedSearchWrap input:focus {
+  border-color: rgba(0, 184, 241, 0.35);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
+}
+
+.communityFeedSearchWrap button,
+.communityFeedLoadMoreBtn {
+  min-height: 46px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  font: inherit;
+  font-weight: 760;
+  cursor: pointer;
+  padding: 0 16px;
+}
+
+.communityFeedList {
+  display: grid;
+  gap: 16px;
+}
+
+.communityFeedLoadMoreBtn {
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .communityFeedSearchWrap {
+    grid-template-columns: 1fr;
+  }
+}
