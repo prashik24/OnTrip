@@ -32,6 +32,11 @@ export default function CommunityProfileView({
 }) {
   return (
     <div className="communityProfileView">
+      <div className="communityProfileHead">
+        <h1>My Profile</h1>
+        <p>Manage your profile activity and your own posts.</p>
+      </div>
+
       <div className="communityProfileHeroCard">
         <div className="communityProfileTop">
           {profile?.avatar ? (
@@ -47,7 +52,7 @@ export default function CommunityProfileView({
           )}
 
           <div className="communityProfileInfo">
-            <h1>{profile?.name || "Profile"}</h1>
+            <h2>{profile?.name || "Profile"}</h2>
             <p>{profile?.bio || "Traveler on OnTrip community"}</p>
 
             <div className="communityProfileMeta">
@@ -86,6 +91,7 @@ export default function CommunityProfileView({
 
       {profile?.isMe ? (
         <CommunityComposer
+          title="My Post"
           composer={composer}
           setComposer={setComposer}
           submitting={submitting}
@@ -94,15 +100,24 @@ export default function CommunityProfileView({
       ) : null}
 
       {loading ? (
-        <div className="communityProfileEmptyCard">Loading profile...</div>
+        <div className="communityProfileEmptyState">
+          <div className="communityProfileEmptyIcon">📝</div>
+          <h3>Loading profile posts</h3>
+          <p>Please wait while your posts are loading.</p>
+        </div>
       ) : posts.length === 0 ? (
-        <div className="communityProfileEmptyCard">No posts yet.</div>
+        <div className="communityProfileEmptyState">
+          <div className="communityProfileEmptyIcon">📄</div>
+          <h3>No posts yet</h3>
+          <p>Your posts will appear here after you create one.</p>
+        </div>
       ) : (
         <div className="communityProfilePosts">
           {posts.map((post) => (
             <CommunityPostCard
               key={post.id}
               post={post}
+              showDelete={true}
               onLike={onLike}
               onBookmark={onBookmark}
               onDelete={onDelete}
