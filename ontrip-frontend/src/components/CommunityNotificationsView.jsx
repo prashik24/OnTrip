@@ -23,15 +23,23 @@ export default function CommunityNotificationsView({
 }) {
   return (
     <div className="communityNotificationsView">
-      <div className="communityNotificationsHeroCard">
+      <div className="communityNotificationsHead">
         <h1>Notifications</h1>
         <p>Recent updates from your community activity.</p>
       </div>
 
       {loading ? (
-        <div className="communityNotificationsEmptyCard">Loading notifications...</div>
+        <div className="communityNotificationsEmptyState">
+          <div className="communityNotificationsEmptyIcon">🔔</div>
+          <h3>Loading notifications</h3>
+          <p>Please wait while your notifications are loading.</p>
+        </div>
       ) : notifications.length === 0 ? (
-        <div className="communityNotificationsEmptyCard">No notifications yet.</div>
+        <div className="communityNotificationsEmptyState">
+          <div className="communityNotificationsEmptyIcon">📭</div>
+          <h3>No notifications yet</h3>
+          <p>When something new happens, it will appear here.</p>
+        </div>
       ) : (
         <div className="communityNotificationsList">
           {notifications.map((item) => (
