@@ -1,3 +1,4 @@
+import CommunityComposer from "./CommunityComposer";
 import CommunityPostCard from "./CommunityPostCard";
 import "./CommunityProfileView.css";
 
@@ -7,6 +8,10 @@ function getInitial(name = "U") {
 
 export default function CommunityProfileView({
   profile,
+  composer,
+  setComposer,
+  submitting,
+  onCreatePost,
   posts,
   pagination,
   loading,
@@ -78,6 +83,15 @@ export default function CommunityProfileView({
           </div>
         </div>
       </div>
+
+      {profile?.isMe ? (
+        <CommunityComposer
+          composer={composer}
+          setComposer={setComposer}
+          submitting={submitting}
+          onCreatePost={onCreatePost}
+        />
+      ) : null}
 
       {loading ? (
         <div className="communityProfileEmptyCard">Loading profile...</div>
