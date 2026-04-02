@@ -112,6 +112,7 @@ function CommentNode({
 
 export default function CommunityPostCard({
   post,
+  showDelete = false,
   onLike,
   onBookmark,
   onDelete,
@@ -124,6 +125,8 @@ export default function CommunityPostCard({
   loadingCommentsFor,
   loadingRepliesId,
 }) {
+  const canDelete = showDelete || post.showDelete || post.isMine;
+
   return (
     <article className="communityPostCard">
       <div className="communityPostHead">
@@ -151,13 +154,13 @@ export default function CommunityPostCard({
               {post.author?.role === "provider" ? "Provider" : "Traveler"}
             </span>
 
-            {post.isMine ? (
+            {canDelete ? (
               <button
                 type="button"
                 className="communityDeleteBtn"
                 onClick={() => onDelete(post.id)}
               >
-                Delete
+                Delete My Post
               </button>
             ) : null}
           </div>
