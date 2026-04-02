@@ -1,0 +1,165 @@
+.communityComposerCard {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+}
+
+.communityComposerHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.communityComposerTitle {
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 820;
+}
+
+.communityComposerType {
+  width: 220px;
+  max-width: 100%;
+}
+
+.communityComposerInput,
+.communityComposerTextarea {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  background: #fff;
+  font: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.communityComposerInput {
+  min-height: 48px;
+  padding: 0 14px;
+}
+
+.communityComposerTextarea {
+  min-height: 120px;
+  padding: 14px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.communityComposerInput:focus,
+.communityComposerTextarea:focus {
+  border-color: rgba(0, 184, 241, 0.35);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
+}
+
+.communityComposerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.communityComposerActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.communityComposerUploadBtn,
+.communityComposerPostBtn {
+  min-height: 46px;
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 760;
+  cursor: pointer;
+  padding: 0 16px;
+}
+
+.communityComposerUploadBtn {
+  border: 1px solid rgba(0, 184, 241, 0.14);
+  background: rgba(0, 184, 241, 0.08);
+  color: #0369a1;
+}
+
+.communityComposerPostBtn {
+  border: none;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+}
+
+.communityComposerPostBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.communityComposerHiddenInput {
+  display: none;
+}
+
+.communityComposerSelectedText {
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.communityComposerPreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.communityComposerPreviewCard {
+  border-radius: 18px;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  background: rgba(248, 252, 255, 0.98);
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.communityComposerPreviewTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.communityComposerPreviewTop span {
+  color: var(--text);
+  font-weight: 750;
+}
+
+.communityComposerPreviewTop button {
+  border: none;
+  background: transparent;
+  color: #b42318;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.communityComposerPreviewMedia {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+  background: #000;
+}
+
+.communityComposerPreviewName {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+  word-break: break-word;
+}
+
+@media (max-width: 720px) {
+  .communityComposerGrid,
+  .communityComposerPreviewGrid {
+    grid-template-columns: 1fr;
+  }
+}
