@@ -1,0 +1,143 @@
+.communitySidebar {
+  min-width: 0;
+}
+
+.communitySidebarInner {
+  position: sticky;
+  top: 88px;
+  display: grid;
+  gap: 16px;
+}
+
+.communitySidebarCard {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+}
+
+.communitySidebarUserCard,
+.communitySidebarMenuCard,
+.communitySidebarMiniCard {
+  padding: 18px;
+}
+
+.communitySidebarUserCard {
+  display: grid;
+  gap: 14px;
+}
+
+.communitySidebarAvatar,
+.communitySidebarAvatarFallback {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+}
+
+.communitySidebarAvatar {
+  object-fit: cover;
+  display: block;
+}
+
+.communitySidebarAvatarFallback {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  font-size: 28px;
+  font-weight: 850;
+}
+
+.communitySidebarUserInfo h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 820;
+  color: var(--text);
+}
+
+.communitySidebarUserInfo p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.communitySidebarStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.communitySidebarStatBox {
+  border-radius: 16px;
+  background: rgba(248, 252, 255, 0.98);
+  border: 1px solid rgba(11, 27, 42, 0.06);
+  padding: 12px 10px;
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+
+.communitySidebarStatBox strong {
+  color: var(--text);
+  font-size: 18px;
+}
+
+.communitySidebarStatBox span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.communitySidebarMenuCard {
+  display: grid;
+  gap: 8px;
+}
+
+.communitySidebarLink {
+  min-height: 48px;
+  border-radius: 14px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 760;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.communitySidebarLink:hover,
+.communitySidebarLink.active {
+  background: rgba(0, 184, 241, 0.08);
+  color: #0369a1;
+  border-color: rgba(0, 184, 241, 0.14);
+}
+
+.communitySidebarMiniTitle {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.communitySidebarMiniList {
+  display: grid;
+  gap: 10px;
+  color: var(--muted);
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.communitySidebarMiniLink {
+  text-decoration: none;
+  color: #0369a1;
+  font-weight: 750;
+}
+
+@media (max-width: 1080px) {
+  .communitySidebarInner {
+    position: static;
+  }
+}
