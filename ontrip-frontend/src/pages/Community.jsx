@@ -225,10 +225,15 @@ export default function Community() {
 
       setSelectedProfile(profileRes.profile || null);
 
+      const nextPosts = enrichPosts(postsRes.posts || []).map((post) => ({
+        ...post,
+        showDelete: String(userId) === String(me?.id),
+      }));
+
       if (reset) {
-        setProfilePosts(enrichPosts(postsRes.posts || []));
+        setProfilePosts(nextPosts);
       } else {
-        setProfilePosts((prev) => [...prev, ...enrichPosts(postsRes.posts || [])]);
+        setProfilePosts((prev) => [...prev, ...nextPosts]);
       }
 
       setProfilePagination(postsRes.pagination || { page, hasMore: false });
@@ -358,13 +363,11 @@ export default function Community() {
           ? Math.min(res.post.comments.length, 3)
           : 0,
         rootCommentsTotal: Array.isArray(res.post.comments) ? res.post.comments.length : 0,
+        showDelete: true,
       };
 
       setFeedPosts((prev) => [freshPost, ...prev]);
-
-      if (selectedProfile?.isMe || String(selectedProfile?.id) === String(me?.id)) {
-        setProfilePosts((prev) => [freshPost, ...prev]);
-      }
+      setProfilePosts((prev) => [freshPost, ...prev]);
 
       setProfileStats((prev) => ({
         ...prev,
@@ -406,10 +409,18 @@ export default function Community() {
       rootCommentsTotal: Array.isArray(nextPost.comments) ? nextPost.comments.length : 0,
     };
 
-    setFeedPosts((prev) => prev.map((post) => (post.id === enriched.id ? enriched : post)));
-    setProfilePosts((prev) => prev.map((post) => (post.id === enriched.id ? enriched : post)));
-    setBookmarkPosts((prev) => prev.map((post) => (post.id === enriched.id ? enriched : post)));
-    setLikedPosts((prev) => prev.map((post) => (post.id === enriched.id ? enriched : post)));
+    setFeedPosts((prev) =>
+      prev.map((post) => (post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post))
+    );
+    setProfilePosts((prev) =>
+      prev.map((post) => (post.id === enriched.id ? { ...enriched, showDelete: true } : post))
+    );
+    setBookmarkPosts((prev) =>
+      prev.map((post) => (post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post))
+    );
+    setLikedPosts((prev) =>
+      prev.map((post) => (post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post))
+    );
   }
 
   async function handleLike(postId) {
