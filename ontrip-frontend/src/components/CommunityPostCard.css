@@ -1,9 +1,9 @@
 .communityPostCard {
   background: rgba(255, 255, 255, 0.97);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 24px;
+  border-radius: 22px;
   box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
-  padding: 20px;
+  padding: 18px;
   display: grid;
   gap: 14px;
 }
@@ -89,7 +89,7 @@
 }
 
 .communityDeleteBtn {
-  min-height: 30px;
+  min-height: 34px;
   padding: 0 12px;
   border-radius: 999px;
   border: 1px solid rgba(255, 98, 98, 0.2);
@@ -117,6 +117,7 @@
 
 .communityPostText {
   color: var(--text);
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.7;
   white-space: pre-wrap;
@@ -180,7 +181,7 @@
 
 .communityActionBtn,
 .communityActionInfo {
-  min-height: 46px;
+  min-height: 44px;
   border-radius: 14px;
   padding: 0 14px;
   border: 1px solid rgba(11, 27, 42, 0.08);
