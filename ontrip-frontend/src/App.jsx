@@ -13,11 +13,6 @@ import PlaceDetails from "./pages/PlaceDetails";
 import Planner from "./pages/Planner";
 import PlannerResult from "./pages/PlannerResult";
 import Community from "./pages/Community";
-import CommunityProfile from "./pages/CommunityProfile";
-import Bookmarks from "./pages/Bookmarks";
-import LikedPosts from "./pages/LikedPosts";
-import Notifications from "./pages/Notifications";
-import MyCommunityPosts from "./pages/MyCommunityPosts";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -36,6 +31,7 @@ import BookingCheckout from "./pages/BookingCheckout";
 import BookingSuccess from "./pages/BookingSuccess";
 import InvoiceView from "./pages/InvoiceView";
 import SavedTrips from "./pages/SavedTrips";
+
 
 import "./App.css";
 
@@ -71,12 +67,10 @@ export default function App() {
             <Route path="/explore/:stateId/:placeId" element={<PlaceDetails />} />
             <Route path="/planner" element={<Planner />} />
             <Route path="/planner/result" element={<PlannerResult />} />
+
             <Route path="/community" element={<Community />} />
-            <Route path="/community/profile/:userId" element={<CommunityProfile />} />
-            <Route path="/community/bookmarks" element={<Bookmarks />} />
-            <Route path="/community/likes" element={<LikedPosts />} />
-            <Route path="/community/notifications" element={<Notifications />} />
-            <Route path="/community/my-posts" element={<MyCommunityPosts />} />
+
+
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/my-listings" element={<MyListings />} />
