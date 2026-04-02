@@ -7,7 +7,10 @@ import {
   togglePostLike,
   togglePostBookmark,
   addPostComment,
+  getPostComments,
+  getCommentReplies,
   incrementPostShare,
+  deleteCommunityPost,
   getMyPosts,
   getBookmarkedPosts,
   getLikedPosts,
@@ -22,25 +25,26 @@ import {
 const router = express.Router();
 
 router.get("/feed", getCommunityFeed);
-router.get("/search", getCommunityFeed);
 router.get("/discover", searchPeopleAndTags);
 
 router.get("/profile/:userId", getUserProfile);
 router.get("/profile/:userId/posts", getUserPosts);
+router.post("/profile/:userId/follow", protect, toggleFollowUser);
 
 router.post("/", protect, upload.any(), createCommunityPost);
+
 router.post("/:postId/like", protect, togglePostLike);
 router.post("/:postId/bookmark", protect, togglePostBookmark);
 router.post("/:postId/comment", protect, addPostComment);
+router.get("/:postId/comments", getPostComments);
+router.get("/:postId/comments/:commentId/replies", getCommentReplies);
 router.post("/:postId/share", protect, incrementPostShare);
+router.delete("/:postId", protect, deleteCommunityPost);
 
 router.get("/me/posts", protect, getMyPosts);
 router.get("/me/bookmarks", protect, getBookmarkedPosts);
 router.get("/me/likes", protect, getLikedPosts);
 router.get("/me/notifications", protect, getNotifications);
 router.post("/me/notifications/read", protect, markNotificationsRead);
-
-router.post("/profile/:userId/follow", protect, toggleFollowUser);
-router.get("/search/all", searchPeopleAndTags);
 
 export default router;
