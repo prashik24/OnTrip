@@ -4,57 +4,43 @@
   min-width: 0;
 }
 
-.communityFeedSearchSticky {
+.communityFeedTop {
   position: sticky;
   top: 88px;
   z-index: 7;
-}
-
-.communityFeedHeroCard,
-.communityFeedEmptyCard {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 22px;
-  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
-}
-
-.communityFeedHeroCard {
-  padding: 18px;
-}
-
-.communityFeedEmptyCard {
-  padding: 18px;
-  color: rgba(11, 27, 42, 0.76);
-  font-weight: 650;
-}
-
-.communityFeedHeroTop {
   display: grid;
   gap: 14px;
+  padding-bottom: 2px;
+  background: transparent;
 }
 
-.communityFeedHeroTop h1 {
+.communityFeedTitleWrap h1 {
   margin: 0;
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 850;
   color: var(--text);
   line-height: 1.2;
 }
 
-.communityFeedHeroTop p {
-  margin: 6px 0 0;
+.communityFeedTitleWrap p {
+  margin: 8px 0 0;
   color: var(--muted);
   font-weight: 550;
   line-height: 1.6;
 }
 
-.communityFeedSearchWrap {
+.communityFeedSearchBar {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 22px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+  padding: 16px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 120px;
   gap: 10px;
 }
 
-.communityFeedSearchWrap input {
+.communityFeedSearchBar input {
   width: 100%;
   min-height: 48px;
   border-radius: 14px;
@@ -66,12 +52,12 @@
   padding: 0 14px;
 }
 
-.communityFeedSearchWrap input:focus {
+.communityFeedSearchBar input:focus {
   border-color: rgba(0, 184, 241, 0.35);
   box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
 }
 
-.communityFeedSearchWrap button,
+.communityFeedSearchBar button,
 .communityFeedLoadMoreBtn {
   min-height: 46px;
   border-radius: 14px;
@@ -84,10 +70,6 @@
   padding: 0 16px;
 }
 
-.communityFeedContent {
-  min-width: 0;
-}
-
 .communityFeedList {
   display: grid;
   gap: 16px;
@@ -97,18 +79,55 @@
   width: 100%;
 }
 
+.communityFeedEmptyState {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 22px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+  padding: 36px 24px;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.communityFeedEmptyIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 184, 241, 0.08);
+  font-size: 28px;
+}
+
+.communityFeedEmptyState h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.communityFeedEmptyState p {
+  margin: 0;
+  max-width: 460px;
+  color: var(--muted);
+  line-height: 1.6;
+  font-weight: 550;
+}
+
 @media (max-width: 1080px) {
-  .communityFeedSearchSticky {
+  .communityFeedTop {
     position: static;
   }
 }
 
 @media (max-width: 720px) {
-  .communityFeedSearchWrap {
+  .communityFeedSearchBar {
     grid-template-columns: 1fr;
   }
 
-  .communityFeedHeroTop h1 {
-    font-size: 26px;
+  .communityFeedTitleWrap h1 {
+    font-size: 28px;
   }
 }
