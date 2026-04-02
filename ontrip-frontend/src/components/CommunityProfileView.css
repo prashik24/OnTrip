@@ -1,20 +1,21 @@
 .communityProfileView {
   display: grid;
-  gap: 18px;
+  gap: 16px;
+  min-width: 0;
 }
 
 .communityProfileHeroCard,
 .communityProfileEmptyCard {
-  background: rgba(255, 255, 255, 0.97);
+  background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 24px;
+  border-radius: 22px;
   box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
 }
 
 .communityProfileHeroCard {
-  padding: 24px;
+  padding: 22px;
   background:
-    radial-gradient(circle at top right, rgba(0, 184, 241, 0.12), transparent 32%),
+    radial-gradient(circle at top right, rgba(0, 184, 241, 0.1), transparent 32%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(247, 252, 255, 0.98));
 }
 
@@ -54,8 +55,9 @@
 
 .communityProfileInfo h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 30px;
   color: var(--text);
+  line-height: 1.2;
 }
 
 .communityProfileInfo p {
