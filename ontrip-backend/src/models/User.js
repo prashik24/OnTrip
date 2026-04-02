@@ -60,10 +60,20 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
 
-    socialProfileCreated: {
-      type: Boolean,
-      default: false,
-    },
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
     isOnline: {
       type: Boolean,
       default: false,
@@ -77,5 +87,7 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.index({ name: "text", email: "text", city: "text" });
 
 export default mongoose.model("User", userSchema);
