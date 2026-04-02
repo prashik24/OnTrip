@@ -1,0 +1,349 @@
+.communityPostCard {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+}
+
+.communityPostHead {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.communityAuthorLink,
+.communityCommentUserLink {
+  text-decoration: none;
+}
+
+.communityPostAvatar,
+.communityPostAvatarFallback {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+}
+
+.communityPostAvatar {
+  object-fit: cover;
+  display: block;
+}
+
+.communityPostAvatarFallback,
+.communityCommentAvatarFallback {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  font-weight: 850;
+}
+
+.communityPostHeadContent {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.communityPostHeadTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.communityAuthorName,
+.communityCommentName,
+.communityReplyName {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.communityAuthorName:hover,
+.communityCommentName:hover,
+.communityReplyName:hover {
+  color: #0369a1;
+}
+
+.communityRolePill {
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.communityRolePill.provider {
+  color: #0369a1;
+  background: rgba(0, 184, 241, 0.1);
+}
+
+.communityRolePill.user {
+  color: #334155;
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.communityDeleteBtn {
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 98, 98, 0.2);
+  background: rgba(255, 98, 98, 0.08);
+  color: #b42318;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.communityPostMeta {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.communityPostType {
+  color: #0369a1;
+  font-weight: 700;
+}
+
+.communityPostText {
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.communityTagRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.communityTagChip {
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 184, 241, 0.08);
+  color: #0369a1;
+  font-weight: 760;
+  font-size: 13px;
+}
+
+.communityLocationText {
+  color: #0369a1;
+  font-weight: 700;
+}
+
+.communityMediaGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.communityMediaGrid.single {
+  grid-template-columns: 1fr;
+}
+
+.communityMediaGrid.double {
+  grid-template-columns: 1fr 1fr;
+}
+
+.communityMediaGrid.multi {
+  grid-template-columns: 1fr 1fr;
+}
+
+.communityPostMedia {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 18px;
+  display: block;
+  background: #000;
+}
+
+.communityPostActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.communityActionBtn,
+.communityActionInfo {
+  min-height: 46px;
+  border-radius: 14px;
+  padding: 0 14px;
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  background: rgba(248, 252, 255, 0.98);
+  color: var(--text);
+  font: inherit;
+  font-weight: 760;
+}
+
+.communityActionBtn {
+  cursor: pointer;
+}
+
+.communityActionBtn.active {
+  color: #0369a1;
+  background: rgba(235, 249, 255, 0.98);
+  border-color: rgba(0, 184, 241, 0.2);
+}
+
+.communityCommentComposer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.communityCommentComposer input,
+.communityReplyComposer input {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  background: #fff;
+  font: inherit;
+  outline: none;
+  box-sizing: border-box;
+  padding: 0 14px;
+}
+
+.communityCommentComposer button,
+.communityReplyComposer button,
+.communityLoadCommentsBtn,
+.communityCommentActions button {
+  min-height: 42px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  font: inherit;
+  font-weight: 760;
+  cursor: pointer;
+  padding: 0 14px;
+}
+
+.communityCommentList {
+  display: grid;
+  gap: 10px;
+}
+
+.communityCommentItem {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.communityCommentAvatar,
+.communityCommentAvatarFallback {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
+
+.communityCommentAvatar {
+  object-fit: cover;
+  display: block;
+}
+
+.communityCommentBody {
+  background: rgba(248, 252, 255, 0.98);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 16px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.communityCommentTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.communityCommentTop span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.communityCommentText {
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.communityCommentActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.communityCommentActions button {
+  min-height: 32px;
+  padding: 0 12px;
+  background: rgba(0, 184, 241, 0.08);
+  color: #0369a1;
+  border: 1px solid rgba(0, 184, 241, 0.14);
+}
+
+.communityReplyComposer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.communityReplyList {
+  margin-top: 6px;
+  display: grid;
+  gap: 6px;
+}
+
+.communityReplyItem {
+  padding-left: 10px;
+  border-left: 2px solid rgba(0, 184, 241, 0.16);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.communityReplyText {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.communityLoadCommentsBtn {
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .communityMediaGrid.double,
+  .communityMediaGrid.multi,
+  .communityCommentComposer,
+  .communityReplyComposer {
+    grid-template-columns: 1fr;
+  }
+
+  .communityPostMedia {
+    height: 220px;
+  }
+
+  .communityPostActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
