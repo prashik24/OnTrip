@@ -237,6 +237,13 @@ export default function Community() {
     }
   }
 
+  async function handleOpenProfile(userId) {
+    if (!userId) return;
+    setSelectedProfileId(userId);
+    setActiveView("profile");
+    setFocusedPostId("");
+  }
+
   async function applySearch() {
     try {
       setLoadingMain(true);
@@ -776,6 +783,21 @@ export default function Community() {
       });
 
       setSelectedProfile(res.profile || null);
+
+      setFeedPosts((prev) =>
+        prev.map((post) =>
+          String(post.author?.id) === String(selectedProfileId)
+            ? {
+                ...post,
+                author: {
+                  ...post.author,
+                  followersCount: res.profile?.followersCount ?? post.author?.followersCount,
+                  isFollowing: res.profile?.isFollowing ?? post.author?.isFollowing,
+                },
+              }
+            : post
+        )
+      );
     } catch (err) {
       setError(err.message || "Failed to update follow status.");
     }
@@ -793,6 +815,7 @@ export default function Community() {
     setCommentText,
     loadingCommentsFor,
     loadingRepliesId,
+    onOpenProfile: handleOpenProfile,
   };
 
   return (
