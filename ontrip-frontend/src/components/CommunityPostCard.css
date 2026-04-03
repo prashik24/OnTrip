@@ -58,8 +58,8 @@
 .communityCommentName {
   text-decoration: none;
   color: var(--text);
-  font-weight: 760;
-  font-size: 16px;
+  font-weight: 740;
+  font-size: 15px;
   line-height: 1.2;
 }
 
@@ -109,7 +109,7 @@
 
 .communityPostMeta {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 650;
   display: flex;
   gap: 6px;
@@ -123,9 +123,9 @@
 
 .communityPostText {
   color: rgba(11, 27, 42, 0.9);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
-  line-height: 1.75;
+  line-height: 1.72;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -150,7 +150,7 @@
 
 .communityLocationText {
   color: #0369a1;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -292,7 +292,7 @@
 
 .communityCommentItem {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
+  grid-template-columns: 42px minmax(0, 1fr);
   gap: 12px;
   align-items: start;
 }
@@ -300,13 +300,13 @@
 .communityCommentItem.depth-1,
 .communityCommentItem.depth-2,
 .communityCommentItem.depth-3 {
-  margin-left: 16px;
+  margin-left: 14px;
 }
 
 .communityCommentAvatar,
 .communityCommentAvatarFallback {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
 }
 
@@ -319,7 +319,7 @@
   background: rgba(244, 251, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 16px;
-  padding: 14px 14px 12px;
+  padding: 12px 12px 11px;
   display: grid;
   gap: 8px;
 }
@@ -346,9 +346,9 @@
 
 .communityCommentText {
   color: rgba(11, 27, 42, 0.9);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
-  line-height: 1.7;
+  line-height: 1.65;
   word-break: break-word;
 }
 
@@ -359,8 +359,8 @@
 }
 
 .communityCommentActions button {
-  min-height: 38px;
-  padding: 0 16px;
+  min-height: 36px;
+  padding: 0 14px;
   background: rgba(0, 184, 241, 0.08);
   color: #0369a1;
   border: 1px solid rgba(0, 184, 241, 0.16);
@@ -383,7 +383,7 @@
   display: grid;
   gap: 8px;
   border-left: 2px solid rgba(0, 184, 241, 0.18);
-  padding-left: 14px;
+  padding-left: 12px;
 }
 
 .communityLoadCommentsBtn {
@@ -403,11 +403,11 @@
   }
 
   .communityPostText {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .communityCommentText {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .communityCommentItem.depth-1,
