@@ -36,12 +36,13 @@ function getPostPreview(item) {
 }
 
 function getCommentPreview(item) {
-  const text =
-    String(item.commentText || "").trim() ||
-    String(item.text || "").trim();
-
+  const text = String(item.commentText || "").trim();
   if (!text) return "Comment text not available.";
   return text.length > 180 ? `${text.slice(0, 180)}...` : text;
+}
+
+function canReplyToNotification(item) {
+  return ["comment_post", "reply_comment", "mention_comment"].includes(item.type);
 }
 
 export default function CommunityNotificationsView({
@@ -52,7 +53,7 @@ export default function CommunityNotificationsView({
   onLoadMore,
   notificationCommentDrafts,
   setNotificationCommentText,
-  onCommentFromNotification,
+  onReplyFromNotification,
   commentingNotificationId,
 }) {
   return (
@@ -73,8 +74,8 @@ export default function CommunityNotificationsView({
       ) : (
         <div className="communityNotificationsList">
           {notifications.map((item) => {
-            const canComment = Boolean(item.post?.id);
             const draft = notificationCommentDrafts?.[item.id] || "";
+            const canReply = Boolean(item.post?.id) && canReplyToNotification(item);
 
             return (
               <div
@@ -111,31 +112,10 @@ export default function CommunityNotificationsView({
 
                   {item.type === "like_post" && item.post?.id ? (
                     <div className="communityNotificationsPreviewBox">
-                      <strong>Liked Post</strong>
+                      <strong>Post</strong>
                       <p>{getPostPreview(item)}</p>
                     </div>
                   ) : null}
-
-                  {item.type === "comment_post" && (
-                    <div className="communityNotificationsPreviewBox">
-                      <strong>Comment</strong>
-                      <p>{getCommentPreview(item)}</p>
-                    </div>
-                  )}
-
-                  {item.type === "reply_comment" && (
-                    <div className="communityNotificationsPreviewBox">
-                      <strong>Reply</strong>
-                      <p>{getCommentPreview(item)}</p>
-                    </div>
-                  )}
-
-                  {item.type === "mention_comment" && (
-                    <div className="communityNotificationsPreviewBox">
-                      <strong>Comment</strong>
-                      <p>{getCommentPreview(item)}</p>
-                    </div>
-                  )}
 
                   {item.type === "mention_post" && item.post?.id ? (
                     <div className="communityNotificationsPreviewBox">
@@ -144,11 +124,56 @@ export default function CommunityNotificationsView({
                     </div>
                   ) : null}
 
-                  {canComment ? (
+                  {item.type === "comment_post" ? (
+                    <div className="communityNotificationsPreviewStack">
+                      <div className="communityNotificationsPreviewBox">
+                        <strong>Comment</strong>
+                        <p>{getCommentPreview(item)}</p>
+                      </div>
+                      {item.post?.id ? (
+                        <div className="communityNotificationsPreviewBox">
+                          <strong>Post</strong>
+                          <p>{getPostPreview(item)}</p>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+
+                  {item.type === "reply_comment" ? (
+                    <div className="communityNotificationsPreviewStack">
+                      <div className="communityNotificationsPreviewBox">
+                        <strong>Reply</strong>
+                        <p>{getCommentPreview(item)}</p>
+                      </div>
+                      {item.post?.id ? (
+                        <div className="communityNotificationsPreviewBox">
+                          <strong>Post</strong>
+                          <p>{getPostPreview(item)}</p>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+
+                  {item.type === "mention_comment" ? (
+                    <div className="communityNotificationsPreviewStack">
+                      <div className="communityNotificationsPreviewBox">
+                        <strong>Comment</strong>
+                        <p>{getCommentPreview(item)}</p>
+                      </div>
+                      {item.post?.id ? (
+                        <div className="communityNotificationsPreviewBox">
+                          <strong>Post</strong>
+                          <p>{getPostPreview(item)}</p>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+
+                  {canReply ? (
                     <div className="communityNotificationsCommentBox">
                       <input
                         type="text"
-                        placeholder="Write a comment..."
+                        placeholder="Write a reply..."
                         value={draft}
                         onChange={(e) =>
                           setNotificationCommentText(item.id, e.target.value)
@@ -156,14 +181,14 @@ export default function CommunityNotificationsView({
                       />
                       <button
                         type="button"
-                        onClick={() => onCommentFromNotification(item)}
+                        onClick={() => onReplyFromNotification(item)}
                         disabled={
                           commentingNotificationId === item.id || !draft.trim()
                         }
                       >
                         {commentingNotificationId === item.id
                           ? "Posting..."
-                          : "Comment"}
+                          : "Reply"}
                       </button>
                     </div>
                   ) : null}
