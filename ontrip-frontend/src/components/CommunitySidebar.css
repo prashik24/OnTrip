@@ -9,37 +9,37 @@
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 22px;
   box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
-  padding: 18px 16px 16px;
+  padding: 16px;
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
-  gap: 16px;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 14px;
   min-height: calc(100vh - 180px);
   max-height: calc(100vh - 180px);
   overflow: hidden;
 }
 
+/* top */
 .communitySidebarTop {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .communitySidebarProfileRow {
   display: grid;
-  grid-template-columns: 68px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: 60px minmax(0, 1fr);
+  gap: 12px;
   align-items: center;
 }
 
 .communitySidebarAvatar,
 .communitySidebarAvatarFallback {
-  width: 68px;
-  height: 68px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
 }
 
 .communitySidebarAvatar {
   object-fit: cover;
-  display: block;
 }
 
 .communitySidebarAvatarFallback {
@@ -47,198 +47,105 @@
   place-items: center;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
-  font-size: 24px;
-  font-weight: 800;
-}
-
-.communitySidebarProfileInfo {
-  min-width: 0;
+  font-weight: 700;
 }
 
 .communitySidebarProfileInfo h3 {
   margin: 0;
+  font-size: 18px;
+  font-weight: 600; /* reduced */
   color: var(--text);
-  font-size: 22px;
-  font-weight: 760;
-  line-height: 1.15;
-  word-break: break-word;
 }
 
 .communitySidebarProfileInfo p {
-  margin: 5px 0 0;
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--muted);
-  font-size: 14px;
-  font-weight: 550;
-  line-height: 1.35;
-  word-break: break-word;
 }
 
 .communitySidebarStats {
   display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  color: var(--muted);
-  font-size: 14px;
+  gap: 12px;
+  font-size: 13px;
   font-weight: 500;
-  line-height: 1.4;
+  color: var(--muted);
 }
 
 .communitySidebarStats strong {
   color: var(--text);
-  font-weight: 700;
+  font-weight: 600;
 }
 
-.communitySidebarDivider {
-  height: 1px;
-  background: rgba(11, 27, 42, 0.08);
-}
-
+/* menu */
 .communitySidebarMenu {
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
   display: grid;
-  gap: 8px;
-  align-content: start;
-  padding-right: 4px;
+  gap: 6px;
+  overflow-y: auto;
   scrollbar-width: none;
-  -ms-overflow-style: none;
 }
 
 .communitySidebarMenu::-webkit-scrollbar {
-  width: 0;
-  height: 0;
   display: none;
 }
 
 .communitySidebarLink {
-  width: 100%;
-  min-height: 58px;
-  border: 1px solid transparent;
-  background: transparent;
-  border-radius: 16px;
-  padding: 0 12px;
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto;
+  grid-template-columns: 28px 1fr auto;
   align-items: center;
   gap: 12px;
+  min-height: 52px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  text-align: left;
   font: inherit;
+  font-size: 15px;
+  font-weight: 500; /* reduced like chat */
   color: var(--text);
-  transition: 0.18s ease;
-  box-sizing: border-box;
+  transition: 0.15s ease;
 }
 
 .communitySidebarLink:hover {
-  background: rgba(248, 252, 255, 0.96);
-  border-color: rgba(11, 27, 42, 0.06);
+  background: rgba(0, 184, 241, 0.06);
 }
 
 .communitySidebarLink.active {
-  background: rgba(235, 249, 255, 0.96);
-  border-color: rgba(0, 184, 241, 0.16);
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.05);
-}
-
-.communitySidebarIconWrap {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: rgba(248, 252, 255, 0.96);
-  border: 1px solid rgba(11, 27, 42, 0.06);
-}
-
-.communitySidebarLink.active .communitySidebarIconWrap {
-  background: rgba(0, 184, 241, 0.1);
-  border-color: rgba(0, 184, 241, 0.14);
+  background: rgba(0, 184, 241, 0.12);
+  color: #0369a1;
 }
 
 .communitySidebarIcon {
   width: 22px;
   height: 22px;
   object-fit: contain;
-  display: block;
+  opacity: 0.85;
 }
 
-.communitySidebarText {
-  min-width: 0;
-  font-size: 18px;
-  font-weight: 650;
-  line-height: 1.2;
-  color: inherit;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.communitySidebarLink.active .communitySidebarIcon {
+  opacity: 1;
 }
 
+/* badge */
 .communitySidebarBadge {
-  min-width: 24px;
-  height: 24px;
-  padding: 0 8px;
+  min-width: 20px;
+  height: 20px;
   border-radius: 999px;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
-  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  font-weight: 800;
-  flex-shrink: 0;
 }
 
+/* responsive */
 @media (max-width: 1080px) {
   .communitySidebarCard {
     position: static;
     min-height: auto;
     max-height: none;
-  }
-}
-
-@media (max-width: 640px) {
-  .communitySidebarCard {
-    padding: 16px 14px 14px;
-  }
-
-  .communitySidebarProfileRow {
-    grid-template-columns: 60px minmax(0, 1fr);
-    gap: 12px;
-  }
-
-  .communitySidebarAvatar,
-  .communitySidebarAvatarFallback {
-    width: 60px;
-    height: 60px;
-  }
-
-  .communitySidebarProfileInfo h3 {
-    font-size: 20px;
-  }
-
-  .communitySidebarStats {
-    font-size: 13px;
-    gap: 12px;
-  }
-
-  .communitySidebarLink {
-    min-height: 54px;
-    grid-template-columns: 38px minmax(0, 1fr) auto;
-    gap: 10px;
-  }
-
-  .communitySidebarIconWrap {
-    width: 38px;
-    height: 38px;
-  }
-
-  .communitySidebarIcon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .communitySidebarText {
-    font-size: 17px;
   }
 }
