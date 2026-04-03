@@ -8,7 +8,7 @@ import CommunityLikedView from "../components/CommunityLikedView";
 import CommunityNotificationsView from "../components/CommunityNotificationsView";
 import "./Community.css";
 
-function normalizeCommentsForUi(comments = [], rootLimit = 3, replyLimit = 2) {
+function normalizeCommentsForUi(comments = [], rootLimit = 2, replyLimit = 2) {
   const safeComments = Array.isArray(comments) ? comments : [];
   const visibleRoot = safeComments.slice(0, rootLimit);
 
@@ -367,7 +367,7 @@ export default function Community() {
         ...normalizeCommentsForUi(res.post.comments || []),
         commentsPage: 1,
         loadedRootCount: Array.isArray(res.post.comments)
-          ? Math.min(res.post.comments.length, 3)
+          ? Math.min(res.post.comments.length, 2)
           : 0,
         rootCommentsTotal: Array.isArray(res.post.comments) ? res.post.comments.length : 0,
         showDelete: true,
@@ -411,7 +411,7 @@ export default function Community() {
       ...normalizeCommentsForUi(nextPost.comments || []),
       commentsPage: 1,
       loadedRootCount: Array.isArray(nextPost.comments)
-        ? Math.min(nextPost.comments.length, 3)
+        ? Math.min(nextPost.comments.length, 2)
         : 0,
       rootCommentsTotal: Array.isArray(nextPost.comments) ? nextPost.comments.length : 0,
     };
@@ -546,7 +546,7 @@ export default function Community() {
 
       const nextPage = (target?.commentsPage || 1) + 1;
 
-      const res = await apiFetch(`/api/community/${postId}/comments?page=${nextPage}&limit=3`);
+      const res = await apiFetch(`/api/community/${postId}/comments?page=${nextPage}&limit=2`);
 
       const comments = res.comments || [];
       const total = res.pagination?.total || comments.length;
