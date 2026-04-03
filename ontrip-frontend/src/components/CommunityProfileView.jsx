@@ -1,5 +1,6 @@
 import CommunityComposer from "./CommunityComposer";
 import CommunityPostCard from "./CommunityPostCard";
+import LoadingSpinner from "./LoadingSpinner";
 import "./CommunityProfileView.css";
 
 function getInitial(name = "U") {
@@ -34,31 +35,37 @@ export default function CommunityProfileView({
     <div className="communityProfileView">
       <div className="communityProfileHead">
         <h1>My Profile</h1>
-        <p>Manage your profile activity and your own posts.</p>
+        <p>Manage your profile and your community posts.</p>
       </div>
 
       <div className="communityProfileHeroCard">
         <div className="communityProfileTop">
-          {profile?.avatar ? (
-            <img
-              src={profile.avatar}
-              alt={profile.name || "User"}
-              className="communityProfileAvatar"
-            />
-          ) : (
-            <div className="communityProfileAvatarFallback">
-              {getInitial(profile?.name)}
-            </div>
-          )}
+          <div className="communityProfileAvatarWrap">
+            {profile?.avatar ? (
+              <img
+                src={profile.avatar}
+                alt={profile.name || "User"}
+                className="communityProfileAvatar"
+              />
+            ) : (
+              <div className="communityProfileAvatarFallback">
+                {getInitial(profile?.name)}
+              </div>
+            )}
+          </div>
 
           <div className="communityProfileInfo">
-            <h2>{profile?.name || "Profile"}</h2>
+            <div className="communityProfileNameRow">
+              <h2>{profile?.name || "Profile"}</h2>
+              <span className="communityProfileRolePill">
+                {profile?.role === "provider" ? "Provider" : "Traveler"}
+              </span>
+            </div>
+
             <p>{profile?.bio || "Traveler on OnTrip community"}</p>
 
             <div className="communityProfileMeta">
               <span>{profile?.city || "OnTrip"}</span>
-              <span>•</span>
-              <span>{profile?.role === "provider" ? "Provider" : "Traveler"}</span>
             </div>
 
             <div className="communityProfileStats">
@@ -100,14 +107,10 @@ export default function CommunityProfileView({
       ) : null}
 
       {loading ? (
-        <div className="communityProfileEmptyState">
-          <div className="communityProfileEmptyIcon">📝</div>
-          <h3>Loading profile posts</h3>
-          <p>Please wait while your posts are loading.</p>
-        </div>
+        <LoadingSpinner text="Loading profile..." />
       ) : posts.length === 0 ? (
         <div className="communityProfileEmptyState">
-          <div className="communityProfileEmptyIcon">📄</div>
+          <div className="communityProfileEmptyIcon">📝</div>
           <h3>No posts yet</h3>
           <p>Your posts will appear here after you create one.</p>
         </div>
