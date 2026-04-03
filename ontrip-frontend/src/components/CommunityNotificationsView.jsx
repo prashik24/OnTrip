@@ -1,6 +1,13 @@
 import LoadingSpinner from "./LoadingSpinner";
 import "./CommunityNotificationsView.css";
 
+const LIKE_ICON =
+  "https://img.icons8.com/?size=100&id=33479&format=png&color=000000";
+const BOOKMARK_ICON =
+  "https://img.icons8.com/?size=100&id=82461&format=png&color=000000";
+const COMMENT_ICON =
+  "https://img.icons8.com/?size=100&id=11167&format=png&color=000000";
+
 function formatTime(value) {
   if (!value) return "";
   return new Date(value).toLocaleString([], {
@@ -51,8 +58,6 @@ function NotificationPostCard({ item, onOpenPost }) {
   const media = Array.isArray(post.media) ? post.media : [];
   const tags = Array.isArray(post.tags) ? post.tags : [];
   const author = post.author || {};
-  const likeCount = Number(post.likesCount || 0);
-  const commentCount = Number(post.commentsCount || 0);
 
   return (
     <article
@@ -155,12 +160,18 @@ function NotificationPostCard({ item, onOpenPost }) {
 
       <div className="communityPostActions">
         <div className="communityActionInfo">
-          <span>👍</span>
-          <span>{likeCount}</span>
+          <img src={LIKE_ICON} alt="" className="communityActionIcon" />
+          <span>{Number(post.likesCount || 0)}</span>
         </div>
+
         <div className="communityActionInfo">
-          <span>💬</span>
-          <span>{commentCount}</span>
+          <img src={BOOKMARK_ICON} alt="" className="communityActionIcon" />
+          <span>{Number(post.bookmarksCount || 0)}</span>
+        </div>
+
+        <div className="communityActionInfo">
+          <img src={COMMENT_ICON} alt="" className="communityActionIcon" />
+          <span>{Number(post.commentsCount || 0)}</span>
         </div>
       </div>
     </article>
