@@ -7,11 +7,18 @@
 .communityFeedTop {
   position: sticky;
   top: 88px;
-  z-index: 7;
+  z-index: 6;
   display: grid;
   gap: 14px;
-  padding-bottom: 2px;
-  background: transparent;
+  padding-bottom: 6px;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(234, 242, 248, 0.96) 0%,
+      rgba(234, 242, 248, 0.96) 70%,
+      rgba(234, 242, 248, 0) 100%
+    );
+  backdrop-filter: blur(8px);
 }
 
 .communityFeedTitleWrap h1 {
@@ -36,7 +43,7 @@
   box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
   padding: 16px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 120px;
+  grid-template-columns: minmax(0, 1fr) 150px;
   gap: 10px;
 }
 
@@ -49,7 +56,7 @@
   font: inherit;
   outline: none;
   box-sizing: border-box;
-  padding: 0 14px;
+  padding: 0 18px;
 }
 
 .communityFeedSearchBar input:focus {
@@ -118,7 +125,16 @@
 
 @media (max-width: 1080px) {
   .communityFeedTop {
+    top: 80px;
+  }
+}
+
+@media (max-width: 860px) {
+  .communityFeedTop {
     position: static;
+    background: transparent;
+    backdrop-filter: none;
+    padding-bottom: 0;
   }
 }
 
