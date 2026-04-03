@@ -19,6 +19,24 @@
 .communityAuthorLink,
 .communityCommentUserLink {
   text-decoration: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.communityAuthorLink:focus,
+.communityAuthorLink:active,
+.communityCommentUserLink:focus,
+.communityCommentUserLink:active {
+  outline: none;
+  box-shadow: none;
+  border: none;
 }
 
 .communityPostAvatar,
@@ -60,11 +78,29 @@
   text-decoration: none;
   color: var(--text);
   font-weight: 800;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
 }
 
 .communityAuthorName:hover,
 .communityCommentName:hover {
   color: #0369a1;
+}
+
+.communityAuthorName:focus,
+.communityAuthorName:active,
+.communityCommentName:focus,
+.communityCommentName:active {
+  outline: none;
+  box-shadow: none;
+  border: none;
 }
 
 .communityRolePill {
@@ -426,43 +462,4 @@
     height: 38px;
     padding: 0 12px;
   }
-}
-
-.communityAuthorLink,
-.communityCommentUserLink,
-.communityAuthorName,
-.communityCommentName {
-  border: none;
-  outline: none;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-  box-shadow: none;
-  appearance: none;
-  -webkit-appearance: none;
-}
-
-.communityAuthorLink,
-.communityCommentUserLink {
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.communityAuthorName,
-.communityCommentName {
-  cursor: pointer;
-}
-
-.communityAuthorLink:focus,
-.communityCommentUserLink:focus,
-.communityAuthorName:focus,
-.communityCommentName:focus,
-.communityAuthorLink:focus-visible,
-.communityCommentUserLink:focus-visible,
-.communityAuthorName:focus-visible,
-.communityCommentName:focus-visible {
-  outline: none;
-  box-shadow: none;
 }
