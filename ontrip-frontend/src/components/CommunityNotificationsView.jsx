@@ -15,12 +15,45 @@ function getInitial(name = "U") {
   return String(name || "U").trim().charAt(0).toUpperCase();
 }
 
+function getNotificationTitle(item) {
+  if (item.type === "like_post") return "Liked your post";
+  if (item.type === "comment_post") return "Commented on your post";
+  if (item.type === "reply_comment") return "Replied to your comment";
+  if (item.type === "mention_post") return "Mentioned you in a post";
+  if (item.type === "mention_comment") return "Mentioned you in a comment";
+  if (item.type === "follow_user") return "Started following you";
+  return "Notification";
+}
+
+function getActorLabel(item) {
+  return item.actor?.name || "Someone";
+}
+
+function getPostPreview(item) {
+  const text = String(item.post?.text || "").trim();
+  if (!text) return "Post content not available.";
+  return text.length > 180 ? `${text.slice(0, 180)}...` : text;
+}
+
+function getCommentPreview(item) {
+  const text =
+    String(item.commentText || "").trim() ||
+    String(item.text || "").trim();
+
+  if (!text) return "Comment text not available.";
+  return text.length > 180 ? `${text.slice(0, 180)}...` : text;
+}
+
 export default function CommunityNotificationsView({
   notifications,
   pagination,
   loading,
   loadingMore,
   onLoadMore,
+  notificationCommentDrafts,
+  setNotificationCommentText,
+  onCommentFromNotification,
+  commentingNotificationId,
 }) {
   return (
     <div className="communityNotificationsView">
@@ -39,33 +72,93 @@ export default function CommunityNotificationsView({
         </div>
       ) : (
         <div className="communityNotificationsList">
-          {notifications.map((item) => (
-            <div
-              className={`communityNotificationsCard ${item.isRead ? "read" : "unread"}`}
-              key={item.id}
-            >
-              <div className="communityNotificationsLeft">
-                {item.actor?.avatar ? (
-                  <img
-                    src={item.actor.avatar}
-                    alt={item.actor?.name || "User"}
-                    className="communityNotificationsAvatar"
-                  />
-                ) : (
-                  <div className="communityNotificationsAvatarFallback">
-                    {getInitial(item.actor?.name)}
-                  </div>
-                )}
-              </div>
+          {notifications.map((item) => {
+            const canComment = Boolean(item.post?.id);
+            const draft = notificationCommentDrafts[item.id] || "";
 
-              <div className="communityNotificationsBody">
-                <div className="communityNotificationsText">{item.text}</div>
-                <div className="communityNotificationsMeta">
-                  <span>{formatTime(item.createdAt)}</span>
+            return (
+              <div
+                className={`communityNotificationsCard ${item.isRead ? "read" : "unread"}`}
+                key={item.id}
+              >
+                <div className="communityNotificationsLeft">
+                  {item.actor?.avatar ? (
+                    <img
+                      src={item.actor.avatar}
+                      alt={item.actor?.name || "User"}
+                      className="communityNotificationsAvatar"
+                    />
+                  ) : (
+                    <div className="communityNotificationsAvatarFallback">
+                      {getInitial(item.actor?.name)}
+                    </div>
+                  )}
+                </div>
+
+                <div className="communityNotificationsBody">
+                  <div className="communityNotificationsTitleRow">
+                    <div className="communityNotificationsTitle">
+                      {getNotificationTitle(item)}
+                    </div>
+                    <div className="communityNotificationsMeta">
+                      <span>{formatTime(item.createdAt)}</span>
+                    </div>
+                  </div>
+
+                  <div className="communityNotificationsActor">
+                    {getActorLabel(item)}
+                  </div>
+
+                  {item.type === "like_post" && item.post?.id ? (
+                    <div className="communityNotificationsPreviewBox">
+                      <strong>Post</strong>
+                      <p>{getPostPreview(item)}</p>
+                    </div>
+                  ) : null}
+
+                  {(item.type === "comment_post" ||
+                    item.type === "reply_comment" ||
+                    item.type === "mention_comment") ? (
+                    <div className="communityNotificationsPreviewBox">
+                      <strong>Comment</strong>
+                      <p>{getCommentPreview(item)}</p>
+                    </div>
+                  ) : null}
+
+                  {item.type === "mention_post" && item.post?.id ? (
+                    <div className="communityNotificationsPreviewBox">
+                      <strong>Post</strong>
+                      <p>{getPostPreview(item)}</p>
+                    </div>
+                  ) : null}
+
+                  {canComment ? (
+                    <div className="communityNotificationsCommentBox">
+                      <input
+                        type="text"
+                        placeholder="Write a comment..."
+                        value={draft}
+                        onChange={(e) =>
+                          setNotificationCommentText(item.id, e.target.value)
+                        }
+                      />
+                      <button
+                        type="button"
+                        onClick={() => onCommentFromNotification(item)}
+                        disabled={
+                          commentingNotificationId === item.id || !draft.trim()
+                        }
+                      >
+                        {commentingNotificationId === item.id
+                          ? "Posting..."
+                          : "Comment"}
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           {pagination?.hasMore ? (
             <button
