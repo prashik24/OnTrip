@@ -13,9 +13,7 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 14px;
-  min-height: calc(100vh - 180px);
-  max-height: calc(100vh - 180px);
-  overflow: hidden;
+  align-self: start;
 }
 
 .communitySidebarTop {
@@ -80,7 +78,7 @@
 .communitySidebarMenu {
   display: grid;
   gap: 4px;
-  overflow-y: auto;
+  overflow: visible;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
