@@ -6,7 +6,7 @@
   padding: 20px;
   display: grid;
   gap: 14px;
-  position: relative; /* ✅ added */
+  position: relative;
 }
 
 .communityPostHead {
@@ -87,7 +87,6 @@
   background: rgba(148, 163, 184, 0.12);
 }
 
-/* 🔥 UPDATED DELETE BUTTON */
 .communityDeleteBtn {
   position: absolute;
   top: 16px;
@@ -256,9 +255,7 @@
 
 .communityCommentComposer button,
 .communityReplyComposer button,
-.communityLoadCommentsBtn,
-.communityCommentActions button,
-.communityCommentLoadBtn {
+.communityLoadCommentsBtn {
   min-height: 42px;
   border-radius: 12px;
   border: none;
@@ -347,12 +344,13 @@
 .communityCommentLoadBtn {
   min-height: 32px;
   padding: 0 12px;
-  border-radius: 999px;
-  background: rgba(0, 184, 241, 0.08);
-  color: #0369a1;
-  border: 1px solid rgba(0, 184, 241, 0.14);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
   font-size: 13px;
   font-weight: 700;
+  cursor: pointer;
 }
 
 .communityReplyComposer {
