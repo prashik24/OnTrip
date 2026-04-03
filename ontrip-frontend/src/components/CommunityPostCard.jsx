@@ -23,6 +23,11 @@ function formatTime(value) {
   });
 }
 
+function getHasNestedReplyLoad(comment) {
+  if (comment?.hasMoreReplies) return true;
+  return (comment?.replies || []).some((reply) => getHasNestedReplyLoad(reply));
+}
+
 function CommentNode({
   comment,
   postId,
@@ -67,7 +72,7 @@ function CommentNode({
             {showReplyBox ? "Close Reply" : "Reply"}
           </button>
 
-          {comment.hasMoreReplies ? (
+          {getHasNestedReplyLoad(comment) ? (
             <button
               type="button"
               className="communityCommentLoadBtn"
