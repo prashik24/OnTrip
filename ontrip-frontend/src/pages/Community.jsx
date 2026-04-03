@@ -95,6 +95,7 @@ export default function Community() {
   const [activeView, setActiveView] = useState("home");
   const [selectedProfileId, setSelectedProfileId] = useState(me?.id || "");
   const [selectedProfile, setSelectedProfile] = useState(null);
+  const [focusedPostId, setFocusedPostId] = useState("");
 
   const [feedPosts, setFeedPosts] = useState([]);
   const [feedPagination, setFeedPagination] = useState({
@@ -184,6 +185,19 @@ export default function Community() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeView, selectedProfileId]);
 
+  useEffect(() => {
+    if (activeView !== "home" || !focusedPostId || loadingMain) return;
+
+    const timer = setTimeout(() => {
+      const el = document.getElementById(`community-post-${focusedPostId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [activeView, focusedPostId, loadingMain, feedPosts]);
+
   async function loadInitialHome() {
     try {
       setLoadingMain(true);
@@ -235,6 +249,7 @@ export default function Community() {
       setFeedPosts(enrichPosts(res.posts || []));
       setFeedPagination(res.pagination || { page: 1, hasMore: false });
       setActiveView("home");
+      setFocusedPostId("");
     } catch (err) {
       setError(err.message || "Failed to search posts.");
     } finally {
@@ -382,6 +397,25 @@ export default function Community() {
     }
   }
 
+  async function handleOpenPostFromNotification(postId) {
+    if (!postId) return;
+
+    try {
+      setActiveView("home");
+      setFocusedPostId(postId);
+      setLoadingMain(true);
+      setError("");
+
+      const res = await apiFetch("/api/community/feed?page=1&limit=20");
+      setFeedPosts(enrichPosts(res.posts || []));
+      setFeedPagination(res.pagination || { page: 1, hasMore: false });
+    } catch (err) {
+      setError(err.message || "Failed to open post.");
+    } finally {
+      setLoadingMain(false);
+    }
+  }
+
   async function handleCreatePost() {
     if (!isLoggedIn()) {
       setError("Please login first.");
@@ -441,6 +475,7 @@ export default function Community() {
 
       setActiveView("profile");
       setSelectedProfileId(me?.id || "");
+      setFocusedPostId("");
     } catch (err) {
       setError(err.message || "Failed to create post.");
     } finally {
@@ -775,6 +810,7 @@ export default function Community() {
               setSelectedProfileId(me?.id || "");
             }
             setActiveView(view);
+            if (view !== "home") setFocusedPostId("");
           }}
         />
 
@@ -789,6 +825,7 @@ export default function Community() {
               pagination={feedPagination}
               loadingMore={loadingFeedMore}
               onLoadMore={loadMoreFeed}
+              focusedPostId={focusedPostId}
               {...sharedProps}
             />
           ) : null}
@@ -844,6 +881,7 @@ export default function Community() {
               setNotificationCommentText={setNotificationCommentText}
               onReplyFromNotification={handleReplyFromNotification}
               commentingNotificationId={commentingNotificationId}
+              onOpenPostFromNotification={handleOpenPostFromNotification}
             />
           ) : null}
         </main>
