@@ -71,9 +71,6 @@ export default function CommunityProfileView({
           <div className="communityProfileInfo">
             <div className="communityProfileNameRow">
               <div className="communityProfileTitleBlock">
-                <div className="communityProfileOverline">
-                  {profile?.role === "provider" ? "Provider Profile" : "Traveler Profile"}
-                </div>
                 <h2>{profile?.name || "Profile"}</h2>
                 <span className="communityProfileUsername">
                   @
