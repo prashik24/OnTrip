@@ -7,45 +7,27 @@
   top: 88px;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 22px;
+  border-radius: 24px;
   box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
-  padding: 16px;
+  padding: 18px 16px 16px;
   display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: 14px;
   min-height: calc(100vh - 180px);
   max-height: calc(100vh - 180px);
   overflow: hidden;
 }
 
-.communitySidebarHead h2 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text);
+.communitySidebarTop {
+  display: grid;
+  gap: 12px;
 }
 
-.communitySidebarHead p {
-  margin: 6px 0 0;
-  color: var(--muted);
-  font-weight: 550;
-  line-height: 1.45;
-}
-
-.communitySidebarUserCard {
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  background: rgba(248, 252, 255, 0.96);
-  border-radius: 18px;
-  padding: 14px;
+.communitySidebarProfileRow {
   display: grid;
   grid-template-columns: 64px minmax(0, 1fr);
   gap: 12px;
   align-items: center;
-}
-
-.communitySidebarAvatarWrap {
-  width: 64px;
-  height: 64px;
 }
 
 .communitySidebarAvatar,
@@ -65,59 +47,50 @@
   place-items: center;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 850;
 }
 
-.communitySidebarUserInfo {
+.communitySidebarProfileInfo {
   min-width: 0;
 }
 
-.communitySidebarUserInfo h3 {
+.communitySidebarProfileInfo h3 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 800;
   color: var(--text);
-  line-height: 1.2;
+  font-size: 24px;
+  font-weight: 820;
+  line-height: 1.15;
   word-break: break-word;
 }
 
-.communitySidebarUserInfo p {
-  margin: 6px 0 0;
+.communitySidebarProfileInfo p {
+  margin: 4px 0 0;
   color: var(--muted);
   font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
+  font-weight: 650;
+  line-height: 1.35;
   word-break: break-word;
 }
 
 .communitySidebarStats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.communitySidebarStatBox {
-  border-radius: 16px;
-  background: rgba(248, 252, 255, 0.96);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  padding: 12px 10px;
-  display: grid;
-  gap: 4px;
-  text-align: center;
-}
-
-.communitySidebarStatBox strong {
-  color: var(--text);
-  font-size: 18px;
-  line-height: 1.2;
-}
-
-.communitySidebarStatBox span {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.communitySidebarStats strong {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.communitySidebarDivider {
+  height: 1px;
+  background: rgba(11, 27, 42, 0.08);
 }
 
 .communitySidebarMenu {
@@ -125,7 +98,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   display: grid;
-  gap: 10px;
+  gap: 8px;
   align-content: start;
   padding-right: 4px;
   scrollbar-width: none;
@@ -140,38 +113,67 @@
 
 .communitySidebarLink {
   width: 100%;
-  min-height: 52px;
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  background: rgba(248, 252, 255, 0.96);
-  border-radius: 16px;
-  padding: 0 14px;
-  display: flex;
+  min-height: 58px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 18px;
+  padding: 0 12px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   cursor: pointer;
   text-align: left;
   font: inherit;
-  font-size: 15px;
-  font-weight: 760;
   color: var(--text);
   transition: 0.18s ease;
   box-sizing: border-box;
 }
 
-.communitySidebarLink:hover,
+.communitySidebarLink:hover {
+  background: rgba(248, 252, 255, 0.96);
+  border-color: rgba(11, 27, 42, 0.06);
+}
+
 .communitySidebarLink.active {
-  border-color: rgba(0, 184, 241, 0.24);
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.06);
   background: rgba(235, 249, 255, 0.96);
-  color: #0369a1;
+  border-color: rgba(0, 184, 241, 0.16);
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.05);
+}
+
+.communitySidebarIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  line-height: 1;
+  background: rgba(248, 252, 255, 0.96);
+  border: 1px solid rgba(11, 27, 42, 0.06);
+}
+
+.communitySidebarLink.active .communitySidebarIcon {
+  background: rgba(0, 184, 241, 0.1);
+  border-color: rgba(0, 184, 241, 0.14);
+}
+
+.communitySidebarText {
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 780;
+  line-height: 1.2;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .communitySidebarBadge {
-  min-width: 22px;
-  height: 22px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
   border-radius: 999px;
-  padding: 0 7px;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
   display: inline-flex;
@@ -180,6 +182,33 @@
   font-size: 11px;
   font-weight: 800;
   flex-shrink: 0;
+}
+
+.communitySidebarBottom {
+  display: grid;
+}
+
+.communitySidebarMiniCard {
+  border-radius: 18px;
+  background: rgba(248, 252, 255, 0.96);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.communitySidebarMiniLabel {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.communitySidebarMiniValue {
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 820;
+  line-height: 1.1;
 }
 
 @media (max-width: 1080px) {
@@ -191,12 +220,31 @@
 }
 
 @media (max-width: 640px) {
-  .communitySidebarStats {
-    grid-template-columns: 1fr 1fr 1fr;
+  .communitySidebarCard {
+    padding: 16px 14px 14px;
+    border-radius: 22px;
+  }
+
+  .communitySidebarProfileRow {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+
+  .communitySidebarAvatar,
+  .communitySidebarAvatarFallback {
+    width: 56px;
+    height: 56px;
+  }
+
+  .communitySidebarProfileInfo h3 {
+    font-size: 21px;
+  }
+
+  .communitySidebarText {
+    font-size: 17px;
   }
 
   .communitySidebarLink {
-    min-height: 48px;
-    border-radius: 14px;
+    min-height: 54px;
+    border-radius: 16px;
   }
 }
