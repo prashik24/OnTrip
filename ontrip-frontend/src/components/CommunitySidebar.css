@@ -3,19 +3,19 @@
 }
 
 .communitySidebarCard {
-  position: sticky;
-  top: 24px;
+  position: static;
+  top: auto;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 22px;
   box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
   padding: 16px;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
   gap: 14px;
-  min-height: calc(100vh - 180px);
-  max-height: calc(100vh - 180px);
-  overflow: hidden;
+  min-height: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 .communitySidebarTop {
@@ -80,7 +80,7 @@
 .communitySidebarMenu {
   display: grid;
   gap: 4px;
-  overflow-y: auto;
+  overflow: visible;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
