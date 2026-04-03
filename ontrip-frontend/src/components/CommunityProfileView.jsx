@@ -32,6 +32,7 @@ export default function CommunityProfileView({
   setCommentText,
   loadingCommentsFor,
   loadingRepliesId,
+  onOpenProfile,
 }) {
   const [pendingDeletePostId, setPendingDeletePostId] = useState("");
 
@@ -162,6 +163,7 @@ export default function CommunityProfileView({
               setCommentText={setCommentText}
               loadingCommentsFor={loadingCommentsFor}
               loadingRepliesId={loadingRepliesId}
+              onOpenProfile={onOpenProfile}
             />
           ))}
 
