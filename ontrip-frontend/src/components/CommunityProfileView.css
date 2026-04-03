@@ -22,16 +22,29 @@
 }
 
 .communityProfileHeroCard {
-  background: linear-gradient(135deg, rgba(78, 201, 245, 0.14), rgba(0, 184, 241, 0.08));
-  border: 1px solid rgba(0, 184, 241, 0.14);
+  position: relative;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 22px;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
   padding: 24px;
   display: grid;
   gap: 18px;
+  overflow: hidden;
+}
+
+.communityProfileHeroCard::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 86px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  z-index: 0;
 }
 
 .communityProfileTop {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 150px minmax(0, 1fr);
   gap: 24px;
@@ -57,7 +70,8 @@
   object-fit: cover;
   display: block;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.1);
-  border: 3px solid rgba(255, 255, 255, 0.82);
+  border: 4px solid rgba(255, 255, 255, 0.92);
+  background: #fff;
 }
 
 .communityProfileAvatarFallback {
@@ -67,6 +81,7 @@
   color: #fff;
   font-size: 42px;
   font-weight: 850;
+  border: 4px solid rgba(255, 255, 255, 0.92);
 }
 
 .communityProfileInfo {
@@ -112,12 +127,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.9);
   color: #0369a1;
   font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
-  border: 1px solid rgba(0, 184, 241, 0.14);
+  border: 1px solid rgba(0, 184, 241, 0.12);
 }
 
 .communityProfileBio {
@@ -294,6 +309,10 @@
 }
 
 @media (max-width: 700px) {
+  .communityProfileHeroCard::before {
+    height: 72px;
+  }
+
   .communityProfileTop {
     grid-template-columns: 1fr;
     align-items: start;
