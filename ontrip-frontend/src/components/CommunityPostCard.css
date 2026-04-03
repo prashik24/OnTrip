@@ -179,15 +179,14 @@
 
 .communityPostActions {
   display: flex;
-  align-items: center;
-  gap: 18px;
+  gap: 16px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .communityActionBtn,
 .communityActionInfo {
   min-height: auto;
-  padding: 0;
   border: none;
   background: transparent;
   color: var(--text);
@@ -196,6 +195,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding: 0;
 }
 
 .communityActionBtn {
@@ -336,20 +336,6 @@
 
 .communityLoadCommentsBtn {
   width: 100%;
-}
-
-@media (max-width: 1080px) {
-  .communitySidebarCard {
-    position: sticky;
-    top: 80px;
-  }
-}
-
-@media (max-width: 860px) {
-  .communitySidebarCard {
-    position: static;
-    top: auto;
-  }
 }
 
 @media (max-width: 720px) {
