@@ -44,8 +44,12 @@ export default function CommunityProfileView({
   return (
     <div className="communityProfileView">
       <div className="communityProfileHead">
-        <h1>My Profile</h1>
-        <p>Manage your profile and your community posts.</p>
+        <h1>{isOwnProfile ? "My Profile" : "Profile"}</h1>
+        <p>
+          {isOwnProfile
+            ? "Manage your profile and share your travel updates."
+            : "See profile details and community activity."}
+        </p>
       </div>
 
       <div className="communityProfileHeroCard">
@@ -67,6 +71,9 @@ export default function CommunityProfileView({
           <div className="communityProfileInfo">
             <div className="communityProfileNameRow">
               <div className="communityProfileTitleBlock">
+                <div className="communityProfileOverline">
+                  {profile?.role === "provider" ? "Provider Profile" : "Traveler Profile"}
+                </div>
                 <h2>{profile?.name || "Profile"}</h2>
                 <span className="communityProfileUsername">
                   @
@@ -78,48 +85,51 @@ export default function CommunityProfileView({
                 </span>
               </div>
 
-              <span className="communityProfileRolePill">
-                {profile?.role === "provider" ? "Provider" : "Traveler"}
-              </span>
+              {!isOwnProfile ? (
+                <button
+                  type="button"
+                  className="communityProfileFollowBtn"
+                  onClick={onToggleFollow}
+                >
+                  {profile?.isFollowing ? "Following" : "Follow"}
+                </button>
+              ) : (
+                <span className="communityProfileRolePill">
+                  {profile?.role === "provider" ? "Provider" : "Traveler"}
+                </span>
+              )}
             </div>
 
-            <p>{profile?.bio || "Traveler on OnTrip community"}</p>
+            <p className="communityProfileBio">
+              {profile?.bio || "Traveler on OnTrip community"}
+            </p>
 
             <div className="communityProfileMeta">
               <span>{profile?.city || "OnTrip"}</span>
+              <span>•</span>
+              <span>{profile?.role === "provider" ? "Provider Account" : "Community Member"}</span>
             </div>
 
-            <div className="communityProfileStats">
-              <div className="communityProfileStatCard">
-                <strong>{profile?.postsCount || 0}</strong>
-                <span>Posts</span>
-              </div>
-              <div className="communityProfileStatCard">
-                <strong>{profile?.followersCount || 0}</strong>
-                <span>Followers</span>
-              </div>
-              <div className="communityProfileStatCard">
-                <strong>{profile?.followingCount || 0}</strong>
-                <span>Following</span>
-              </div>
+            <div className="communityProfileStatsInline">
+              <span>
+                <strong>{profile?.postsCount || 0}</strong> Posts
+              </span>
+              <span>•</span>
+              <span>
+                <strong>{profile?.followersCount || 0}</strong> Followers
+              </span>
+              <span>•</span>
+              <span>
+                <strong>{profile?.followingCount || 0}</strong> Following
+              </span>
             </div>
-
-            {!isOwnProfile ? (
-              <button
-                type="button"
-                className="communityProfileFollowBtn"
-                onClick={onToggleFollow}
-              >
-                {profile?.isFollowing ? "Following" : "Follow"}
-              </button>
-            ) : null}
           </div>
         </div>
       </div>
 
       {isOwnProfile ? (
         <CommunityComposer
-          title="My Post"
+          title="Create Post"
           composer={composer}
           setComposer={setComposer}
           submitting={submitting}
@@ -133,7 +143,7 @@ export default function CommunityProfileView({
         <div className="communityProfileEmptyState">
           <div className="communityProfileEmptyIcon">📝</div>
           <h3>No posts yet</h3>
-          <p>Your posts will appear here after you create one.</p>
+          <p>{isOwnProfile ? "Create your first post to show it here." : "No posts to show yet."}</p>
         </div>
       ) : (
         <div className="communityProfilePosts">
