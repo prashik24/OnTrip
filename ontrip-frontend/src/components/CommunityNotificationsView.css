@@ -61,13 +61,29 @@
 
 .communityNotificationsBody {
   display: grid;
-  gap: 8px;
+  gap: 10px;
+  min-width: 0;
 }
 
-.communityNotificationsText {
+.communityNotificationsTitleRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.communityNotificationsTitle {
   color: var(--text);
-  font-weight: 650;
-  line-height: 1.55;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.communityNotificationsActor {
+  color: #0369a1;
+  font-size: 14px;
+  font-weight: 750;
 }
 
 .communityNotificationsMeta {
@@ -79,16 +95,71 @@
   font-weight: 650;
 }
 
-.communityNotificationsLoadMoreBtn {
-  min-height: 46px;
+.communityNotificationsPreviewBox {
+  background: rgba(248, 252, 255, 0.96);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.communityNotificationsPreviewBox strong {
+  color: #0369a1;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.communityNotificationsPreviewBox p {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.communityNotificationsCommentBox {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.communityNotificationsCommentBox input {
   width: 100%;
+  min-height: 44px;
   border-radius: 14px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  background: #fff;
+  font: inherit;
+  outline: none;
+  box-sizing: border-box;
+  padding: 0 14px;
+}
+
+.communityNotificationsCommentBox input:focus {
+  border-color: rgba(0, 184, 241, 0.35);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
+}
+
+.communityNotificationsCommentBox button,
+.communityNotificationsLoadMoreBtn {
+  min-height: 44px;
+  border-radius: 12px;
   border: none;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
   font: inherit;
   font-weight: 760;
   cursor: pointer;
+  padding: 0 16px;
+}
+
+.communityNotificationsLoadMoreBtn {
+  width: 100%;
 }
 
 .communityNotificationsEmptyState {
@@ -126,4 +197,10 @@
   color: var(--muted);
   line-height: 1.6;
   font-weight: 550;
+}
+
+@media (max-width: 720px) {
+  .communityNotificationsCommentBox {
+    grid-template-columns: 1fr;
+  }
 }
