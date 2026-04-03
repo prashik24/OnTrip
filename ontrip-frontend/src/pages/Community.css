@@ -3,6 +3,7 @@
   padding-bottom: 32px;
   display: grid;
   gap: 16px;
+  overflow: visible;
 }
 
 .communityPageAlert {
@@ -18,22 +19,21 @@
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr);
   gap: 18px;
-  min-height: calc(100vh - 180px);
   align-items: start;
+  overflow: visible;
 }
 
 .communityPageMain {
   min-width: 0;
-  min-height: calc(100vh - 180px);
   display: grid;
   gap: 16px;
   align-content: start;
+  overflow: visible;
 }
 
 @media (max-width: 1080px) {
   .communityPageLayout {
     grid-template-columns: 1fr;
-    min-height: auto;
   }
 
   .communityPageMain {
