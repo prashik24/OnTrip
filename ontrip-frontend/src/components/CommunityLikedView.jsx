@@ -1,4 +1,5 @@
 import CommunityPostCard from "./CommunityPostCard";
+import LoadingSpinner from "./LoadingSpinner";
 import "./CommunityLikedView.css";
 
 export default function CommunityLikedView({
@@ -27,11 +28,7 @@ export default function CommunityLikedView({
       </div>
 
       {loading ? (
-        <div className="communityLikedEmptyState">
-          <div className="communityLikedEmptyIcon">❤️</div>
-          <h3>Loading liked posts</h3>
-          <p>Please wait while your liked posts are loading.</p>
-        </div>
+        <LoadingSpinner text="Loading liked posts..." />
       ) : posts.length === 0 ? (
         <div className="communityLikedEmptyState">
           <div className="communityLikedEmptyIcon">💬</div>
