@@ -19,6 +19,7 @@ export default function CommunityLikedView({
   setCommentText,
   loadingCommentsFor,
   loadingRepliesId,
+  onOpenProfile,
 }) {
   return (
     <div className="communityLikedView">
@@ -52,6 +53,7 @@ export default function CommunityLikedView({
               setCommentText={setCommentText}
               loadingCommentsFor={loadingCommentsFor}
               loadingRepliesId={loadingRepliesId}
+              onOpenProfile={onOpenProfile}
             />
           ))}
 
