@@ -22,6 +22,7 @@ export default function CommunityFeedView({
   setCommentText,
   loadingCommentsFor,
   loadingRepliesId,
+  focusedPostId,
 }) {
   return (
     <div className="communityFeedView">
@@ -55,21 +56,28 @@ export default function CommunityFeedView({
       ) : (
         <div className="communityFeedList">
           {posts.map((post) => (
-            <CommunityPostCard
+            <div
               key={post.id}
-              post={post}
-              onLike={onLike}
-              onBookmark={onBookmark}
-              onDelete={onDelete}
-              onComment={onComment}
-              onReply={onReply}
-              onLoadComments={onLoadComments}
-              onLoadReplies={onLoadReplies}
-              commentText={commentDrafts[post.id] || ""}
-              setCommentText={setCommentText}
-              loadingCommentsFor={loadingCommentsFor}
-              loadingRepliesId={loadingRepliesId}
-            />
+              id={`community-post-${post.id}`}
+              className={`communityFeedTarget ${
+                focusedPostId === post.id ? "communityFeedTargetActive" : ""
+              }`}
+            >
+              <CommunityPostCard
+                post={post}
+                onLike={onLike}
+                onBookmark={onBookmark}
+                onDelete={onDelete}
+                onComment={onComment}
+                onReply={onReply}
+                onLoadComments={onLoadComments}
+                onLoadReplies={onLoadReplies}
+                commentText={commentDrafts[post.id] || ""}
+                setCommentText={setCommentText}
+                loadingCommentsFor={loadingCommentsFor}
+                loadingRepliesId={loadingRepliesId}
+              />
+            </div>
           ))}
 
           {pagination?.hasMore ? (
