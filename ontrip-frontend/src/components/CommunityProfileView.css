@@ -6,11 +6,11 @@
 
 .communityProfileHead h1 {
   margin: 0;
-  font-size: 30px;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 760;
   color: var(--text);
   line-height: 1.15;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .communityProfileHead p {
@@ -22,25 +22,25 @@
 }
 
 .communityProfileHeroCard {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(78, 201, 245, 0.14), rgba(0, 184, 241, 0.08));
+  border: 1px solid rgba(0, 184, 241, 0.14);
+  border-radius: 22px;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
-  padding: 22px;
+  padding: 24px;
   display: grid;
   gap: 18px;
 }
 
 .communityProfileTop {
   display: grid;
-  grid-template-columns: 148px minmax(0, 1fr);
-  gap: 22px;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 24px;
   align-items: center;
 }
 
 .communityProfileAvatarWrap {
-  width: 148px;
-  height: 148px;
+  width: 150px;
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,8 +48,8 @@
 
 .communityProfileAvatar,
 .communityProfileAvatarFallback {
-  width: 148px;
-  height: 148px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
 }
 
@@ -57,6 +57,7 @@
   object-fit: cover;
   display: block;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.1);
+  border: 3px solid rgba(255, 255, 255, 0.82);
 }
 
 .communityProfileAvatarFallback {
@@ -88,11 +89,11 @@
 
 .communityProfileTitleBlock h2 {
   margin: 0;
-  font-size: 34px;
-  font-weight: 820;
+  font-size: 26px;
+  font-weight: 760;
   color: var(--text);
   line-height: 1.08;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   word-break: break-word;
 }
 
@@ -100,28 +101,29 @@
   display: inline-block;
   margin-top: 6px;
   color: #60748b;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
 }
 
 .communityProfileRolePill {
-  min-height: 38px;
+  min-height: 40px;
   padding: 0 22px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 184, 241, 0.1);
+  background: rgba(255, 255, 255, 0.6);
   color: #0369a1;
   font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
+  border: 1px solid rgba(0, 184, 241, 0.14);
 }
 
 .communityProfileBio {
   margin: 0;
   color: rgba(11, 27, 42, 0.9);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 650;
   line-height: 1.7;
 }
@@ -287,7 +289,7 @@
   }
 
   .communityProfileTitleBlock h2 {
-    font-size: 30px;
+    font-size: 24px;
   }
 }
 
@@ -310,11 +312,11 @@
 
   .communityProfileHead h1,
   .communityProfileTitleBlock h2 {
-    font-size: 28px;
+    font-size: 22px;
   }
 
   .communityProfileBio {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .communityProfileStatsInline {
