@@ -1,3 +1,4 @@
+import { useState } from "react";
 import CommunityComposer from "./CommunityComposer";
 import CommunityPostCard from "./CommunityPostCard";
 import LoadingSpinner from "./LoadingSpinner";
@@ -32,6 +33,14 @@ export default function CommunityProfileView({
   loadingCommentsFor,
   loadingRepliesId,
 }) {
+  const [pendingDeletePostId, setPendingDeletePostId] = useState("");
+
+  async function handleConfirmDelete() {
+    if (!pendingDeletePostId) return;
+    await onDelete(pendingDeletePostId);
+    setPendingDeletePostId("");
+  }
+
   return (
     <div className="communityProfileView">
       <div className="communityProfileHead">
@@ -57,7 +66,18 @@ export default function CommunityProfileView({
 
           <div className="communityProfileInfo">
             <div className="communityProfileNameRow">
-              <h2>{profile?.name || "Profile"}</h2>
+              <div className="communityProfileTitleBlock">
+                <h2>{profile?.name || "Profile"}</h2>
+                <span className="communityProfileUsername">
+                  @
+                  {profile?.username ||
+                    profile?.email?.split("@")?.[0] ||
+                    String(profile?.name || "user")
+                      .replace(/\s+/g, "")
+                      .toLowerCase()}
+                </span>
+              </div>
+
               <span className="communityProfileRolePill">
                 {profile?.role === "provider" ? "Provider" : "Traveler"}
               </span>
@@ -70,15 +90,15 @@ export default function CommunityProfileView({
             </div>
 
             <div className="communityProfileStats">
-              <div>
+              <div className="communityProfileStatCard">
                 <strong>{profile?.postsCount || 0}</strong>
                 <span>Posts</span>
               </div>
-              <div>
+              <div className="communityProfileStatCard">
                 <strong>{profile?.followersCount || 0}</strong>
                 <span>Followers</span>
               </div>
-              <div>
+              <div className="communityProfileStatCard">
                 <strong>{profile?.followingCount || 0}</strong>
                 <span>Following</span>
               </div>
@@ -122,6 +142,8 @@ export default function CommunityProfileView({
               key={post.id}
               post={post}
               showDelete={isOwnProfile}
+              pendingDeletePostId={pendingDeletePostId}
+              setPendingDeletePostId={setPendingDeletePostId}
               onLike={onLike}
               onBookmark={onBookmark}
               onDelete={onDelete}
@@ -148,6 +170,38 @@ export default function CommunityProfileView({
           ) : null}
         </div>
       )}
+
+      {pendingDeletePostId ? (
+        <div
+          className="communityProfileDeleteOverlay"
+          onClick={() => setPendingDeletePostId("")}
+        >
+          <div
+            className="communityProfileDeleteCard"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Delete post?</h3>
+            <p>This action will remove the post from your profile and community feed.</p>
+
+            <div className="communityProfileDeleteActions">
+              <button
+                type="button"
+                className="communityProfileDeleteCancelBtn"
+                onClick={() => setPendingDeletePostId("")}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="communityProfileDeleteConfirmBtn"
+                onClick={handleConfirmDelete}
+              >
+                Delete Post
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
