@@ -1,10 +1,15 @@
 .communitySidebar {
   min-width: 0;
+}
+
+.communitySidebarNormalFlow {
+  position: static !important;
+  top: auto !important;
   align-self: start;
 }
 
-.communitySidebarCard {
-  position: relative !important;
+.communitySidebarBox {
+  position: static !important;
   top: auto !important;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
@@ -145,9 +150,7 @@
 }
 
 @media (max-width: 1080px) {
-  .communitySidebarCard {
-    position: relative !important;
-    top: auto !important;
+  .communitySidebarBox {
     min-height: calc(100vh - 180px);
     max-height: calc(100vh - 180px);
   }
