@@ -1,11 +1,11 @@
 .communityPostCard {
   background: rgba(255, 255, 255, 0.97);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 24px;
+  border-radius: 22px;
   box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
   padding: 20px;
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .communityPostHead {
@@ -123,7 +123,7 @@
   color: var(--text);
   font-size: 15px;
   font-weight: 600;
-  line-height: 1.7;
+  line-height: 1.75;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -213,6 +213,20 @@
   display: block;
 }
 
+.communityCommentsSection {
+  display: grid;
+  gap: 12px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(11, 27, 42, 0.08);
+}
+
+.communityCommentsHeading {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0369a1;
+  letter-spacing: 0.02em;
+}
+
 .communityCommentComposer {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -230,6 +244,12 @@
   outline: none;
   box-sizing: border-box;
   padding: 0 14px;
+}
+
+.communityCommentComposer input:focus,
+.communityReplyComposer input:focus {
+  border-color: rgba(0, 184, 241, 0.35);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
 }
 
 .communityCommentComposer button,
@@ -250,6 +270,15 @@
 .communityCommentList {
   display: grid;
   gap: 10px;
+}
+
+.communityNoComments {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(248, 252, 255, 0.96);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  color: var(--muted);
+  font-weight: 650;
 }
 
 .communityCommentItem {
@@ -281,9 +310,9 @@
   background: rgba(248, 252, 255, 0.98);
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 16px;
-  padding: 10px 12px;
+  padding: 12px;
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
 
 .communityCommentTop {
@@ -293,7 +322,14 @@
   flex-wrap: wrap;
 }
 
-.communityCommentTop span {
+.communityCommentNameWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.communityCommentNameWrap span {
   color: var(--muted);
   font-size: 12px;
   font-weight: 650;
@@ -302,7 +338,7 @@
 .communityCommentText {
   color: var(--text);
   font-weight: 600;
-  line-height: 1.55;
+  line-height: 1.6;
   word-break: break-word;
 }
 
@@ -313,11 +349,17 @@
 }
 
 .communityCommentActions button {
-  min-height: 32px;
+  min-height: 34px;
   padding: 0 12px;
   background: rgba(0, 184, 241, 0.08);
   color: #0369a1;
   border: 1px solid rgba(0, 184, 241, 0.14);
+}
+
+.communityCommentActions .communityCommentLoadBtn {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  border: none;
 }
 
 .communityReplyComposer {
@@ -327,7 +369,7 @@
 }
 
 .communityReplyTree {
-  margin-top: 6px;
+  margin-top: 2px;
   display: grid;
   gap: 8px;
   border-left: 2px solid rgba(0, 184, 241, 0.12);
