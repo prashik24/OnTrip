@@ -19,6 +19,7 @@ function formatTime(value) {
 function CommentNode({
   comment,
   postId,
+  depth = 0,
   onReply,
   onLoadReplies,
   loadingRepliesId,
@@ -27,7 +28,7 @@ function CommentNode({
   const [showReplyBox, setShowReplyBox] = useState(false);
 
   return (
-    <div className="communityCommentItem">
+    <div className={`communityCommentItem depth-${Math.min(depth, 3)}`}>
       <Link to={`/community/profile/${comment.user?.id}`} className="communityCommentUserLink">
         {comment.user?.avatar ? (
           <img
@@ -53,10 +54,7 @@ function CommentNode({
         <div className="communityCommentText">{comment.text}</div>
 
         <div className="communityCommentActions">
-          <button
-            type="button"
-            onClick={() => setShowReplyBox((prev) => !prev)}
-          >
+          <button type="button" onClick={() => setShowReplyBox((prev) => !prev)}>
             Reply
           </button>
 
@@ -94,14 +92,17 @@ function CommentNode({
         ) : null}
 
         {comment.replies?.length ? (
-          <div className="communityReplyList">
+          <div className="communityReplyTree">
             {comment.replies.map((reply) => (
-              <div className="communityReplyItem" key={reply.id}>
-                <Link to={`/community/profile/${reply.user?.id}`} className="communityReplyName">
-                  {reply.user?.name || "User"}
-                </Link>
-                <span className="communityReplyText">{reply.text}</span>
-              </div>
+              <CommentNode
+                key={reply.id}
+                comment={reply}
+                postId={postId}
+                depth={depth + 1}
+                onReply={onReply}
+                onLoadReplies={onLoadReplies}
+                loadingRepliesId={loadingRepliesId}
+              />
             ))}
           </div>
         ) : null}
@@ -113,6 +114,8 @@ function CommentNode({
 export default function CommunityPostCard({
   post,
   showDelete = false,
+  pendingDeletePostId = "",
+  setPendingDeletePostId = () => {},
   onLike,
   onBookmark,
   onDelete,
@@ -157,10 +160,14 @@ export default function CommunityPostCard({
             {canDelete ? (
               <button
                 type="button"
-                className="communityDeleteBtn"
-                onClick={() => onDelete(post.id)}
+                className={`communityDeleteBtn ${
+                  pendingDeletePostId === post.id ? "pending" : ""
+                }`}
+                onClick={() =>
+                  setPendingDeletePostId((prev) => (prev === post.id ? "" : post.id))
+                }
               >
-                Delete My Post
+                {pendingDeletePostId === post.id ? "Close Delete" : "Delete My Post"}
               </button>
             ) : null}
           </div>
@@ -221,7 +228,7 @@ export default function CommunityPostCard({
               <img
                 key={`${item.url}-${index}`}
                 src={item.url}
-                alt="post"
+                alt={`post-${index + 1}`}
                 className="communityPostMedia"
               />
             )
@@ -268,6 +275,7 @@ export default function CommunityPostCard({
               key={comment.id}
               comment={comment}
               postId={post.id}
+              depth={0}
               onReply={onReply}
               onLoadReplies={onLoadReplies}
               loadingRepliesId={loadingRepliesId}
