@@ -232,14 +232,15 @@ export async function createCommunityPost(req, res) {
     const postType = String(req.body.postType || "post").trim();
     const text = String(req.body.text || "").trim();
     const locationText = String(req.body.locationText || "").trim();
+    const files = Array.isArray(req.files) ? req.files : [];
 
-    if (!text && (!req.files || req.files.length === 0)) {
+    if (!text && files.length === 0) {
       return res.status(400).json({
         message: "Write something or upload image/video.",
       });
     }
 
-    const uploadedMedia = await uploadMany(req.files || [], "ontrip/community/posts");
+    const uploadedMedia = await uploadMany(files, "ontrip/community/posts");
     const textTags = extractHashTags(text);
     const manualTags = String(req.body.tags || "")
       .split(",")
@@ -481,10 +482,31 @@ export async function getPostComments(req, res) {
     const start = (page - 1) * limit;
     const pagedRoot = rootComments.slice(start, start + limit);
 
-    const pagedIds = new Set(pagedRoot.map((item) => String(item._id)));
-    const relatedReplies = (post.comments || []).filter(
-      (item) => item.parentComment && pagedIds.has(String(item.parentComment))
-    );
+    const allowedRootIds = new Set(pagedRoot.map((item) => String(item._id)));
+    const relatedReplies = [];
+    const allComments = post.comments || [];
+
+    const collectReplies = (parentIds) => {
+      const nextParentIds = [];
+
+      for (const item of allComments) {
+        if (item.parentComment && parentIds.has(String(item.parentComment))) {
+          const alreadyAdded = relatedReplies.some(
+            (reply) => String(reply._id) === String(item._id)
+          );
+          if (!alreadyAdded) {
+            relatedReplies.push(item);
+            nextParentIds.push(String(item._id));
+          }
+        }
+      }
+
+      if (nextParentIds.length) {
+        collectReplies(new Set(nextParentIds));
+      }
+    };
+
+    collectReplies(allowedRootIds);
 
     const combined = [...pagedRoot, ...relatedReplies];
     const nested = buildNestedComments(combined, req.user?._id || null);
@@ -523,40 +545,49 @@ export async function getCommentReplies(req, res) {
       });
     }
 
-    const replies = (post.comments || []).filter(
+    const allComments = post.comments || [];
+    const directReplies = allComments.filter(
       (item) => String(item.parentComment) === String(commentId)
     );
 
     const start = (page - 1) * limit;
-    const paged = replies.slice(start, start + limit).map((comment) => ({
-      id: comment._id,
-      user: comment.user
-        ? {
-            id: comment.user._id || comment.user.id,
-            name: comment.user.name,
-            avatar: comment.user.avatar || "",
-            city: comment.user.city || "",
-            role: comment.user.role || "user",
+    const pagedDirectReplies = directReplies.slice(start, start + limit);
+
+    const selectedReplyIds = new Set(pagedDirectReplies.map((item) => String(item._id)));
+    const nestedReplies = [];
+
+    const collectNestedReplies = (parentIds) => {
+      const nextParentIds = [];
+
+      for (const item of allComments) {
+        if (item.parentComment && parentIds.has(String(item.parentComment))) {
+          const alreadyAdded = nestedReplies.some(
+            (reply) => String(reply._id) === String(item._id)
+          );
+          if (!alreadyAdded) {
+            nestedReplies.push(item);
+            nextParentIds.push(String(item._id));
           }
-        : null,
-      text: comment.text,
-      parentComment: comment.parentComment || null,
-      likesCount: (comment.likes || []).length,
-      isLikedByMe: req.user?._id
-        ? (comment.likes || []).some((id) => String(id) === String(req.user._id))
-        : false,
-      isEdited: !!comment.isEdited,
-      editedAt: comment.editedAt || null,
-      createdAt: comment.createdAt,
-    }));
+        }
+      }
+
+      if (nextParentIds.length) {
+        collectNestedReplies(new Set(nextParentIds));
+      }
+    };
+
+    collectNestedReplies(selectedReplyIds);
+
+    const combined = [...pagedDirectReplies, ...nestedReplies];
+    const nested = buildNestedComments(combined, req.user?._id || null);
 
     return res.json({
-      replies: paged,
+      replies: nested,
       pagination: {
         page,
         limit,
-        total: replies.length,
-        hasMore: page * limit < replies.length,
+        total: directReplies.length,
+        hasMore: page * limit < directReplies.length,
       },
     });
   } catch (error) {
