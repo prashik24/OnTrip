@@ -6,48 +6,48 @@
 
 .communityProfileHead h1 {
   margin: 0;
-  font-size: 34px;
-  font-weight: 850;
+  font-size: 30px;
+  font-weight: 800;
   color: var(--text);
-  line-height: 1.1;
+  line-height: 1.15;
   letter-spacing: -0.02em;
 }
 
 .communityProfileHead p {
   margin: 8px 0 0;
   color: var(--muted);
-  font-size: 15px;
-  font-weight: 550;
+  font-size: 14px;
+  font-weight: 500;
   line-height: 1.65;
 }
 
 .communityProfileHeroCard {
-  background: rgba(255, 255, 255, 0.97);
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 22px;
-  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
-  padding: 24px;
-  background:
-    radial-gradient(circle at top right, rgba(0, 184, 241, 0.1), transparent 32%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.99), rgba(247, 252, 255, 0.99));
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 28px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.05);
+  padding: 26px 28px;
 }
 
 .communityProfileTop {
   display: grid;
-  grid-template-columns: 118px minmax(0, 1fr);
-  gap: 22px;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 24px;
   align-items: center;
 }
 
 .communityProfileAvatarWrap {
-  width: 118px;
-  height: 118px;
+  width: 132px;
+  height: 132px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .communityProfileAvatar,
 .communityProfileAvatarFallback {
-  width: 118px;
-  height: 118px;
+  width: 132px;
+  height: 132px;
   border-radius: 50%;
 }
 
@@ -62,7 +62,7 @@
   place-items: center;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
-  font-size: 36px;
+  font-size: 40px;
   font-weight: 850;
 }
 
@@ -84,50 +84,41 @@
   min-width: 0;
 }
 
-.communityProfileOverline {
-  font-size: 12px;
-  font-weight: 800;
-  color: #0369a1;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 6px;
-}
-
 .communityProfileTitleBlock h2 {
   margin: 0;
-  font-size: 32px;
+  font-size: 38px;
   font-weight: 850;
-  color: var(--text);
-  line-height: 1.12;
-  letter-spacing: -0.02em;
+  color: #031b33;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
   word-break: break-word;
 }
 
 .communityProfileUsername {
   display: inline-block;
-  margin-top: 7px;
-  color: var(--muted);
-  font-size: 15px;
-  font-weight: 650;
+  margin-top: 8px;
+  color: #5f7187;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .communityProfileRolePill {
-  min-height: 34px;
-  padding: 0 14px;
+  min-height: 42px;
+  padding: 0 18px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   background: rgba(0, 184, 241, 0.1);
   color: #0369a1;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   white-space: nowrap;
 }
 
 .communityProfileBio {
   margin: 0;
-  color: rgba(11, 27, 42, 0.82);
-  font-size: 15px;
+  color: #23384f;
+  font-size: 17px;
   font-weight: 600;
   line-height: 1.7;
 }
@@ -136,8 +127,8 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  color: var(--muted);
-  font-size: 14px;
+  color: #5f7187;
+  font-size: 15px;
   font-weight: 650;
 }
 
@@ -146,13 +137,13 @@
   gap: 10px;
   flex-wrap: wrap;
   align-items: center;
-  color: rgba(11, 27, 42, 0.72);
+  color: #31475f;
   font-size: 15px;
   font-weight: 650;
 }
 
 .communityProfileStatsInline strong {
-  color: var(--text);
+  color: #031b33;
   font-weight: 850;
   margin-right: 4px;
 }
@@ -161,12 +152,13 @@
 .communityProfileLoadMoreBtn,
 .communityProfileDeleteCancelBtn,
 .communityProfileDeleteConfirmBtn {
-  min-height: 44px;
+  min-height: 42px;
   padding: 0 18px;
   border-radius: 12px;
   border: none;
   font: inherit;
-  font-weight: 760;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
 }
@@ -198,10 +190,10 @@
 }
 
 .communityProfileEmptyState {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(0, 184, 241, 0.12);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 22px;
-  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.05);
   padding: 40px 24px;
   display: grid;
   justify-items: center;
@@ -280,6 +272,10 @@
 }
 
 @media (max-width: 700px) {
+  .communityProfileHeroCard {
+    padding: 22px 20px;
+  }
+
   .communityProfileTop {
     grid-template-columns: 1fr;
     align-items: start;
@@ -288,13 +284,17 @@
   .communityProfileAvatarWrap,
   .communityProfileAvatar,
   .communityProfileAvatarFallback {
-    width: 92px;
-    height: 92px;
+    width: 96px;
+    height: 96px;
   }
 
   .communityProfileHead h1,
   .communityProfileTitleBlock h2 {
     font-size: 28px;
+  }
+
+  .communityProfileBio {
+    font-size: 15px;
   }
 
   .communityProfileStatsInline {
