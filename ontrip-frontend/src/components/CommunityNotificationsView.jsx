@@ -1,3 +1,4 @@
+import LoadingSpinner from "./LoadingSpinner";
 import "./CommunityNotificationsView.css";
 
 function formatTime(value) {
@@ -29,11 +30,7 @@ export default function CommunityNotificationsView({
       </div>
 
       {loading ? (
-        <div className="communityNotificationsEmptyState">
-          <div className="communityNotificationsEmptyIcon">🔔</div>
-          <h3>Loading notifications</h3>
-          <p>Please wait while your notifications are loading.</p>
-        </div>
+        <LoadingSpinner text="Loading notifications..." />
       ) : notifications.length === 0 ? (
         <div className="communityNotificationsEmptyState">
           <div className="communityNotificationsEmptyIcon">📭</div>
