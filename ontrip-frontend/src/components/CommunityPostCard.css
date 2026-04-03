@@ -1,11 +1,11 @@
 .communityPostCard {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.97);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 18px;
-  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
-  padding: 22px;
+  border-radius: 24px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+  padding: 20px;
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .communityPostHead {
@@ -38,7 +38,7 @@
   place-items: center;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
-  font-weight: 800;
+  font-weight: 850;
 }
 
 .communityPostHeadContent {
@@ -49,7 +49,7 @@
 
 .communityPostHeadTop {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
@@ -58,9 +58,7 @@
 .communityCommentName {
   text-decoration: none;
   color: var(--text);
-  font-weight: 740;
-  font-size: 15px;
-  line-height: 1.2;
+  font-weight: 800;
 }
 
 .communityAuthorName:hover,
@@ -69,12 +67,12 @@
 }
 
 .communityRolePill {
-  min-height: 24px;
-  padding: 0 10px;
+  min-height: 26px;
+  padding: 0 12px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -89,27 +87,27 @@
 }
 
 .communityDeleteBtn {
-  margin-left: auto;
-  min-height: 38px;
+  min-height: 36px;
   padding: 0 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 184, 241, 0.32);
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #fff;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 98, 98, 0.2);
+  background: rgba(255, 98, 98, 0.08);
+  color: #b42318;
   font: inherit;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   transition: 0.18s ease;
 }
 
 .communityDeleteBtn.pending {
-  opacity: 0.85;
+  background: rgba(255, 98, 98, 0.14);
+  border-color: rgba(255, 98, 98, 0.28);
 }
 
 .communityPostMeta {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 650;
   display: flex;
   gap: 6px;
@@ -122,10 +120,10 @@
 }
 
 .communityPostText {
-  color: rgba(11, 27, 42, 0.9);
+  color: var(--text);
   font-size: 15px;
-  font-weight: 500;
-  line-height: 1.72;
+  font-weight: 600;
+  line-height: 1.7;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -137,20 +135,19 @@
 }
 
 .communityTagChip {
-  min-height: 28px;
+  min-height: 30px;
   padding: 0 12px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   background: rgba(0, 184, 241, 0.08);
   color: #0369a1;
-  font-weight: 700;
-  font-size: 12px;
+  font-weight: 760;
+  font-size: 13px;
 }
 
 .communityLocationText {
   color: #0369a1;
-  font-size: 13px;
   font-weight: 700;
 }
 
@@ -194,7 +191,6 @@
   background: transparent;
   color: var(--text);
   font: inherit;
-  font-size: 13px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
@@ -220,16 +216,13 @@
 .communityCommentsSection {
   display: grid;
   gap: 12px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(11, 27, 42, 0.08);
+  padding-top: 4px;
 }
 
 .communityCommentsHeading {
-  font-size: 13px;
-  font-weight: 800;
-  color: #0369a1;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font-size: 16px;
+  font-weight: 780;
+  color: var(--text);
 }
 
 .communityCommentComposer {
@@ -241,16 +234,14 @@
 .communityCommentComposer input,
 .communityReplyComposer input {
   width: 100%;
-  min-height: 44px;
+  min-height: 46px;
   border-radius: 14px;
   border: 1px solid rgba(11, 27, 42, 0.12);
   background: #fff;
   font: inherit;
-  font-size: 14px;
   outline: none;
   box-sizing: border-box;
   padding: 0 14px;
-  color: rgba(11, 27, 42, 0.9);
 }
 
 .communityCommentComposer input:focus,
@@ -262,51 +253,45 @@
 .communityCommentComposer button,
 .communityReplyComposer button,
 .communityLoadCommentsBtn,
-.communityCommentActions button {
-  min-height: 40px;
+.communityCommentActions button,
+.communityCommentLoadBtn {
+  min-height: 42px;
   border-radius: 12px;
   border: none;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
   font: inherit;
-  font-size: 12px;
-  font-weight: 700;
+  font-weight: 760;
   cursor: pointer;
   padding: 0 14px;
 }
 
 .communityCommentList {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .communityNoComments {
   padding: 14px 16px;
-  border-radius: 14px;
-  background: #ffffff;
+  border-radius: 16px;
+  background: rgba(248, 252, 255, 0.98);
   border: 1px solid rgba(11, 27, 42, 0.08);
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 650;
+  font-size: 14px;
+  font-weight: 550;
 }
 
 .communityCommentItem {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
   align-items: start;
-}
-
-.communityCommentItem.depth-1,
-.communityCommentItem.depth-2,
-.communityCommentItem.depth-3 {
-  margin-left: 14px;
 }
 
 .communityCommentAvatar,
 .communityCommentAvatarFallback {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
 }
 
@@ -316,19 +301,16 @@
 }
 
 .communityCommentBody {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 16px;
-  padding: 12px 12px 11px;
+  padding: 12px 14px;
   display: grid;
   gap: 8px;
 }
 
 .communityCommentTop {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
+  display: block;
 }
 
 .communityCommentNameWrap {
@@ -341,14 +323,13 @@
 .communityCommentNameWrap span {
   color: var(--muted);
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .communityCommentText {
-  color: rgba(11, 27, 42, 0.9);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.65;
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.6;
   word-break: break-word;
 }
 
@@ -358,32 +339,66 @@
   flex-wrap: wrap;
 }
 
-.communityCommentActions button {
-  min-height: 36px;
-  padding: 0 14px;
-  background: #ffffff;
+.communityCommentActions button,
+.communityCommentLoadBtn {
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(0, 184, 241, 0.08);
   color: #0369a1;
-  border: 1px solid rgba(0, 184, 241, 0.16);
-}
-
-.communityCommentActions .communityCommentLoadBtn {
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #fff;
-  border: none;
+  border: 1px solid rgba(0, 184, 241, 0.14);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .communityReplyComposer {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
+  margin-top: 2px;
 }
 
 .communityReplyTree {
-  margin-top: 4px;
   display: grid;
-  gap: 8px;
-  border-left: 2px solid rgba(11, 27, 42, 0.08);
-  padding-left: 12px;
+  gap: 10px;
+  margin-top: 4px;
+  padding-left: 14px;
+}
+
+.communityCommentItem.depth-1,
+.communityCommentItem.depth-2,
+.communityCommentItem.depth-3 {
+  margin-left: 0;
+}
+
+.communityReplyTree > .communityCommentItem {
+  position: relative;
+}
+
+.communityReplyTree > .communityCommentItem::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 18px;
+  width: 2px;
+  height: calc(100% - 8px);
+  background: rgba(0, 184, 241, 0.14);
+  border-radius: 999px;
+}
+
+.communityReplyTree > .communityCommentItem:last-child::before {
+  height: 18px;
+}
+
+.communityReplyTree > .communityCommentItem::after {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 18px;
+  width: 10px;
+  height: 2px;
+  background: rgba(0, 184, 241, 0.14);
+  border-radius: 999px;
 }
 
 .communityLoadCommentsBtn {
@@ -402,21 +417,20 @@
     height: 220px;
   }
 
-  .communityPostText {
-    font-size: 14px;
+  .communityPostActions {
+    gap: 14px;
   }
 
-  .communityCommentText {
-    font-size: 13px;
+  .communityReplyTree {
+    padding-left: 10px;
   }
 
-  .communityCommentItem.depth-1,
-  .communityCommentItem.depth-2,
-  .communityCommentItem.depth-3 {
-    margin-left: 10px;
+  .communityReplyTree > .communityCommentItem::before {
+    left: -8px;
   }
 
-  .communityDeleteBtn {
-    margin-left: 0;
+  .communityReplyTree > .communityCommentItem::after {
+    left: -8px;
+    width: 8px;
   }
 }
