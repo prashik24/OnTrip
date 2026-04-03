@@ -771,6 +771,14 @@ export async function getNotifications(req, res) {
 
     const items = await Notification.find({ user: req.user._id })
       .populate("actor", "name avatar city role")
+      .populate({
+        path: "post",
+        select: "text media comments",
+        populate: {
+          path: "comments.user",
+          select: "name avatar city role",
+        },
+      })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
@@ -778,24 +786,62 @@ export async function getNotifications(req, res) {
     const total = await Notification.countDocuments({ user: req.user._id });
 
     return res.json({
-      notifications: items.map((item) => ({
-        id: item._id,
-        type: item.type,
-        text: item.text,
-        isRead: item.isRead,
-        post: item.post || null,
-        commentId: item.commentId || null,
-        actor: item.actor
-          ? {
-              id: item.actor._id,
-              name: item.actor.name,
-              avatar: item.actor.avatar || "",
-              city: item.actor.city || "",
-              role: item.actor.role || "user",
+      notifications: items.map((item) => {
+        let commentText = "";
+        let parentCommentText = "";
+
+        if (item.post && item.commentId && Array.isArray(item.post.comments)) {
+          const matchedComment =
+            item.post.comments.id?.(item.commentId) ||
+            item.post.comments.find(
+              (comment) => String(comment._id) === String(item.commentId)
+            );
+
+          if (matchedComment) {
+            commentText = matchedComment.text || "";
+
+            if (matchedComment.parentComment) {
+              const parentComment =
+                item.post.comments.id?.(matchedComment.parentComment) ||
+                item.post.comments.find(
+                  (comment) =>
+                    String(comment._id) === String(matchedComment.parentComment)
+                );
+
+              if (parentComment) {
+                parentCommentText = parentComment.text || "";
+              }
             }
-          : null,
-        createdAt: item.createdAt,
-      })),
+          }
+        }
+
+        return {
+          id: item._id,
+          type: item.type,
+          text: item.text,
+          isRead: item.isRead,
+          post: item.post
+            ? {
+                id: item.post._id,
+                text: item.post.text || "",
+                media: item.post.media || [],
+              }
+            : null,
+          commentId: item.commentId || null,
+          commentText,
+          parentCommentText,
+          actor: item.actor
+            ? {
+                id: item.actor._id,
+                name: item.actor.name,
+                avatar: item.actor.avatar || "",
+                city: item.actor.city || "",
+                role: item.actor.role || "user",
+              }
+            : null,
+          createdAt: item.createdAt,
+        };
+      }),
       pagination: {
         page,
         limit,
