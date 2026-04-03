@@ -29,43 +29,106 @@ function getActorLabel(item) {
   return item.actor?.name || "Someone";
 }
 
-function getPostPreview(item) {
-  const text = String(item.post?.text || "").trim();
-  if (!text) return "";
-  return text;
-}
-
 function getCommentPreview(item) {
   const text = String(item.commentText || "").trim();
   if (!text) return "Comment text not available.";
   return text;
 }
 
-function getPostMedia(item) {
-  return Array.isArray(item.post?.media) ? item.post.media : [];
-}
-
 function canReplyToNotification(item) {
   return item.type === "comment_post" || item.type === "mention_comment";
 }
 
-function NotificationPostCard({ item }) {
-  const media = getPostMedia(item);
-  const hasText = Boolean(String(item.post?.text || "").trim());
+function getPostTypeLabel(postType) {
+  if (postType === "question") return "Question";
+  if (postType === "trip_story") return "Trip Story";
+  if (postType === "provider_offer") return "Provider Offer";
+  return "Post";
+}
+
+function NotificationPostCard({ item, onOpenPost }) {
+  const post = item.post || {};
+  const media = Array.isArray(post.media) ? post.media : [];
+  const tags = Array.isArray(post.tags) ? post.tags : [];
+  const author = post.author || {};
+  const likeCount = Number(post.likesCount || 0);
+  const commentCount = Number(post.commentsCount || 0);
 
   return (
-    <div className="communityNotificationsPostCard">
-      <div className="communityNotificationsPostHead">
-        <strong>Post</strong>
+    <article
+      className="communityPostCard communityNotificationsFullPostCard"
+      onClick={() => post?.id && onOpenPost?.(post.id)}
+      role={post?.id ? "button" : undefined}
+      tabIndex={post?.id ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (!post?.id) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpenPost?.(post.id);
+        }
+      }}
+    >
+      <div className="communityPostHead">
+        <div className="communityAuthorLink">
+          {author?.avatar ? (
+            <img
+              src={author.avatar}
+              alt={author?.name || "User"}
+              className="communityPostAvatar"
+            />
+          ) : (
+            <div className="communityPostAvatarFallback">
+              {getInitial(author?.name)}
+            </div>
+          )}
+        </div>
+
+        <div className="communityPostHeadContent">
+          <div className="communityPostHeadTop">
+            <span className="communityAuthorName">
+              {author?.name || "User"}
+            </span>
+
+            <span className={`communityRolePill ${author?.role || "user"}`}>
+              {author?.role === "provider" ? "Provider" : "Traveler"}
+            </span>
+          </div>
+
+          <div className="communityPostMeta">
+            <span>{author?.city || post.locationText || "OnTrip"}</span>
+            <span>•</span>
+            <span>{formatTime(post.createdAt || item.createdAt)}</span>
+            {post.postType ? (
+              <>
+                <span>•</span>
+                <span className="communityPostType">
+                  {getPostTypeLabel(post.postType)}
+                </span>
+              </>
+            ) : null}
+          </div>
+        </div>
       </div>
 
-      {hasText ? (
-        <div className="communityNotificationsPostText">{getPostPreview(item)}</div>
+      {post.text ? <div className="communityPostText">{post.text}</div> : null}
+
+      {tags.length ? (
+        <div className="communityTagRow">
+          {tags.map((tag) => (
+            <span key={tag} className="communityTagChip">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      ) : null}
+
+      {post.locationText ? (
+        <div className="communityLocationText">📍 {post.locationText}</div>
       ) : null}
 
       {media.length ? (
         <div
-          className={`communityNotificationsMediaGrid ${
+          className={`communityMediaGrid ${
             media.length === 1 ? "single" : media.length === 2 ? "double" : "multi"
           }`}
         >
@@ -75,26 +138,32 @@ function NotificationPostCard({ item }) {
                 key={`${mediaItem.url}-${index}`}
                 src={mediaItem.url}
                 controls
-                className="communityNotificationsPostMedia"
+                className="communityPostMedia"
+                onClick={(e) => e.stopPropagation()}
               />
             ) : (
               <img
                 key={`${mediaItem.url}-${index}`}
                 src={mediaItem.url}
                 alt={`notification-post-${index + 1}`}
-                className="communityNotificationsPostMedia"
+                className="communityPostMedia"
               />
             )
           )}
         </div>
       ) : null}
 
-      {!hasText && !media.length ? (
-        <div className="communityNotificationsPostText">
-          Post content not available.
+      <div className="communityPostActions">
+        <div className="communityActionInfo">
+          <span>👍</span>
+          <span>{likeCount}</span>
         </div>
-      ) : null}
-    </div>
+        <div className="communityActionInfo">
+          <span>💬</span>
+          <span>{commentCount}</span>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -108,6 +177,7 @@ export default function CommunityNotificationsView({
   setNotificationCommentText,
   onReplyFromNotification,
   commentingNotificationId,
+  onOpenPostFromNotification,
 }) {
   return (
     <div className="communityNotificationsView">
@@ -164,11 +234,17 @@ export default function CommunityNotificationsView({
                   </div>
 
                   {item.type === "like_post" && item.post?.id ? (
-                    <NotificationPostCard item={item} />
+                    <NotificationPostCard
+                      item={item}
+                      onOpenPost={onOpenPostFromNotification}
+                    />
                   ) : null}
 
                   {item.type === "mention_post" && item.post?.id ? (
-                    <NotificationPostCard item={item} />
+                    <NotificationPostCard
+                      item={item}
+                      onOpenPost={onOpenPostFromNotification}
+                    />
                   ) : null}
 
                   {item.type === "comment_post" ? (
@@ -177,7 +253,12 @@ export default function CommunityNotificationsView({
                         <strong>Comment</strong>
                         <p>{getCommentPreview(item)}</p>
                       </div>
-                      {item.post?.id ? <NotificationPostCard item={item} /> : null}
+                      {item.post?.id ? (
+                        <NotificationPostCard
+                          item={item}
+                          onOpenPost={onOpenPostFromNotification}
+                        />
+                      ) : null}
                     </div>
                   ) : null}
 
@@ -187,7 +268,12 @@ export default function CommunityNotificationsView({
                         <strong>Reply</strong>
                         <p>{getCommentPreview(item)}</p>
                       </div>
-                      {item.post?.id ? <NotificationPostCard item={item} /> : null}
+                      {item.post?.id ? (
+                        <NotificationPostCard
+                          item={item}
+                          onOpenPost={onOpenPostFromNotification}
+                        />
+                      ) : null}
                     </div>
                   ) : null}
 
@@ -197,7 +283,12 @@ export default function CommunityNotificationsView({
                         <strong>Comment</strong>
                         <p>{getCommentPreview(item)}</p>
                       </div>
-                      {item.post?.id ? <NotificationPostCard item={item} /> : null}
+                      {item.post?.id ? (
+                        <NotificationPostCard
+                          item={item}
+                          onOpenPost={onOpenPostFromNotification}
+                        />
+                      ) : null}
                     </div>
                   ) : null}
 
@@ -210,10 +301,14 @@ export default function CommunityNotificationsView({
                         onChange={(e) =>
                           setNotificationCommentText(item.id, e.target.value)
                         }
+                        onClick={(e) => e.stopPropagation()}
                       />
                       <button
                         type="button"
-                        onClick={() => onReplyFromNotification(item)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onReplyFromNotification(item);
+                        }}
                         disabled={
                           commentingNotificationId === item.id || !draft.trim()
                         }
