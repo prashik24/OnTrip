@@ -74,7 +74,7 @@ export default function CommunityNotificationsView({
         <div className="communityNotificationsList">
           {notifications.map((item) => {
             const canComment = Boolean(item.post?.id);
-            const draft = notificationCommentDrafts[item.id] || "";
+            const draft = notificationCommentDrafts?.[item.id] || "";
 
             return (
               <div
@@ -111,19 +111,31 @@ export default function CommunityNotificationsView({
 
                   {item.type === "like_post" && item.post?.id ? (
                     <div className="communityNotificationsPreviewBox">
-                      <strong>Post</strong>
+                      <strong>Liked Post</strong>
                       <p>{getPostPreview(item)}</p>
                     </div>
                   ) : null}
 
-                  {(item.type === "comment_post" ||
-                    item.type === "reply_comment" ||
-                    item.type === "mention_comment") ? (
+                  {item.type === "comment_post" && (
                     <div className="communityNotificationsPreviewBox">
                       <strong>Comment</strong>
                       <p>{getCommentPreview(item)}</p>
                     </div>
-                  ) : null}
+                  )}
+
+                  {item.type === "reply_comment" && (
+                    <div className="communityNotificationsPreviewBox">
+                      <strong>Reply</strong>
+                      <p>{getCommentPreview(item)}</p>
+                    </div>
+                  )}
+
+                  {item.type === "mention_comment" && (
+                    <div className="communityNotificationsPreviewBox">
+                      <strong>Comment</strong>
+                      <p>{getCommentPreview(item)}</p>
+                    </div>
+                  )}
 
                   {item.type === "mention_post" && item.post?.id ? (
                     <div className="communityNotificationsPreviewBox">
