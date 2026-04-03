@@ -31,7 +31,7 @@ function getActorLabel(item) {
 
 function getPostPreview(item) {
   const text = String(item.post?.text || "").trim();
-  if (!text) return "Post content not available.";
+  if (!text) return "";
   return text;
 }
 
@@ -51,6 +51,7 @@ function canReplyToNotification(item) {
 
 function NotificationPostCard({ item }) {
   const media = getPostMedia(item);
+  const hasText = Boolean(String(item.post?.text || "").trim());
 
   return (
     <div className="communityNotificationsPostCard">
@@ -58,7 +59,7 @@ function NotificationPostCard({ item }) {
         <strong>Post</strong>
       </div>
 
-      {item.post?.text ? (
+      {hasText ? (
         <div className="communityNotificationsPostText">{getPostPreview(item)}</div>
       ) : null}
 
@@ -85,6 +86,12 @@ function NotificationPostCard({ item }) {
               />
             )
           )}
+        </div>
+      ) : null}
+
+      {!hasText && !media.length ? (
+        <div className="communityNotificationsPostText">
+          Post content not available.
         </div>
       ) : null}
     </div>
