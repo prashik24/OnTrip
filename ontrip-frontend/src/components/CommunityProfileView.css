@@ -38,6 +38,7 @@
   position: absolute;
   inset: 0 0 auto 0;
   height: 86px;
+
   z-index: 0;
 }
 
@@ -182,28 +183,11 @@
 }
 
 .communityProfileFollowBtn,
-.communityProfileLoadMoreBtn {
+.communityProfileLoadMoreBtn,
+.communityProfileDeleteConfirmBtn {
   border: 1px solid rgba(0, 184, 241, 0.32);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #ffffff;
-}
-
-.communityProfileDeleteConfirmBtn {
-  border: 1px solid #0284c7;
-  background: linear-gradient(135deg, #38bdf8, #0284c7);
-  color: #ffffff;
-  box-shadow: 0 10px 22px rgba(2, 132, 199, 0.22);
-}
-
-.communityProfileDeleteConfirmBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 28px rgba(2, 132, 199, 0.28);
-  filter: brightness(1.03);
-}
-
-.communityProfileDeleteConfirmBtn:active {
-  transform: translateY(0);
-  box-shadow: 0 8px 18px rgba(2, 132, 199, 0.22);
 }
 
 .communityProfileDeleteCancelBtn {
