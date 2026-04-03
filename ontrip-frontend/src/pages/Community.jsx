@@ -134,8 +134,10 @@ export default function Community() {
 
   const [search, setSearch] = useState("");
   const [commentDrafts, setCommentDrafts] = useState({});
+  const [notificationCommentDrafts, setNotificationCommentDrafts] = useState({});
   const [loadingCommentsFor, setLoadingCommentsFor] = useState("");
   const [loadingRepliesId, setLoadingRepliesId] = useState("");
+  const [commentingNotificationId, setCommentingNotificationId] = useState("");
 
   const [loadingMain, setLoadingMain] = useState(true);
   const [loadingProfile, setLoadingProfile] = useState(false);
@@ -538,6 +540,13 @@ export default function Community() {
     }));
   }
 
+  function setNotificationCommentText(notificationId, value) {
+    setNotificationCommentDrafts((prev) => ({
+      ...prev,
+      [notificationId]: value,
+    }));
+  }
+
   async function handleComment(postId) {
     if (!isLoggedIn()) {
       setError("Please login first.");
@@ -561,6 +570,42 @@ export default function Community() {
       }));
     } catch (err) {
       setError(err.message || "Failed to add comment.");
+    }
+  }
+
+  async function handleCommentFromNotification(notification) {
+    if (!isLoggedIn()) {
+      setError("Please login first.");
+      return;
+    }
+
+    const postId = notification?.post?.id;
+    if (!postId) {
+      setError("Post not available for comment.");
+      return;
+    }
+
+    const text = String(notificationCommentDrafts[notification.id] || "").trim();
+    if (!text) return;
+
+    try {
+      setCommentingNotificationId(notification.id);
+
+      const res = await apiFetch(`/api/community/${postId}/comment`, {
+        method: "POST",
+        body: JSON.stringify({ text }),
+      });
+
+      replacePostAcrossViews(res.post);
+
+      setNotificationCommentDrafts((prev) => ({
+        ...prev,
+        [notification.id]: "",
+      }));
+    } catch (err) {
+      setError(err.message || "Failed to add comment.");
+    } finally {
+      setCommentingNotificationId("");
     }
   }
 
@@ -786,6 +831,10 @@ export default function Community() {
               loading={loadingNotifications}
               loadingMore={loadingNotificationsMore}
               onLoadMore={() => loadNotifications(false)}
+              notificationCommentDrafts={notificationCommentDrafts}
+              setNotificationCommentText={setNotificationCommentText}
+              onCommentFromNotification={handleCommentFromNotification}
+              commentingNotificationId={commentingNotificationId}
             />
           ) : null}
         </main>
