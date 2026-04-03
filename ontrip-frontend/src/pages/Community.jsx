@@ -680,6 +680,7 @@ export default function Community() {
           {activeView === "profile" ? (
             <CommunityProfileView
               profile={selectedProfile}
+              isOwnProfile={String(selectedProfileId) === String(me?.id)}
               composer={composer}
               setComposer={setComposer}
               submitting={submitting}
