@@ -14,20 +14,27 @@ export default function CommunitySidebar({
   return (
     <aside className="communitySidebar">
       <div className="communitySidebarCard">
-        <div className="communitySidebarProfile">
-          {me?.avatar ? (
-            <img
-              src={me.avatar}
-              alt={me.name || "User"}
-              className="communitySidebarAvatar"
-            />
-          ) : (
-            <div className="communitySidebarAvatarFallback">
-              {getInitial(me?.name)}
-            </div>
-          )}
+        <div className="communitySidebarHead">
+          <h2>Community</h2>
+          <p>Profile, posts and activity</p>
+        </div>
 
-          <div className="communitySidebarProfileInfo">
+        <div className="communitySidebarUserCard">
+          <div className="communitySidebarAvatarWrap">
+            {me?.avatar ? (
+              <img
+                src={me.avatar}
+                alt={me.name || "User"}
+                className="communitySidebarAvatar"
+              />
+            ) : (
+              <div className="communitySidebarAvatarFallback">
+                {getInitial(me?.name)}
+              </div>
+            )}
+          </div>
+
+          <div className="communitySidebarUserInfo">
             <h3>{me?.name || "User"}</h3>
             <p>{me?.city || "OnTrip"}</p>
           </div>
@@ -91,7 +98,6 @@ export default function CommunitySidebar({
             onClick={() => onChangeView("notifications")}
           >
             <span>Notifications</span>
-
             {unreadNotificationsCount > 0 ? (
               <span className="communitySidebarBadge">{unreadNotificationsCount}</span>
             ) : null}
