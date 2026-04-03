@@ -773,10 +773,11 @@ export async function getNotifications(req, res) {
       .populate("actor", "name avatar city role")
       .populate({
         path: "post",
-        select: "text media comments",
+        select:
+          "author postType text media tags likes bookmarks comments locationText createdAt",
         populate: {
-          path: "comments.user",
-          select: "name avatar city role",
+          path: "author",
+          select: "name email avatar city bio role followers following",
         },
       })
       .sort({ createdAt: -1 })
@@ -823,8 +824,30 @@ export async function getNotifications(req, res) {
           post: item.post
             ? {
                 id: item.post._id,
+                author: item.post.author
+                  ? {
+                      id: item.post.author._id,
+                      name: item.post.author.name,
+                      email: item.post.author.email || "",
+                      avatar: item.post.author.avatar || "",
+                      city: item.post.author.city || "",
+                      bio: item.post.author.bio || "",
+                      role: item.post.author.role || "user",
+                    }
+                  : null,
+                postType: item.post.postType || "post",
                 text: item.post.text || "",
                 media: item.post.media || [],
+                tags: item.post.tags || [],
+                locationText: item.post.locationText || "",
+                likesCount: Array.isArray(item.post.likes) ? item.post.likes.length : 0,
+                bookmarksCount: Array.isArray(item.post.bookmarks)
+                  ? item.post.bookmarks.length
+                  : 0,
+                commentsCount: Array.isArray(item.post.comments)
+                  ? item.post.comments.length
+                  : 0,
+                createdAt: item.post.createdAt || item.createdAt,
               }
             : null,
           commentId: item.commentId || null,
