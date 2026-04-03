@@ -29,7 +29,7 @@ export default function CommunityFeedView({
     <div className="communityFeedView">
       <div className="communityFeedTop">
         <div className="communityFeedTitleWrap">
-          <h1>Community Main</h1>
+          <h1>Community</h1>
           <p>See all posts from all users in one place.</p>
         </div>
 
