@@ -27,9 +27,9 @@
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 22px;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
-  padding: 0;
+  padding: 24px;
   display: grid;
-  gap: 0;
+  gap: 18px;
   overflow: hidden;
 }
 
@@ -37,8 +37,7 @@
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
-  height: 114px;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  height: 86px;
   z-index: 0;
 }
 
@@ -48,15 +47,14 @@
   display: grid;
   grid-template-columns: 150px minmax(0, 1fr);
   gap: 24px;
-  align-items: start;
-  padding: 78px 24px 24px;
+  align-items: center;
 }
 
 .communityProfileAvatarWrap {
   width: 150px;
   height: 150px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
 }
 
@@ -71,7 +69,7 @@
   object-fit: cover;
   display: block;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.1);
-  border: 4px solid rgba(255, 255, 255, 0.95);
+  border: 4px solid rgba(255, 255, 255, 0.92);
   background: #fff;
 }
 
@@ -82,14 +80,13 @@
   color: #fff;
   font-size: 42px;
   font-weight: 850;
-  border: 4px solid rgba(255, 255, 255, 0.95);
+  border: 4px solid rgba(255, 255, 255, 0.92);
 }
 
 .communityProfileInfo {
   min-width: 0;
   display: grid;
   gap: 12px;
-  padding-top: 58px;
 }
 
 .communityProfileNameRow {
@@ -129,13 +126,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.9);
   color: #0369a1;
   font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
   border: 1px solid rgba(0, 184, 241, 0.12);
-  margin-top: 4px;
 }
 
 .communityProfileBio {
@@ -295,14 +291,8 @@
 }
 
 @media (max-width: 900px) {
-  .communityProfileHeroCard::before {
-    height: 102px;
-  }
-
   .communityProfileTop {
     grid-template-columns: 118px minmax(0, 1fr);
-    gap: 18px;
-    padding: 72px 20px 20px;
   }
 
   .communityProfileAvatarWrap,
@@ -312,10 +302,6 @@
     height: 118px;
   }
 
-  .communityProfileInfo {
-    padding-top: 46px;
-  }
-
   .communityProfileTitleBlock h2 {
     font-size: 24px;
   }
@@ -323,17 +309,16 @@
 
 @media (max-width: 700px) {
   .communityProfileHeroCard::before {
-    height: 88px;
-  }
-
-  .communityProfileHeroCard {
-    border-radius: 20px;
+    height: 72px;
   }
 
   .communityProfileTop {
     grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 64px 18px 18px;
+    align-items: start;
+  }
+
+  .communityProfileHeroCard {
+    padding: 20px;
   }
 
   .communityProfileAvatarWrap,
@@ -341,15 +326,6 @@
   .communityProfileAvatarFallback {
     width: 96px;
     height: 96px;
-  }
-
-  .communityProfileInfo {
-    padding-top: 0;
-  }
-
-  .communityProfileNameRow {
-    flex-direction: column;
-    align-items: flex-start;
   }
 
   .communityProfileHead h1,
