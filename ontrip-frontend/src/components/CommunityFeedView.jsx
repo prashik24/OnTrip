@@ -1,4 +1,5 @@
 import CommunityPostCard from "./CommunityPostCard";
+import LoadingSpinner from "./LoadingSpinner";
 import "./CommunityFeedView.css";
 
 export default function CommunityFeedView({
@@ -44,11 +45,7 @@ export default function CommunityFeedView({
       </div>
 
       {loading ? (
-        <div className="communityFeedEmptyState">
-          <div className="communityFeedEmptyIcon">🌍</div>
-          <h3>Loading community</h3>
-          <p>Please wait while posts are loading.</p>
-        </div>
+        <LoadingSpinner text="Loading community..." />
       ) : posts.length === 0 ? (
         <div className="communityFeedEmptyState">
           <div className="communityFeedEmptyIcon">📭</div>
