@@ -7,6 +7,7 @@
 .communityProfileHead h1 {
   margin: 0;
   font-size: 32px;
+  font-weight: 850;
   color: var(--text);
   line-height: 1.2;
 }
@@ -33,7 +34,12 @@
   display: grid;
   grid-template-columns: 110px minmax(0, 1fr);
   gap: 20px;
-  align-items: start;
+  align-items: center;
+}
+
+.communityProfileAvatarWrap {
+  width: 110px;
+  height: 110px;
 }
 
 .communityProfileAvatar,
@@ -57,22 +63,47 @@
   font-weight: 850;
 }
 
-.communityProfileInfo h2 {
+.communityProfileInfo {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.communityProfileNameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.communityProfileNameRow h2 {
   margin: 0;
   font-size: 30px;
+  font-weight: 850;
   color: var(--text);
   line-height: 1.2;
 }
 
+.communityProfileRolePill {
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 184, 241, 0.1);
+  color: #0369a1;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .communityProfileInfo p {
-  margin: 8px 0 0;
+  margin: 0;
   color: var(--muted);
   font-weight: 550;
   line-height: 1.6;
 }
 
 .communityProfileMeta {
-  margin-top: 12px;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -81,7 +112,6 @@
 }
 
 .communityProfileStats {
-  margin-top: 18px;
   display: flex;
   gap: 24px;
   flex-wrap: wrap;
@@ -111,12 +141,12 @@
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
   font: inherit;
-  font-weight: 750;
+  font-weight: 760;
   cursor: pointer;
 }
 
 .communityProfileFollowBtn {
-  margin-top: 18px;
+  width: fit-content;
 }
 
 .communityProfilePosts {
@@ -168,8 +198,10 @@
 @media (max-width: 640px) {
   .communityProfileTop {
     grid-template-columns: 1fr;
+    align-items: start;
   }
 
+  .communityProfileAvatarWrap,
   .communityProfileAvatar,
   .communityProfileAvatarFallback {
     width: 90px;
@@ -177,7 +209,7 @@
   }
 
   .communityProfileHead h1,
-  .communityProfileInfo h2 {
+  .communityProfileNameRow h2 {
     font-size: 26px;
   }
 }
