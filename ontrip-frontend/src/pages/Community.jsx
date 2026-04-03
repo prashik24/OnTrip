@@ -316,9 +316,12 @@ export default function Community() {
       const res = await apiFetch(`/api/community/me/notifications?page=${page}&limit=15`);
 
       if (reset) {
-        setNotifications(res.notifications || []);
+        const freshNotifications = (res.notifications || []).map((item) => ({
+          ...item,
+          isRead: true,
+        }));
+        setNotifications(freshNotifications);
         await apiFetch("/api/community/me/notifications/read", { method: "POST" });
-        setNotifications((res.notifications || []).map((item) => ({ ...item, isRead: true })));
       } else {
         setNotifications((prev) => [...prev, ...(res.notifications || [])]);
       }
@@ -421,16 +424,19 @@ export default function Community() {
         post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post
       )
     );
+
     setProfilePosts((prev) =>
       prev.map((post) =>
         post.id === enriched.id ? { ...enriched, showDelete: true } : post
       )
     );
+
     setBookmarkPosts((prev) =>
       prev.map((post) =>
         post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post
       )
     );
+
     setLikedPosts((prev) =>
       prev.map((post) =>
         post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post
@@ -598,9 +604,15 @@ export default function Community() {
       const mergeRepliesRecursively = (comments = []) =>
         comments.map((comment) => {
           if (comment.id === commentId) {
+            const existingReplyIds = new Set((comment.replies || []).map((reply) => String(reply.id)));
+            const mergedReplies = [
+              ...(comment.replies || []),
+              ...newReplies.filter((reply) => !existingReplyIds.has(String(reply.id))),
+            ];
+
             return {
               ...comment,
-              replies: [...(comment.replies || []), ...newReplies],
+              replies: mergedReplies,
               hasMoreReplies: res.pagination?.hasMore || false,
             };
           }
