@@ -193,6 +193,9 @@
   color: var(--text);
   font: inherit;
   font-weight: 760;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .communityActionBtn {
@@ -203,6 +206,22 @@
   color: #0369a1;
   background: rgba(235, 249, 255, 0.98);
   border-color: rgba(0, 184, 241, 0.2);
+}
+
+.communityActionIcon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: block;
+}
+
+.communityActionFallbackIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  font-size: 16px;
+  line-height: 1;
 }
 
 .communityCommentComposer {
