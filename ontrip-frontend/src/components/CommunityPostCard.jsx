@@ -23,11 +23,6 @@ function formatTime(value) {
   });
 }
 
-function getHasNestedReplyLoad(comment) {
-  if (comment?.hasMoreReplies) return true;
-  return (comment?.replies || []).some((reply) => getHasNestedReplyLoad(reply));
-}
-
 function CommentNode({
   comment,
   postId,
@@ -38,6 +33,8 @@ function CommentNode({
 }) {
   const [replyText, setReplyText] = useState("");
   const [showReplyBox, setShowReplyBox] = useState(false);
+
+  const hasMoreReplies = Boolean(comment?.hasMoreReplies);
 
   return (
     <div className={`communityCommentItem depth-${Math.min(depth, 3)}`}>
@@ -72,7 +69,7 @@ function CommentNode({
             {showReplyBox ? "Close Reply" : "Reply"}
           </button>
 
-          {getHasNestedReplyLoad(comment) ? (
+          {hasMoreReplies ? (
             <button
               type="button"
               className="communityCommentLoadBtn"
@@ -144,6 +141,9 @@ export default function CommunityPostCard({
   loadingRepliesId,
 }) {
   const canDelete = showDelete || post.showDelete || post.isMine;
+  const hasMoreComments =
+    Boolean(post.hasMoreComments) &&
+    Number(post.rootCommentsTotal || 0) > Number(post.loadedRootCount || 0);
 
   return (
     <article className="communityPostCard">
@@ -309,7 +309,7 @@ export default function CommunityPostCard({
           <div className="communityNoComments">No comments yet.</div>
         )}
 
-        {post.hasMoreComments ? (
+        {hasMoreComments ? (
           <button
             type="button"
             className="communityLoadCommentsBtn"
