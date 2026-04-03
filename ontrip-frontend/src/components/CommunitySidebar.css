@@ -1,149 +1,168 @@
-.communityFeedView {
-  display: grid;
-  gap: 16px;
+.communitySidebar {
   min-width: 0;
 }
 
-.communityFeedTop {
+.communitySidebarCard {
   position: sticky;
   top: 88px;
-  z-index: 6;
-  display: grid;
-  gap: 14px;
-  padding-bottom: 6px;
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(234, 242, 248, 0.96) 0%,
-      rgba(234, 242, 248, 0.96) 70%,
-      rgba(234, 242, 248, 0) 100%
-    );
-  backdrop-filter: blur(8px);
-}
-
-.communityFeedTitleWrap h1 {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 850;
-  color: var(--text);
-  line-height: 1.2;
-}
-
-.communityFeedTitleWrap p {
-  margin: 8px 0 0;
-  color: var(--muted);
-  font-weight: 550;
-  line-height: 1.6;
-}
-
-.communityFeedSearchBar {
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 22px;
   box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
   padding: 16px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 150px;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 14px;
+  align-self: start;
+}
+
+.communitySidebarTop {
+  display: grid;
   gap: 10px;
 }
 
-.communityFeedSearchBar input {
-  width: 100%;
-  min-height: 48px;
-  border-radius: 14px;
-  border: 1px solid rgba(11, 27, 42, 0.12);
-  background: #fff;
-  font: inherit;
-  outline: none;
-  box-sizing: border-box;
-  padding: 0 18px;
-}
-
-.communityFeedSearchBar input:focus {
-  border-color: rgba(0, 184, 241, 0.35);
-  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
-}
-
-.communityFeedSearchBar button,
-.communityFeedLoadMoreBtn {
-  min-height: 46px;
-  border-radius: 14px;
-  border: none;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #fff;
-  font: inherit;
-  font-weight: 760;
-  cursor: pointer;
-  padding: 0 16px;
-}
-
-.communityFeedList {
+.communitySidebarProfileRow {
   display: grid;
-  gap: 16px;
-}
-
-.communityFeedLoadMoreBtn {
-  width: 100%;
-}
-
-.communityFeedEmptyState {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 22px;
-  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
-  padding: 36px 24px;
-  display: grid;
-  justify-items: center;
-  text-align: center;
+  grid-template-columns: 56px minmax(0, 1fr);
   gap: 10px;
+  align-items: center;
 }
 
-.communityFeedEmptyIcon {
-  width: 64px;
-  height: 64px;
+.communitySidebarAvatar,
+.communitySidebarAvatarFallback {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
+}
+
+.communitySidebarAvatar {
+  object-fit: cover;
+}
+
+.communitySidebarAvatarFallback {
   display: grid;
   place-items: center;
-  background: rgba(0, 184, 241, 0.08);
-  font-size: 28px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  font-weight: 700;
 }
 
-.communityFeedEmptyState h3 {
+.communitySidebarProfileInfo h3 {
   margin: 0;
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 18px;
+  font-weight: 600;
   color: var(--text);
 }
 
-.communityFeedEmptyState p {
-  margin: 0;
-  max-width: 460px;
+.communitySidebarProfileInfo p {
+  margin: 3px 0 0;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--muted);
-  line-height: 1.6;
-  font-weight: 550;
+}
+
+.communitySidebarStats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.communitySidebarStats strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.communitySidebarMenu {
+  display: grid;
+  gap: 4px;
+  overflow: visible;
+}
+
+.communitySidebarLink {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 48px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  transition: 0.15s ease;
+}
+
+.communitySidebarLink span {
+  margin: 0;
+  padding: 0;
+}
+
+.communitySidebarLink:hover {
+  background: rgba(0, 184, 241, 0.06);
+}
+
+.communitySidebarLink.active {
+  background: rgba(0, 184, 241, 0.12);
+  color: #0369a1;
+}
+
+.communitySidebarIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  opacity: 0.9;
+  margin: 0;
+  padding: 0;
+}
+
+.communitySidebarBadge {
+  margin-left: auto;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 1080px) {
-  .communityFeedTop {
-    top: 80px;
-  }
-}
-
-@media (max-width: 860px) {
-  .communityFeedTop {
+  .communitySidebarCard {
     position: static;
-    background: transparent;
-    backdrop-filter: none;
-    padding-bottom: 0;
   }
 }
 
-@media (max-width: 720px) {
-  .communityFeedSearchBar {
-    grid-template-columns: 1fr;
+@media (max-width: 640px) {
+  .communitySidebarProfileRow {
+    grid-template-columns: 50px minmax(0, 1fr);
   }
 
-  .communityFeedTitleWrap h1 {
-    font-size: 28px;
+  .communitySidebarAvatar,
+  .communitySidebarAvatarFallback {
+    width: 50px;
+    height: 50px;
+  }
+
+  .communitySidebarLink {
+    min-height: 44px;
+    gap: 5px;
+  }
+
+  .communitySidebarIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .communitySidebarProfileInfo h3 {
+    font-size: 16px;
   }
 }
