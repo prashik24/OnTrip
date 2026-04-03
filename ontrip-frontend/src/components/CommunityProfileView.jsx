@@ -9,6 +9,7 @@ function getInitial(name = "U") {
 
 export default function CommunityProfileView({
   profile,
+  isOwnProfile,
   composer,
   setComposer,
   submitting,
@@ -83,7 +84,7 @@ export default function CommunityProfileView({
               </div>
             </div>
 
-            {!profile?.isMe ? (
+            {!isOwnProfile ? (
               <button
                 type="button"
                 className="communityProfileFollowBtn"
@@ -96,7 +97,7 @@ export default function CommunityProfileView({
         </div>
       </div>
 
-      {profile?.isMe ? (
+      {isOwnProfile ? (
         <CommunityComposer
           title="My Post"
           composer={composer}
@@ -120,7 +121,7 @@ export default function CommunityProfileView({
             <CommunityPostCard
               key={post.id}
               post={post}
-              showDelete={true}
+              showDelete={isOwnProfile}
               onLike={onLike}
               onBookmark={onBookmark}
               onDelete={onDelete}
