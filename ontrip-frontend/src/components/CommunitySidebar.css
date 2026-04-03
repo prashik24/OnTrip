@@ -1,11 +1,11 @@
 .communitySidebar {
   min-width: 0;
-  height: 100%;
+  align-self: start;
 }
 
 .communitySidebarCard {
-  position: relative;
-  top: auto;
+  position: relative !important;
+  top: auto !important;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 22px;
@@ -146,7 +146,8 @@
 
 @media (max-width: 1080px) {
   .communitySidebarCard {
-    position: relative;
+    position: relative !important;
+    top: auto !important;
     min-height: calc(100vh - 180px);
     max-height: calc(100vh - 180px);
   }
