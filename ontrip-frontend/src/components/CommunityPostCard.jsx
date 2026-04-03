@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import "./CommunityPostCard.css";
 
 const LIKE_ICON =
@@ -30,6 +29,7 @@ function CommentNode({
   onReply,
   onLoadReplies,
   loadingRepliesId,
+  onOpenProfile,
 }) {
   const [replyText, setReplyText] = useState("");
   const [showReplyBox, setShowReplyBox] = useState(false);
@@ -38,7 +38,11 @@ function CommentNode({
 
   return (
     <div className={`communityCommentItem depth-${Math.min(depth, 3)}`}>
-      <Link to={`/community/profile/${comment.user?.id}`} className="communityCommentUserLink">
+      <button
+        type="button"
+        className="communityCommentUserLink"
+        onClick={() => onOpenProfile?.(comment.user?.id)}
+      >
         {comment.user?.avatar ? (
           <img
             src={comment.user.avatar}
@@ -50,14 +54,18 @@ function CommentNode({
             {getInitial(comment.user?.name)}
           </div>
         )}
-      </Link>
+      </button>
 
       <div className="communityCommentBody">
         <div className="communityCommentTop">
           <div className="communityCommentNameWrap">
-            <Link to={`/community/profile/${comment.user?.id}`} className="communityCommentName">
+            <button
+              type="button"
+              className="communityCommentName"
+              onClick={() => onOpenProfile?.(comment.user?.id)}
+            >
               {comment.user?.name || "User"}
-            </Link>
+            </button>
             <span>{formatTime(comment.createdAt)}</span>
           </div>
         </div>
@@ -114,6 +122,7 @@ function CommentNode({
                 onReply={onReply}
                 onLoadReplies={onLoadReplies}
                 loadingRepliesId={loadingRepliesId}
+                onOpenProfile={onOpenProfile}
               />
             ))}
           </div>
@@ -139,6 +148,7 @@ export default function CommunityPostCard({
   setCommentText,
   loadingCommentsFor,
   loadingRepliesId,
+  onOpenProfile,
 }) {
   const canDelete = showDelete || post.showDelete || post.isMine;
   const hasMoreComments =
@@ -148,7 +158,11 @@ export default function CommunityPostCard({
   return (
     <article className="communityPostCard">
       <div className="communityPostHead">
-        <Link to={`/community/profile/${post.author?.id}`} className="communityAuthorLink">
+        <button
+          type="button"
+          className="communityAuthorLink"
+          onClick={() => onOpenProfile?.(post.author?.id)}
+        >
           {post.author?.avatar ? (
             <img
               src={post.author.avatar}
@@ -160,13 +174,17 @@ export default function CommunityPostCard({
               {getInitial(post.author?.name)}
             </div>
           )}
-        </Link>
+        </button>
 
         <div className="communityPostHeadContent">
           <div className="communityPostHeadTop">
-            <Link to={`/community/profile/${post.author?.id}`} className="communityAuthorName">
+            <button
+              type="button"
+              className="communityAuthorName"
+              onClick={() => onOpenProfile?.(post.author?.id)}
+            >
               {post.author?.name || "User"}
-            </Link>
+            </button>
 
             <span className={`communityRolePill ${post.author?.role || "user"}`}>
               {post.author?.role === "provider" ? "Provider" : "Traveler"}
@@ -302,6 +320,7 @@ export default function CommunityPostCard({
                 onReply={onReply}
                 onLoadReplies={onLoadReplies}
                 loadingRepliesId={loadingRepliesId}
+                onOpenProfile={onOpenProfile}
               />
             ))}
           </div>
