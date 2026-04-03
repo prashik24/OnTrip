@@ -12,36 +12,34 @@
   padding: 16px;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 14px;
+  gap: 12px;
   min-height: calc(100vh - 180px);
   max-height: calc(100vh - 180px);
   overflow: hidden;
 }
 
-/* ---------- TOP PROFILE ---------- */
-
+/* TOP PROFILE */
 .communitySidebarTop {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .communitySidebarProfileRow {
   display: grid;
-  grid-template-columns: 60px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 10px;
   align-items: center;
 }
 
 .communitySidebarAvatar,
 .communitySidebarAvatarFallback {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
 }
 
 .communitySidebarAvatar {
   object-fit: cover;
-  display: block;
 }
 
 .communitySidebarAvatarFallback {
@@ -49,35 +47,27 @@
   place-items: center;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
-  font-size: 22px;
   font-weight: 700;
-}
-
-.communitySidebarProfileInfo {
-  min-width: 0;
 }
 
 .communitySidebarProfileInfo h3 {
   margin: 0;
   font-size: 18px;
-  font-weight: 600; /* reduced */
+  font-weight: 600;
   color: var(--text);
-  line-height: 1.2;
 }
 
 .communitySidebarProfileInfo p {
-  margin: 4px 0 0;
+  margin: 3px 0 0;
   font-size: 13px;
   font-weight: 500;
   color: var(--muted);
 }
 
-/* ---------- STATS ---------- */
-
+/* STATS */
 .communitySidebarStats {
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 10px;
   font-size: 13px;
   font-weight: 500;
   color: var(--muted);
@@ -88,30 +78,24 @@
   font-weight: 600;
 }
 
-/* ---------- MENU ---------- */
-
+/* MENU */
 .communitySidebarMenu {
   display: grid;
-  gap: 6px;
+  gap: 4px; /* 🔥 reduced gap between items */
   overflow-y: auto;
-  padding-right: 4px;
-
   scrollbar-width: none;
-  -ms-overflow-style: none;
 }
 
 .communitySidebarMenu::-webkit-scrollbar {
   display: none;
 }
 
-/* ---------- LINKS ---------- */
-
+/* 🔥 MAIN FIX HERE */
 .communitySidebarLink {
-  display: grid;
-  grid-template-columns: 24px 1fr auto; /* tighter layout */
+  display: flex;
   align-items: center;
-  gap: 8px; /* reduced spacing */
-  min-height: 50px;
+  gap: 6px; /* 🔥 very tight spacing icon + text */
+  min-height: 48px;
   padding: 0 10px;
   border-radius: 12px;
   background: transparent;
@@ -119,11 +103,18 @@
   cursor: pointer;
   font: inherit;
   font-size: 15px;
-  font-weight: 500; /* lighter like chat */
+  font-weight: 500;
   color: var(--text);
   transition: 0.15s ease;
 }
 
+/* remove extra spacing */
+.communitySidebarLink span {
+  margin: 0;
+  padding: 0;
+}
+
+/* hover + active */
 .communitySidebarLink:hover {
   background: rgba(0, 184, 241, 0.06);
 }
@@ -133,28 +124,19 @@
   color: #0369a1;
 }
 
-/* ---------- ICON ---------- */
-
+/* ICON */
 .communitySidebarIcon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
-  opacity: 0.85;
+  opacity: 0.9;
+  margin: 0; /* 🔥 remove any spacing */
+  padding: 0;
 }
 
-.communitySidebarLink.active .communitySidebarIcon {
-  opacity: 1;
-}
-
-/* ---------- TEXT ---------- */
-
-.communitySidebarLink span {
-  line-height: 1;
-}
-
-/* ---------- BADGE ---------- */
-
+/* BADGE */
 .communitySidebarBadge {
+  margin-left: auto; /* push to right */
   min-width: 20px;
   height: 20px;
   border-radius: 999px;
@@ -167,8 +149,7 @@
   justify-content: center;
 }
 
-/* ---------- RESPONSIVE ---------- */
-
+/* RESPONSIVE */
 @media (max-width: 1080px) {
   .communitySidebarCard {
     position: static;
@@ -179,31 +160,26 @@
 
 @media (max-width: 640px) {
   .communitySidebarProfileRow {
-    grid-template-columns: 52px minmax(0, 1fr);
-    gap: 10px;
+    grid-template-columns: 50px minmax(0, 1fr);
   }
 
   .communitySidebarAvatar,
   .communitySidebarAvatarFallback {
-    width: 52px;
-    height: 52px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .communitySidebarLink {
+    min-height: 44px;
+    gap: 5px; /* even tighter mobile */
+  }
+
+  .communitySidebarIcon {
+    width: 18px;
+    height: 18px;
   }
 
   .communitySidebarProfileInfo h3 {
     font-size: 16px;
-  }
-
-  .communitySidebarLink {
-    min-height: 48px;
-    gap: 6px;
-  }
-
-  .communitySidebarIcon {
-    width: 16px;
-    height: 16px;
-  }
-
-  .communitySidebarStats {
-    font-size: 12px;
   }
 }
