@@ -29,8 +29,8 @@ export default function CommunitySidebar({
   onChangeView,
 }) {
   return (
-    <aside className="communitySidebar">
-      <div className="communitySidebarCard">
+    <aside className="communitySidebar communitySidebarNormalFlow">
+      <div className="communitySidebarBox">
         <div className="communitySidebarTop">
           <div className="communitySidebarProfileRow">
             {me?.avatar ? (
