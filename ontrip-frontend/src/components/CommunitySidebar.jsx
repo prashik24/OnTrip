@@ -5,7 +5,7 @@ const ICONS = {
   home: "https://img.icons8.com/?size=100&id=2797&format=png&color=000000",
   bell: "https://img.icons8.com/?size=100&id=84025&format=png&color=000000",
   bookmark: "https://img.icons8.com/?size=100&id=82461&format=png&color=000000",
-  like: "https://img.icons8.com/?size=100&id=24816&format=png&color=000000",
+  like: "https://img.icons8.com/?size=100&id=33479&format=png&color=000000",
 };
 
 function getInitial(name = "U") {
@@ -34,11 +34,7 @@ export default function CommunitySidebar({
         <div className="communitySidebarTop">
           <div className="communitySidebarProfileRow">
             {me?.avatar ? (
-              <img
-                src={me.avatar}
-                alt={me.name || "User"}
-                className="communitySidebarAvatar"
-              />
+              <img src={me.avatar} alt="" className="communitySidebarAvatar" />
             ) : (
               <div className="communitySidebarAvatarFallback">
                 {getInitial(me?.name)}
@@ -46,7 +42,7 @@ export default function CommunitySidebar({
             )}
 
             <div className="communitySidebarProfileInfo">
-              <h3>{me?.name || "User"}</h3>
+              <h3>{me?.name}</h3>
               <p>{getUsername(me)}</p>
             </div>
           </div>
@@ -64,70 +60,53 @@ export default function CommunitySidebar({
           </div>
         </div>
 
-        <div className="communitySidebarDivider" />
-
         <div className="communitySidebarMenu">
           <button
-            type="button"
             className={`communitySidebarLink ${activeView === "profile" ? "active" : ""}`}
             onClick={() => onChangeView("profile")}
           >
-            <span className="communitySidebarIconWrap">
-              <img src={ICONS.user} alt="" className="communitySidebarIcon" />
-            </span>
-            <span className="communitySidebarText">My Profile</span>
+            <img src={ICONS.user} className="communitySidebarIcon" />
+            <span>My Profile</span>
           </button>
 
           <button
-            type="button"
             className={`communitySidebarLink ${activeView === "home" ? "active" : ""}`}
             onClick={() => onChangeView("home")}
           >
-            <span className="communitySidebarIconWrap">
-              <img src={ICONS.home} alt="" className="communitySidebarIcon" />
-            </span>
-            <span className="communitySidebarText">Home</span>
+            <img src={ICONS.home} className="communitySidebarIcon" />
+            <span>Home</span>
           </button>
 
           <button
-            type="button"
             className={`communitySidebarLink ${activeView === "bookmarks" ? "active" : ""}`}
             onClick={() => onChangeView("bookmarks")}
           >
-            <span className="communitySidebarIconWrap">
-              <img src={ICONS.bookmark} alt="" className="communitySidebarIcon" />
-            </span>
-            <span className="communitySidebarText">Bookmarks</span>
+            <img src={ICONS.bookmark} className="communitySidebarIcon" />
+            <span>Bookmarks</span>
           </button>
 
           <button
-            type="button"
             className={`communitySidebarLink ${activeView === "likes" ? "active" : ""}`}
             onClick={() => onChangeView("likes")}
           >
-            <span className="communitySidebarIconWrap">
-              <img src={ICONS.like} alt="" className="communitySidebarIcon" />
-            </span>
-            <span className="communitySidebarText">Liked Posts</span>
+            <img src={ICONS.like} className="communitySidebarIcon" />
+            <span>Liked Posts</span>
           </button>
 
           <button
-            type="button"
             className={`communitySidebarLink ${
               activeView === "notifications" ? "active" : ""
             }`}
             onClick={() => onChangeView("notifications")}
           >
-            <span className="communitySidebarIconWrap">
-              <img src={ICONS.bell} alt="" className="communitySidebarIcon" />
-            </span>
-            <span className="communitySidebarText">Notifications</span>
+            <img src={ICONS.bell} className="communitySidebarIcon" />
+            <span>Notifications</span>
 
-            {unreadNotificationsCount > 0 ? (
+            {unreadNotificationsCount > 0 && (
               <span className="communitySidebarBadge">
-                {unreadNotificationsCount > 99 ? "99+" : unreadNotificationsCount}
+                {unreadNotificationsCount}
               </span>
-            ) : null}
+            )}
           </button>
         </div>
       </div>
