@@ -44,6 +44,37 @@ function enrichPosts(posts = []) {
   });
 }
 
+function mergeRepliesByCommentId(comments = [], commentId, newReplies = [], hasMore = false) {
+  return comments.map((comment) => {
+    if (String(comment.id) === String(commentId)) {
+      const existingIds = new Set((comment.replies || []).map((reply) => String(reply.id)));
+      const filteredIncoming = (newReplies || []).filter(
+        (reply) => !existingIds.has(String(reply.id))
+      );
+
+      return {
+        ...comment,
+        replies: [...(comment.replies || []), ...filteredIncoming],
+        hasMoreReplies: hasMore,
+      };
+    }
+
+    return {
+      ...comment,
+      replies: mergeRepliesByCommentId(comment.replies || [], commentId, newReplies, hasMore),
+    };
+  });
+}
+
+function findCommentById(comments = [], commentId) {
+  for (const comment of comments) {
+    if (String(comment.id) === String(commentId)) return comment;
+    const found = findCommentById(comment.replies || [], commentId);
+    if (found) return found;
+  }
+  return null;
+}
+
 export default function Community() {
   const me = getUser();
 
@@ -582,16 +613,7 @@ export default function Community() {
         bookmarkPosts.find((post) => post.id === postId) ||
         likedPosts.find((post) => post.id === postId);
 
-      const findCommentRecursively = (comments = [], targetId) => {
-        for (const comment of comments) {
-          if (comment.id === targetId) return comment;
-          const found = findCommentRecursively(comment.replies || [], targetId);
-          if (found) return found;
-        }
-        return null;
-      };
-
-      const targetComment = findCommentRecursively(target?.comments || [], commentId);
+      const targetComment = findCommentById(target?.comments || [], commentId);
       const currentReplyCount = targetComment?.replies?.length || 0;
       const nextPage = Math.floor(currentReplyCount / 2) + 1;
 
@@ -601,31 +623,14 @@ export default function Community() {
 
       const newReplies = res.replies || [];
 
-      const mergeRepliesRecursively = (comments = []) =>
-        comments.map((comment) => {
-          if (comment.id === commentId) {
-            const existingReplyIds = new Set((comment.replies || []).map((reply) => String(reply.id)));
-            const mergedReplies = [
-              ...(comment.replies || []),
-              ...newReplies.filter((reply) => !existingReplyIds.has(String(reply.id))),
-            ];
-
-            return {
-              ...comment,
-              replies: mergedReplies,
-              hasMoreReplies: res.pagination?.hasMore || false,
-            };
-          }
-
-          return {
-            ...comment,
-            replies: mergeRepliesRecursively(comment.replies || []),
-          };
-        });
-
       updatePostAcrossViews(postId, (post) => ({
         ...post,
-        comments: mergeRepliesRecursively(post.comments || []),
+        comments: mergeRepliesByCommentId(
+          post.comments || [],
+          commentId,
+          newReplies,
+          res.pagination?.hasMore || false
+        ),
       }));
     } catch (err) {
       setError(err.message || "Failed to load replies.");
