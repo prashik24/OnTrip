@@ -2,6 +2,14 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./CommunityPostCard.css";
 
+const LIKE_ICON =
+  "https://img.icons8.com/?size=100&id=33479&format=png&color=000000";
+const BOOKMARK_ICON =
+  "https://img.icons8.com/?size=100&id=82461&format=png&color=000000";
+
+/* comment link you gave was invalid, so fallback icon is used here */
+const COMMENT_ICON_FALLBACK = "💬";
+
 function getInitial(name = "U") {
   return String(name || "U").trim().charAt(0).toUpperCase();
 }
@@ -242,7 +250,8 @@ export default function CommunityPostCard({
           className={`communityActionBtn ${post.isLikedByMe ? "active" : ""}`}
           onClick={() => onLike(post.id)}
         >
-          ❤️ {post.likesCount}
+          <img src={LIKE_ICON} alt="" className="communityActionIcon" />
+          <span>{post.likesCount}</span>
         </button>
 
         <button
@@ -250,10 +259,14 @@ export default function CommunityPostCard({
           className={`communityActionBtn ${post.isBookmarkedByMe ? "active" : ""}`}
           onClick={() => onBookmark(post.id)}
         >
-          🔖 {post.isBookmarkedByMe ? "Saved" : "Save"}
+          <img src={BOOKMARK_ICON} alt="" className="communityActionIcon" />
+          <span>{post.isBookmarkedByMe ? "Saved" : "Save"}</span>
         </button>
 
-        <div className="communityActionInfo">💬 {post.commentsCount}</div>
+        <div className="communityActionInfo">
+          <span className="communityActionFallbackIcon">{COMMENT_ICON_FALLBACK}</span>
+          <span>{post.commentsCount}</span>
+        </div>
       </div>
 
       <div className="communityCommentComposer">
