@@ -12,13 +12,20 @@ function normalizeCommentsForUi(comments = [], rootLimit = 3, replyLimit = 2) {
   const safeComments = Array.isArray(comments) ? comments : [];
   const visibleRoot = safeComments.slice(0, rootLimit);
 
-  return {
-    comments: visibleRoot.map((comment) => ({
+  function normalizeNode(comment, depth = 0) {
+    const replies = Array.isArray(comment.replies) ? comment.replies : [];
+    const visibleReplies = replies.slice(0, replyLimit);
+
+    return {
       ...comment,
-      replies: Array.isArray(comment.replies) ? comment.replies.slice(0, replyLimit) : [],
-      hasMoreReplies:
-        Array.isArray(comment.replies) && comment.replies.length > replyLimit,
-    })),
+      depth,
+      replies: visibleReplies.map((reply) => normalizeNode(reply, depth + 1)),
+      hasMoreReplies: replies.length > replyLimit,
+    };
+  }
+
+  return {
+    comments: visibleRoot.map((comment) => normalizeNode(comment, 0)),
     hasMoreComments: safeComments.length > rootLimit,
   };
 }
@@ -410,16 +417,24 @@ export default function Community() {
     };
 
     setFeedPosts((prev) =>
-      prev.map((post) => (post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post))
+      prev.map((post) =>
+        post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post
+      )
     );
     setProfilePosts((prev) =>
-      prev.map((post) => (post.id === enriched.id ? { ...enriched, showDelete: true } : post))
+      prev.map((post) =>
+        post.id === enriched.id ? { ...enriched, showDelete: true } : post
+      )
     );
     setBookmarkPosts((prev) =>
-      prev.map((post) => (post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post))
+      prev.map((post) =>
+        post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post
+      )
     );
     setLikedPosts((prev) =>
-      prev.map((post) => (post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post))
+      prev.map((post) =>
+        post.id === enriched.id ? { ...enriched, showDelete: post.showDelete } : post
+      )
     );
   }
 
@@ -561,7 +576,16 @@ export default function Community() {
         bookmarkPosts.find((post) => post.id === postId) ||
         likedPosts.find((post) => post.id === postId);
 
-      const targetComment = (target?.comments || []).find((c) => c.id === commentId);
+      const findCommentRecursively = (comments = [], targetId) => {
+        for (const comment of comments) {
+          if (comment.id === targetId) return comment;
+          const found = findCommentRecursively(comment.replies || [], targetId);
+          if (found) return found;
+        }
+        return null;
+      };
+
+      const targetComment = findCommentRecursively(target?.comments || [], commentId);
       const currentReplyCount = targetComment?.replies?.length || 0;
       const nextPage = Math.floor(currentReplyCount / 2) + 1;
 
@@ -571,17 +595,25 @@ export default function Community() {
 
       const newReplies = res.replies || [];
 
+      const mergeRepliesRecursively = (comments = []) =>
+        comments.map((comment) => {
+          if (comment.id === commentId) {
+            return {
+              ...comment,
+              replies: [...(comment.replies || []), ...newReplies],
+              hasMoreReplies: res.pagination?.hasMore || false,
+            };
+          }
+
+          return {
+            ...comment,
+            replies: mergeRepliesRecursively(comment.replies || []),
+          };
+        });
+
       updatePostAcrossViews(postId, (post) => ({
         ...post,
-        comments: (post.comments || []).map((comment) =>
-          comment.id === commentId
-            ? {
-                ...comment,
-                replies: [...(comment.replies || []), ...newReplies],
-                hasMoreReplies: res.pagination?.hasMore || false,
-              }
-            : comment
-        ),
+        comments: mergeRepliesRecursively(post.comments || []),
       }));
     } catch (err) {
       setError(err.message || "Failed to load replies.");
@@ -591,9 +623,6 @@ export default function Community() {
   }
 
   async function handleDelete(postId) {
-    const ok = window.confirm("Delete this post?");
-    if (!ok) return;
-
     try {
       await apiFetch(`/api/community/${postId}`, {
         method: "DELETE",
