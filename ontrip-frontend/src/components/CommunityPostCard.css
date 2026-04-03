@@ -255,16 +255,19 @@
 
 .communityCommentComposer button,
 .communityReplyComposer button,
-.communityLoadCommentsBtn {
+.communityLoadCommentsBtn,
+.communityCommentActions button,
+.communityCommentLoadBtn {
   min-height: 42px;
+  padding: 0 14px;
   border-radius: 12px;
-  border: none;
+  border: 1px solid rgba(0, 184, 241, 0.32);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
   font: inherit;
-  font-weight: 760;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
-  padding: 0 14px;
 }
 
 .communityCommentList {
@@ -340,19 +343,6 @@
   flex-wrap: wrap;
 }
 
-.communityCommentActions button,
-.communityCommentLoadBtn {
-  min-height: 32px;
-  padding: 0 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 184, 241, 0.32);
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
 .communityReplyComposer {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -365,6 +355,7 @@
   gap: 10px;
   margin-top: 4px;
   padding-left: 14px;
+  border-left: none;
 }
 
 .communityCommentItem.depth-1,
@@ -377,30 +368,10 @@
   position: relative;
 }
 
-.communityReplyTree > .communityCommentItem::before {
-  content: "";
-  position: absolute;
-  left: -10px;
-  top: 18px;
-  width: 2px;
-  height: calc(100% - 8px);
-  background: rgba(0, 184, 241, 0.14);
-  border-radius: 999px;
-}
-
-.communityReplyTree > .communityCommentItem:last-child::before {
-  height: 18px;
-}
-
+.communityReplyTree > .communityCommentItem::before,
 .communityReplyTree > .communityCommentItem::after {
-  content: "";
-  position: absolute;
-  left: -10px;
-  top: 18px;
-  width: 10px;
-  height: 2px;
-  background: rgba(0, 184, 241, 0.14);
-  border-radius: 999px;
+  display: none;
+  content: none;
 }
 
 .communityLoadCommentsBtn {
@@ -427,12 +398,11 @@
     padding-left: 10px;
   }
 
-  .communityReplyTree > .communityCommentItem::before {
-    left: -8px;
-  }
-
-  .communityReplyTree > .communityCommentItem::after {
-    left: -8px;
-    width: 8px;
+  .communityDeleteBtn {
+    top: 14px;
+    right: 14px;
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 12px;
   }
 }
