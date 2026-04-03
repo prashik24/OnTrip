@@ -13,7 +13,9 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 14px;
-  align-self: start;
+  min-height: calc(100vh - 180px);
+  max-height: calc(100vh - 180px);
+  overflow: hidden;
 }
 
 .communitySidebarTop {
@@ -78,7 +80,13 @@
 .communitySidebarMenu {
   display: grid;
   gap: 4px;
-  overflow: visible;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.communitySidebarMenu::-webkit-scrollbar {
+  display: none;
 }
 
 .communitySidebarLink {
@@ -138,6 +146,8 @@
 @media (max-width: 1080px) {
   .communitySidebarCard {
     position: static;
+    min-height: auto;
+    max-height: none;
   }
 }
 
