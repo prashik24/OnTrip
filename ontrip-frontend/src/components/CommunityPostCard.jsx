@@ -52,22 +52,25 @@ function CommentNode({
 
       <div className="communityCommentBody">
         <div className="communityCommentTop">
-          <Link to={`/community/profile/${comment.user?.id}`} className="communityCommentName">
-            {comment.user?.name || "User"}
-          </Link>
-          <span>{formatTime(comment.createdAt)}</span>
+          <div className="communityCommentNameWrap">
+            <Link to={`/community/profile/${comment.user?.id}`} className="communityCommentName">
+              {comment.user?.name || "User"}
+            </Link>
+            <span>{formatTime(comment.createdAt)}</span>
+          </div>
         </div>
 
         <div className="communityCommentText">{comment.text}</div>
 
         <div className="communityCommentActions">
           <button type="button" onClick={() => setShowReplyBox((prev) => !prev)}>
-            Reply
+            {showReplyBox ? "Close Reply" : "Reply"}
           </button>
 
           {comment.hasMoreReplies ? (
             <button
               type="button"
+              className="communityCommentLoadBtn"
               onClick={() => onLoadReplies(postId, comment.id)}
               disabled={loadingRepliesId === comment.id}
             >
@@ -268,44 +271,50 @@ export default function CommunityPostCard({
         </div>
       </div>
 
-      <div className="communityCommentComposer">
-        <input
-          type="text"
-          placeholder="Write a comment..."
-          value={commentText}
-          onChange={(e) => setCommentText(post.id, e.target.value)}
-        />
-        <button type="button" onClick={() => onComment(post.id)}>
-          Comment
-        </button>
-      </div>
+      <div className="communityCommentsSection">
+        <div className="communityCommentsHeading">Comments</div>
 
-      {post.comments?.length ? (
-        <div className="communityCommentList">
-          {post.comments.map((comment) => (
-            <CommentNode
-              key={comment.id}
-              comment={comment}
-              postId={post.id}
-              depth={0}
-              onReply={onReply}
-              onLoadReplies={onLoadReplies}
-              loadingRepliesId={loadingRepliesId}
-            />
-          ))}
+        <div className="communityCommentComposer">
+          <input
+            type="text"
+            placeholder="Write a comment..."
+            value={commentText}
+            onChange={(e) => setCommentText(post.id, e.target.value)}
+          />
+          <button type="button" onClick={() => onComment(post.id)}>
+            Comment
+          </button>
         </div>
-      ) : null}
 
-      {post.hasMoreComments ? (
-        <button
-          type="button"
-          className="communityLoadCommentsBtn"
-          onClick={() => onLoadComments(post.id)}
-          disabled={loadingCommentsFor === post.id}
-        >
-          {loadingCommentsFor === post.id ? "Loading..." : "Load More Comments"}
-        </button>
-      ) : null}
+        {post.comments?.length ? (
+          <div className="communityCommentList">
+            {post.comments.map((comment) => (
+              <CommentNode
+                key={comment.id}
+                comment={comment}
+                postId={post.id}
+                depth={0}
+                onReply={onReply}
+                onLoadReplies={onLoadReplies}
+                loadingRepliesId={loadingRepliesId}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="communityNoComments">No comments yet.</div>
+        )}
+
+        {post.hasMoreComments ? (
+          <button
+            type="button"
+            className="communityLoadCommentsBtn"
+            onClick={() => onLoadComments(post.id)}
+            disabled={loadingCommentsFor === post.id}
+          >
+            {loadingCommentsFor === post.id ? "Loading..." : "Load More Comments"}
+          </button>
+        ) : null}
+      </div>
     </article>
   );
 }
