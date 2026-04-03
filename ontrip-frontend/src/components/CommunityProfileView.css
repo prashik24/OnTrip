@@ -37,7 +37,7 @@
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
-  height: 86px;
+  height: 92px;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   z-index: 0;
 }
@@ -48,7 +48,8 @@
   display: grid;
   grid-template-columns: 150px minmax(0, 1fr);
   gap: 24px;
-  align-items: center;
+  align-items: end;
+  padding-top: 34px;
 }
 
 .communityProfileAvatarWrap {
@@ -70,7 +71,7 @@
   object-fit: cover;
   display: block;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.1);
-  border: 4px solid rgba(255, 255, 255, 0.92);
+  border: 4px solid rgba(255, 255, 255, 0.95);
   background: #fff;
 }
 
@@ -81,13 +82,14 @@
   color: #fff;
   font-size: 42px;
   font-weight: 850;
-  border: 4px solid rgba(255, 255, 255, 0.92);
+  border: 4px solid rgba(255, 255, 255, 0.95);
 }
 
 .communityProfileInfo {
   min-width: 0;
   display: grid;
   gap: 12px;
+  align-self: end;
 }
 
 .communityProfileNameRow {
@@ -127,7 +129,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   color: #0369a1;
   font-size: 13px;
   font-weight: 800;
@@ -292,8 +294,13 @@
 }
 
 @media (max-width: 900px) {
+  .communityProfileHeroCard::before {
+    height: 84px;
+  }
+
   .communityProfileTop {
     grid-template-columns: 118px minmax(0, 1fr);
+    padding-top: 28px;
   }
 
   .communityProfileAvatarWrap,
@@ -316,6 +323,7 @@
   .communityProfileTop {
     grid-template-columns: 1fr;
     align-items: start;
+    padding-top: 22px;
   }
 
   .communityProfileHeroCard {
