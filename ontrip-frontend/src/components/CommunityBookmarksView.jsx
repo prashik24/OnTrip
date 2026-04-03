@@ -1,4 +1,5 @@
 import CommunityPostCard from "./CommunityPostCard";
+import LoadingSpinner from "./LoadingSpinner";
 import "./CommunityBookmarksView.css";
 
 export default function CommunityBookmarksView({
@@ -27,11 +28,7 @@ export default function CommunityBookmarksView({
       </div>
 
       {loading ? (
-        <div className="communityBookmarksEmptyState">
-          <div className="communityBookmarksEmptyIcon">🔖</div>
-          <h3>Loading bookmarks</h3>
-          <p>Please wait while your saved posts are loading.</p>
-        </div>
+        <LoadingSpinner text="Loading bookmarks..." />
       ) : posts.length === 0 ? (
         <div className="communityBookmarksEmptyState">
           <div className="communityBookmarksEmptyIcon">📂</div>
