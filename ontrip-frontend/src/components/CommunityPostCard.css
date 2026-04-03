@@ -259,7 +259,7 @@
 .communityCommentActions button,
 .communityCommentLoadBtn {
   min-height: 42px;
-  padding: 0 14px;
+  padding: 0 10px;
   border-radius: 12px;
   border: 1px solid rgba(0, 184, 241, 0.32);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
