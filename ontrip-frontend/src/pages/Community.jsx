@@ -8,19 +8,33 @@ import CommunityLikedView from "../components/CommunityLikedView";
 import CommunityNotificationsView from "../components/CommunityNotificationsView";
 import "./Community.css";
 
-function normalizeCommentsForUi(comments = [], rootLimit = 2, replyLimit = 2) {
+const ROOT_COMMENTS_LIMIT = 2;
+const REPLY_LIMIT = 2;
+const MAX_INLINE_REPLY_DEPTH = 1;
+
+function normalizeCommentsForUi(
+  comments = [],
+  rootLimit = ROOT_COMMENTS_LIMIT,
+  replyLimit = REPLY_LIMIT
+) {
   const safeComments = Array.isArray(comments) ? comments : [];
   const visibleRoot = safeComments.slice(0, rootLimit);
 
   function normalizeNode(comment, depth = 0) {
     const replies = Array.isArray(comment.replies) ? comment.replies : [];
-    const visibleReplies = replies.slice(0, replyLimit);
+
+    const shouldCollapseDeeperReplies =
+      depth >= MAX_INLINE_REPLY_DEPTH && replies.length > 0;
+
+    const visibleReplies = shouldCollapseDeeperReplies
+      ? []
+      : replies.slice(0, replyLimit);
 
     return {
       ...comment,
       depth,
       replies: visibleReplies.map((reply) => normalizeNode(reply, depth + 1)),
-      hasMoreReplies: replies.length > replyLimit,
+      hasMoreReplies: shouldCollapseDeeperReplies || replies.length > replyLimit,
     };
   }
 
@@ -401,7 +415,7 @@ export default function Community() {
         ...normalizeCommentsForUi(res.post.comments || []),
         commentsPage: 1,
         loadedRootCount: Array.isArray(res.post.comments)
-          ? Math.min(res.post.comments.length, 2)
+          ? Math.min(res.post.comments.length, ROOT_COMMENTS_LIMIT)
           : 0,
         rootCommentsTotal: Array.isArray(res.post.comments) ? res.post.comments.length : 0,
         showDelete: true,
@@ -445,7 +459,7 @@ export default function Community() {
       ...normalizeCommentsForUi(nextPost.comments || []),
       commentsPage: 1,
       loadedRootCount: Array.isArray(nextPost.comments)
-        ? Math.min(nextPost.comments.length, 2)
+        ? Math.min(nextPost.comments.length, ROOT_COMMENTS_LIMIT)
         : 0,
       rootCommentsTotal: Array.isArray(nextPost.comments) ? nextPost.comments.length : 0,
     };
@@ -583,7 +597,9 @@ export default function Community() {
 
       const nextPage = (target?.commentsPage || 1) + 1;
 
-      const res = await apiFetch(`/api/community/${postId}/comments?page=${nextPage}&limit=2`);
+      const res = await apiFetch(
+        `/api/community/${postId}/comments?page=${nextPage}&limit=${ROOT_COMMENTS_LIMIT}`
+      );
 
       const comments = res.comments || [];
       const total = res.pagination?.total || comments.length;
@@ -615,10 +631,10 @@ export default function Community() {
 
       const targetComment = findCommentById(target?.comments || [], commentId);
       const currentReplyCount = targetComment?.replies?.length || 0;
-      const nextPage = Math.floor(currentReplyCount / 2) + 1;
+      const nextPage = Math.floor(currentReplyCount / REPLY_LIMIT) + 1;
 
       const res = await apiFetch(
-        `/api/community/${postId}/comments/${commentId}/replies?page=${nextPage}&limit=2`
+        `/api/community/${postId}/comments/${commentId}/replies?page=${nextPage}&limit=${REPLY_LIMIT}`
       );
 
       const newReplies = res.replies || [];
