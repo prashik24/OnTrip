@@ -594,7 +594,7 @@ export default function Community() {
       const body = { text };
 
       if (
-        ["comment_post", "reply_comment", "mention_comment"].includes(notification.type) &&
+        (notification.type === "comment_post" || notification.type === "mention_comment") &&
         notification.commentId
       ) {
         body.parentComment = notification.commentId;
