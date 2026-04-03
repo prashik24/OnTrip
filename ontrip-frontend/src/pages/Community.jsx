@@ -573,7 +573,7 @@ export default function Community() {
     }
   }
 
-  async function handleCommentFromNotification(notification) {
+  async function handleReplyFromNotification(notification) {
     if (!isLoggedIn()) {
       setError("Please login first.");
       return;
@@ -581,7 +581,7 @@ export default function Community() {
 
     const postId = notification?.post?.id;
     if (!postId) {
-      setError("Post not available for comment.");
+      setError("Post not available.");
       return;
     }
 
@@ -591,9 +591,18 @@ export default function Community() {
     try {
       setCommentingNotificationId(notification.id);
 
+      const body = { text };
+
+      if (
+        ["comment_post", "reply_comment", "mention_comment"].includes(notification.type) &&
+        notification.commentId
+      ) {
+        body.parentComment = notification.commentId;
+      }
+
       const res = await apiFetch(`/api/community/${postId}/comment`, {
         method: "POST",
-        body: JSON.stringify({ text }),
+        body: JSON.stringify(body),
       });
 
       replacePostAcrossViews(res.post);
@@ -603,7 +612,7 @@ export default function Community() {
         [notification.id]: "",
       }));
     } catch (err) {
-      setError(err.message || "Failed to add comment.");
+      setError(err.message || "Failed to reply from notification.");
     } finally {
       setCommentingNotificationId("");
     }
@@ -833,7 +842,7 @@ export default function Community() {
               onLoadMore={() => loadNotifications(false)}
               notificationCommentDrafts={notificationCommentDrafts}
               setNotificationCommentText={setNotificationCommentText}
-              onCommentFromNotification={handleCommentFromNotification}
+              onReplyFromNotification={handleReplyFromNotification}
               commentingNotificationId={commentingNotificationId}
             />
           ) : null}
