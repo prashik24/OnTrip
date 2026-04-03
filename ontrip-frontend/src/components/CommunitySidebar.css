@@ -18,7 +18,8 @@
   overflow: hidden;
 }
 
-/* top */
+/* ---------- TOP PROFILE ---------- */
+
 .communitySidebarTop {
   display: grid;
   gap: 12px;
@@ -40,6 +41,7 @@
 
 .communitySidebarAvatar {
   object-fit: cover;
+  display: block;
 }
 
 .communitySidebarAvatarFallback {
@@ -47,7 +49,12 @@
   place-items: center;
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
+  font-size: 22px;
   font-weight: 700;
+}
+
+.communitySidebarProfileInfo {
+  min-width: 0;
 }
 
 .communitySidebarProfileInfo h3 {
@@ -55,6 +62,7 @@
   font-size: 18px;
   font-weight: 600; /* reduced */
   color: var(--text);
+  line-height: 1.2;
 }
 
 .communitySidebarProfileInfo p {
@@ -64,9 +72,12 @@
   color: var(--muted);
 }
 
+/* ---------- STATS ---------- */
+
 .communitySidebarStats {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
   font-size: 13px;
   font-weight: 500;
   color: var(--muted);
@@ -77,24 +88,30 @@
   font-weight: 600;
 }
 
-/* menu */
+/* ---------- MENU ---------- */
+
 .communitySidebarMenu {
   display: grid;
   gap: 6px;
   overflow-y: auto;
+  padding-right: 4px;
+
   scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .communitySidebarMenu::-webkit-scrollbar {
   display: none;
 }
 
+/* ---------- LINKS ---------- */
+
 .communitySidebarLink {
   display: grid;
-  grid-template-columns: 28px 1fr auto;
+  grid-template-columns: 24px 1fr auto; /* tighter layout */
   align-items: center;
-  gap: 12px;
-  min-height: 52px;
+  gap: 8px; /* reduced spacing */
+  min-height: 50px;
   padding: 0 10px;
   border-radius: 12px;
   background: transparent;
@@ -102,7 +119,7 @@
   cursor: pointer;
   font: inherit;
   font-size: 15px;
-  font-weight: 500; /* reduced like chat */
+  font-weight: 500; /* lighter like chat */
   color: var(--text);
   transition: 0.15s ease;
 }
@@ -116,9 +133,11 @@
   color: #0369a1;
 }
 
+/* ---------- ICON ---------- */
+
 .communitySidebarIcon {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
   opacity: 0.85;
 }
@@ -127,7 +146,14 @@
   opacity: 1;
 }
 
-/* badge */
+/* ---------- TEXT ---------- */
+
+.communitySidebarLink span {
+  line-height: 1;
+}
+
+/* ---------- BADGE ---------- */
+
 .communitySidebarBadge {
   min-width: 20px;
   height: 20px;
@@ -141,11 +167,43 @@
   justify-content: center;
 }
 
-/* responsive */
+/* ---------- RESPONSIVE ---------- */
+
 @media (max-width: 1080px) {
   .communitySidebarCard {
     position: static;
     min-height: auto;
     max-height: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .communitySidebarProfileRow {
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .communitySidebarAvatar,
+  .communitySidebarAvatarFallback {
+    width: 52px;
+    height: 52px;
+  }
+
+  .communitySidebarProfileInfo h3 {
+    font-size: 16px;
+  }
+
+  .communitySidebarLink {
+    min-height: 48px;
+    gap: 6px;
+  }
+
+  .communitySidebarIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .communitySidebarStats {
+    font-size: 12px;
   }
 }
