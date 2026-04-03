@@ -1,7 +1,24 @@
 import "./CommunitySidebar.css";
 
+const ICONS = {
+  user: "https://img.icons8.com/?size=100&id=7819&format=png&color=000000",
+  home: "https://img.icons8.com/?size=100&id=2797&format=png&color=000000",
+  bell: "https://img.icons8.com/?size=100&id=84025&format=png&color=000000",
+  bookmark: "https://img.icons8.com/?size=100&id=82461&format=png&color=000000",
+  like: "https://img.icons8.com/?size=100&id=24816&format=png&color=000000",
+};
+
 function getInitial(name = "U") {
   return String(name || "U").trim().charAt(0).toUpperCase();
+}
+
+function getUsername(me) {
+  const raw =
+    me?.username ||
+    me?.email?.split("@")?.[0] ||
+    String(me?.name || "user").replace(/\s+/g, "").toLowerCase();
+
+  return `@${raw}`;
 }
 
 export default function CommunitySidebar({
@@ -30,11 +47,14 @@ export default function CommunitySidebar({
 
             <div className="communitySidebarProfileInfo">
               <h3>{me?.name || "User"}</h3>
-              <p>@{String(me?.name || "user").replace(/\s+/g, "").toLowerCase()}</p>
+              <p>{getUsername(me)}</p>
             </div>
           </div>
 
           <div className="communitySidebarStats">
+            <span>
+              <strong>{profileStats?.postsCount || 0}</strong> Posts
+            </span>
             <span>
               <strong>{profileStats?.followingCount || 0}</strong> Following
             </span>
@@ -52,8 +72,8 @@ export default function CommunitySidebar({
             className={`communitySidebarLink ${activeView === "profile" ? "active" : ""}`}
             onClick={() => onChangeView("profile")}
           >
-            <span className="communitySidebarIcon" aria-hidden="true">
-              https://img.icons8.com/?size=100&id=7819&format=png&color=000000
+            <span className="communitySidebarIconWrap">
+              <img src={ICONS.user} alt="" className="communitySidebarIcon" />
             </span>
             <span className="communitySidebarText">My Profile</span>
           </button>
@@ -63,8 +83,8 @@ export default function CommunitySidebar({
             className={`communitySidebarLink ${activeView === "home" ? "active" : ""}`}
             onClick={() => onChangeView("home")}
           >
-            <span className="communitySidebarIcon" aria-hidden="true">
-              🏠︎
+            <span className="communitySidebarIconWrap">
+              <img src={ICONS.home} alt="" className="communitySidebarIcon" />
             </span>
             <span className="communitySidebarText">Home</span>
           </button>
@@ -74,8 +94,8 @@ export default function CommunitySidebar({
             className={`communitySidebarLink ${activeView === "bookmarks" ? "active" : ""}`}
             onClick={() => onChangeView("bookmarks")}
           >
-            <span className="communitySidebarIcon" aria-hidden="true">
-              ⛉
+            <span className="communitySidebarIconWrap">
+              <img src={ICONS.bookmark} alt="" className="communitySidebarIcon" />
             </span>
             <span className="communitySidebarText">Bookmarks</span>
           </button>
@@ -85,8 +105,8 @@ export default function CommunitySidebar({
             className={`communitySidebarLink ${activeView === "likes" ? "active" : ""}`}
             onClick={() => onChangeView("likes")}
           >
-            <span className="communitySidebarIcon" aria-hidden="true">
-              ❤︎
+            <span className="communitySidebarIconWrap">
+              <img src={ICONS.like} alt="" className="communitySidebarIcon" />
             </span>
             <span className="communitySidebarText">Liked Posts</span>
           </button>
@@ -98,8 +118,8 @@ export default function CommunitySidebar({
             }`}
             onClick={() => onChangeView("notifications")}
           >
-            <span className="communitySidebarIcon" aria-hidden="true">
-              🕭
+            <span className="communitySidebarIconWrap">
+              <img src={ICONS.bell} alt="" className="communitySidebarIcon" />
             </span>
             <span className="communitySidebarText">Notifications</span>
 
@@ -109,15 +129,6 @@ export default function CommunitySidebar({
               </span>
             ) : null}
           </button>
-        </div>
-
-        <div className="communitySidebarBottom">
-          <div className="communitySidebarMiniCard">
-            <div className="communitySidebarMiniLabel">Posts</div>
-            <div className="communitySidebarMiniValue">
-              {profileStats?.postsCount || 0}
-            </div>
-          </div>
         </div>
       </div>
     </aside>
