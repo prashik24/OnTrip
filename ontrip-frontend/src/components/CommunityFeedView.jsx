@@ -23,6 +23,7 @@ export default function CommunityFeedView({
   loadingCommentsFor,
   loadingRepliesId,
   focusedPostId,
+  onOpenProfile,
 }) {
   return (
     <div className="communityFeedView">
@@ -76,6 +77,7 @@ export default function CommunityFeedView({
                 setCommentText={setCommentText}
                 loadingCommentsFor={loadingCommentsFor}
                 loadingRepliesId={loadingRepliesId}
+                onOpenProfile={onOpenProfile}
               />
             </div>
           ))}
