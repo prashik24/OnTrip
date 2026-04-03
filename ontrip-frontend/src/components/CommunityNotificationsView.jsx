@@ -32,17 +32,63 @@ function getActorLabel(item) {
 function getPostPreview(item) {
   const text = String(item.post?.text || "").trim();
   if (!text) return "Post content not available.";
-  return text.length > 180 ? `${text.slice(0, 180)}...` : text;
+  return text;
 }
 
 function getCommentPreview(item) {
   const text = String(item.commentText || "").trim();
   if (!text) return "Comment text not available.";
-  return text.length > 180 ? `${text.slice(0, 180)}...` : text;
+  return text;
+}
+
+function getPostMedia(item) {
+  return Array.isArray(item.post?.media) ? item.post.media : [];
 }
 
 function canReplyToNotification(item) {
-  return ["comment_post", "reply_comment", "mention_comment"].includes(item.type);
+  return item.type === "comment_post" || item.type === "mention_comment";
+}
+
+function NotificationPostCard({ item }) {
+  const media = getPostMedia(item);
+
+  return (
+    <div className="communityNotificationsPostCard">
+      <div className="communityNotificationsPostHead">
+        <strong>Post</strong>
+      </div>
+
+      {item.post?.text ? (
+        <div className="communityNotificationsPostText">{getPostPreview(item)}</div>
+      ) : null}
+
+      {media.length ? (
+        <div
+          className={`communityNotificationsMediaGrid ${
+            media.length === 1 ? "single" : media.length === 2 ? "double" : "multi"
+          }`}
+        >
+          {media.map((mediaItem, index) =>
+            mediaItem.type === "video" ? (
+              <video
+                key={`${mediaItem.url}-${index}`}
+                src={mediaItem.url}
+                controls
+                className="communityNotificationsPostMedia"
+              />
+            ) : (
+              <img
+                key={`${mediaItem.url}-${index}`}
+                src={mediaItem.url}
+                alt={`notification-post-${index + 1}`}
+                className="communityNotificationsPostMedia"
+              />
+            )
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 export default function CommunityNotificationsView({
@@ -111,17 +157,11 @@ export default function CommunityNotificationsView({
                   </div>
 
                   {item.type === "like_post" && item.post?.id ? (
-                    <div className="communityNotificationsPreviewBox">
-                      <strong>Post</strong>
-                      <p>{getPostPreview(item)}</p>
-                    </div>
+                    <NotificationPostCard item={item} />
                   ) : null}
 
                   {item.type === "mention_post" && item.post?.id ? (
-                    <div className="communityNotificationsPreviewBox">
-                      <strong>Post</strong>
-                      <p>{getPostPreview(item)}</p>
-                    </div>
+                    <NotificationPostCard item={item} />
                   ) : null}
 
                   {item.type === "comment_post" ? (
@@ -130,12 +170,7 @@ export default function CommunityNotificationsView({
                         <strong>Comment</strong>
                         <p>{getCommentPreview(item)}</p>
                       </div>
-                      {item.post?.id ? (
-                        <div className="communityNotificationsPreviewBox">
-                          <strong>Post</strong>
-                          <p>{getPostPreview(item)}</p>
-                        </div>
-                      ) : null}
+                      {item.post?.id ? <NotificationPostCard item={item} /> : null}
                     </div>
                   ) : null}
 
@@ -145,12 +180,7 @@ export default function CommunityNotificationsView({
                         <strong>Reply</strong>
                         <p>{getCommentPreview(item)}</p>
                       </div>
-                      {item.post?.id ? (
-                        <div className="communityNotificationsPreviewBox">
-                          <strong>Post</strong>
-                          <p>{getPostPreview(item)}</p>
-                        </div>
-                      ) : null}
+                      {item.post?.id ? <NotificationPostCard item={item} /> : null}
                     </div>
                   ) : null}
 
@@ -160,12 +190,7 @@ export default function CommunityNotificationsView({
                         <strong>Comment</strong>
                         <p>{getCommentPreview(item)}</p>
                       </div>
-                      {item.post?.id ? (
-                        <div className="communityNotificationsPreviewBox">
-                          <strong>Post</strong>
-                          <p>{getPostPreview(item)}</p>
-                        </div>
-                      ) : null}
+                      {item.post?.id ? <NotificationPostCard item={item} /> : null}
                     </div>
                   ) : null}
 
