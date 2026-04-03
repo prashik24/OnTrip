@@ -3,8 +3,8 @@
 }
 
 .communitySidebarCard {
-  position: sticky;
-  top: 88px;
+  position: static;
+  top: auto;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 22px;
@@ -13,7 +13,9 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 14px;
-  align-self: start;
+  min-height: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 .communitySidebarTop {
@@ -78,7 +80,7 @@
 .communitySidebarMenu {
   display: grid;
   gap: 4px;
-  overflow: visible;
+  overflow-y: visible;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
