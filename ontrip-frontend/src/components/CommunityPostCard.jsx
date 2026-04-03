@@ -6,9 +6,8 @@ const LIKE_ICON =
   "https://img.icons8.com/?size=100&id=33479&format=png&color=000000";
 const BOOKMARK_ICON =
   "https://img.icons8.com/?size=100&id=82461&format=png&color=000000";
-
-/* comment link you gave was invalid, so fallback icon is used here */
-const COMMENT_ICON_FALLBACK = "💬";
+const COMMENT_ICON =
+  "https://img.icons8.com/?size=100&id=11167&format=png&color=000000";
 
 function getInitial(name = "U") {
   return String(name || "U").trim().charAt(0).toUpperCase();
@@ -264,7 +263,7 @@ export default function CommunityPostCard({
         </button>
 
         <div className="communityActionInfo">
-          <span className="communityActionFallbackIcon">{COMMENT_ICON_FALLBACK}</span>
+          <img src={COMMENT_ICON} alt="" className="communityActionIcon" />
           <span>{post.commentsCount}</span>
         </div>
       </div>
