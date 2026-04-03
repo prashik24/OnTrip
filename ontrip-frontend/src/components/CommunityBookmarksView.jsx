@@ -19,6 +19,7 @@ export default function CommunityBookmarksView({
   setCommentText,
   loadingCommentsFor,
   loadingRepliesId,
+  onOpenProfile,
 }) {
   return (
     <div className="communityBookmarksView">
@@ -52,6 +53,7 @@ export default function CommunityBookmarksView({
               setCommentText={setCommentText}
               loadingCommentsFor={loadingCommentsFor}
               loadingRepliesId={loadingRepliesId}
+              onOpenProfile={onOpenProfile}
             />
           ))}
 
