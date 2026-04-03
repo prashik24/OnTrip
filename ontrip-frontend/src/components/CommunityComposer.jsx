@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import CustomSelect from "./CustomSelect";
 import "./CommunityComposer.css";
 
@@ -22,6 +22,14 @@ export default function CommunityComposer({
   onCreatePost,
 }) {
   const fileInputRef = useRef(null);
+
+  const previewItems = useMemo(() => {
+    return (composer.mediaFiles || []).map((file) => ({
+      file,
+      objectUrl: URL.createObjectURL(file),
+      isVideo: String(file?.type || "").startsWith("video/"),
+    }));
+  }, [composer.mediaFiles]);
 
   return (
     <div className="communityComposerCard">
@@ -78,7 +86,7 @@ export default function CommunityComposer({
           className="communityComposerUploadBtn"
           onClick={() => fileInputRef.current?.click()}
         >
-          Add Image / Video
+          Add Images / Videos
         </button>
 
         <input
@@ -87,12 +95,14 @@ export default function CommunityComposer({
           accept="image/*,video/*"
           multiple
           className="communityComposerHiddenInput"
-          onChange={(e) =>
+          onChange={(e) => {
+            const picked = Array.from(e.target.files || []);
             setComposer((prev) => ({
               ...prev,
-              mediaFiles: Array.from(e.target.files || []),
-            }))
-          }
+              mediaFiles: [...(prev.mediaFiles || []), ...picked],
+            }));
+            e.target.value = "";
+          }}
         />
 
         <div className="communityComposerSelectedText">
@@ -111,47 +121,34 @@ export default function CommunityComposer({
         </button>
       </div>
 
-      {composer.mediaFiles.length > 0 ? (
+      {previewItems.length > 0 ? (
         <div className="communityComposerPreviewGrid">
-          {composer.mediaFiles.map((file, index) => {
-            const objectUrl = URL.createObjectURL(file);
-            const isVideo = String(file.type || "").startsWith("video/");
-
-            return (
-              <div className="communityComposerPreviewCard" key={`${file.name}-${index}`}>
-                <div className="communityComposerPreviewTop">
-                  <span>{previewLabel(file)}</span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setComposer((prev) => ({
-                        ...prev,
-                        mediaFiles: prev.mediaFiles.filter((_, i) => i !== index),
-                      }))
-                    }
-                  >
-                    Remove
-                  </button>
-                </div>
-
-                {isVideo ? (
-                  <video
-                    src={objectUrl}
-                    controls
-                    className="communityComposerPreviewMedia"
-                  />
-                ) : (
-                  <img
-                    src={objectUrl}
-                    alt={file.name}
-                    className="communityComposerPreviewMedia"
-                  />
-                )}
-
-                <div className="communityComposerPreviewName">{file.name}</div>
+          {previewItems.map(({ file, objectUrl, isVideo }, index) => (
+            <div className="communityComposerPreviewCard" key={`${file.name}-${index}`}>
+              <div className="communityComposerPreviewTop">
+                <span>{previewLabel(file)}</span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setComposer((prev) => ({
+                      ...prev,
+                      mediaFiles: prev.mediaFiles.filter((_, i) => i !== index),
+                    }))
+                  }
+                >
+                  Remove
+                </button>
               </div>
-            );
-          })}
+
+              {isVideo ? (
+                <video src={objectUrl} controls className="communityComposerPreviewMedia" />
+              ) : (
+                <img src={objectUrl} alt={file.name} className="communityComposerPreviewMedia" />
+              )}
+
+              <div className="communityComposerPreviewName">{file.name}</div>
+            </div>
+          ))}
         </div>
       ) : null}
     </div>
