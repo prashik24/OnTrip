@@ -1,7 +1,7 @@
 .communityComposerCard {
   background: rgba(255, 255, 255, 0.98);
   border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 28px;
+  border-radius: 22px;
   box-shadow: 0 12px 28px rgba(10, 22, 35, 0.05);
   padding: 20px;
   display: grid;
@@ -78,7 +78,7 @@
 .communityComposerUploadBtn,
 .communityComposerPostBtn {
   min-height: 42px;
-  border-radius: 16px;
+  border-radius: 12px;
   font: inherit;
   font-size: 13px;
   font-weight: 700;
@@ -87,13 +87,13 @@
 }
 
 .communityComposerUploadBtn {
-  border: 1px solid rgba(0, 184, 241, 0.18);
-  background: rgba(0, 184, 241, 0.08);
-  color: #0369a1;
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
 }
 
 .communityComposerPostBtn {
-  border: none;
+  border: 1px solid rgba(0, 184, 241, 0.32);
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
   color: #fff;
   min-width: 88px;
