@@ -427,3 +427,42 @@
     padding: 0 12px;
   }
 }
+
+.communityAuthorLink,
+.communityCommentUserLink,
+.communityAuthorName,
+.communityCommentName {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.communityAuthorLink,
+.communityCommentUserLink {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.communityAuthorName,
+.communityCommentName {
+  cursor: pointer;
+}
+
+.communityAuthorLink:focus,
+.communityCommentUserLink:focus,
+.communityAuthorName:focus,
+.communityCommentName:focus,
+.communityAuthorLink:focus-visible,
+.communityCommentUserLink:focus-visible,
+.communityAuthorName:focus-visible,
+.communityCommentName:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
