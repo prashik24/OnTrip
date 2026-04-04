@@ -13,83 +13,53 @@
   gap: 18px;
 }
 
-.bookingReviewHero {
+.bookingReviewHead {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  border: 1px solid rgba(0, 184, 241, 0.2);
+  border-radius: 22px;
+  box-shadow: 0 14px 34px rgba(0, 184, 241, 0.16);
+  padding: 22px;
   position: relative;
   overflow: hidden;
+}
+
+.bookingReviewHead::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.22), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.14), transparent 30%);
+  pointer-events: none;
+}
+
+.bookingReviewHeadContent {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 18px;
-  padding: 28px 28px 26px;
-  border-radius: 26px;
-  background:
-    radial-gradient(circle at top right, rgba(78, 201, 245, 0.22), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(0, 184, 241, 0.16), transparent 28%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(242, 251, 255, 0.98));
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  box-shadow: 0 16px 36px rgba(10, 22, 35, 0.07);
 }
 
-.bookingReviewHeroContent {
+.bookingReviewHeadText {
   min-width: 0;
-  display: grid;
-  gap: 12px;
 }
 
-.bookingReviewHeroBadge {
-  width: fit-content;
-  max-width: 100%;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: rgba(0, 184, 241, 0.1);
-  border: 1px solid rgba(0, 184, 241, 0.16);
-  color: #0369a1;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.2px;
-  word-break: break-word;
-}
-
-.bookingReviewHero h1 {
+.bookingReviewHead h1 {
   margin: 0;
-  font-size: 34px;
-  color: var(--text);
-  line-height: 1.12;
-  font-weight: 800;
+  font-size: 32px;
+  color: #ffffff;
+  line-height: 1.2;
   word-break: break-word;
 }
 
-.bookingReviewHero p {
-  margin: 0;
-  max-width: 820px;
-  color: var(--muted);
-  line-height: 1.7;
-  font-weight: 550;
+.bookingReviewHead p {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.65;
+  font-weight: 600;
   word-break: break-word;
-}
-
-.bookingReviewHeroMeta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.bookingReviewHeroMeta span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 34px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  color: #12212f;
-  font-size: 14px;
-  font-weight: 700;
-  word-break: break-word;
-}
-
-.bookingReviewHeroActions {
-  flex: 0 0 auto;
 }
 
 .bookingReviewMessage {
@@ -107,19 +77,21 @@
   min-height: 42px;
   padding: 0 16px;
   border-radius: 12px;
-  border: 1px solid rgba(11, 27, 42, 0.12);
-  background: #ffffff;
-  color: #12212f;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
   white-space: nowrap;
+  backdrop-filter: blur(6px);
 }
 
 .bookingReviewBackBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.12);
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .bookingReviewLayout {
@@ -387,11 +359,6 @@
 }
 
 @media (max-width: 980px) {
-  .bookingReviewHero {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
   .bookingReviewLayout {
     grid-template-columns: 1fr;
   }
@@ -406,24 +373,20 @@
     gap: 16px;
   }
 
-  .bookingReviewHero {
-    padding: 20px 16px;
-    border-radius: 20px;
+  .bookingReviewHeadContent {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .bookingReviewHero h1 {
+  .bookingReviewHead h1 {
     font-size: 26px;
   }
 
-  .bookingReviewHero p,
+  .bookingReviewHead p,
   .bookingReviewMessage,
   .bookingReviewCardInfo,
   .bookingReviewAlert {
     font-size: 14px;
-  }
-
-  .bookingReviewHeroActions {
-    width: 100%;
   }
 
   .bookingReviewBackBtn {
