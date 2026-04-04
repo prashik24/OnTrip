@@ -4,6 +4,11 @@ import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDetails.css";
 
+const LIKE_ICON =
+  "https://img.icons8.com/?size=100&id=24816&format=png&color=000000";
+const DISLIKE_ICON =
+  "https://img.icons8.com/?size=100&id=33479&format=png&color=000000";
+
 function formatReviewDateTime(value) {
   if (!value) return "";
   const date = new Date(value);
@@ -62,7 +67,9 @@ export default function ProviderDetails() {
   }, [id]);
 
   const isOwner =
-    user && provider && String(provider.owner?._id || provider.owner) === String(user.id);
+    user &&
+    provider &&
+    String(provider.owner?._id || provider.owner) === String(user.id);
 
   const travelPlans = useMemo(() => {
     if (!provider) return [];
@@ -172,7 +179,9 @@ export default function ProviderDetails() {
 
           <div className="providerDetailsTopContent">
             <div className="providerDetailsType providerDetailsTypeTop">
-              {provider.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+              {provider.listingType === "vehicle"
+                ? "Vehicle Service"
+                : "Travel Planner"}
             </div>
 
             <h1>{provider.businessName}</h1>
@@ -279,7 +288,9 @@ export default function ProviderDetails() {
 
                       <div className="providerDetailsMiniInfo">
                         <span className="providerDetailsMiniLabel">Driver Option</span>
-                        <strong>{vehicle.withDriver ? "With Driver" : "Without Driver"}</strong>
+                        <strong>
+                          {vehicle.withDriver ? "With Driver" : "Without Driver"}
+                        </strong>
                       </div>
                     </div>
                   </div>
@@ -400,7 +411,12 @@ export default function ProviderDetails() {
                       onClick={() => handleReviewVote(review._id, "helpful")}
                       disabled={voteLoadingId === review._id}
                     >
-                      👍 Helpful ({review.helpfulCount || 0})
+                      <img
+                        src={LIKE_ICON}
+                        alt="Like"
+                        className="providerDetailsVoteIcon"
+                      />
+                      <span>Helpful ({review.helpfulCount || 0})</span>
                     </button>
 
                     <button
@@ -411,7 +427,12 @@ export default function ProviderDetails() {
                       onClick={() => handleReviewVote(review._id, "not_helpful")}
                       disabled={voteLoadingId === review._id}
                     >
-                      👎 Not Helpful ({review.notHelpfulCount || 0})
+                      <img
+                        src={DISLIKE_ICON}
+                        alt="Dislike"
+                        className="providerDetailsVoteIcon"
+                      />
+                      <span>Not Helpful ({review.notHelpfulCount || 0})</span>
                     </button>
                   </div>
                 </div>
