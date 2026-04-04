@@ -163,27 +163,13 @@ export default function BookingReviewPage() {
 
   return (
     <div className="bookingReviewPage container">
-      <div className="bookingReviewHero">
-        <div className="bookingReviewHeroContent">
-          <div className="bookingReviewHeroBadge">
-            {booking.existingReview ? "Update Review" : "Share Experience"}
+      <div className="bookingReviewHead">
+        <div className="bookingReviewHeadContent">
+          <div className="bookingReviewHeadText">
+            <h1>{booking.existingReview ? "Edit Review" : "Write Review"}</h1>
+            <p>Update your review and manage image directly from the photo.</p>
           </div>
 
-          <h1>{booking.existingReview ? "Edit Your Review" : "Write a Review"}</h1>
-
-          <p>
-            Share your experience for <strong>{booking.serviceTitle}</strong> and
-            help other travelers choose better services with real feedback.
-          </p>
-
-          <div className="bookingReviewHeroMeta">
-            <span>{booking.provider?.businessName || "Provider"}</span>
-            <span>{booking.destination || booking.place || booking.serviceTitle}</span>
-            <span>Booking Ref: {booking.bookingRef}</span>
-          </div>
-        </div>
-
-        <div className="bookingReviewHeroActions">
           <button
             className="bookingReviewBackBtn"
             onClick={() => navigate("/profile/bookings")}
