@@ -117,8 +117,7 @@
   margin: 0;
   padding-right: 130px;
   font-size: 28px;
-  line-height: 1.15;
-  font-weight: 820;
+  line-height: 1.2;
   color: var(--text);
   word-break: break-word;
 }
