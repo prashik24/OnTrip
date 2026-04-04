@@ -4,10 +4,9 @@ import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDetails.css";
 
-const HELPFUL_ICON =
-  "https://img.icons8.com/?size=100&id=24816&format=png&color=000000";
-const NOT_HELPFUL_ICON =
-  "https://img.icons8.com/?size=100&id=33479&format=png&color=000000";
+const HELPFUL_ICON ="https://img.icons8.com/?size=100&id=eLboJEJbAaqW&format=png&color=000000";
+const NOT_HELPFUL_ICON = "https://img.icons8.com/?size=100&id=ssAgeQSY66YW&format=png&color=000000";
+ 
 
 function formatReviewDateTime(value) {
   if (!value) return "";
