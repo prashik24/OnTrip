@@ -150,7 +150,7 @@ export default function BookingReviewPage() {
       <div className="bookingReviewPage container">
         {msg && <div className="bookingReviewMessage">{msg}</div>}
         <button
-          className="bookingReviewBackBtn"
+          className="bookingReviewBackBtn bookingReviewBackBtnPlain"
           onClick={() => navigate("/profile/bookings")}
         >
           Back to Booking History
@@ -164,19 +164,17 @@ export default function BookingReviewPage() {
   return (
     <div className="bookingReviewPage container">
       <div className="bookingReviewHead">
-        <div className="bookingReviewHeadContent">
-          <div className="bookingReviewHeadText">
-            <h1>{booking.existingReview ? "Edit Review" : "Write Review"}</h1>
-            <p>Update your review and manage image directly from the photo.</p>
-          </div>
-
-          <button
-            className="bookingReviewBackBtn"
-            onClick={() => navigate("/profile/bookings")}
-          >
-            Back to Booking History
-          </button>
+        <div>
+          <h1>{booking.existingReview ? "Edit Review" : "Write Review"}</h1>
+          <p>Update your review and manage image directly from the photo.</p>
         </div>
+
+        <button
+          className="bookingReviewBackBtn bookingReviewBackBtnPlain"
+          onClick={() => navigate("/profile/bookings")}
+        >
+          Back to Booking History
+        </button>
       </div>
 
       {msg && <div className="bookingReviewMessage">{msg}</div>}
@@ -184,61 +182,67 @@ export default function BookingReviewPage() {
       <div className="bookingReviewLayout">
         <aside className="bookingReviewSidebar">
           <div className="bookingReviewCard">
-            <div className="bookingReviewCardTop">
-              <div>
-                <h3>{booking.serviceTitle}</h3>
-                <p>{booking.provider?.businessName || "Provider"}</p>
+            <div className="bookingReviewCardHeader">
+              <div className="bookingReviewCardHeaderContent">
+                <div className="bookingReviewCardTop">
+                  <div>
+                    <h3>{booking.serviceTitle}</h3>
+                    <p>{booking.provider?.businessName || "Provider"}</p>
+                  </div>
+                  <div className="bookingReviewPrice">₹{booking.amount}</div>
+                </div>
               </div>
-              <div className="bookingReviewPrice">₹{booking.amount}</div>
             </div>
 
-            <div className="bookingReviewCardInfo">
-              <div>
-                <span>Booking Ref:</span> {booking.bookingRef}
-              </div>
-              <div>
-                <span>Date:</span>{" "}
-                {booking.bookingDate
-                  ? new Date(booking.bookingDate).toLocaleDateString()
-                  : "-"}
-              </div>
-              <div>
-                <span>Payment:</span> {booking.paymentStatus}
-              </div>
-              <div>
-                <span>Status:</span> {booking.bookingStatus}
-              </div>
-              <div>
-                <span>People:</span> {booking.peopleCount}
-              </div>
-              <div>
-                <span>Days:</span> {booking.days}
+            <div className="bookingReviewCardBody">
+              <div className="bookingReviewCardInfo">
+                <div>
+                  <span>Booking Ref:</span> {booking.bookingRef}
+                </div>
+                <div>
+                  <span>Date:</span>{" "}
+                  {booking.bookingDate
+                    ? new Date(booking.bookingDate).toLocaleDateString()
+                    : "-"}
+                </div>
+                <div>
+                  <span>Payment:</span> {booking.paymentStatus}
+                </div>
+                <div>
+                  <span>Status:</span> {booking.bookingStatus}
+                </div>
+                <div>
+                  <span>People:</span> {booking.peopleCount}
+                </div>
+                <div>
+                  <span>Days:</span> {booking.days}
+                </div>
+
+                {booking.destination ? (
+                  <div>
+                    <span>Destination:</span> {booking.destination}
+                  </div>
+                ) : null}
+
+                {booking.place ? (
+                  <div>
+                    <span>Place:</span> {booking.place}
+                  </div>
+                ) : null}
               </div>
 
-              {booking.destination ? (
-                <div>
-                  <span>Destination:</span> {booking.destination}
+              {booking.cancellationReason ? (
+                <div className="bookingReviewAlert bookingReviewAlertDanger">
+                  <strong>Cancellation Reason:</strong> {booking.cancellationReason}
                 </div>
               ) : null}
 
-              {booking.place ? (
-                <div>
-                  <span>Place:</span> {booking.place}
+              {isCancelled ? (
+                <div className="bookingReviewAlert bookingReviewAlertSuccess">
+                  Your provider cancelled this service. They will refund your money soon.
                 </div>
               ) : null}
             </div>
-
-            {booking.cancellationReason ? (
-              <div className="bookingReviewAlert bookingReviewAlertDanger">
-                <strong>Cancellation Reason:</strong> {booking.cancellationReason}
-              </div>
-            ) : null}
-
-            {isCancelled ? (
-              <div className="bookingReviewAlert bookingReviewAlertSuccess">
-                Your provider cancelled this service. They will refund your money soon.
-              </div>
-            ) : null}
           </div>
         </aside>
 
