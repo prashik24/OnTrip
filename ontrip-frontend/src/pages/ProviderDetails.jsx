@@ -3,12 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDetails.css";
-
 const HELPFUL_ICON =
-  "https://img.icons8.com/?size=100&id=eLboJEJbAaqW&format=png&color=000000";
-const NOT_HELPFUL_ICON =
-  "https://img.icons8.com/?size=100&id=ssAgeQSY66YW&format=png&color=000000";
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M2 21h4V9H2v12zm20-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 1 6.59 7.59C6.22 7.95 6 8.45 6 9v10c0 1.1.9 2 2 2h9c.82 0 1.52-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z'/></svg>";
 
+const NOT_HELPFUL_ICON =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M15 3H6c-.82 0-1.52.5-1.84 1.22L1.14 11.27c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L10.83 23l6.58-6.59c.37-.36.59-.86.59-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z'/></svg>";
 function formatReviewDateTime(value) {
   if (!value) return "";
   const date = new Date(value);
