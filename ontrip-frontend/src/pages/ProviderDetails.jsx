@@ -4,9 +4,10 @@ import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDetails.css";
 
-const HELPFUL_ICON ="https://img.icons8.com/?size=100&id=eLboJEJbAaqW&format=png&color=000000";
-const NOT_HELPFUL_ICON = "https://img.icons8.com/?size=100&id=ssAgeQSY66YW&format=png&color=000000";
- 
+const HELPFUL_ICON =
+  "https://img.icons8.com/?size=100&id=eLboJEJbAaqW&format=png&color=000000";
+const NOT_HELPFUL_ICON =
+  "https://img.icons8.com/?size=100&id=ssAgeQSY66YW&format=png&color=000000";
 
 function formatReviewDateTime(value) {
   if (!value) return "";
@@ -411,35 +412,13 @@ export default function ProviderDetails() {
                       }`}
                       onClick={() => handleReviewVote(review._id, "helpful")}
                       disabled={voteLoadingId === review._id}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "10px",
-                      }}
                     >
                       <img
                         src={HELPFUL_ICON}
                         alt="Helpful"
-                        style={{
-                          width: "22px",
-                          height: "22px",
-                          minWidth: "22px",
-                          minHeight: "22px",
-                          objectFit: "contain",
-                          display: "block",
-                          verticalAlign: "middle",
-                          flexShrink: 0,
-                        }}
+                        className="providerDetailsVoteIcon"
                       />
-                      <span
-                        style={{
-                          display: "inline-block",
-                          lineHeight: 1,
-                        }}
-                      >
-                        Helpful ({review.helpfulCount || 0})
-                      </span>
+                      <span>Helpful ({review.helpfulCount || 0})</span>
                     </button>
 
                     <button
@@ -449,35 +428,13 @@ export default function ProviderDetails() {
                       }`}
                       onClick={() => handleReviewVote(review._id, "not_helpful")}
                       disabled={voteLoadingId === review._id}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "10px",
-                      }}
                     >
                       <img
                         src={NOT_HELPFUL_ICON}
                         alt="Not Helpful"
-                        style={{
-                          width: "22px",
-                          height: "22px",
-                          minWidth: "22px",
-                          minHeight: "22px",
-                          objectFit: "contain",
-                          display: "block",
-                          verticalAlign: "middle",
-                          flexShrink: 0,
-                        }}
+                        className="providerDetailsVoteIcon"
                       />
-                      <span
-                        style={{
-                          display: "inline-block",
-                          lineHeight: 1,
-                        }}
-                      >
-                        Not Helpful ({review.notHelpfulCount || 0})
-                      </span>
+                      <span>Not Helpful ({review.notHelpfulCount || 0})</span>
                     </button>
                   </div>
                 </div>
