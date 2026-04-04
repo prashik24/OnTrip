@@ -14,51 +14,25 @@
 }
 
 .bookingReviewHead {
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  border: 1px solid rgba(0, 184, 241, 0.2);
-  border-radius: 22px;
-  box-shadow: 0 14px 34px rgba(0, 184, 241, 0.16);
-  padding: 22px;
-  position: relative;
-  overflow: hidden;
-}
-
-.bookingReviewHead::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.22), transparent 28%),
-    radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.14), transparent 30%);
-  pointer-events: none;
-}
-
-.bookingReviewHeadContent {
-  position: relative;
-  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 18px;
-}
-
-.bookingReviewHeadText {
-  min-width: 0;
+  gap: 14px;
 }
 
 .bookingReviewHead h1 {
   margin: 0;
   font-size: 32px;
-  color: #ffffff;
+  color: var(--text);
   line-height: 1.2;
   word-break: break-word;
 }
 
 .bookingReviewHead p {
   margin: 8px 0 0;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--muted);
   line-height: 1.65;
-  font-weight: 600;
+  font-weight: 550;
   word-break: break-word;
 }
 
@@ -77,21 +51,22 @@
   min-height: 42px;
   padding: 0 16px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.36);
-  background: rgba(255, 255, 255, 0.16);
-  color: #ffffff;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
   white-space: nowrap;
-  backdrop-filter: blur(6px);
 }
 
-.bookingReviewBackBtn:hover {
+.bookingReviewBackBtnPlain {
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  background: #ffffff;
+  color: #12212f;
+}
+
+.bookingReviewBackBtnPlain:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.12);
-  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
 }
 
 .bookingReviewLayout {
@@ -112,14 +87,41 @@
   border: 1px solid rgba(0, 184, 241, 0.12);
   border-radius: 18px;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
-  padding: 18px;
 }
 
 .bookingReviewCard {
-  display: grid;
-  gap: 14px;
+  overflow: hidden;
   position: sticky;
   top: 18px;
+}
+
+.bookingReviewCardHeader {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.bookingReviewCardHeader::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.14), transparent 34%);
+  pointer-events: none;
+}
+
+.bookingReviewCardHeaderContent {
+  position: relative;
+  z-index: 1;
+  padding: 20px 22px;
+}
+
+.bookingReviewCardBody {
+  display: grid;
+  gap: 14px;
+  padding: 18px 22px 22px;
 }
 
 .bookingReviewCardTop {
@@ -132,24 +134,24 @@
 .bookingReviewCardTop h3 {
   margin: 0;
   font-size: 20px;
-  font-weight: 740;
-  color: var(--text);
+  font-weight: 760;
+  color: #ffffff;
   line-height: 1.3;
   word-break: break-word;
 }
 
 .bookingReviewCardTop p {
   margin: 6px 0 0;
-  color: var(--muted);
-  font-weight: 550;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
   word-break: break-word;
 }
 
 .bookingReviewPrice {
   flex: 0 0 auto;
   font-size: 16px;
-  font-weight: 740;
-  color: #0369a1;
+  font-weight: 800;
+  color: #ffffff;
   white-space: nowrap;
 }
 
@@ -189,6 +191,7 @@
 .bookingReviewFormCard {
   display: grid;
   gap: 14px;
+  padding: 18px;
 }
 
 .bookingReviewField {
@@ -373,7 +376,7 @@
     gap: 16px;
   }
 
-  .bookingReviewHeadContent {
+  .bookingReviewHead {
     flex-direction: column;
     align-items: stretch;
   }
@@ -393,9 +396,14 @@
     width: 100%;
   }
 
-  .bookingReviewCard,
+  .bookingReviewCardHeaderContent,
+  .bookingReviewCardBody,
   .bookingReviewFormCard {
     padding: 16px;
+  }
+
+  .bookingReviewCard,
+  .bookingReviewFormCard {
     border-radius: 16px;
   }
 
