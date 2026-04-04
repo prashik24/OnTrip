@@ -623,3 +623,38 @@
     flex-direction: column;
   }
 }
+
+.providerDetailsVoteBtn {
+  min-height: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  color: #12212f;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.providerDetailsVoteBtnAlt {
+  border: none;
+  background: transparent;
+  color: #12212f;
+}
+
+.providerDetailsVoteBtn.active {
+  border: none;
+  background: transparent;
+  color: #0369a1;
+}
+
+.providerDetailsVoteBtn:hover {
+  box-shadow: none;
+  color: #00b8f1;
+}
