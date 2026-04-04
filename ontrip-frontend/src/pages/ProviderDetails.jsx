@@ -67,7 +67,9 @@ export default function ProviderDetails() {
   }, [id]);
 
   const isOwner =
-    user && provider && String(provider.owner?._id || provider.owner) === String(user.id);
+    user &&
+    provider &&
+    String(provider.owner?._id || provider.owner) === String(user.id);
 
   const travelPlans = useMemo(() => {
     if (!provider) return [];
@@ -109,7 +111,9 @@ export default function ProviderDetails() {
       return;
     }
 
-    const ownerId = provider?.owner?._id || provider?.owner?.id || provider?.owner;
+    const ownerId =
+      provider?.owner?._id || provider?.owner?.id || provider?.owner;
+
     if (!ownerId) {
       setMsg("Provider chat is not available right now.");
       return;
@@ -177,7 +181,9 @@ export default function ProviderDetails() {
 
           <div className="providerDetailsTopContent">
             <div className="providerDetailsType providerDetailsTypeTop">
-              {provider.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+              {provider.listingType === "vehicle"
+                ? "Vehicle Service"
+                : "Travel Planner"}
             </div>
 
             <h1>{provider.businessName}</h1>
@@ -284,7 +290,9 @@ export default function ProviderDetails() {
 
                       <div className="providerDetailsMiniInfo">
                         <span className="providerDetailsMiniLabel">Driver Option</span>
-                        <strong>{vehicle.withDriver ? "With Driver" : "Without Driver"}</strong>
+                        <strong>
+                          {vehicle.withDriver ? "With Driver" : "Without Driver"}
+                        </strong>
                       </div>
                     </div>
                   </div>
@@ -404,18 +412,35 @@ export default function ProviderDetails() {
                       }`}
                       onClick={() => handleReviewVote(review._id, "helpful")}
                       disabled={voteLoadingId === review._id}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "10px",
+                      }}
                     >
                       <img
                         src={HELPFUL_ICON}
                         alt="Helpful"
                         style={{
-                          width: "18px",
-                          height: "18px",
+                          width: "22px",
+                          height: "22px",
+                          minWidth: "22px",
+                          minHeight: "22px",
                           objectFit: "contain",
+                          display: "block",
+                          verticalAlign: "middle",
                           flexShrink: 0,
                         }}
                       />
-                      <span>Helpful ({review.helpfulCount || 0})</span>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          lineHeight: 1,
+                        }}
+                      >
+                        Helpful ({review.helpfulCount || 0})
+                      </span>
                     </button>
 
                     <button
@@ -425,18 +450,35 @@ export default function ProviderDetails() {
                       }`}
                       onClick={() => handleReviewVote(review._id, "not_helpful")}
                       disabled={voteLoadingId === review._id}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "10px",
+                      }}
                     >
                       <img
                         src={NOT_HELPFUL_ICON}
                         alt="Not Helpful"
                         style={{
-                          width: "18px",
-                          height: "18px",
+                          width: "22px",
+                          height: "22px",
+                          minWidth: "22px",
+                          minHeight: "22px",
                           objectFit: "contain",
+                          display: "block",
+                          verticalAlign: "middle",
                           flexShrink: 0,
                         }}
                       />
-                      <span>Not Helpful ({review.notHelpfulCount || 0})</span>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          lineHeight: 1,
+                        }}
+                      >
+                        Not Helpful ({review.notHelpfulCount || 0})
+                      </span>
                     </button>
                   </div>
                 </div>
