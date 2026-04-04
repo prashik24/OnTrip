@@ -619,3 +619,46 @@
     flex-direction: column;
   }
 }
+
+.providerDetailsVoteBtn {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  background: #ffffff;
+  color: #12212f;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.providerDetailsVoteBtnAlt {
+  border-color: rgba(11, 27, 42, 0.12);
+  background: #ffffff;
+  color: #12212f;
+}
+
+.providerDetailsVoteBtn.active {
+  border-color: rgba(0, 184, 241, 0.28);
+  background: rgba(0, 184, 241, 0.08);
+  color: #0369a1;
+}
+
+.providerDetailsVoteIcon {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
