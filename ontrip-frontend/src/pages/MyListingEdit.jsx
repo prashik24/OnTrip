@@ -16,6 +16,12 @@ const vehicleTypes = [
   "cycle",
 ];
 
+function formatLabel(value) {
+  return String(value || "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 function emptyVehicle() {
   return {
     vehicleType: "car",
@@ -74,28 +80,28 @@ export default function MyListingEdit() {
 
   const listingTypeOptions = useMemo(
     () => [
-      { label: "Vehicle Service", value: "vehicle" },
-      { label: "Travel Planner", value: "travel_planner" },
+      { label: formatLabel("vehicle"), value: "vehicle" },
+      { label: formatLabel("travel_planner"), value: "travel_planner" },
     ],
     []
   );
 
   const plannerModeOptions = useMemo(
     () => [
-      { label: "Customized Trip", value: "customized_trip" },
-      { label: "Self Customized Places", value: "self_customized_places" },
-      { label: "Day Package", value: "day_package" },
-      { label: "Multi Day Package", value: "multi_day_package" },
-      { label: "Group Trip", value: "group_trip" },
+      { label: formatLabel("customized_trip"), value: "customized_trip" },
+      { label: formatLabel("self_customized_places"), value: "self_customized_places" },
+      { label: formatLabel("day_package"), value: "day_package" },
+      { label: formatLabel("multi_day_package"), value: "multi_day_package" },
+      { label: formatLabel("group_trip"), value: "group_trip" },
     ],
     []
   );
 
   const priceUnitOptions = useMemo(
     () => [
-      { label: "Per Day", value: "per_day" },
-      { label: "Per Hour", value: "per_hour" },
-      { label: "Fixed", value: "fixed" },
+      { label: formatLabel("per_day"), value: "per_day" },
+      { label: formatLabel("per_hour"), value: "per_hour" },
+      { label: formatLabel("fixed"), value: "fixed" },
     ],
     []
   );
@@ -525,7 +531,7 @@ export default function MyListingEdit() {
                           updateVehicle(index, "vehicleType", e.target.value)
                         }
                         options={vehicleTypes.map((type) => ({
-                          label: type,
+                          label: formatLabel(type),
                           value: type,
                         }))}
                       />
