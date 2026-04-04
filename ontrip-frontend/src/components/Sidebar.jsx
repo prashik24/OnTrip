@@ -65,14 +65,46 @@ export default function Sidebar({ open, onClose }) {
 
   const navItems = useMemo(
     () => [
-      { to: "/", label: "Home" },
-      { to: "/explore", label: "Explore" },
-      { to: "/planner", label: "AI Planner" },
-      { to: "/community", label: "Community" },
-      { to: "/chat", label: "Chat" },
-      { to: "/providers", label: "Providers" },
-      { to: "/provider-register", label: "Register Service" },
-      { to: "/profile", label: "Profile" },
+      {
+        to: "/",
+        label: "Home",
+        icon: "https://img.icons8.com/?size=100&id=2797&format=png&color=000000",
+      },
+      {
+        to: "/explore",
+        label: "Explore",
+        icon: "https://img.icons8.com/?size=100&id=uHuD6VI5HlWw&format=png&color=000000",
+      },
+      {
+        to: "/planner",
+        label: "AI Planner",
+        icon: "https://img.icons8.com/?size=100&id=pSv2x64tdztR&format=png&color=000000",
+      },
+      {
+        to: "/community",
+        label: "Community",
+        icon: "https://img.icons8.com/?size=100&id=102261&format=png&color=000000",
+      },
+      {
+        to: "/chat",
+        label: "Chat",
+        icon: "https://img.icons8.com/?size=100&id=85546&format=png&color=000000",
+      },
+      {
+        to: "/providers",
+        label: "Providers",
+        icon: "https://img.icons8.com/?size=100&id=61121&format=png&color=000000",
+      },
+      {
+        to: "/provider-register",
+        label: "Register Service",
+        icon: "https://img.icons8.com/?size=100&id=44471&format=png&color=000000",
+      },
+      {
+        to: "/profile",
+        label: "Profile",
+        icon: "https://img.icons8.com/?size=100&id=7819&format=png&color=000000",
+      },
     ],
     []
   );
@@ -120,7 +152,7 @@ export default function Sidebar({ open, onClose }) {
           <div className="otSideTitle">Menu</div>
 
           <button
-            className="otSideClose"
+            className="otSideClose otBtnGhost"
             onClick={onClose}
             aria-label="Close sidebar"
             type="button"
@@ -178,14 +210,6 @@ export default function Sidebar({ open, onClose }) {
                 {userName}
               </button>
             </div>
-
-            <button
-              className="otMiniLink"
-              type="button"
-              onClick={handleProfileClick}
-            >
-              Profile
-            </button>
           </div>
         ) : (
           <div className="otGuestCard">
@@ -203,7 +227,7 @@ export default function Sidebar({ open, onClose }) {
 
             <div className="otGuestActions">
               <button
-                className="otGuestPrimary"
+                className="otGuestPrimary otBtnPrimary"
                 type="button"
                 onClick={() => goWithClose("/login")}
               >
@@ -211,7 +235,7 @@ export default function Sidebar({ open, onClose }) {
               </button>
 
               <button
-                className="otGuestSecondary"
+                className="otGuestSecondary otBtnGhost"
                 type="button"
                 onClick={() => goWithClose("/signup")}
               >
@@ -294,7 +318,12 @@ export default function Sidebar({ open, onClose }) {
                   onClose?.();
                 }}
               >
-                <span className="dot" aria-hidden="true" />
+                <img
+                  src={item.icon}
+                  alt={item.label}
+                  className="otNavIcon"
+                  loading="lazy"
+                />
                 <span>{item.label}</span>
               </NavLink>
             ))}
@@ -307,7 +336,7 @@ export default function Sidebar({ open, onClose }) {
           <div className="otSectionTitle">Quick actions</div>
 
           <button
-            className="otActionBtn"
+            className="otActionBtn otBtnPrimary"
             type="button"
             onClick={() => goWithClose("/planner")}
           >
@@ -315,7 +344,7 @@ export default function Sidebar({ open, onClose }) {
           </button>
 
           <button
-            className="otActionBtn"
+            className="otActionBtn otBtnGhost"
             type="button"
             onClick={() => handleProtectedRoute("/provider-register")}
           >
@@ -323,7 +352,7 @@ export default function Sidebar({ open, onClose }) {
           </button>
 
           <button
-            className="otActionBtn"
+            className="otActionBtn otBtnGhost"
             type="button"
             onClick={() => goWithClose("/providers")}
           >
@@ -391,7 +420,7 @@ export default function Sidebar({ open, onClose }) {
             </button>
           ) : (
             <button
-              className="otBottomBtn"
+              className="otBottomBtn otBtnPrimary"
               onClick={() => goWithClose("/signup")}
               type="button"
             >
