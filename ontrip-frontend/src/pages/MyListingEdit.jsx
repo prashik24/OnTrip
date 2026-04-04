@@ -89,7 +89,10 @@ export default function MyListingEdit() {
   const plannerModeOptions = useMemo(
     () => [
       { label: formatLabel("customized_trip"), value: "customized_trip" },
-      { label: formatLabel("self_customized_places"), value: "self_customized_places" },
+      {
+        label: formatLabel("self_customized_places"),
+        value: "self_customized_places",
+      },
       { label: formatLabel("day_package"), value: "day_package" },
       { label: formatLabel("multi_day_package"), value: "multi_day_package" },
       { label: formatLabel("group_trip"), value: "group_trip" },
