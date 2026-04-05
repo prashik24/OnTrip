@@ -38,7 +38,6 @@
   position: absolute;
   inset: 0 0 auto 0;
   height: 86px;
-
   z-index: 0;
 }
 
@@ -168,7 +167,15 @@
   margin-right: 4px;
 }
 
+.communityProfileActionRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .communityProfileFollowBtn,
+.communityProfileMessageBtn,
 .communityProfileLoadMoreBtn,
 .communityProfileDeleteCancelBtn,
 .communityProfileDeleteConfirmBtn {
@@ -190,13 +197,20 @@
   color: #ffffff;
 }
 
+.communityProfileMessageBtn {
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  background: #ffffff;
+  color: var(--text);
+}
+
 .communityProfileDeleteCancelBtn {
   border: 1px solid rgba(15, 23, 42, 0.1);
   background: #ffffff;
   color: var(--text);
 }
 
-.communityProfileFollowBtn {
+.communityProfileFollowBtn,
+.communityProfileMessageBtn {
   width: fit-content;
 }
 
@@ -340,5 +354,16 @@
 
   .communityProfileStatsInline {
     font-size: 13px;
+  }
+
+  .communityProfileActionRow {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .communityProfileFollowBtn,
+  .communityProfileMessageBtn {
+    width: 100%;
   }
 }
