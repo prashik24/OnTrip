@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./CommunityPostCard.css";
 
 const LIKE_ICON =
-  "https://img.icons8.com/?size=100&id=24816&format=png&color=000000";
+  "https://img.icons8.com/?size=100&id=33479&format=png&color=000000";
 const BOOKMARK_ICON =
   "https://img.icons8.com/?size=100&id=82461&format=png&color=000000";
 const COMMENT_ICON =
