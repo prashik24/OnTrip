@@ -10,6 +10,8 @@ import communityRoutes from "./routes/communityRoutes.js";
 import aiPlannerRoutes from "./routes/aiPlannerRoutes.js";
 import savedTripRoutes from "./routes/savedTripRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import subscriberRoutes from "./routes/subscriberRoutes.js";
+import providerBroadcastRoutes from "./routes/providerBroadcastRoutes.js";
 
 const app = express();
 
@@ -35,5 +37,7 @@ app.use("/api/ai-planner", aiPlannerRoutes);
 app.use("/api/saved-trips", savedTripRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/subscribers", subscriberRoutes);
+app.use("/api/provider-broadcasts", providerBroadcastRoutes);
 
 export default app;
