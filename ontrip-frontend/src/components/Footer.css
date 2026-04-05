@@ -109,7 +109,14 @@
 
 /* Instagram */
 .otSocial .otIconBtn:nth-child(1) {
-  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+  background: radial-gradient(
+    circle at 30% 107%,
+    #fdf497 0%,
+    #fdf497 5%,
+    #fd5949 45%,
+    #d6249f 60%,
+    #285aeb 90%
+  );
 }
 
 /* X / Twitter */
@@ -209,13 +216,46 @@
 }
 
 .otNewsBtn {
-  border: none;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #04202d;
-  border-radius: 16px;
-  font-weight: 900;
+  min-height: 46px;
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, var(--p2), var(--p3));
+  color: #ffffff;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
   min-width: 0;
+  transition: 0.18s ease;
+  box-sizing: border-box;
+}
+
+.otNewsBtn:hover {
+  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+}
+
+.otNewsBtn:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.otNewsMessage {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 650;
+  word-break: break-word;
+}
+
+.otNewsMessage.success {
+  background: rgba(16, 185, 129, 0.08);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.16);
+}
+
+.otNewsMessage.error {
+  background: rgba(255, 98, 98, 0.08);
+  color: #b42318;
+  border: 1px solid rgba(255, 98, 98, 0.16);
 }
 
 .otSmallNote {
