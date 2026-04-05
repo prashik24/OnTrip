@@ -15,11 +15,13 @@ export default function CommunityBookmarksView({
   onReply,
   onLoadComments,
   onLoadReplies,
+  onMessageUser,
   commentDrafts,
   setCommentText,
   loadingCommentsFor,
   loadingRepliesId,
   onOpenProfile,
+  me,
 }) {
   return (
     <div className="communityBookmarksView">
@@ -49,11 +51,13 @@ export default function CommunityBookmarksView({
               onReply={onReply}
               onLoadComments={onLoadComments}
               onLoadReplies={onLoadReplies}
+              onMessageUser={onMessageUser}
               commentText={commentDrafts[post.id] || ""}
               setCommentText={setCommentText}
               loadingCommentsFor={loadingCommentsFor}
               loadingRepliesId={loadingRepliesId}
               onOpenProfile={onOpenProfile}
+              me={me}
             />
           ))}
 
