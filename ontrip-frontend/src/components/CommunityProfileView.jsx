@@ -38,6 +38,8 @@ export default function CommunityProfileView({
 }) {
   const [pendingDeletePostId, setPendingDeletePostId] = useState("");
 
+  const profileUserId = profile?.id || profile?._id || "";
+
   async function handleConfirmDelete() {
     if (!pendingDeletePostId) return;
     await onDelete(pendingDeletePostId);
@@ -86,13 +88,23 @@ export default function CommunityProfileView({
               </div>
 
               {!isOwnProfile ? (
-                <button
-                  type="button"
-                  className="communityProfileFollowBtn"
-                  onClick={onToggleFollow}
-                >
-                  {profile?.isFollowing ? "Following" : "Follow"}
-                </button>
+                <div className="communityProfileActionRow">
+                  <button
+                    type="button"
+                    className="communityProfileMessageBtn"
+                    onClick={() => onMessageUser?.(profileUserId)}
+                  >
+                    Message
+                  </button>
+
+                  <button
+                    type="button"
+                    className="communityProfileFollowBtn"
+                    onClick={onToggleFollow}
+                  >
+                    {profile?.isFollowing ? "Following" : "Follow"}
+                  </button>
+                </div>
               ) : (
                 <span className="communityProfileRolePill">
                   {profile?.role === "provider" ? "Provider" : "Traveler"}
