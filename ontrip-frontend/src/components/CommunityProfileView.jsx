@@ -28,11 +28,13 @@ export default function CommunityProfileView({
   onReply,
   onLoadComments,
   onLoadReplies,
+  onMessageUser,
   commentDrafts,
   setCommentText,
   loadingCommentsFor,
   loadingRepliesId,
   onOpenProfile,
+  me,
 }) {
   const [pendingDeletePostId, setPendingDeletePostId] = useState("");
 
@@ -159,11 +161,13 @@ export default function CommunityProfileView({
               onReply={onReply}
               onLoadComments={onLoadComments}
               onLoadReplies={onLoadReplies}
+              onMessageUser={onMessageUser}
               commentText={commentDrafts[post.id] || ""}
               setCommentText={setCommentText}
               loadingCommentsFor={loadingCommentsFor}
               loadingRepliesId={loadingRepliesId}
               onOpenProfile={onOpenProfile}
+              me={me}
             />
           ))}
 
