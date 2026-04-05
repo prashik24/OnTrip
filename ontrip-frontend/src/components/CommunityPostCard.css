@@ -78,6 +78,7 @@
   text-decoration: none;
   color: var(--text);
   font-weight: 800;
+  font-family: inherit;
   border: none;
   outline: none;
   background: transparent;
@@ -87,6 +88,17 @@
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
+}
+
+.communityAuthorName {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.communityCommentName {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .communityAuthorName:hover,
@@ -242,6 +254,14 @@
 }
 
 .communityActionBtn.active {
+  color: #0369a1;
+}
+
+.communityMessageBtn {
+  color: var(--text);
+}
+
+.communityMessageBtn:hover {
   color: #0369a1;
 }
 
@@ -462,39 +482,4 @@
     height: 38px;
     padding: 0 12px;
   }
-}
-
-.communityAuthorName,
-.communityCommentName {
-  text-decoration: none;
-  color: var(--text);
-  font-weight: 800;
-
-  /* 🔥 FIX FONT LOOK */
-  font-family: inherit;
-  font-size: 16px;
-  line-height: 1.2;
-
-  /* remove button default styles */
-  border: none;
-  outline: none;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-  box-shadow: none;
-  appearance: none;
-  -webkit-appearance: none;
-
-  cursor: pointer;
-}
-
-/* optional: make it exactly like before */
-.communityAuthorName {
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.communityCommentName {
-  font-size: 14px;
-  font-weight: 700;
 }
