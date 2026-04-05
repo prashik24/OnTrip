@@ -8,7 +8,7 @@ const BOOKMARK_ICON =
 const COMMENT_ICON =
   "https://img.icons8.com/?size=100&id=11167&format=png&color=000000";
 const MESSAGE_ICON =
-  "https://img.icons8.com/?size=100&id=2848&format=png&color=000000";
+  "https://img.icons8.com/?size=100&id=63&format=png&color=000000";
 
 function getInitial(name = "U") {
   return String(name || "U").trim().charAt(0).toUpperCase();
