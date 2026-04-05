@@ -8,7 +8,7 @@ const BOOKMARK_ICON =
 const COMMENT_ICON =
   "https://img.icons8.com/?size=100&id=11167&format=png&color=000000";
 const MESSAGE_ICON =
-  "https://img.icons8.com/?size=100&id=2848&format=png&color=000000";
+  "https://img.icons8.com/?size=100&id=63&format=png&color=000000";
 
 function getInitial(name = "U") {
   return String(name || "U").trim().charAt(0).toUpperCase();
@@ -37,13 +37,14 @@ function CommentNode({
   const [showReplyBox, setShowReplyBox] = useState(false);
 
   const hasMoreReplies = Boolean(comment?.hasMoreReplies);
+  const commentUserId = comment.user?.id || comment.user?._id || "";
 
   return (
     <div className={`communityCommentItem depth-${Math.min(depth, 3)}`}>
       <button
         type="button"
         className="communityCommentUserLink"
-        onClick={() => onOpenProfile?.(comment.user?.id)}
+        onClick={() => onOpenProfile?.(commentUserId)}
       >
         {comment.user?.avatar ? (
           <img
@@ -64,7 +65,7 @@ function CommentNode({
             <button
               type="button"
               className="communityCommentName"
-              onClick={() => onOpenProfile?.(comment.user?.id)}
+              onClick={() => onOpenProfile?.(commentUserId)}
             >
               {comment.user?.name || "User"}
             </button>
@@ -154,13 +155,15 @@ export default function CommunityPostCard({
   onOpenProfile,
   me,
 }) {
+  const authorId = post.author?.id || post.author?._id || "";
+  const myId = me?.id || me?._id || "";
+
   const canDelete = showDelete || post.showDelete || post.isMine;
   const hasMoreComments =
     Boolean(post.hasMoreComments) &&
     Number(post.rootCommentsTotal || 0) > Number(post.loadedRootCount || 0);
 
-  const canMessageAuthor =
-    post.author?.id && String(post.author.id) !== String(me?.id);
+  const canMessageAuthor = Boolean(authorId) && String(authorId) !== String(myId);
 
   return (
     <article className="communityPostCard" id={`community-post-${post.id}`}>
@@ -168,7 +171,7 @@ export default function CommunityPostCard({
         <button
           type="button"
           className="communityAuthorLink"
-          onClick={() => onOpenProfile?.(post.author?.id)}
+          onClick={() => onOpenProfile?.(authorId)}
         >
           {post.author?.avatar ? (
             <img
@@ -188,7 +191,7 @@ export default function CommunityPostCard({
             <button
               type="button"
               className="communityAuthorName"
-              onClick={() => onOpenProfile?.(post.author?.id)}
+              onClick={() => onOpenProfile?.(authorId)}
             >
               {post.author?.name || "User"}
             </button>
@@ -299,7 +302,7 @@ export default function CommunityPostCard({
           <button
             type="button"
             className="communityActionBtn communityMessageBtn"
-            onClick={() => onMessageUser?.(post.author?.id)}
+            onClick={() => onMessageUser?.(authorId)}
           >
             <img src={MESSAGE_ICON} alt="" className="communityActionIcon" />
             <span>Message</span>
