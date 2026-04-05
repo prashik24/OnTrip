@@ -22,6 +22,7 @@ import NotFound from "./pages/NotFound";
 import Providers from "./pages/Providers";
 import ProviderDetails from "./pages/ProviderDetails";
 import ProviderRegister from "./pages/ProviderRegister";
+import ProviderBroadcast from "./pages/ProviderBroadcast";
 import MyListings from "./pages/MyListings";
 import MyListingEdit from "./pages/MyListingEdit";
 import ProviderDashboard from "./pages/ProviderDashboard";
@@ -70,7 +71,7 @@ export default function App() {
 
             <Route path="/community" element={<Community />} />
 
-
+            <Route path="/provider-broadcast" element={<ProviderBroadcast />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/my-listings" element={<MyListings />} />
