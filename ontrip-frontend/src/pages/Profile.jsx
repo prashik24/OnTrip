@@ -150,9 +150,15 @@ export default function Profile() {
         <div className="profileHeader">
           <div className="profileAvatarArea">
             {avatarSrc ? (
-              <img src={avatarSrc} alt={user?.name || "User"} className="profileAvatar" />
+              <img
+                src={avatarSrc}
+                alt={user?.name || "User"}
+                className="profileAvatar"
+              />
             ) : (
-              <div className="profileAvatar profileAvatarFallback">{initial}</div>
+              <div className="profileAvatar profileAvatarFallback">
+                {initial}
+              </div>
             )}
 
             {editing && (
@@ -192,7 +198,9 @@ export default function Profile() {
           </div>
         </div>
 
-        {msg.text && <div className={`profileMessage ${msg.type}`}>{msg.text}</div>}
+        {msg.text && (
+          <div className={`profileMessage ${msg.type}`}>{msg.text}</div>
+        )}
 
         {!editing ? (
           <div className="profileContent">
@@ -231,7 +239,10 @@ export default function Profile() {
                 <div className="profileQuickCard">
                   <h3>Booking History</h3>
                   <p>Track bookings, payment state, and travel plans.</p>
-                  <button className="profileGhostBtn" onClick={() => navigate("/profile/bookings")}>
+                  <button
+                    className="profileGhostBtn"
+                    onClick={() => navigate("/profile/bookings")}
+                  >
                     Open Booking History
                   </button>
                 </div>
@@ -240,7 +251,10 @@ export default function Profile() {
               {hasSavedTrips && (
                 <div className="profileQuickCard">
                   <h3>Saved Trips</h3>
-                  <p>View your saved AI trip plans and open or download them anytime.</p>
+                  <p>
+                    View your saved AI trip plans and open or download them
+                    anytime.
+                  </p>
                   <button
                     className="profileGhostBtn"
                     onClick={() => navigate("/profile/saved-trips")}
@@ -271,6 +285,20 @@ export default function Profile() {
                       onClick={() => navigate("/provider/dashboard")}
                     >
                       Open Dashboard
+                    </button>
+                  </div>
+
+                  <div className="profileQuickCard">
+                    <h3>Provider Broadcast</h3>
+                    <p>
+                      Send trip and vehicle updates to all subscribed users and
+                      review old broadcast history.
+                    </p>
+                    <button
+                      className="profileGhostBtn"
+                      onClick={() => navigate("/provider-broadcast")}
+                    >
+                      Open Provider Broadcast
                     </button>
                   </div>
                 </>
@@ -316,7 +344,11 @@ export default function Profile() {
               </div>
             </div>
 
-            <button className="profilePrimaryBtn" type="submit" disabled={loading}>
+            <button
+              className="profilePrimaryBtn"
+              type="submit"
+              disabled={loading}
+            >
               {loading ? "Saving..." : "Save Changes"}
             </button>
           </form>
