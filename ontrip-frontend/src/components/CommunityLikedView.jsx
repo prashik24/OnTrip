@@ -15,11 +15,13 @@ export default function CommunityLikedView({
   onReply,
   onLoadComments,
   onLoadReplies,
+  onMessageUser,
   commentDrafts,
   setCommentText,
   loadingCommentsFor,
   loadingRepliesId,
   onOpenProfile,
+  me,
 }) {
   return (
     <div className="communityLikedView">
@@ -49,11 +51,13 @@ export default function CommunityLikedView({
               onReply={onReply}
               onLoadComments={onLoadComments}
               onLoadReplies={onLoadReplies}
+              onMessageUser={onMessageUser}
               commentText={commentDrafts[post.id] || ""}
               setCommentText={setCommentText}
               loadingCommentsFor={loadingCommentsFor}
               loadingRepliesId={loadingRepliesId}
               onOpenProfile={onOpenProfile}
+              me={me}
             />
           ))}
 
