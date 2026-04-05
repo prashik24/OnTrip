@@ -7,6 +7,8 @@ const BOOKMARK_ICON =
   "https://img.icons8.com/?size=100&id=82461&format=png&color=000000";
 const COMMENT_ICON =
   "https://img.icons8.com/?size=100&id=11167&format=png&color=000000";
+const MESSAGE_ICON =
+  "https://img.icons8.com/?size=100&id=2848&format=png&color=000000";
 
 function getInitial(name = "U") {
   return String(name || "U").trim().charAt(0).toUpperCase();
@@ -144,19 +146,24 @@ export default function CommunityPostCard({
   onReply,
   onLoadComments,
   onLoadReplies,
+  onMessageUser,
   commentText,
   setCommentText,
   loadingCommentsFor,
   loadingRepliesId,
   onOpenProfile,
+  me,
 }) {
   const canDelete = showDelete || post.showDelete || post.isMine;
   const hasMoreComments =
     Boolean(post.hasMoreComments) &&
     Number(post.rootCommentsTotal || 0) > Number(post.loadedRootCount || 0);
 
+  const canMessageAuthor =
+    post.author?.id && String(post.author.id) !== String(me?.id);
+
   return (
-    <article className="communityPostCard">
+    <article className="communityPostCard" id={`community-post-${post.id}`}>
       <div className="communityPostHead">
         <button
           type="button"
@@ -287,6 +294,17 @@ export default function CommunityPostCard({
           <img src={BOOKMARK_ICON} alt="" className="communityActionIcon" />
           <span>{post.isBookmarkedByMe ? "Saved" : "Save"}</span>
         </button>
+
+        {canMessageAuthor ? (
+          <button
+            type="button"
+            className="communityActionBtn communityMessageBtn"
+            onClick={() => onMessageUser?.(post.author?.id)}
+          >
+            <img src={MESSAGE_ICON} alt="" className="communityActionIcon" />
+            <span>Message</span>
+          </button>
+        ) : null}
 
         <div className="communityActionInfo">
           <img src={COMMENT_ICON} alt="" className="communityActionIcon" />
