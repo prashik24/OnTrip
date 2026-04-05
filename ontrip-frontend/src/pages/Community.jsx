@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import CommunitySidebar from "../components/CommunitySidebar";
 import CommunityFeedView from "../components/CommunityFeedView";
@@ -91,6 +92,7 @@ function findCommentById(comments = [], commentId) {
 
 export default function Community() {
   const me = getUser();
+  const navigate = useNavigate();
 
   const [activeView, setActiveView] = useState("home");
   const [selectedProfileId, setSelectedProfileId] = useState(me?.id || "");
@@ -242,6 +244,21 @@ export default function Community() {
     setSelectedProfileId(userId);
     setActiveView("profile");
     setFocusedPostId("");
+  }
+
+  function handleMessageUser(userId) {
+    if (!userId) return;
+
+    if (!isLoggedIn()) {
+      setError("Please login first.");
+      return;
+    }
+
+    if (String(userId) === String(me?.id)) {
+      return;
+    }
+
+    navigate(`/chat?user=${encodeURIComponent(userId)}`);
   }
 
   async function applySearch() {
@@ -816,6 +833,8 @@ export default function Community() {
     loadingCommentsFor,
     loadingRepliesId,
     onOpenProfile: handleOpenProfile,
+    onMessageUser: handleMessageUser,
+    me,
   };
 
   return (
