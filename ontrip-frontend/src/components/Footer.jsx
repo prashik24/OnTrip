@@ -1,11 +1,50 @@
+import { useState } from "react";
+import { apiFetch } from "../lib/api";
 import "./Footer.css";
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState({ text: "", type: "" });
+
+  async function handleSubscribe(e) {
+    e.preventDefault();
+
+    if (!email.trim()) {
+      setMsg({ text: "Please enter your email address.", type: "error" });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setMsg({ text: "", type: "" });
+
+      const data = await apiFetch("/api/subscribers/subscribe", {
+        method: "POST",
+        body: JSON.stringify({
+          email: email.trim(),
+        }),
+      });
+
+      setMsg({
+        text: data.message || "Subscribed successfully.",
+        type: "success",
+      });
+      setEmail("");
+    } catch (err) {
+      setMsg({
+        text: err.message || "Failed to subscribe.",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <footer className="otFooter">
       <div className="otFooterTop">
         <div className="otFooterContainer">
-          {/* Brand */}
           <div className="otBrand">
             <div className="otBrandName">OnTrip</div>
             <div className="otBrandTagline">
@@ -39,7 +78,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Columns */}
           <div className="otCols">
             <div className="otCol">
               <div className="otColTitle">Product</div>
@@ -66,27 +104,35 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Newsletter */}
           <div className="otNewsletter">
             <div className="otColTitle">Get travel updates</div>
             <div className="otNewsText">
-              Get new hidden places, price alerts, and itinerary tips (demo UI).
+              Get new hidden places, price alerts, and itinerary tips directly in
+              your inbox.
             </div>
 
-            <form
-              className="otNewsForm"
-              onSubmit={(e) => e.preventDefault()}
-            >
+            <form className="otNewsForm" onSubmit={handleSubscribe}>
               <input
                 className="otNewsInput"
                 type="email"
                 placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <button className="otNewsBtn" type="submit">
-                Subscribe
+
+              <button
+                className="otNewsBtn"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? "Subscribing..." : "Subscribe"}
               </button>
             </form>
+
+            {msg.text ? (
+              <div className={`otNewsMessage ${msg.type}`}>{msg.text}</div>
+            ) : null}
 
             <div className="otSmallNote">
               By subscribing, you agree to receive emails from OnTrip.
@@ -95,7 +141,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom bar */}
       <div className="otFooterBottom">
         <div className="otFooterContainer otBottomInner">
           <div className="otCopyright">
