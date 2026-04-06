@@ -1,25 +1,25 @@
 .providerDashboardPage {
-  padding-bottom: 24px;
+  padding-bottom: 32px;
   display: grid;
-  gap: 14px;
+  gap: 18px;
 }
 
 .providerDashboardPage.container {
   width: 100%;
-  max-width: 1040px;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 0 14px;
+  padding: 0 16px;
   box-sizing: border-box;
 }
 
 .providerDashboardHead {
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
 
 .providerDashboardHead h1 {
   margin: 0;
-  font-size: 26px;
+  font-size: 32px;
   color: var(--text);
   line-height: 1.2;
   word-break: break-word;
@@ -28,15 +28,14 @@
 .providerDashboardHead p {
   margin: 0;
   color: var(--muted);
-  line-height: 1.55;
-  font-size: 14px;
-  font-weight: 550;
+  line-height: 1.6;
+  font-weight: 600;
   word-break: break-word;
 }
 
 .providerDashboardMessage {
-  padding: 10px 12px;
-  border-radius: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
   background: rgba(255, 98, 98, 0.08);
   border: 1px solid rgba(255, 98, 98, 0.16);
   color: #b42318;
@@ -47,25 +46,25 @@
 .providerDashboardEmpty {
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 14px;
-  padding: 18px;
+  border-radius: 16px;
+  padding: 22px;
   color: rgba(11, 27, 42, 0.72);
   font-weight: 650;
-  box-shadow: 0 6px 16px rgba(10, 22, 35, 0.05);
+  box-shadow: 0 8px 20px rgba(10, 22, 35, 0.05);
 }
 
 .providerDashboardGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 18px;
   align-items: stretch;
 }
 
 .providerDashboardCard {
   background: rgba(255, 255, 255, 0.97);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 16px;
-  box-shadow: 0 6px 16px rgba(10, 22, 35, 0.05);
+  border-radius: 18px;
+  box-shadow: 0 8px 22px rgba(10, 22, 35, 0.05);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -73,12 +72,12 @@
 }
 
 .providerDashboardTop {
-  padding: 14px;
+  padding: 18px;
   color: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
+  gap: 14px;
   min-width: 0;
 }
 
@@ -100,32 +99,31 @@
 
 .providerDashboardTop h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 21px;
   font-weight: 760;
-  line-height: 1.2;
+  line-height: 1.25;
   color: #ffffff;
   word-break: break-word;
 }
 
 .providerDashboardTop p {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   color: rgba(255, 255, 255, 0.94);
-  font-size: 13px;
   font-weight: 600;
-  line-height: 1.45;
+  line-height: 1.55;
   word-break: break-word;
 }
 
 .providerDashboardTopRight {
   flex-shrink: 0;
   display: grid;
-  gap: 4px;
+  gap: 6px;
   justify-items: end;
 }
 
 .providerDashboardPrice {
   color: #ffffff;
-  font-size: 17px;
+  font-size: 22px;
   font-weight: 800;
   line-height: 1.2;
 }
@@ -133,15 +131,15 @@
 .providerDashboardTopStatuses {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
 .providerDashboardStatusBadge {
-  padding: 6px 10px;
+  padding: 7px 12px;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   text-align: center;
   text-transform: capitalize;
@@ -149,7 +147,7 @@
 
 .providerDashboardStatusBadge.top {
   padding: 0;
-  font-size: 12px;
+  font-size: 13px;
   background: transparent;
   color: #ffffff;
   border: none;
@@ -158,61 +156,61 @@
 }
 
 .providerDashboardBody {
-  padding: 14px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   height: 100%;
 }
 
 .providerDashboardPreview {
   display: grid;
-  grid-template-columns: 128px minmax(0, 1fr);
-  gap: 10px;
-  align-items: start;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
   min-width: 0;
 }
 
 .providerDashboardImageWrap {
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
   background: rgba(177, 227, 250, 0.14);
-  min-height: 94px;
+  min-height: 130px;
   border: 1px solid rgba(0, 184, 241, 0.1);
 }
 
 .providerDashboardImage {
   width: 100%;
-  height: 94px;
+  height: 100%;
+  min-height: 130px;
   object-fit: cover;
   display: block;
 }
 
 .providerDashboardImageEmpty {
   width: 100%;
-  min-height: 94px;
+  min-height: 130px;
   display: grid;
   place-items: center;
   color: rgba(11, 27, 42, 0.5);
-  font-size: 12px;
   font-weight: 650;
   text-align: center;
-  padding: 10px;
+  padding: 12px;
 }
 
 .providerDashboardPreviewMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px 12px;
   align-content: flex-start;
 }
 
 .providerDashboardPreviewMeta span {
-  padding: 6px 9px;
-  border-radius: 9px;
+  padding: 7px 10px;
+  border-radius: 10px;
   background: rgba(244, 251, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.1);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 650;
   color: rgba(11, 27, 42, 0.78);
   word-break: break-word;
@@ -221,22 +219,22 @@
 .providerDashboardInfo {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .providerDashboardInfo > div {
   background: rgba(244, 251, 255, 0.94);
-  border-radius: 12px;
-  padding: 11px 12px;
+  border-radius: 14px;
+  padding: 14px 15px;
   border: 1px solid rgba(0, 184, 241, 0.1);
   min-width: 0;
   display: grid;
-  gap: 3px;
+  gap: 4px;
 }
 
 .providerDashboardInfo > div strong {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   color: rgba(15, 23, 42, 0.46);
   font-weight: 700;
@@ -244,10 +242,10 @@
 }
 
 .providerDashboardInfo > div span {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 650;
   color: rgba(15, 23, 42, 0.88);
-  line-height: 1.45;
+  line-height: 1.55;
   word-break: break-word;
 }
 
@@ -267,25 +265,24 @@
 
 .providerDashboardCancelWrap {
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
 
 .providerDashboardCancelWrap label {
   display: block;
   color: var(--text);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .providerDashboardCard textarea {
   width: 100%;
-  min-height: 72px;
+  min-height: 90px;
   border: 1px solid rgba(11, 27, 42, 0.12);
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: 12px;
+  padding: 12px 14px;
   font: inherit;
-  font-size: 13px;
   resize: vertical;
   outline: none;
   box-sizing: border-box;
@@ -307,17 +304,17 @@
   margin-top: auto;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
 }
 
 .providerDashboardBtn {
   width: 100%;
-  min-height: 38px;
-  padding: 0 12px;
+  min-height: 42px;
+  padding: 0 14px;
   border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 10px;
+  border-radius: 12px;
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   background: #ffffff;
@@ -377,8 +374,7 @@
   .providerDashboardImageWrap,
   .providerDashboardImage,
   .providerDashboardImageEmpty {
-    min-height: 170px;
-    height: 170px;
+    min-height: 190px;
   }
 
   .providerDashboardTop {
@@ -397,35 +393,35 @@
 
 @media (max-width: 640px) {
   .providerDashboardPage {
-    gap: 14px;
+    gap: 16px;
   }
 
   .providerDashboardPage.container {
-    padding: 0 12px;
+    padding: 0 14px;
   }
 
   .providerDashboardHead h1 {
-    font-size: 22px;
+    font-size: 24px;
   }
 
   .providerDashboardHead p {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .providerDashboardTop {
-    padding: 12px;
+    padding: 16px;
   }
 
   .providerDashboardTop h3 {
-    font-size: 17px;
+    font-size: 18px;
   }
 
   .providerDashboardPrice {
-    font-size: 17px;
+    font-size: 18px;
   }
 
   .providerDashboardBody {
-    padding: 12px;
+    padding: 16px;
   }
 
   .providerDashboardInfo {
@@ -434,11 +430,11 @@
 
   .providerDashboardActions {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 10px;
   }
 
   .providerDashboardBtn {
-    min-height: 40px;
-    font-size: 13px;
+    min-height: 44px;
+    font-size: 14px;
   }
 }
