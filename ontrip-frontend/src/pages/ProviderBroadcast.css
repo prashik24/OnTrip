@@ -2,6 +2,10 @@
   padding-bottom: 32px;
   display: grid;
   gap: 18px;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .providerBroadcastMessage {
@@ -40,6 +44,10 @@
   border-radius: 18px;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
   overflow: hidden;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .providerBroadcastBanner {
@@ -88,6 +96,7 @@
   cursor: pointer;
   transition: 0.18s ease;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .providerBroadcastRefBtn:hover {
@@ -97,18 +106,22 @@
 .providerBroadcastTop {
   padding: 20px 22px 0;
   display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 540px) minmax(0, 1fr);
+  gap: 22px;
   align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .providerBroadcastImageWrap {
   border-radius: 18px;
   overflow: hidden;
-  min-height: 260px;
-  height: 260px;
+  min-height: 320px;
+  height: 320px;
   background: #eaf8fd;
   border: 1px solid rgba(0, 184, 241, 0.12);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .providerBroadcastImage {
@@ -122,12 +135,14 @@
   background: rgba(244, 251, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 18px;
-  padding: 18px;
+  padding: 20px;
   display: grid;
-  gap: 12px;
+  gap: 14px;
   align-content: start;
   min-width: 0;
-  min-height: 260px;
+  min-height: 320px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .providerBroadcastType {
@@ -140,6 +155,9 @@
   font-size: 12px;
   font-weight: 800;
   color: #0369a1;
+  margin-left: auto;
+  justify-self: end;
+  text-align: right;
 }
 
 .providerBroadcastSummary h2 {
@@ -245,10 +263,11 @@
   grid-template-rows: auto minmax(0, 1fr);
   min-height: 430px;
   max-height: 430px;
+  overflow: hidden;
   width: calc(100% - 44px);
   min-width: calc(100% - 44px);
   max-width: calc(100% - 44px);
-  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .providerBroadcastPreviewHead {
@@ -302,6 +321,7 @@
   gap: 4px;
   min-height: 86px;
   align-content: start;
+  box-sizing: border-box;
 }
 
 .providerBroadcastInfoGrid > div strong {
@@ -372,13 +392,18 @@
 }
 
 @media (max-width: 1100px) {
+  .providerBroadcastPage,
+  .providerBroadcastCard {
+    max-width: 100%;
+  }
+
   .providerBroadcastTop {
     grid-template-columns: 1fr;
   }
 
   .providerBroadcastImageWrap,
   .providerBroadcastSummary {
-    min-height: 240px;
+    min-height: 260px;
     height: auto;
   }
 }
