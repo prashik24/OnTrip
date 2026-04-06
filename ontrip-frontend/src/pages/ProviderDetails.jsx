@@ -3,11 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDetails.css";
+
 const HELPFUL_ICON =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M2 21h4V9H2v12zm20-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 1 6.59 7.59C6.22 7.95 6 8.45 6 9v10c0 1.1.9 2 2 2h9c.82 0 1.52-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z'/></svg>";
 
 const NOT_HELPFUL_ICON =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M15 3H6c-.82 0-1.52.5-1.84 1.22L1.14 11.27c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L10.83 23l6.58-6.59c.37-.36.59-.86.59-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z'/></svg>";
+
 function formatReviewDateTime(value) {
   if (!value) return "";
   const date = new Date(value);
@@ -16,6 +18,12 @@ function formatReviewDateTime(value) {
     hour: "2-digit",
     minute: "2-digit",
   })}`;
+}
+
+function formatLabel(value) {
+  return String(value || "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 export default function ProviderDetails() {
@@ -255,44 +263,57 @@ export default function ProviderDetails() {
                     </div>
                   )}
 
-                  <div className="providerDetailsVehicleSummary">
-                    <div className="providerDetailsVehicleMetaGrid">
-                      <div className="providerDetailsMiniInfo">
-                        <span className="providerDetailsMiniLabel">Vehicle Type</span>
-                        <strong>{vehicle.vehicleType || "-"}</strong>
-                      </div>
+                  <div className="providerDetailsInfoGrid">
+                    <div>
+                      <strong>Business</strong>
+                      <span>{provider.businessName || "-"}</span>
+                    </div>
 
-                      <div className="providerDetailsMiniInfo">
-                        <span className="providerDetailsMiniLabel">Title</span>
-                        <strong>{vehicle.title || "-"}</strong>
-                      </div>
+                    <div>
+                      <strong>City</strong>
+                      <span>{provider.city || "-"}</span>
+                    </div>
 
-                      <div className="providerDetailsMiniInfo">
-                        <span className="providerDetailsMiniLabel">Price</span>
-                        <strong>₹{vehicle.price || 0}</strong>
-                      </div>
+                    <div>
+                      <strong>Vehicle Type</strong>
+                      <span>{formatLabel(vehicle.vehicleType || "-")}</span>
+                    </div>
 
-                      <div className="providerDetailsMiniInfo">
-                        <span className="providerDetailsMiniLabel">Price Unit</span>
-                        <strong>{vehicle.priceUnit || "-"}</strong>
-                      </div>
+                    <div>
+                      <strong>Title</strong>
+                      <span>{vehicle.title || "-"}</span>
+                    </div>
 
-                      <div className="providerDetailsMiniInfo">
-                        <span className="providerDetailsMiniLabel">Capacity</span>
-                        <strong>{vehicle.capacity || 1}</strong>
-                      </div>
+                    <div>
+                      <strong>Price</strong>
+                      <span>₹{vehicle.price || 0}</span>
+                    </div>
 
-                      <div className="providerDetailsMiniInfo">
-                        <span className="providerDetailsMiniLabel">Fuel Type</span>
-                        <strong>{vehicle.fuelType || "N/A"}</strong>
-                      </div>
+                    <div>
+                      <strong>Price Unit</strong>
+                      <span>{formatLabel(vehicle.priceUnit || "-")}</span>
+                    </div>
 
-                      <div className="providerDetailsMiniInfo">
-                        <span className="providerDetailsMiniLabel">Driver Option</span>
-                        <strong>
-                          {vehicle.withDriver ? "With Driver" : "Without Driver"}
-                        </strong>
-                      </div>
+                    <div>
+                      <strong>Capacity</strong>
+                      <span>{vehicle.capacity || 1}</span>
+                    </div>
+
+                    <div>
+                      <strong>Fuel Type</strong>
+                      <span>{vehicle.fuelType || "N/A"}</span>
+                    </div>
+
+                    <div className="providerDetailsInfoWide">
+                      <strong>Driver Option</strong>
+                      <span>
+                        {vehicle.withDriver ? "With Driver" : "Without Driver"}
+                      </span>
+                    </div>
+
+                    <div className="providerDetailsInfoWide">
+                      <strong>Description</strong>
+                      <span>{provider.description || "-"}</span>
                     </div>
                   </div>
                 </div>
@@ -333,37 +354,77 @@ export default function ProviderDetails() {
                     </div>
                   )}
 
-                  <div className="providerDetailsDataGrid">
-                    <div className="providerDetailsDataBox">
-                      <strong>Package</strong>
-                      <span>{trip.packageTitle || "Package"}</span>
+                  <div className="providerDetailsInfoGrid">
+                    <div>
+                      <strong>Business</strong>
+                      <span>{provider.businessName || "-"}</span>
                     </div>
 
-                    <div className="providerDetailsDataBox">
+                    <div>
+                      <strong>City</strong>
+                      <span>{provider.city || "-"}</span>
+                    </div>
+
+                    <div>
+                      <strong>Planner Type</strong>
+                      <span>{formatLabel(trip.plannerMode || "-")}</span>
+                    </div>
+
+                    <div>
+                      <strong>Package Title</strong>
+                      <span>{trip.packageTitle || "-"}</span>
+                    </div>
+
+                    <div>
                       <strong>Duration</strong>
                       <span>{trip.durationText || "-"}</span>
                     </div>
 
-                    <div className="providerDetailsDataBox">
+                    <div>
+                      <strong>Days</strong>
+                      <span>{trip.days || "-"}</span>
+                    </div>
+
+                    <div>
                       <strong>Price From</strong>
                       <span>₹{trip.priceFrom || 0}</span>
                     </div>
-                  </div>
 
-                  <div className="providerDetailsInfoBlocks">
-                    <div className="providerDetailsInfoBlock">
-                      <h3>Places Covered</h3>
-                      <p>{(trip.placesCovered || []).join(", ") || "-"}</p>
+                    <div>
+                      <strong>Price Per Person</strong>
+                      <span>₹{trip.pricePerPerson || 0}</span>
                     </div>
 
-                    <div className="providerDetailsInfoBlock">
-                      <h3>Inclusions</h3>
-                      <p>{(trip.inclusions || []).join(", ") || "-"}</p>
+                    <div className="providerDetailsInfoWide">
+                      <strong>Places Covered</strong>
+                      <span>
+                        {Array.isArray(trip.placesCovered)
+                          ? trip.placesCovered.join(", ")
+                          : trip.placesCovered || "-"}
+                      </span>
                     </div>
 
-                    <div className="providerDetailsInfoBlock">
-                      <h3>Exclusions</h3>
-                      <p>{(trip.exclusions || []).join(", ") || "-"}</p>
+                    <div className="providerDetailsInfoWide">
+                      <strong>Inclusions</strong>
+                      <span>
+                        {Array.isArray(trip.inclusions)
+                          ? trip.inclusions.join(", ")
+                          : trip.inclusions || "-"}
+                      </span>
+                    </div>
+
+                    <div className="providerDetailsInfoWide">
+                      <strong>Exclusions</strong>
+                      <span>
+                        {Array.isArray(trip.exclusions)
+                          ? trip.exclusions.join(", ")
+                          : trip.exclusions || "-"}
+                      </span>
+                    </div>
+
+                    <div className="providerDetailsInfoWide">
+                      <strong>Description</strong>
+                      <span>{provider.description || "-"}</span>
                     </div>
                   </div>
                 </div>
