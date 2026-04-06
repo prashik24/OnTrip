@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { apiFetch } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./ProviderDashboard.css";
@@ -8,6 +8,10 @@ function formatStatusLabel(value) {
   return String(value)
     .replaceAll("_", " ")
     .replace(/\b\w/g, (m) => m.toUpperCase());
+}
+
+function normalizeText(value) {
+  return String(value || "").trim().toLowerCase();
 }
 
 export default function ProviderDashboard() {
@@ -64,6 +68,63 @@ export default function ProviderDashboard() {
     }
   }
 
+  const preparedBookings = useMemo(() => {
+    return bookings.map((booking) => {
+      const provider = booking.provider || {};
+
+      const travelPlans =
+        Array.isArray(provider.travelPlans) && provider.travelPlans.length > 0
+          ? provider.travelPlans
+          : provider.travelPlanner?.packageTitle ||
+            provider.travelPlanner?.durationText ||
+            provider.travelPlanner?.images?.length
+          ? [provider.travelPlanner]
+          : [];
+
+      const selectedVehicle =
+        provider.vehicles?.find(
+          (vehicle) =>
+            normalizeText(vehicle.title) ===
+              normalizeText(booking.selectedVehicleTitle) ||
+            normalizeText(vehicle.vehicleType) ===
+              normalizeText(booking.selectedVehicleTitle)
+        ) || null;
+
+      const selectedTravelPlan =
+        travelPlans.find(
+          (trip) =>
+            normalizeText(trip.packageTitle) ===
+              normalizeText(booking.selectedPackageTitle) ||
+            normalizeText(trip.plannerMode) ===
+              normalizeText(booking.selectedPackageTitle)
+        ) || null;
+
+      const displayTitle =
+        booking.selectedVehicleTitle ||
+        booking.selectedPackageTitle ||
+        booking.serviceTitle ||
+        "Booking";
+
+      const heroImage =
+        booking.serviceType === "vehicle"
+          ? selectedVehicle?.images?.[0]?.url ||
+            provider?.vehicles?.[0]?.images?.[0]?.url ||
+            provider?.serviceImage?.url ||
+            ""
+          : selectedTravelPlan?.images?.[0]?.url ||
+            provider?.travelPlans?.[0]?.images?.[0]?.url ||
+            provider?.travelPlanner?.images?.[0]?.url ||
+            provider?.serviceImage?.url ||
+            "";
+
+      return {
+        ...booking,
+        displayTitle,
+        heroImage,
+      };
+    });
+  }, [bookings]);
+
   if (loading) {
     return <LoadingSpinner text="Loading provider dashboard..." />;
   }
@@ -72,16 +133,16 @@ export default function ProviderDashboard() {
     <div className="providerDashboardPage container">
       <div className="providerDashboardHead">
         <h1>Provider Dashboard</h1>
-        <p>View customer bookings, statuses, cancellation reason, and updates.</p>
+        <p>View customer bookings, statuses, selected service details, notes, and updates.</p>
       </div>
 
       {msg && <div className="providerDashboardMessage">{msg}</div>}
 
-      {bookings.length === 0 ? (
+      {preparedBookings.length === 0 ? (
         <div className="providerDashboardEmpty">No customer bookings found yet.</div>
       ) : (
         <div className="providerDashboardGrid">
-          {bookings.map((booking) => {
+          {preparedBookings.map((booking) => {
             const isCancelled = booking.bookingStatus === "cancelled";
             const isCompleted = booking.bookingStatus === "completed";
             const topClass = isCancelled
@@ -95,7 +156,7 @@ export default function ProviderDashboard() {
               <div className="providerDashboardCard" key={booking._id}>
                 <div className={`providerDashboardTop ${topClass}`}>
                   <div className="providerDashboardTopLeft">
-                    <h3>{booking.serviceTitle}</h3>
+                    <h3>{booking.displayTitle}</h3>
                     <p>Customer: {booking.user?.name || booking.contactName || "User"}</p>
                   </div>
 
@@ -117,6 +178,40 @@ export default function ProviderDashboard() {
                 </div>
 
                 <div className="providerDashboardBody">
+                  <div className="providerDashboardPreview">
+                    <div className="providerDashboardImageWrap">
+                      {booking.heroImage ? (
+                        <img
+                          src={booking.heroImage}
+                          alt={booking.displayTitle}
+                          className="providerDashboardImage"
+                        />
+                      ) : (
+                        <div className="providerDashboardImageEmpty">No Image</div>
+                      )}
+                    </div>
+
+                    <div className="providerDashboardPreviewSummary">
+                      <div className="providerDashboardPreviewType">
+                        {booking.serviceType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+                      </div>
+
+                      <h4>{booking.displayTitle}</h4>
+                      <p>{booking.provider?.businessName || "Provider"}</p>
+
+                      <div className="providerDashboardPreviewMeta">
+                        <span>
+                          Date:{" "}
+                          {booking.bookingDate
+                            ? new Date(booking.bookingDate).toLocaleDateString()
+                            : "-"}
+                        </span>
+                        <span>Payment: {formatStatusLabel(booking.paymentStatus)}</span>
+                        <span>Status: {formatStatusLabel(booking.bookingStatus)}</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="providerDashboardInfo">
                     <div>
                       <strong>Email</strong>
@@ -126,15 +221,6 @@ export default function ProviderDashboard() {
                     <div>
                       <strong>Phone</strong>
                       <span>{booking.contactPhone || "-"}</span>
-                    </div>
-
-                    <div>
-                      <strong>Date</strong>
-                      <span>
-                        {booking.bookingDate
-                          ? new Date(booking.bookingDate).toLocaleDateString()
-                          : "-"}
-                      </span>
                     </div>
 
                     <div>
@@ -163,14 +249,14 @@ export default function ProviderDashboard() {
 
                     {booking.selectedVehicleTitle ? (
                       <div>
-                        <strong>Vehicle</strong>
+                        <strong>Selected Vehicle</strong>
                         <span>{booking.selectedVehicleTitle}</span>
                       </div>
                     ) : null}
 
                     {booking.selectedPackageTitle ? (
                       <div>
-                        <strong>Package</strong>
+                        <strong>Selected Package</strong>
                         <span>{booking.selectedPackageTitle}</span>
                       </div>
                     ) : null}
