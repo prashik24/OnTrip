@@ -6,6 +6,10 @@ import "./BookingSuccess.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+function normalizeText(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
 export default function BookingSuccess() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -31,16 +35,92 @@ export default function BookingSuccess() {
     loadBooking();
   }, [id]);
 
+  const selectedVehicle = useMemo(() => {
+    if (!booking?.provider?.vehicles?.length || !booking?.selectedVehicleTitle) return null;
+
+    const selectedTitle = normalizeText(booking.selectedVehicleTitle);
+
+    return (
+      booking.provider.vehicles.find(
+        (vehicle) =>
+          normalizeText(vehicle.title) === selectedTitle ||
+          normalizeText(vehicle.vehicleType) === selectedTitle
+      ) || null
+    );
+  }, [booking]);
+
+  const travelPlans = useMemo(() => {
+    if (!booking?.provider) return [];
+
+    if (booking.provider.travelPlans?.length > 0) {
+      return booking.provider.travelPlans;
+    }
+
+    if (
+      booking.provider.travelPlanner?.packageTitle ||
+      booking.provider.travelPlanner?.durationText ||
+      booking.provider.travelPlanner?.images?.length
+    ) {
+      return [booking.provider.travelPlanner];
+    }
+
+    return [];
+  }, [booking]);
+
+  const selectedTravelPlan = useMemo(() => {
+    if (!travelPlans.length || !booking?.selectedPackageTitle) return null;
+
+    const selectedTitle = normalizeText(booking.selectedPackageTitle);
+
+    return (
+      travelPlans.find(
+        (trip) =>
+          normalizeText(trip.packageTitle) === selectedTitle ||
+          normalizeText(trip.plannerMode) === selectedTitle
+      ) || null
+    );
+  }, [travelPlans, booking]);
+
+  const displayTitle = useMemo(() => {
+    if (!booking) return "";
+
+    if (booking.serviceType === "vehicle") {
+      return (
+        booking.selectedVehicleTitle ||
+        selectedVehicle?.title ||
+        booking.serviceTitle ||
+        "Vehicle Service"
+      );
+    }
+
+    return (
+      booking.selectedPackageTitle ||
+      selectedTravelPlan?.packageTitle ||
+      booking.serviceTitle ||
+      "Travel Planner Service"
+    );
+  }, [booking, selectedVehicle, selectedTravelPlan]);
+
   const heroImage = useMemo(() => {
     if (!booking?.provider) return "";
 
+    if (booking.serviceType === "vehicle") {
+      return (
+        selectedVehicle?.images?.[0]?.url ||
+        booking.provider?.vehicles?.[0]?.images?.[0]?.url ||
+        booking.provider?.serviceImage?.url ||
+        ""
+      );
+    }
+
     return (
-      booking.provider?.serviceImage?.url ||
+      selectedTravelPlan?.images?.[0]?.url ||
+      booking.provider?.travelPlans?.[0]?.images?.[0]?.url ||
       booking.provider?.travelPlanner?.images?.[0]?.url ||
-      booking.provider?.vehicles?.[0]?.images?.[0]?.url ||
+      booking.provider?.serviceImage?.url ||
       ""
     );
-  }, [booking]);
+  }, [booking, selectedVehicle, selectedTravelPlan]);
 
   async function downloadInvoice() {
     try {
@@ -108,7 +188,7 @@ export default function BookingSuccess() {
         <div className="bookingSuccessTop">
           <div className="bookingSuccessImageWrap">
             {heroImage ? (
-              <img src={heroImage} alt={booking.serviceTitle} className="bookingSuccessImage" />
+              <img src={heroImage} alt={displayTitle} className="bookingSuccessImage" />
             ) : (
               <div className="bookingSuccessImageEmpty">No Image</div>
             )}
@@ -118,7 +198,7 @@ export default function BookingSuccess() {
             <div className="bookingSuccessType">
               {booking.serviceType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
             </div>
-            <h2>{booking.serviceTitle}</h2>
+            <h2>{displayTitle}</h2>
             <p>{booking.provider?.businessName || "Provider"}</p>
 
             <div className="bookingSuccessMeta">
@@ -128,6 +208,7 @@ export default function BookingSuccess() {
             </div>
 
             <div className="bookingSuccessAmount">Paid: ₹{booking.amount}</div>
+
             {isCancelled && booking.cancellationReason ? (
               <div className="bookingSuccessCancelReason">
                 Reason: {booking.cancellationReason}
@@ -141,22 +222,27 @@ export default function BookingSuccess() {
             <strong>Customer</strong>
             <span>{booking.contactName}</span>
           </div>
+
           <div className="bookingSuccessInfoItem">
             <strong>Phone</strong>
             <span>{booking.contactPhone}</span>
           </div>
+
           <div className="bookingSuccessInfoItem">
             <strong>Email</strong>
             <span>{booking.contactEmail || "-"}</span>
           </div>
+
           <div className="bookingSuccessInfoItem">
             <strong>People</strong>
             <span>{booking.peopleCount}</span>
           </div>
+
           <div className="bookingSuccessInfoItem">
             <strong>Days</strong>
             <span>{booking.days}</span>
           </div>
+
           <div className="bookingSuccessInfoItem">
             <strong>Unit Price</strong>
             <span>₹{booking.unitPrice}</span>
