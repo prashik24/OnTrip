@@ -48,12 +48,13 @@ export default function ProviderBroadcastHistory() {
     const total = history.length;
     const sent = history.filter((item) => item.status === "sent").length;
     const failed = history.filter((item) => item.status === "failed").length;
+    const pending = history.filter((item) => item.status === "pending").length;
     const recipients = history.reduce(
       (sum, item) => sum + Number(item.recipientsCount || 0),
       0
     );
 
-    return { total, sent, failed, recipients };
+    return { total, sent, failed, pending, recipients };
   }, [history]);
 
   if (loading) {
@@ -62,80 +63,111 @@ export default function ProviderBroadcastHistory() {
 
   return (
     <div className="providerBroadcastHistoryPage container">
-      {msg ? <div className="providerBroadcastHistoryMessage error">{msg}</div> : null}
+      {msg ? (
+        <div className="providerBroadcastHistoryMessage error">{msg}</div>
+      ) : null}
 
-      <div className="providerBroadcastHistoryHero">
+      <section className="providerBroadcastHistoryHeroCard">
+        <div className="providerBroadcastHistoryHeroImageWrap">
+          <img
+            src="/images/places/varanasi-hero.jpg"
+            alt="Travel broadcast history"
+            className="providerBroadcastHistoryHeroImage"
+          />
+          <div className="providerBroadcastHistoryHeroOverlay" />
+        </div>
+
         <div className="providerBroadcastHistoryHeroContent">
-          <div className="providerBroadcastHistoryKicker">OnTrip Provider Tools</div>
+          <div className="providerBroadcastHistoryBadge">OnTrip Provider Tools</div>
           <h1>Broadcast History</h1>
           <p>
-            Review all past provider broadcasts, delivery status, and recipient count.
+            Review all past provider broadcasts, delivery status, recipient count,
+            and update details in one clean page.
           </p>
 
-          <div className="providerBroadcastHistoryActions">
+          <div className="providerBroadcastHistoryHeroActions">
             <button
               className="providerBroadcastHistoryPrimaryBtn"
               type="button"
               onClick={() => navigate("/provider-broadcast")}
             >
-              Back to Broadcast Page
+              Back to Provider Broadcast
             </button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="providerBroadcastHistoryStatsGrid">
-        <div className="providerBroadcastHistoryStatCard">
-          <strong>Total Broadcasts</strong>
-          <span>{stats.total}</span>
+      <section className="providerBroadcastHistoryStatsWrap">
+        <div className="providerBroadcastHistoryStatsGrid">
+          <div className="providerBroadcastHistoryStatCard">
+            <strong>Total Broadcasts</strong>
+            <span>{stats.total}</span>
+          </div>
+
+          <div className="providerBroadcastHistoryStatCard">
+            <strong>Sent</strong>
+            <span>{stats.sent}</span>
+          </div>
+
+          <div className="providerBroadcastHistoryStatCard">
+            <strong>Pending</strong>
+            <span>{stats.pending}</span>
+          </div>
+
+          <div className="providerBroadcastHistoryStatCard">
+            <strong>Failed</strong>
+            <span>{stats.failed}</span>
+          </div>
+
+          <div className="providerBroadcastHistoryStatCard providerBroadcastHistoryStatWide">
+            <strong>Total Recipients Reached</strong>
+            <span>{stats.recipients}</span>
+          </div>
         </div>
-        <div className="providerBroadcastHistoryStatCard">
-          <strong>Sent</strong>
-          <span>{stats.sent}</span>
-        </div>
-        <div className="providerBroadcastHistoryStatCard">
-          <strong>Failed</strong>
-          <span>{stats.failed}</span>
-        </div>
-        <div className="providerBroadcastHistoryStatCard">
-          <strong>Total Recipients</strong>
-          <span>{stats.recipients}</span>
-        </div>
-      </div>
+      </section>
 
       {history.length === 0 ? (
         <div className="providerBroadcastHistoryEmpty">
           No old broadcasts found yet.
         </div>
       ) : (
-        <div className="providerBroadcastHistoryList">
-          {history.map((item) => (
-            <article className="providerBroadcastHistoryCard" key={item._id}>
-              <div className="providerBroadcastHistoryCardTop">
-                <div>
-                  <div className="providerBroadcastHistoryType">Provider Broadcast</div>
-                  <h3>{item.subject || "-"}</h3>
-                  <p>{formatDateTime(item.createdAt)}</p>
+        <section className="providerBroadcastHistoryListWrap">
+          <div className="providerBroadcastHistoryListHead">
+            <h2>All Broadcast Records</h2>
+            <p>Every provider update you sent is shown here.</p>
+          </div>
+
+          <div className="providerBroadcastHistoryList">
+            {history.map((item) => (
+              <article className="providerBroadcastHistoryCard" key={item._id}>
+                <div className="providerBroadcastHistoryCardTop">
+                  <div className="providerBroadcastHistoryCardMain">
+                    <div className="providerBroadcastHistoryType">
+                      Provider Broadcast
+                    </div>
+                    <h3>{item.subject || "-"}</h3>
+                    <p>Sent on {formatDateTime(item.createdAt)}</p>
+                  </div>
+
+                  <div
+                    className={`providerBroadcastHistoryStatus ${item.status || ""}`}
+                  >
+                    {formatLabel(item.status || "-")}
+                  </div>
                 </div>
 
-                <div
-                  className={`providerBroadcastHistoryStatus ${item.status || ""}`}
-                >
-                  {formatLabel(item.status || "-")}
+                <div className="providerBroadcastHistoryBody">
+                  {item.message || "-"}
                 </div>
-              </div>
 
-              <div className="providerBroadcastHistoryBody">
-                {item.message || "-"}
-              </div>
-
-              <div className="providerBroadcastHistoryFooter">
-                <span>Recipients: {item.recipientsCount || 0}</span>
-                <span>Updated: {formatDateTime(item.updatedAt)}</span>
-              </div>
-            </article>
-          ))}
-        </div>
+                <div className="providerBroadcastHistoryFooter">
+                  <span>Recipients: {item.recipientsCount || 0}</span>
+                  <span>Updated: {formatDateTime(item.updatedAt)}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );
