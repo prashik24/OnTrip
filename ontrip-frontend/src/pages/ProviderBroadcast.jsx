@@ -440,48 +440,50 @@ export default function ProviderBroadcast() {
                 <h3>Vehicle Preview</h3>
               </div>
 
-              <div className="providerBroadcastInfoGrid">
-                <div>
-                  <strong>Business</strong>
-                  <span>{selectedProvider?.businessName || "-"}</span>
-                </div>
-                <div>
-                  <strong>City</strong>
-                  <span>{selectedProvider?.city || "-"}</span>
-                </div>
-                <div>
-                  <strong>Vehicle Type</strong>
-                  <span>{formatLabel(selectedVehicle.vehicleType || "-")}</span>
-                </div>
-                <div>
-                  <strong>Title</strong>
-                  <span>{selectedVehicle.title || "-"}</span>
-                </div>
-                <div>
-                  <strong>Price</strong>
-                  <span>₹{selectedVehicle.price || 0}</span>
-                </div>
-                <div>
-                  <strong>Price Unit</strong>
-                  <span>{formatLabel(selectedVehicle.priceUnit || "-")}</span>
-                </div>
-                <div>
-                  <strong>Capacity</strong>
-                  <span>{selectedVehicle.capacity || "-"}</span>
-                </div>
-                <div>
-                  <strong>Fuel Type</strong>
-                  <span>{selectedVehicle.fuelType || "-"}</span>
-                </div>
-                <div className="providerBroadcastInfoWide">
-                  <strong>Driver Option</strong>
-                  <span>
-                    {selectedVehicle.withDriver ? "With Driver" : "Self Drive / No Driver"}
-                  </span>
-                </div>
-                <div className="providerBroadcastInfoWide">
-                  <strong>Description</strong>
-                  <span>{selectedProvider?.description || "-"}</span>
+              <div className="providerBroadcastPreviewBody">
+                <div className="providerBroadcastInfoGrid">
+                  <div>
+                    <strong>Business</strong>
+                    <span>{selectedProvider?.businessName || "-"}</span>
+                  </div>
+                  <div>
+                    <strong>City</strong>
+                    <span>{selectedProvider?.city || "-"}</span>
+                  </div>
+                  <div>
+                    <strong>Vehicle Type</strong>
+                    <span>{formatLabel(selectedVehicle.vehicleType || "-")}</span>
+                  </div>
+                  <div>
+                    <strong>Title</strong>
+                    <span>{selectedVehicle.title || "-"}</span>
+                  </div>
+                  <div>
+                    <strong>Price</strong>
+                    <span>₹{selectedVehicle.price || 0}</span>
+                  </div>
+                  <div>
+                    <strong>Price Unit</strong>
+                    <span>{formatLabel(selectedVehicle.priceUnit || "-")}</span>
+                  </div>
+                  <div>
+                    <strong>Capacity</strong>
+                    <span>{selectedVehicle.capacity || "-"}</span>
+                  </div>
+                  <div>
+                    <strong>Fuel Type</strong>
+                    <span>{selectedVehicle.fuelType || "-"}</span>
+                  </div>
+                  <div className="providerBroadcastInfoWide">
+                    <strong>Driver Option</strong>
+                    <span>
+                      {selectedVehicle.withDriver ? "With Driver" : "Self Drive / No Driver"}
+                    </span>
+                  </div>
+                  <div className="providerBroadcastInfoWide">
+                    <strong>Description</strong>
+                    <span>{selectedProvider?.description || "-"}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -493,66 +495,68 @@ export default function ProviderBroadcast() {
                 <h3>Trip Preview</h3>
               </div>
 
-              <div className="providerBroadcastInfoGrid">
-                <div>
-                  <strong>Business</strong>
-                  <span>{selectedProvider?.businessName || "-"}</span>
-                </div>
-                <div>
-                  <strong>City</strong>
-                  <span>{selectedProvider?.city || "-"}</span>
-                </div>
-                <div>
-                  <strong>Planner Type</strong>
-                  <span>{formatLabel(selectedTrip.plannerMode || "-")}</span>
-                </div>
-                <div>
-                  <strong>Package Title</strong>
-                  <span>{selectedTrip.packageTitle || "-"}</span>
-                </div>
-                <div>
-                  <strong>Duration</strong>
-                  <span>{selectedTrip.durationText || "-"}</span>
-                </div>
-                <div>
-                  <strong>Days</strong>
-                  <span>{selectedTrip.days || "-"}</span>
-                </div>
-                <div>
-                  <strong>Price From</strong>
-                  <span>₹{selectedTrip.priceFrom || 0}</span>
-                </div>
-                <div>
-                  <strong>Price Per Person</strong>
-                  <span>₹{selectedTrip.pricePerPerson || 0}</span>
-                </div>
-                <div className="providerBroadcastInfoWide">
-                  <strong>Places Covered</strong>
-                  <span>
-                    {Array.isArray(selectedTrip.placesCovered)
-                      ? selectedTrip.placesCovered.join(", ")
-                      : selectedTrip.placesCovered || "-"}
-                  </span>
-                </div>
-                <div className="providerBroadcastInfoWide">
-                  <strong>Inclusions</strong>
-                  <span>
-                    {Array.isArray(selectedTrip.inclusions)
-                      ? selectedTrip.inclusions.join(", ")
-                      : selectedTrip.inclusions || "-"}
-                  </span>
-                </div>
-                <div className="providerBroadcastInfoWide">
-                  <strong>Exclusions</strong>
-                  <span>
-                    {Array.isArray(selectedTrip.exclusions)
-                      ? selectedTrip.exclusions.join(", ")
-                      : selectedTrip.exclusions || "-"}
-                  </span>
-                </div>
-                <div className="providerBroadcastInfoWide">
-                  <strong>Description</strong>
-                  <span>{selectedProvider?.description || "-"}</span>
+              <div className="providerBroadcastPreviewBody">
+                <div className="providerBroadcastInfoGrid">
+                  <div>
+                    <strong>Business</strong>
+                    <span>{selectedProvider?.businessName || "-"}</span>
+                  </div>
+                  <div>
+                    <strong>City</strong>
+                    <span>{selectedProvider?.city || "-"}</span>
+                  </div>
+                  <div>
+                    <strong>Planner Type</strong>
+                    <span>{formatLabel(selectedTrip.plannerMode || "-")}</span>
+                  </div>
+                  <div>
+                    <strong>Package Title</strong>
+                    <span>{selectedTrip.packageTitle || "-"}</span>
+                  </div>
+                  <div>
+                    <strong>Duration</strong>
+                    <span>{selectedTrip.durationText || "-"}</span>
+                  </div>
+                  <div>
+                    <strong>Days</strong>
+                    <span>{selectedTrip.days || "-"}</span>
+                  </div>
+                  <div>
+                    <strong>Price From</strong>
+                    <span>₹{selectedTrip.priceFrom || 0}</span>
+                  </div>
+                  <div>
+                    <strong>Price Per Person</strong>
+                    <span>₹{selectedTrip.pricePerPerson || 0}</span>
+                  </div>
+                  <div className="providerBroadcastInfoWide">
+                    <strong>Places Covered</strong>
+                    <span>
+                      {Array.isArray(selectedTrip.placesCovered)
+                        ? selectedTrip.placesCovered.join(", ")
+                        : selectedTrip.placesCovered || "-"}
+                    </span>
+                  </div>
+                  <div className="providerBroadcastInfoWide">
+                    <strong>Inclusions</strong>
+                    <span>
+                      {Array.isArray(selectedTrip.inclusions)
+                        ? selectedTrip.inclusions.join(", ")
+                        : selectedTrip.inclusions || "-"}
+                    </span>
+                  </div>
+                  <div className="providerBroadcastInfoWide">
+                    <strong>Exclusions</strong>
+                    <span>
+                      {Array.isArray(selectedTrip.exclusions)
+                        ? selectedTrip.exclusions.join(", ")
+                        : selectedTrip.exclusions || "-"}
+                    </span>
+                  </div>
+                  <div className="providerBroadcastInfoWide">
+                    <strong>Description</strong>
+                    <span>{selectedProvider?.description || "-"}</span>
+                  </div>
                 </div>
               </div>
             </div>
