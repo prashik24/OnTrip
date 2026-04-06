@@ -2,7 +2,7 @@
   padding-bottom: 32px;
   display: grid;
   gap: 18px;
-  max-width: 1120px;
+  max-width: 1040px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
@@ -45,7 +45,7 @@
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
   overflow: hidden;
   width: 100%;
-  max-width: 1120px;
+  max-width: 1040px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -106,8 +106,8 @@
 .providerBroadcastTop {
   padding: 20px 22px 0;
   display: grid;
-  grid-template-columns: minmax(0, 430px) minmax(0, 1fr);
-  gap: 20px;
+  grid-template-columns: minmax(0, 390px) minmax(0, 1fr);
+  gap: 18px;
   align-items: stretch;
   width: 100%;
   box-sizing: border-box;
@@ -116,8 +116,8 @@
 .providerBroadcastImageWrap {
   border-radius: 18px;
   overflow: hidden;
-  min-height: 280px;
-  height: 280px;
+  min-height: 260px;
+  height: 260px;
   background: #eaf8fd;
   border: 1px solid rgba(0, 184, 241, 0.12);
   width: 100%;
@@ -135,12 +135,12 @@
   background: rgba(244, 251, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 18px;
-  padding: 20px;
+  padding: 18px;
   display: grid;
-  gap: 14px;
+  gap: 12px;
   align-content: start;
   min-width: 0;
-  min-height: 280px;
+  min-height: 260px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -260,10 +260,8 @@
   border-radius: 18px;
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  min-height: 430px;
-  max-height: 430px;
-  overflow: hidden;
+  grid-template-rows: auto auto;
+  overflow: visible;
   width: calc(100% - 44px);
   min-width: calc(100% - 44px);
   max-width: calc(100% - 44px);
@@ -290,17 +288,8 @@
 
 .providerBroadcastPreviewBody {
   padding: 14px 20px 20px;
-  overflow-y: auto;
-  min-height: 0;
-}
-
-.providerBroadcastPreviewBody::-webkit-scrollbar {
-  width: 8px;
-}
-
-.providerBroadcastPreviewBody::-webkit-scrollbar-thumb {
-  background: rgba(0, 184, 241, 0.18);
-  border-radius: 999px;
+  overflow: visible;
+  min-height: auto;
 }
 
 .providerBroadcastInfoGrid {
@@ -419,11 +408,6 @@
     align-items: flex-start;
   }
 
-  .providerBroadcastPreviewCard {
-    min-height: 430px;
-    max-height: 430px;
-  }
-
   .providerBroadcastInfoWide {
     grid-column: auto;
   }
@@ -453,8 +437,6 @@
     margin-left: 16px;
     margin-right: 16px;
     border-radius: 16px;
-    min-height: 400px;
-    max-height: 400px;
     width: calc(100% - 32px);
     min-width: calc(100% - 32px);
     max-width: calc(100% - 32px);
