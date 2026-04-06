@@ -133,7 +133,7 @@ export default function ProviderDashboard() {
     <div className="providerDashboardPage container">
       <div className="providerDashboardHead">
         <h1>Provider Dashboard</h1>
-        <p>View customer bookings, statuses, selected service details, notes, and updates.</p>
+        <p>View customer bookings, selected service details, notes, and status updates.</p>
       </div>
 
       {msg && <div className="providerDashboardMessage">{msg}</div>}
@@ -191,24 +191,15 @@ export default function ProviderDashboard() {
                       )}
                     </div>
 
-                    <div className="providerDashboardPreviewSummary">
-                      <div className="providerDashboardPreviewType">
-                        {booking.serviceType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
-                      </div>
-
-                      <h4>{booking.displayTitle}</h4>
-                      <p>{booking.provider?.businessName || "Provider"}</p>
-
-                      <div className="providerDashboardPreviewMeta">
-                        <span>
-                          Date:{" "}
-                          {booking.bookingDate
-                            ? new Date(booking.bookingDate).toLocaleDateString()
-                            : "-"}
-                        </span>
-                        <span>Payment: {formatStatusLabel(booking.paymentStatus)}</span>
-                        <span>Status: {formatStatusLabel(booking.bookingStatus)}</span>
-                      </div>
+                    <div className="providerDashboardPreviewMeta">
+                      <span>
+                        Date:{" "}
+                        {booking.bookingDate
+                          ? new Date(booking.bookingDate).toLocaleDateString()
+                          : "-"}
+                      </span>
+                      <span>Payment: {formatStatusLabel(booking.paymentStatus)}</span>
+                      <span>Status: {formatStatusLabel(booking.bookingStatus)}</span>
                     </div>
                   </div>
 
