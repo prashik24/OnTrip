@@ -2,28 +2,37 @@ import mongoose from "mongoose";
 
 const subscriberSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+      index: true,
+    },
+    name: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     email: {
       type: String,
       required: true,
       unique: true,
       lowercase: true,
       trim: true,
+      index: true,
     },
-
-    status: {
-      type: String,
-      enum: ["active", "unsubscribed"],
-      default: "active",
+    isSubscribed: {
+      type: Boolean,
+      default: true,
+      index: true,
     },
-
-    source: {
-      type: String,
-      default: "footer",
-    },
-
     subscribedAt: {
       type: Date,
       default: Date.now,
+    },
+    unsubscribedAt: {
+      type: Date,
+      default: null,
     },
   },
   { timestamps: true }
