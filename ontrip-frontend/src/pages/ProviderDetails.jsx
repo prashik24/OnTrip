@@ -177,6 +177,22 @@ export default function ProviderDetails() {
       {msg && <div className="providerDetailsMessage error">{msg}</div>}
 
       <div className="providerDetailsCard">
+        <div className="providerDetailsBanner">
+          <div>
+            <div className="providerDetailsKicker">OnTrip Provider Details</div>
+            <h1>{provider.businessName}</h1>
+            <p>
+              {provider.description || "No description provided."}
+            </p>
+          </div>
+
+          <div className="providerDetailsBannerType">
+            {provider.listingType === "vehicle"
+              ? "Vehicle Service"
+              : "Travel Planner"}
+          </div>
+        </div>
+
         <div className="providerDetailsTop">
           <div className="providerDetailsHeroImage">
             {heroImage ? (
@@ -187,27 +203,45 @@ export default function ProviderDetails() {
           </div>
 
           <div className="providerDetailsTopContent">
-            <div className="providerDetailsType providerDetailsTypeTop">
-              {provider.listingType === "vehicle"
-                ? "Vehicle Service"
-                : "Travel Planner"}
-            </div>
+            <div className="providerDetailsInfoGrid">
+              <div>
+                <strong>Business</strong>
+                <span>{provider.businessName || "-"}</span>
+              </div>
 
-            <h1>{provider.businessName}</h1>
+              <div>
+                <strong>City</strong>
+                <span>{provider.city || "-"}</span>
+              </div>
 
-            <div className="providerDetailsMeta">
-              {provider.city} • {provider.phone} • ⭐ {provider.ratingAverage || 0} (
-              {provider.ratingCount || 0})
-            </div>
+              <div>
+                <strong>Phone</strong>
+                <span>{provider.phone || "-"}</span>
+              </div>
 
-            <p className="providerDetailsDesc">
-              {provider.description || "No description provided."}
-            </p>
+              <div>
+                <strong>Rating</strong>
+                <span>
+                  ⭐ {provider.ratingAverage || 0} ({provider.ratingCount || 0})
+                </span>
+              </div>
 
-            <div className="providerDetailsInfoRow">
-              <span>Owner: {provider.owner?.name || "Provider"}</span>
-              {provider.whatsapp ? <span>WhatsApp: {provider.whatsapp}</span> : null}
-              {provider.state ? <span>State: {provider.state}</span> : null}
+              <div>
+                <strong>Owner</strong>
+                <span>{provider.owner?.name || "Provider"}</span>
+              </div>
+
+              <div>
+                <strong>State</strong>
+                <span>{provider.state || "-"}</span>
+              </div>
+
+              {provider.whatsapp ? (
+                <div className="providerDetailsInfoWide">
+                  <strong>WhatsApp</strong>
+                  <span>{provider.whatsapp}</span>
+                </div>
+              ) : null}
             </div>
 
             {!isOwner ? (
