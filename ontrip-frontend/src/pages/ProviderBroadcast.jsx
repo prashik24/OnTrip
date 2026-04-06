@@ -11,52 +11,51 @@ function formatLabel(value) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function makeListingOptions(items = []) {
-  return items.map((item) => ({
-    value: item._id,
-    label: item.businessName || "Provider Listing",
+function buildServiceTypeOptions() {
+  return [
+    { value: "vehicle", label: "Vehicle Service" },
+    { value: "travel_planner", label: "Travel Planner" },
+  ];
+}
+
+function makeProviderOptions(items = [], type = "vehicle") {
+  return items
+    .filter((item) => item.listingType === type)
+    .map((item) => ({
+      value: item._id,
+      label: `${item.businessName} • ${item.city || "-"}`,
+    }));
+}
+
+function makeVehicleTypeOptions(vehicles = []) {
+  const uniqueTypes = [
+    ...new Set((vehicles || []).map((item) => item.vehicleType).filter(Boolean)),
+  ];
+
+  return uniqueTypes.map((type) => ({
+    value: type,
+    label: formatLabel(type),
   }));
 }
 
-function makeVehicleOptions(vehicles = []) {
-  return vehicles.map((item, index) => ({
-    value: String(index),
-    label:
-      item.title ||
-      formatLabel(item.vehicleType) ||
-      `Vehicle ${index + 1}`,
-  }));
+function getDefaultVehicleByType(vehicles = [], selectedVehicleType = "") {
+  return (
+    (vehicles || []).find((item) =>
+      selectedVehicleType
+        ? String(item.vehicleType || "").toLowerCase() ===
+          String(selectedVehicleType || "").toLowerCase()
+        : true
+    ) || null
+  );
 }
 
 function makeTripOptions(travelPlans = []) {
   return travelPlans.map((item, index) => ({
     value: String(index),
-    label: item.packageTitle || `Trip ${index + 1}`,
+    label: `${item.packageTitle || `Trip ${index + 1}`} • ${
+      item.durationText || `${item.days || 1} day(s)`
+    }`,
   }));
-}
-
-function makeListingTypeOptions() {
-  return [
-    { value: "travel_planner", label: "Travel Planner" },
-    { value: "vehicle", label: "Vehicle Service" },
-  ];
-}
-
-function makeVehicleTypeOptions(vehicles = []) {
-  const seen = new Set();
-
-  return vehicles
-    .map((item) => String(item.vehicleType || "").trim().toLowerCase())
-    .filter(Boolean)
-    .filter((type) => {
-      if (seen.has(type)) return false;
-      seen.add(type);
-      return true;
-    })
-    .map((type) => ({
-      value: type,
-      label: formatLabel(type),
-    }));
 }
 
 function buildVehicleMessage({ provider, listing, vehicle, customMessage }) {
@@ -125,6 +124,24 @@ ${customMessage || "-"}
   `.trim();
 }
 
+function getTravelPlans(provider) {
+  if (!provider) return [];
+
+  if (provider.travelPlans?.length > 0) {
+    return provider.travelPlans;
+  }
+
+  if (
+    provider.travelPlanner?.packageTitle ||
+    provider.travelPlanner?.durationText ||
+    provider.travelPlanner?.images?.length
+  ) {
+    return [provider.travelPlanner];
+  }
+
+  return [];
+}
+
 function getSelectedHeroImage(provider, listingType, selectedVehicle, selectedTrip) {
   if (listingType === "vehicle") {
     return (
@@ -150,8 +167,10 @@ export default function ProviderBroadcast() {
   const [providers, setProviders] = useState([]);
 
   const [form, setForm] = useState({
+    serviceType: "vehicle",
     providerId: "",
-    itemIndex: "0",
+    vehicleType: "",
+    selectedTripIndex: "0",
     subject: "",
     customMessage: "",
   });
@@ -163,16 +182,7 @@ export default function ProviderBroadcast() {
 
       const providerData = await apiFetch("/api/providers/mine");
       const nextProviders = providerData.providers || [];
-
       setProviders(nextProviders);
-
-      if (nextProviders.length > 0) {
-        setForm((prev) => ({
-          ...prev,
-          providerId: prev.providerId || nextProviders[0]._id,
-          itemIndex: "0",
-        }));
-      }
     } catch (err) {
       setMsg({
         text: err.message || "Failed to load provider broadcast page.",
@@ -187,70 +197,104 @@ export default function ProviderBroadcast() {
     loadPage();
   }, []);
 
+  const vehicleProviders = useMemo(
+    () => providers.filter((item) => item.listingType === "vehicle"),
+    [providers]
+  );
+
+  const travelProviders = useMemo(
+    () => providers.filter((item) => item.listingType === "travel_planner"),
+    [providers]
+  );
+
+  useEffect(() => {
+    if (!providers.length) return;
+
+    const hasSelectedTypeProvider =
+      form.serviceType === "vehicle"
+        ? vehicleProviders.some((item) => item._id === form.providerId)
+        : travelProviders.some((item) => item._id === form.providerId);
+
+    if (hasSelectedTypeProvider) return;
+
+    const firstProvider =
+      form.serviceType === "vehicle" ? vehicleProviders[0] : travelProviders[0];
+
+    setForm((prev) => ({
+      ...prev,
+      providerId: firstProvider?._id || "",
+      vehicleType: "",
+      selectedTripIndex: "0",
+    }));
+  }, [providers, vehicleProviders, travelProviders, form.serviceType, form.providerId]);
+
   const selectedProvider = useMemo(() => {
     return providers.find((item) => item._id === form.providerId) || null;
   }, [providers, form.providerId]);
-
-  const selectedListingType = selectedProvider?.listingType || "vehicle";
-
-  const vehicleOptions = useMemo(() => {
-    return makeVehicleOptions(selectedProvider?.vehicles || []);
-  }, [selectedProvider]);
 
   const vehicleTypeOptions = useMemo(() => {
     return makeVehicleTypeOptions(selectedProvider?.vehicles || []);
   }, [selectedProvider]);
 
-  const tripSource = useMemo(() => {
-    if (!selectedProvider) return [];
+  useEffect(() => {
+    if (form.serviceType !== "vehicle") return;
+    if (!selectedProvider) return;
 
-    if (selectedProvider.travelPlans?.length > 0) {
-      return selectedProvider.travelPlans;
-    }
+    const availableTypes = makeVehicleTypeOptions(selectedProvider.vehicles || []);
+    const hasVehicleType = availableTypes.some((item) => item.value === form.vehicleType);
 
-    if (
-      selectedProvider.travelPlanner?.packageTitle ||
-      selectedProvider.travelPlanner?.durationText ||
-      selectedProvider.travelPlanner?.images?.length
-    ) {
-      return [selectedProvider.travelPlanner];
-    }
+    if (hasVehicleType) return;
 
-    return [];
-  }, [selectedProvider]);
+    setForm((prev) => ({
+      ...prev,
+      vehicleType: availableTypes[0]?.value || "",
+    }));
+  }, [form.serviceType, selectedProvider, form.vehicleType]);
 
-  const tripOptions = useMemo(() => {
-    return makeTripOptions(tripSource);
-  }, [tripSource]);
+  const selectedVehicle = useMemo(() => {
+    if (form.serviceType !== "vehicle" || !selectedProvider) return null;
+    return getDefaultVehicleByType(selectedProvider.vehicles || [], form.vehicleType);
+  }, [form.serviceType, selectedProvider, form.vehicleType]);
 
-  const selectedVehicle =
-    selectedListingType === "vehicle"
-      ? selectedProvider?.vehicles?.[Number(form.itemIndex)] || null
-      : null;
+  const tripSource = useMemo(() => getTravelPlans(selectedProvider), [selectedProvider]);
 
-  const selectedTrip =
-    selectedListingType === "travel_planner"
-      ? tripSource?.[Number(form.itemIndex)] || null
-      : null;
+  const tripOptions = useMemo(() => makeTripOptions(tripSource), [tripSource]);
+
+  useEffect(() => {
+    if (form.serviceType !== "travel_planner") return;
+
+    const maxIndex = Math.max(0, tripOptions.length - 1);
+    const currentIndex = Number(form.selectedTripIndex || 0);
+
+    if (currentIndex <= maxIndex) return;
+
+    setForm((prev) => ({
+      ...prev,
+      selectedTripIndex: "0",
+    }));
+  }, [form.serviceType, tripOptions, form.selectedTripIndex]);
+
+  const selectedTrip = useMemo(() => {
+    if (form.serviceType !== "travel_planner") return null;
+    return tripSource?.[Number(form.selectedTripIndex || 0)] || null;
+  }, [form.serviceType, tripSource, form.selectedTripIndex]);
 
   const previewImage = useMemo(() => {
     return getSelectedHeroImage(
       selectedProvider,
-      selectedListingType,
+      form.serviceType,
       selectedVehicle,
       selectedTrip
     );
-  }, [selectedProvider, selectedListingType, selectedVehicle, selectedTrip]);
+  }, [selectedProvider, form.serviceType, selectedVehicle, selectedTrip]);
 
   const previewTitle =
-    selectedListingType === "vehicle"
+    form.serviceType === "vehicle"
       ? selectedVehicle?.title || selectedProvider?.businessName || "Vehicle Service"
-      : selectedTrip?.packageTitle ||
-        selectedProvider?.businessName ||
-        "Travel Planner";
+      : selectedTrip?.packageTitle || selectedProvider?.businessName || "Travel Planner";
 
   const previewSubtitle =
-    selectedListingType === "vehicle"
+    form.serviceType === "vehicle"
       ? `${formatLabel(selectedVehicle?.vehicleType || "vehicle")} • ${
           selectedProvider?.city || "-"
         }`
@@ -262,7 +306,7 @@ export default function ProviderBroadcast() {
     e.preventDefault();
 
     if (!selectedProvider) {
-      setMsg({ text: "Please select a listing first.", type: "error" });
+      setMsg({ text: "Please select a service first.", type: "error" });
       return;
     }
 
@@ -271,12 +315,12 @@ export default function ProviderBroadcast() {
       return;
     }
 
-    if (selectedListingType === "vehicle" && !selectedVehicle) {
-      setMsg({ text: "Please select a vehicle.", type: "error" });
+    if (form.serviceType === "vehicle" && !selectedVehicle) {
+      setMsg({ text: "Please select a vehicle type.", type: "error" });
       return;
     }
 
-    if (selectedListingType === "travel_planner" && !selectedTrip) {
+    if (form.serviceType === "travel_planner" && !selectedTrip) {
       setMsg({ text: "Please select a trip.", type: "error" });
       return;
     }
@@ -286,7 +330,7 @@ export default function ProviderBroadcast() {
       setMsg({ text: "", type: "" });
 
       const message =
-        selectedListingType === "vehicle"
+        form.serviceType === "vehicle"
           ? buildVehicleMessage({
               provider: selectedProvider,
               listing: selectedProvider,
@@ -342,7 +386,7 @@ export default function ProviderBroadcast() {
         </div>
       ) : null}
 
-      {providers.length === 0 ? (
+      {!providers.length ? (
         <div className="providerBroadcastEmpty">
           No provider listings found. Please create a listing first before sending broadcasts.
         </div>
@@ -377,7 +421,7 @@ export default function ProviderBroadcast() {
 
             <div className="providerBroadcastSummary">
               <div className="providerBroadcastType">
-                {selectedListingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+                {form.serviceType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
               </div>
 
               <h2>{previewTitle}</h2>
@@ -393,86 +437,90 @@ export default function ProviderBroadcast() {
 
           <div className="providerBroadcastFormBlock">
             <div className="providerBroadcastGrid">
-              <div>
+              <div className="fullSpan">
                 <label>Select Listing</label>
                 <CustomSelect
-                  value={form.providerId}
+                  value={form.serviceType}
                   onChange={(e) =>
                     setForm((prev) => ({
                       ...prev,
-                      providerId: e.target.value,
-                      itemIndex: "0",
+                      serviceType: e.target.value,
+                      providerId: "",
+                      vehicleType: "",
+                      selectedTripIndex: "0",
                     }))
                   }
-                  options={makeListingOptions(providers)}
-                  placeholder="Select listing"
+                  options={buildServiceTypeOptions()}
                 />
               </div>
 
-              <div>
-                <label>
-                  {selectedListingType === "vehicle"
-                    ? "Vehicle Selector"
-                    : "Travel Select"}
-                </label>
-                <CustomSelect
-                  value={form.itemIndex}
-                  onChange={(e) =>
-                    setForm((prev) => ({ ...prev, itemIndex: e.target.value }))
-                  }
-                  options={
-                    selectedListingType === "vehicle" ? vehicleOptions : tripOptions
-                  }
-                  placeholder={
-                    selectedListingType === "vehicle"
-                      ? "Select vehicle"
-                      : "Select trip"
-                  }
-                />
-              </div>
+              {form.serviceType === "vehicle" ? (
+                <>
+                  <div>
+                    <label>Select Vehicle Service</label>
+                    <CustomSelect
+                      value={form.providerId}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          providerId: e.target.value,
+                          vehicleType: "",
+                        }))
+                      }
+                      options={makeProviderOptions(providers, "vehicle")}
+                      placeholder="Choose vehicle service"
+                    />
+                  </div>
 
-              <div>
-                <label>Listing Type</label>
-                <CustomSelect
-                  value={selectedListingType}
-                  onChange={() => {}}
-                  options={makeListingTypeOptions()}
-                  placeholder="Listing type"
-                  disabled
-                />
-              </div>
+                  <div>
+                    <label>Select Vehicle Type</label>
+                    <CustomSelect
+                      value={form.vehicleType}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          vehicleType: e.target.value,
+                        }))
+                      }
+                      options={vehicleTypeOptions}
+                      placeholder="Choose vehicle type"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label>Select Travel Planner</label>
+                    <CustomSelect
+                      value={form.providerId}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          providerId: e.target.value,
+                          selectedTripIndex: "0",
+                        }))
+                      }
+                      options={makeProviderOptions(providers, "travel_planner")}
+                      placeholder="Choose travel planner"
+                    />
+                  </div>
 
-              <div>
-                <label>
-                  {selectedListingType === "vehicle"
-                    ? "Vehicle Selector Type"
-                    : "Travel Planner Select"}
-                </label>
-                <CustomSelect
-                  value={
-                    selectedListingType === "vehicle"
-                      ? String(selectedVehicle?.vehicleType || "").toLowerCase()
-                      : String(selectedProvider?.businessName || "")
-                  }
-                  onChange={() => {}}
-                  options={
-                    selectedListingType === "vehicle"
-                      ? vehicleTypeOptions
-                      : [
-                          {
-                            value: String(selectedProvider?.businessName || ""),
-                            label: selectedProvider?.businessName || "Travel Planner",
-                          },
-                        ]
-                  }
-                  placeholder={
-                    selectedListingType === "vehicle"
-                      ? "Vehicle type"
-                      : "Travel planner"
-                  }
-                  disabled
-                />
-              </div>
+                  <div>
+                    <label>Select Trip</label>
+                    <CustomSelect
+                      value={form.selectedTripIndex}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          selectedTripIndex: e.target.value,
+                        }))
+                      }
+                      options={tripOptions}
+                      placeholder="Choose trip"
+                    />
+                  </div>
+                </>
+              )}
 
               <div className="fullSpan">
                 <label>Subject</label>
@@ -503,7 +551,7 @@ export default function ProviderBroadcast() {
             </div>
           </div>
 
-          {selectedListingType === "vehicle" && selectedVehicle ? (
+          {form.serviceType === "vehicle" && selectedVehicle ? (
             <div className="providerBroadcastPreviewCard">
               <div className="providerBroadcastPreviewHead">
                 <h3>Vehicle Preview</h3>
@@ -558,7 +606,7 @@ export default function ProviderBroadcast() {
             </div>
           ) : null}
 
-          {selectedListingType === "travel_planner" && selectedTrip ? (
+          {form.serviceType === "travel_planner" && selectedTrip ? (
             <div className="providerBroadcastPreviewCard">
               <div className="providerBroadcastPreviewHead">
                 <h3>Trip Preview</h3>
