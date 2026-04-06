@@ -161,6 +161,27 @@ export default function ProviderDashboard() {
                       </div>
                     ) : null}
 
+                    {booking.selectedVehicleTitle ? (
+                      <div>
+                        <strong>Vehicle</strong>
+                        <span>{booking.selectedVehicleTitle}</span>
+                      </div>
+                    ) : null}
+
+                    {booking.selectedPackageTitle ? (
+                      <div>
+                        <strong>Package</strong>
+                        <span>{booking.selectedPackageTitle}</span>
+                      </div>
+                    ) : null}
+
+                    {booking.notes ? (
+                      <div className="providerDashboardInfoWide">
+                        <strong>Customer Note</strong>
+                        <span>{booking.notes}</span>
+                      </div>
+                    ) : null}
+
                     {isCancelled && booking.cancellationReason ? (
                       <div className="providerDashboardInfoWide providerDashboardCancelInfo">
                         <strong>Cancellation Reason</strong>
