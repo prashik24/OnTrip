@@ -17,51 +17,83 @@
   border: 1px solid rgba(255, 98, 98, 0.16);
 }
 
-.providerBroadcastHistoryHero {
-  min-height: 280px;
+.providerBroadcastHistoryHeroCard {
+  position: relative;
+  min-height: 320px;
   border-radius: 20px;
   overflow: hidden;
   border: 1px solid rgba(0, 184, 241, 0.12);
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
-  background:
-    linear-gradient(90deg, rgba(6, 26, 39, 0.82), rgba(0, 184, 241, 0.28)),
-    url("/images/places/varanasi-hero.jpg") center/cover no-repeat;
-  display: flex;
-  align-items: end;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.providerBroadcastHistoryHeroImageWrap {
+  position: absolute;
+  inset: 0;
+}
+
+.providerBroadcastHistoryHeroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.providerBroadcastHistoryHeroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(7, 22, 33, 0.82) 0%,
+    rgba(7, 22, 33, 0.58) 42%,
+    rgba(0, 184, 241, 0.2) 100%
+  );
 }
 
 .providerBroadcastHistoryHeroContent {
+  position: relative;
+  z-index: 1;
+  min-height: 320px;
   padding: 28px;
-  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   max-width: 760px;
+  color: #ffffff;
 }
 
-.providerBroadcastHistoryKicker {
+.providerBroadcastHistoryBadge {
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.92;
 }
 
 .providerBroadcastHistoryHeroContent h1 {
-  margin: 10px 0 0;
-  font-size: 32px;
-  line-height: 1.15;
+  margin: 14px 0 0;
+  font-size: 34px;
+  line-height: 1.12;
   font-weight: 800;
   word-break: break-word;
 }
 
 .providerBroadcastHistoryHeroContent p {
-  margin: 8px 0 0;
-  font-size: 14px;
-  line-height: 1.65;
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 1.75;
   font-weight: 550;
+  max-width: 620px;
   word-break: break-word;
 }
 
-.providerBroadcastHistoryActions {
-  margin-top: 18px;
+.providerBroadcastHistoryHeroActions {
+  margin-top: 20px;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
@@ -71,34 +103,50 @@
   min-height: 44px;
   padding: 0 16px;
   border-radius: 12px;
+  border: 1px solid rgba(0, 184, 241, 0.32);
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
-  box-sizing: border-box;
-  border: 1px solid rgba(0, 184, 241, 0.32);
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #ffffff;
 }
 
 .providerBroadcastHistoryPrimaryBtn:hover {
   box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
 }
 
+.providerBroadcastHistoryStatsWrap,
+.providerBroadcastHistoryListWrap,
+.providerBroadcastHistoryEmpty {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+}
+
+.providerBroadcastHistoryStatsWrap {
+  padding: 20px;
+}
+
 .providerBroadcastHistoryStatsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 14px;
 }
 
 .providerBroadcastHistoryStatCard {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 18px;
+  background: rgba(244, 251, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 16px;
   padding: 18px;
-  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
   display: grid;
   gap: 8px;
+  min-width: 0;
+}
+
+.providerBroadcastHistoryStatWide {
+  grid-column: span 1;
 }
 
 .providerBroadcastHistoryStatCard strong {
@@ -113,16 +161,36 @@
   font-weight: 800;
   color: #12212f;
   line-height: 1;
+  word-break: break-word;
 }
 
 .providerBroadcastHistoryEmpty {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 18px;
   padding: 24px;
   color: rgba(11, 27, 42, 0.72);
   font-weight: 650;
-  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  word-break: break-word;
+}
+
+.providerBroadcastHistoryListWrap {
+  padding: 20px;
+  display: grid;
+  gap: 18px;
+}
+
+.providerBroadcastHistoryListHead h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 780;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.providerBroadcastHistoryListHead p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+  font-weight: 550;
   word-break: break-word;
 }
 
@@ -132,11 +200,10 @@
 }
 
 .providerBroadcastHistoryCard {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 184, 241, 0.12);
+  background: rgba(244, 251, 255, 0.94);
+  border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
+  padding: 18px;
   display: grid;
   gap: 14px;
 }
@@ -146,6 +213,10 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 14px;
+}
+
+.providerBroadcastHistoryCardMain {
+  min-width: 0;
 }
 
 .providerBroadcastHistoryType {
@@ -161,7 +232,7 @@
 }
 
 .providerBroadcastHistoryCardTop h3 {
-  margin: 8px 0 0;
+  margin: 10px 0 0;
   font-size: 22px;
   font-weight: 760;
   color: #12212f;
@@ -215,7 +286,7 @@
   word-break: break-word;
   padding: 16px;
   border-radius: 16px;
-  background: rgba(244, 251, 255, 0.94);
+  background: #ffffff;
   border: 1px solid rgba(0, 184, 241, 0.1);
 }
 
@@ -229,9 +300,9 @@
   font-weight: 650;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1180px) {
   .providerBroadcastHistoryStatsGrid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -240,6 +311,10 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .providerBroadcastHistoryStatWide {
+    grid-column: auto;
+  }
 }
 
 @media (max-width: 640px) {
@@ -247,12 +322,27 @@
     gap: 16px;
   }
 
+  .providerBroadcastHistoryHeroCard,
+  .providerBroadcastHistoryHeroContent {
+    min-height: 300px;
+  }
+
   .providerBroadcastHistoryHeroContent {
     padding: 20px 16px;
   }
 
   .providerBroadcastHistoryHeroContent h1 {
-    font-size: 24px;
+    font-size: 26px;
+  }
+
+  .providerBroadcastHistoryHeroContent p {
+    font-size: 14px;
+  }
+
+  .providerBroadcastHistoryStatsWrap,
+  .providerBroadcastHistoryListWrap {
+    padding: 16px;
+    border-radius: 16px;
   }
 
   .providerBroadcastHistoryStatsGrid {
