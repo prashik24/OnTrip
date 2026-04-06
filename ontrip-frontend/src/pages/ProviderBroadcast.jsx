@@ -23,7 +23,7 @@ function makeProviderOptions(items = [], type = "vehicle") {
     .filter((item) => item.listingType === type)
     .map((item) => ({
       value: item._id,
-      label: `${item.businessName} • ${item.city || "-"}`,
+      label: `${item.businessName}`,
     }));
 }
 
@@ -52,9 +52,7 @@ function getDefaultVehicleByType(vehicles = [], selectedVehicleType = "") {
 function makeTripOptions(travelPlans = []) {
   return travelPlans.map((item, index) => ({
     value: String(index),
-    label: `${item.packageTitle || `Trip ${index + 1}`} • ${
-      item.durationText || `${item.days || 1} day(s)`
-    }`,
+    label: `${item.packageTitle || `Trip ${index + 1}`}`,
   }));
 }
 
