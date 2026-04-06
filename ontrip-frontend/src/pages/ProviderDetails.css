@@ -285,106 +285,45 @@
   object-position: center;
 }
 
-.providerDetailsDataGrid {
+.providerDetailsInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
   width: 100%;
   min-width: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
 }
 
-.providerDetailsDataBox {
-  min-width: 0;
-  box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.96);
+.providerDetailsInfoGrid > div {
+  background: rgba(244, 251, 255, 0.94);
+  border-radius: 14px;
+  padding: 14px 15px;
   border: 1px solid rgba(0, 184, 241, 0.1);
-  border-radius: 12px;
-  padding: 14px;
-  display: grid;
-  gap: 6px;
-}
-
-.providerDetailsDataBox strong {
-  font-size: 13px;
-  color: rgba(11, 27, 42, 0.55);
-  font-weight: 650;
-}
-
-.providerDetailsDataBox span {
-  font-size: 15px;
-  color: var(--text);
-  font-weight: 650;
-  word-break: break-word;
-}
-
-.providerDetailsInfoBlocks {
-  width: 100%;
   min-width: 0;
   display: grid;
-  gap: 12px;
-}
-
-.providerDetailsInfoBlock {
-  min-width: 0;
+  gap: 4px;
+  align-content: start;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(11, 27, 42, 0.08);
-  border-radius: 12px;
-  padding: 14px;
 }
 
-.providerDetailsInfoBlock h3 {
-  margin: 0 0 8px;
-  font-size: 16px;
-  font-weight: 720;
-  word-break: break-word;
+.providerDetailsInfoGrid > div strong {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: rgba(15, 23, 42, 0.46);
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }
 
-.providerDetailsInfoBlock p {
-  margin: 0;
-  color: rgba(11, 27, 42, 0.76);
-  line-height: 1.65;
-  font-weight: 550;
-  word-break: break-word;
-}
-
-.providerDetailsVehicleSummary {
-  width: 100%;
-  min-width: 0;
-  display: grid;
-  gap: 12px;
-}
-
-.providerDetailsVehicleMetaGrid {
-  width: 100%;
-  min-width: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.providerDetailsMiniInfo {
-  min-width: 0;
-  box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(0, 184, 241, 0.1);
-  border-radius: 12px;
-  padding: 14px;
-  display: grid;
-  gap: 6px;
-}
-
-.providerDetailsMiniLabel {
-  font-size: 13px;
-  color: rgba(11, 27, 42, 0.55);
+.providerDetailsInfoGrid > div span {
+  font-size: 14px;
   font-weight: 650;
+  color: rgba(15, 23, 42, 0.88);
+  line-height: 1.55;
+  word-break: break-word;
 }
 
-.providerDetailsMiniInfo strong {
-  font-size: 15px;
-  color: var(--text);
-  font-weight: 650;
-  word-break: break-word;
+.providerDetailsInfoWide {
+  grid-column: 1 / -1;
 }
 
 .providerDetailsReviewList,
@@ -461,11 +400,12 @@
 }
 
 .providerDetailsVoteBtn {
-  min-height: 42px;
-  padding: 0 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(11, 27, 42, 0.12);
-  background: #ffffff;
+  min-height: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
   color: #12212f;
   font: inherit;
   font-weight: 700;
@@ -474,23 +414,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .providerDetailsVoteBtnAlt {
-  border-color: rgba(11, 27, 42, 0.12);
-  background: #ffffff;
+  border: none;
+  background: transparent;
   color: #12212f;
 }
 
 .providerDetailsVoteBtn.active {
-  border-color: rgba(0, 184, 241, 0.28);
-  background: rgba(0, 184, 241, 0.08);
+  border: none;
+  background: transparent;
   color: #0369a1;
 }
 
 .providerDetailsVoteBtn:hover {
-  box-shadow: 0 8px 18px rgba(10, 22, 35, 0.08);
+  box-shadow: none;
+  color: #00b8f1;
 }
 
 .providerDetailsVoteBtn:disabled {
@@ -537,8 +478,7 @@
 
 @media (max-width: 980px) {
   .providerDetailsTop,
-  .providerDetailsDataGrid,
-  .providerDetailsVehicleMetaGrid {
+  .providerDetailsInfoGrid {
     grid-template-columns: 1fr;
   }
 
@@ -571,6 +511,10 @@
   .providerDetailsItemHeader {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .providerDetailsInfoWide {
+    grid-column: auto;
   }
 }
 
@@ -606,8 +550,7 @@
     height: 90px;
   }
 
-  .providerDetailsDataGrid,
-  .providerDetailsVehicleMetaGrid {
+  .providerDetailsInfoGrid {
     grid-template-columns: 1fr;
   }
 
@@ -622,39 +565,4 @@
   .providerDetailsActionRow {
     flex-direction: column;
   }
-}
-
-.providerDetailsVoteBtn {
-  min-height: auto;
-  padding: 0;
-  border: none;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-  color: #12212f;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.18s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.providerDetailsVoteBtnAlt {
-  border: none;
-  background: transparent;
-  color: #12212f;
-}
-
-.providerDetailsVoteBtn.active {
-  border: none;
-  background: transparent;
-  color: #0369a1;
-}
-
-.providerDetailsVoteBtn:hover {
-  box-shadow: none;
-  color: #00b8f1;
 }
