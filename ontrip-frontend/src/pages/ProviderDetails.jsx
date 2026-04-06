@@ -177,22 +177,6 @@ export default function ProviderDetails() {
       {msg && <div className="providerDetailsMessage error">{msg}</div>}
 
       <div className="providerDetailsCard">
-        <div className="providerDetailsBanner">
-          <div>
-            <div className="providerDetailsKicker">OnTrip Provider Details</div>
-            <h1>{provider.businessName}</h1>
-            <p>
-              {provider.description || "No description provided."}
-            </p>
-          </div>
-
-          <div className="providerDetailsBannerType">
-            {provider.listingType === "vehicle"
-              ? "Vehicle Service"
-              : "Travel Planner"}
-          </div>
-        </div>
-
         <div className="providerDetailsTop">
           <div className="providerDetailsHeroImage">
             {heroImage ? (
@@ -203,45 +187,37 @@ export default function ProviderDetails() {
           </div>
 
           <div className="providerDetailsTopContent">
-            <div className="providerDetailsInfoGrid">
-              <div>
-                <strong>Business</strong>
-                <span>{provider.businessName || "-"}</span>
-              </div>
+            <div className="providerDetailsType providerDetailsTypeTop">
+              {provider.listingType === "vehicle"
+                ? "Vehicle Service"
+                : "Travel Planner"}
+            </div>
 
-              <div>
-                <strong>City</strong>
-                <span>{provider.city || "-"}</span>
-              </div>
+            <h1>{provider.businessName}</h1>
 
-              <div>
-                <strong>Phone</strong>
-                <span>{provider.phone || "-"}</span>
-              </div>
+            <div className="providerDetailsMeta">
+              {provider.listingType === "vehicle"
+                ? `${formatLabel(provider.vehicles?.[0]?.vehicleType || "Vehicle")} • ${provider.city || "-"}`
+                : `${travelPlans?.[0]?.durationText || "-"} • ${provider.city || "-"}`}
+            </div>
 
-              <div>
-                <strong>Rating</strong>
-                <span>
-                  ⭐ {provider.ratingAverage || 0} ({provider.ratingCount || 0})
-                </span>
-              </div>
+            <div className="providerDetailsTopTags">
+              <span>Business: {provider.businessName || "-"}</span>
+              <span>City: {provider.city || "-"}</span>
+              <span>State: {provider.state || "-"}</span>
+            </div>
 
-              <div>
-                <strong>Owner</strong>
-                <span>{provider.owner?.name || "Provider"}</span>
-              </div>
+            <p className="providerDetailsDesc">
+              {provider.description || "No description provided."}
+            </p>
 
-              <div>
-                <strong>State</strong>
-                <span>{provider.state || "-"}</span>
-              </div>
-
-              {provider.whatsapp ? (
-                <div className="providerDetailsInfoWide">
-                  <strong>WhatsApp</strong>
-                  <span>{provider.whatsapp}</span>
-                </div>
-              ) : null}
+            <div className="providerDetailsInfoRow">
+              <span>Owner: {provider.owner?.name || "Provider"}</span>
+              {provider.phone ? <span>Phone: {provider.phone}</span> : null}
+              {provider.whatsapp ? <span>WhatsApp: {provider.whatsapp}</span> : null}
+              <span>
+                Rating: ⭐ {provider.ratingAverage || 0} ({provider.ratingCount || 0})
+              </span>
             </div>
 
             {!isOwner ? (
@@ -262,89 +238,52 @@ export default function ProviderDetails() {
 
         {provider.listingType === "vehicle" ? (
           <div className="providerDetailsSection">
-            <h2>Available Vehicles</h2>
+            <div className="providerDetailsSectionHead">
+              <h2>Vehicle Preview</h2>
+            </div>
 
             <div className="providerDetailsVehicleList">
               {(provider.vehicles || []).map((vehicle) => (
                 <div className="providerDetailsVehicleCard" key={vehicle._id}>
-                  <div className="providerDetailsItemHeader">
-                    <h3 className="providerDetailsItemTitle">
-                      {vehicle.title || vehicle.vehicleType || "Vehicle"}
-                    </h3>
-                  </div>
-
-                  <div className="providerDetailsVehicleHero">
-                    {vehicle.images?.length > 0 ? (
-                      <img
-                        src={vehicle.images[0].url}
-                        alt={vehicle.title || vehicle.vehicleType}
-                      />
-                    ) : (
-                      <div className="providerDetailsImageEmpty">No Vehicle Image</div>
-                    )}
-                  </div>
-
-                  {vehicle.images?.length > 1 && (
-                    <div className="providerDetailsGallery providerDetailsVehicleThumbs">
-                      {vehicle.images.slice(1).map((img, index) => (
-                        <div className="providerDetailsGalleryItem" key={index}>
-                          <img
-                            src={img.url}
-                            alt={`${vehicle.title || vehicle.vehicleType}-${index + 2}`}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
                   <div className="providerDetailsInfoGrid">
                     <div>
                       <strong>Business</strong>
                       <span>{provider.businessName || "-"}</span>
                     </div>
-
                     <div>
                       <strong>City</strong>
                       <span>{provider.city || "-"}</span>
                     </div>
-
                     <div>
                       <strong>Vehicle Type</strong>
                       <span>{formatLabel(vehicle.vehicleType || "-")}</span>
                     </div>
-
                     <div>
                       <strong>Title</strong>
                       <span>{vehicle.title || "-"}</span>
                     </div>
-
                     <div>
                       <strong>Price</strong>
                       <span>₹{vehicle.price || 0}</span>
                     </div>
-
                     <div>
                       <strong>Price Unit</strong>
                       <span>{formatLabel(vehicle.priceUnit || "-")}</span>
                     </div>
-
                     <div>
                       <strong>Capacity</strong>
-                      <span>{vehicle.capacity || 1}</span>
+                      <span>{vehicle.capacity || "-"}</span>
                     </div>
-
                     <div>
                       <strong>Fuel Type</strong>
-                      <span>{vehicle.fuelType || "N/A"}</span>
+                      <span>{vehicle.fuelType || "-"}</span>
                     </div>
-
                     <div className="providerDetailsInfoWide">
                       <strong>Driver Option</strong>
                       <span>
-                        {vehicle.withDriver ? "With Driver" : "Without Driver"}
+                        {vehicle.withDriver ? "With Driver" : "Self Drive / No Driver"}
                       </span>
                     </div>
-
                     <div className="providerDetailsInfoWide">
                       <strong>Description</strong>
                       <span>{provider.description || "-"}</span>
@@ -356,79 +295,46 @@ export default function ProviderDetails() {
           </div>
         ) : (
           <div className="providerDetailsSection">
-            <h2>Package Details</h2>
+            <div className="providerDetailsSectionHead">
+              <h2>Trip Preview</h2>
+            </div>
 
             <div className="providerDetailsTravelList">
               {travelPlans.map((trip, index) => (
                 <div className="providerDetailsTravelCard" key={trip._id || index}>
-                  <div className="providerDetailsItemHeader">
-                    <h3 className="providerDetailsItemTitle">
-                      {trip.packageTitle || "Package"}
-                    </h3>
-                  </div>
-
-                  <div className="providerDetailsPackageHero">
-                    {trip.images?.length > 0 ? (
-                      <img
-                        src={trip.images[0].url}
-                        alt={trip.packageTitle || "package"}
-                      />
-                    ) : (
-                      <div className="providerDetailsImageEmpty">No Package Image</div>
-                    )}
-                  </div>
-
-                  {trip.images?.length > 1 && (
-                    <div className="providerDetailsGallery providerDetailsPackageThumbs">
-                      {trip.images.slice(1).map((img, imgIndex) => (
-                        <div className="providerDetailsGalleryItem" key={imgIndex}>
-                          <img src={img.url} alt={`planner-${imgIndex + 2}`} />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
                   <div className="providerDetailsInfoGrid">
                     <div>
                       <strong>Business</strong>
                       <span>{provider.businessName || "-"}</span>
                     </div>
-
                     <div>
                       <strong>City</strong>
                       <span>{provider.city || "-"}</span>
                     </div>
-
                     <div>
                       <strong>Planner Type</strong>
                       <span>{formatLabel(trip.plannerMode || "-")}</span>
                     </div>
-
                     <div>
                       <strong>Package Title</strong>
                       <span>{trip.packageTitle || "-"}</span>
                     </div>
-
                     <div>
                       <strong>Duration</strong>
                       <span>{trip.durationText || "-"}</span>
                     </div>
-
                     <div>
                       <strong>Days</strong>
                       <span>{trip.days || "-"}</span>
                     </div>
-
                     <div>
                       <strong>Price From</strong>
                       <span>₹{trip.priceFrom || 0}</span>
                     </div>
-
                     <div>
                       <strong>Price Per Person</strong>
                       <span>₹{trip.pricePerPerson || 0}</span>
                     </div>
-
                     <div className="providerDetailsInfoWide">
                       <strong>Places Covered</strong>
                       <span>
@@ -437,7 +343,6 @@ export default function ProviderDetails() {
                           : trip.placesCovered || "-"}
                       </span>
                     </div>
-
                     <div className="providerDetailsInfoWide">
                       <strong>Inclusions</strong>
                       <span>
@@ -446,7 +351,6 @@ export default function ProviderDetails() {
                           : trip.inclusions || "-"}
                       </span>
                     </div>
-
                     <div className="providerDetailsInfoWide">
                       <strong>Exclusions</strong>
                       <span>
@@ -455,7 +359,6 @@ export default function ProviderDetails() {
                           : trip.exclusions || "-"}
                       </span>
                     </div>
-
                     <div className="providerDetailsInfoWide">
                       <strong>Description</strong>
                       <span>{provider.description || "-"}</span>
@@ -468,7 +371,9 @@ export default function ProviderDetails() {
         )}
 
         <div className="providerDetailsSection">
-          <h2>Reviews</h2>
+          <div className="providerDetailsSectionHead">
+            <h2>Reviews</h2>
+          </div>
 
           {reviews.length === 0 ? (
             <div className="providerDetailsNote">No reviews yet.</div>
@@ -538,7 +443,9 @@ export default function ProviderDetails() {
         </div>
 
         <div className="providerDetailsSection">
-          <h2>Similar Services</h2>
+          <div className="providerDetailsSectionHead">
+            <h2>Similar Services</h2>
+          </div>
 
           {similar.length === 0 ? (
             <div className="providerDetailsNote">No similar services found.</div>
