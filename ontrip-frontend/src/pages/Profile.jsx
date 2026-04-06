@@ -291,14 +291,26 @@ export default function Profile() {
                   <div className="profileQuickCard">
                     <h3>Provider Broadcast</h3>
                     <p>
-                      Send trip and vehicle updates to all subscribed users and
-                      review old broadcast history.
+                      Send trip and vehicle updates to all subscribed users.
                     </p>
                     <button
                       className="profileGhostBtn"
                       onClick={() => navigate("/provider-broadcast")}
                     >
                       Open Provider Broadcast
+                    </button>
+                  </div>
+
+                  <div className="profileQuickCard">
+                    <h3>Provider Broadcast History</h3>
+                    <p>
+                      View all old provider broadcasts, delivery status, and recipients.
+                    </p>
+                    <button
+                      className="profileGhostBtn"
+                      onClick={() => navigate("/provider-broadcast-history")}
+                    >
+                      Open Broadcast History
                     </button>
                   </div>
                 </>
