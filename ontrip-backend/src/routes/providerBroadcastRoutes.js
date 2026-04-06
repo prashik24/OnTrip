@@ -1,13 +1,9 @@
 import express from "express";
-import {
-  sendProviderBroadcast,
-  getProviderBroadcasts,
-} from "../controllers/providerBroadcastController.js";
 import { protect } from "../middleware/auth.js";
+import { sendProviderBroadcastEmail } from "../controllers/providerBroadcastController.js";
 
 const router = express.Router();
 
-router.post("/send", protect, sendProviderBroadcast);
-router.get("/my", protect, getProviderBroadcasts);
+router.post("/send-email", protect, sendProviderBroadcastEmail);
 
 export default router;
