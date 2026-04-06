@@ -14,28 +14,49 @@ function formatLabel(value) {
 function makeListingOptions(items = []) {
   return items.map((item) => ({
     value: item._id,
-    label: `${item.businessName} • ${item.city} • ${
-      item.listingType === "vehicle" ? "Vehicle" : "Travel"
-    }`,
+    label: item.businessName || "Provider Listing",
   }));
 }
 
 function makeVehicleOptions(vehicles = []) {
   return vehicles.map((item, index) => ({
     value: String(index),
-    label: `${item.title || `Vehicle ${index + 1}`} • ${formatLabel(
-      item.vehicleType
-    )} • ₹${item.price || 0}`,
+    label:
+      item.title ||
+      formatLabel(item.vehicleType) ||
+      `Vehicle ${index + 1}`,
   }));
 }
 
 function makeTripOptions(travelPlans = []) {
   return travelPlans.map((item, index) => ({
     value: String(index),
-    label: `${item.packageTitle || `Trip ${index + 1}`} • ${
-      item.durationText || `${item.days || 1} day(s)`
-    } • ₹${item.priceFrom || item.pricePerPerson || 0}`,
+    label: item.packageTitle || `Trip ${index + 1}`,
   }));
+}
+
+function makeListingTypeOptions() {
+  return [
+    { value: "travel_planner", label: "Travel Planner" },
+    { value: "vehicle", label: "Vehicle Service" },
+  ];
+}
+
+function makeVehicleTypeOptions(vehicles = []) {
+  const seen = new Set();
+
+  return vehicles
+    .map((item) => String(item.vehicleType || "").trim().toLowerCase())
+    .filter(Boolean)
+    .filter((type) => {
+      if (seen.has(type)) return false;
+      seen.add(type);
+      return true;
+    })
+    .map((type) => ({
+      value: type,
+      label: formatLabel(type),
+    }));
 }
 
 function buildVehicleMessage({ provider, listing, vehicle, customMessage }) {
@@ -174,6 +195,10 @@ export default function ProviderBroadcast() {
 
   const vehicleOptions = useMemo(() => {
     return makeVehicleOptions(selectedProvider?.vehicles || []);
+  }, [selectedProvider]);
+
+  const vehicleTypeOptions = useMemo(() => {
+    return makeVehicleTypeOptions(selectedProvider?.vehicles || []);
   }, [selectedProvider]);
 
   const tripSource = useMemo(() => {
@@ -368,7 +393,7 @@ export default function ProviderBroadcast() {
 
           <div className="providerBroadcastFormBlock">
             <div className="providerBroadcastGrid">
-              <div className="fullSpan">
+              <div>
                 <label>Select Listing</label>
                 <CustomSelect
                   value={form.providerId}
@@ -380,19 +405,15 @@ export default function ProviderBroadcast() {
                     }))
                   }
                   options={makeListingOptions(providers)}
+                  placeholder="Select listing"
                 />
               </div>
 
               <div>
-                <label>Listing Type</label>
-                <div className="providerBroadcastStaticField">
-                  {selectedListingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
-                </div>
-              </div>
-
-              <div>
                 <label>
-                  {selectedListingType === "vehicle" ? "Select Vehicle" : "Select Trip"}
+                  {selectedListingType === "vehicle"
+                    ? "Vehicle Selector"
+                    : "Travel Select"}
                 </label>
                 <CustomSelect
                   value={form.itemIndex}
@@ -402,6 +423,54 @@ export default function ProviderBroadcast() {
                   options={
                     selectedListingType === "vehicle" ? vehicleOptions : tripOptions
                   }
+                  placeholder={
+                    selectedListingType === "vehicle"
+                      ? "Select vehicle"
+                      : "Select trip"
+                  }
+                />
+              </div>
+
+              <div>
+                <label>Listing Type</label>
+                <CustomSelect
+                  value={selectedListingType}
+                  onChange={() => {}}
+                  options={makeListingTypeOptions()}
+                  placeholder="Listing type"
+                  disabled
+                />
+              </div>
+
+              <div>
+                <label>
+                  {selectedListingType === "vehicle"
+                    ? "Vehicle Selector Type"
+                    : "Travel Planner Select"}
+                </label>
+                <CustomSelect
+                  value={
+                    selectedListingType === "vehicle"
+                      ? String(selectedVehicle?.vehicleType || "").toLowerCase()
+                      : String(selectedProvider?.businessName || "")
+                  }
+                  onChange={() => {}}
+                  options={
+                    selectedListingType === "vehicle"
+                      ? vehicleTypeOptions
+                      : [
+                          {
+                            value: String(selectedProvider?.businessName || ""),
+                            label: selectedProvider?.businessName || "Travel Planner",
+                          },
+                        ]
+                  }
+                  placeholder={
+                    selectedListingType === "vehicle"
+                      ? "Vehicle type"
+                      : "Travel planner"
+                  }
+                  disabled
                 />
               </div>
 
