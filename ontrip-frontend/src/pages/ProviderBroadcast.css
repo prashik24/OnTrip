@@ -2,7 +2,7 @@
   padding-bottom: 32px;
   display: grid;
   gap: 18px;
-  max-width: 1240px;
+  max-width: 1120px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
@@ -45,7 +45,7 @@
   box-shadow: 0 10px 24px rgba(10, 22, 35, 0.05);
   overflow: hidden;
   width: 100%;
-  max-width: 1240px;
+  max-width: 1120px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -106,8 +106,8 @@
 .providerBroadcastTop {
   padding: 20px 22px 0;
   display: grid;
-  grid-template-columns: minmax(0, 540px) minmax(0, 1fr);
-  gap: 22px;
+  grid-template-columns: minmax(0, 430px) minmax(0, 1fr);
+  gap: 20px;
   align-items: stretch;
   width: 100%;
   box-sizing: border-box;
@@ -116,8 +116,8 @@
 .providerBroadcastImageWrap {
   border-radius: 18px;
   overflow: hidden;
-  min-height: 320px;
-  height: 320px;
+  min-height: 280px;
+  height: 280px;
   background: #eaf8fd;
   border: 1px solid rgba(0, 184, 241, 0.12);
   width: 100%;
@@ -140,7 +140,7 @@
   gap: 14px;
   align-content: start;
   min-width: 0;
-  min-height: 320px;
+  min-height: 280px;
   width: 100%;
   box-sizing: border-box;
 }
