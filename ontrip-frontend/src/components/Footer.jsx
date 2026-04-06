@@ -1,39 +1,115 @@
-import { useState } from "react";
-import { apiFetch } from "../lib/api";
+import { useEffect, useState } from "react";
+import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import "./Footer.css";
 
 export default function Footer() {
-  const [email, setEmail] = useState("");
+  const me = getUser();
+
+  const [email, setEmail] = useState(me?.email || "");
+  const [name, setName] = useState(me?.name || "");
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subscribedAccount, setSubscribedAccount] = useState("");
   const [msg, setMsg] = useState({ text: "", type: "" });
 
-  async function handleSubscribe(e) {
+  useEffect(() => {
+    let ignore = false;
+
+    async function checkStatus() {
+      if (!isLoggedIn()) {
+        setChecking(false);
+        return;
+      }
+
+      try {
+        const data = await apiFetch("/api/subscribers/status");
+
+        if (ignore) return;
+
+        const subscribed = !!data?.isSubscribed;
+        const accountEmail = data?.subscriber?.email || me?.email || "";
+
+        setIsSubscribed(subscribed);
+        setSubscribedAccount(subscribed ? accountEmail : "");
+        setEmail(accountEmail || "");
+        setName(data?.subscriber?.name || me?.name || "");
+      } catch (err) {
+        if (!ignore) {
+          setIsSubscribed(false);
+          setSubscribedAccount("");
+        }
+      } finally {
+        if (!ignore) {
+          setChecking(false);
+        }
+      }
+    }
+
+    checkStatus();
+
+    return () => {
+      ignore = true;
+    };
+  }, [me?.email, me?.name]);
+
+  async function handleSubscribeAction(e) {
     e.preventDefault();
 
-    if (!email.trim()) {
+    setMsg({ text: "", type: "" });
+
+    if (!isLoggedIn()) {
+      setMsg({ text: "Please login first to manage subscription.", type: "error" });
+      return;
+    }
+
+    const cleanEmail = String(email || "").trim().toLowerCase();
+    const cleanName = String(name || "").trim();
+
+    if (!isSubscribed && !cleanEmail) {
       setMsg({ text: "Please enter your email address.", type: "error" });
       return;
     }
 
     try {
       setLoading(true);
-      setMsg({ text: "", type: "" });
 
-      const data = await apiFetch("/api/subscribers/subscribe", {
-        method: "POST",
-        body: JSON.stringify({
-          email: email.trim(),
-        }),
-      });
+      if (isSubscribed) {
+        const data = await apiFetch("/api/subscribers/unsubscribe", {
+          method: "POST",
+          body: JSON.stringify({
+            email: cleanEmail || subscribedAccount || me?.email || "",
+          }),
+        });
 
-      setMsg({
-        text: data.message || "Subscribed successfully.",
-        type: "success",
-      });
-      setEmail("");
+        setIsSubscribed(false);
+        setSubscribedAccount("");
+        setMsg({
+          text: data.message || "Unsubscribed successfully.",
+          type: "success",
+        });
+      } else {
+        const data = await apiFetch("/api/subscribers/subscribe", {
+          method: "POST",
+          body: JSON.stringify({
+            name: cleanName || me?.name || "",
+            email: cleanEmail,
+          }),
+        });
+
+        const accountEmail = data?.subscriber?.email || cleanEmail;
+
+        setIsSubscribed(true);
+        setSubscribedAccount(accountEmail);
+        setEmail(accountEmail);
+        setMsg({
+          text: data.message || "Subscribed successfully.",
+          type: "success",
+        });
+      }
     } catch (err) {
       setMsg({
-        text: err.message || "Failed to subscribe.",
+        text: err.message || "Failed to update subscription.",
         type: "error",
       });
     } finally {
@@ -111,24 +187,48 @@ export default function Footer() {
               your inbox.
             </div>
 
-            <form className="otNewsForm" onSubmit={handleSubscribe}>
+            <form className="otNewsForm otNewsFormStack" onSubmit={handleSubscribeAction}>
+              <input
+                className="otNewsInput"
+                type="text"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={isSubscribed || loading || checking}
+              />
+
               <input
                 className="otNewsInput"
                 type="email"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
+                disabled={isSubscribed || loading || checking}
+                required={!isSubscribed}
               />
 
               <button
                 className="otNewsBtn"
                 type="submit"
-                disabled={loading}
+                disabled={loading || checking}
               >
-                {loading ? "Subscribing..." : "Subscribe"}
+                {checking
+                  ? "Checking..."
+                  : loading
+                  ? isSubscribed
+                    ? "Unsubscribing..."
+                    : "Subscribing..."
+                  : isSubscribed
+                  ? "Unsubscribe"
+                  : "Subscribe"}
               </button>
             </form>
+
+            {isSubscribed ? (
+              <div className="otSubscribedAccount">
+                Subscribed account: <strong>{subscribedAccount || email}</strong>
+              </div>
+            ) : null}
 
             {msg.text ? (
               <div className={`otNewsMessage ${msg.type}`}>{msg.text}</div>
