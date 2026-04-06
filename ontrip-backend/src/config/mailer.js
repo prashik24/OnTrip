@@ -92,20 +92,3 @@ export async function sendOtpEmail(to, otp) {
     `,
   });
 }
-
-//////////////////////////////////////////////////////////////////
-// ✅ NEW FUNCTION (ADD BELOW ONLY)
-//////////////////////////////////////////////////////////////////
-
-export async function sendBroadcastEmail({
-  to,
-  subject,
-  htmlContent,
-}) {
-  // Just reuse existing function (no duplication)
-  return sendTransactionalEmail({
-    to,
-    subject,
-    htmlContent,
-  });
-}
