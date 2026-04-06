@@ -104,15 +104,29 @@ ${customMessage || "-"}
   `.trim();
 }
 
+function getSelectedHeroImage(provider, listingType, selectedVehicle, selectedTrip) {
+  if (listingType === "vehicle") {
+    return (
+      selectedVehicle?.images?.[0]?.url ||
+      provider?.serviceImage?.url ||
+      "/images/places/mumbai-hero.jpg"
+    );
+  }
+
+  return (
+    selectedTrip?.images?.[0]?.url ||
+    provider?.serviceImage?.url ||
+    "/images/places/manali-hero.jpg"
+  );
+}
+
 export default function ProviderBroadcast() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [sendLoading, setSendLoading] = useState(false);
   const [msg, setMsg] = useState({ text: "", type: "" });
-
   const [providers, setProviders] = useState([]);
-  const [history, setHistory] = useState([]);
 
   const [form, setForm] = useState({
     providerId: "",
@@ -126,18 +140,10 @@ export default function ProviderBroadcast() {
       setLoading(true);
       setMsg({ text: "", type: "" });
 
-      const [providerData, historyData] = await Promise.all([
-        apiFetch("/api/providers/mine"),
-        apiFetch("/api/provider-broadcasts/my"),
-      ]);
-
+      const providerData = await apiFetch("/api/providers/mine");
       const nextProviders = providerData.providers || [];
-      const nextHistory = Array.isArray(historyData)
-        ? historyData
-        : historyData.broadcasts || [];
 
       setProviders(nextProviders);
-      setHistory(nextHistory);
 
       if (nextProviders.length > 0) {
         setForm((prev) => ({
@@ -170,35 +176,62 @@ export default function ProviderBroadcast() {
     return makeVehicleOptions(selectedProvider?.vehicles || []);
   }, [selectedProvider]);
 
-  const tripOptions = useMemo(() => {
-    const plans =
-      selectedProvider?.travelPlans?.length > 0
-        ? selectedProvider.travelPlans
-        : selectedProvider?.travelPlanner?.packageTitle ||
-          selectedProvider?.travelPlanner?.durationText
-        ? [selectedProvider.travelPlanner]
-        : [];
+  const tripSource = useMemo(() => {
+    if (!selectedProvider) return [];
 
-    return makeTripOptions(plans);
+    if (selectedProvider.travelPlans?.length > 0) {
+      return selectedProvider.travelPlans;
+    }
+
+    if (
+      selectedProvider.travelPlanner?.packageTitle ||
+      selectedProvider.travelPlanner?.durationText ||
+      selectedProvider.travelPlanner?.images?.length
+    ) {
+      return [selectedProvider.travelPlanner];
+    }
+
+    return [];
   }, [selectedProvider]);
+
+  const tripOptions = useMemo(() => {
+    return makeTripOptions(tripSource);
+  }, [tripSource]);
 
   const selectedVehicle =
     selectedListingType === "vehicle"
       ? selectedProvider?.vehicles?.[Number(form.itemIndex)] || null
       : null;
 
-  const tripSource =
-    selectedProvider?.travelPlans?.length > 0
-      ? selectedProvider.travelPlans
-      : selectedProvider?.travelPlanner?.packageTitle ||
-        selectedProvider?.travelPlanner?.durationText
-      ? [selectedProvider.travelPlanner]
-      : [];
-
   const selectedTrip =
     selectedListingType === "travel_planner"
       ? tripSource?.[Number(form.itemIndex)] || null
       : null;
+
+  const previewImage = useMemo(() => {
+    return getSelectedHeroImage(
+      selectedProvider,
+      selectedListingType,
+      selectedVehicle,
+      selectedTrip
+    );
+  }, [selectedProvider, selectedListingType, selectedVehicle, selectedTrip]);
+
+  const previewTitle =
+    selectedListingType === "vehicle"
+      ? selectedVehicle?.title || selectedProvider?.businessName || "Vehicle Service"
+      : selectedTrip?.packageTitle ||
+        selectedProvider?.businessName ||
+        "Travel Planner";
+
+  const previewSubtitle =
+    selectedListingType === "vehicle"
+      ? `${formatLabel(selectedVehicle?.vehicleType || "vehicle")} • ${
+          selectedProvider?.city || "-"
+        }`
+      : `${selectedTrip?.durationText || `${selectedTrip?.days || 1} day(s)`} • ${
+          selectedProvider?.city || "-"
+        }`;
 
   async function sendBroadcast(e) {
     e.preventDefault();
@@ -262,8 +295,6 @@ export default function ProviderBroadcast() {
         subject: "",
         customMessage: "",
       }));
-
-      await loadPage();
     } catch (err) {
       setMsg({
         text: err.message || "Failed to send broadcast.",
@@ -280,24 +311,6 @@ export default function ProviderBroadcast() {
 
   return (
     <div className="providerBroadcastPage container">
-      <div className="providerBroadcastHead">
-        <div>
-          <h1>Provider Broadcast</h1>
-          <p>
-            Send trip or vehicle updates to all subscribed users and review your
-            previous broadcasts.
-          </p>
-        </div>
-
-        <button
-          className="providerBroadcastBtn"
-          type="button"
-          onClick={() => navigate("/provider-dashboard")}
-        >
-          Back to Dashboard
-        </button>
-      </div>
-
       {msg.text ? (
         <div className={`providerBroadcastMessage ${msg.type}`}>
           {msg.text}
@@ -306,86 +319,124 @@ export default function ProviderBroadcast() {
 
       {providers.length === 0 ? (
         <div className="providerBroadcastEmpty">
-          No provider listings found. Please create a listing first before
-          sending broadcasts.
+          No provider listings found. Please create a listing first before sending broadcasts.
         </div>
       ) : (
-        <form className="providerBroadcastForm" onSubmit={sendBroadcast}>
-          <div className="providerBroadcastGrid">
-            <div className="fullSpan">
-              <label>Select Listing</label>
-              <CustomSelect
-                value={form.providerId}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    providerId: e.target.value,
-                    itemIndex: "0",
-                  }))
-                }
-                options={makeListingOptions(providers)}
+        <form className="providerBroadcastCard" onSubmit={sendBroadcast}>
+          <div className="providerBroadcastBanner">
+            <div>
+              <div className="providerBroadcastKicker">OnTrip Provider Tools</div>
+              <h1>Send Provider Broadcast</h1>
+              <p>
+                Create a professional trip or vehicle update for all subscribed users.
+              </p>
+            </div>
+
+            <button
+              className="providerBroadcastRefBtn"
+              type="button"
+              onClick={() => navigate("/provider-broadcast-history")}
+            >
+              View Broadcast History
+            </button>
+          </div>
+
+          <div className="providerBroadcastTop">
+            <div className="providerBroadcastImageWrap">
+              <img
+                src={previewImage}
+                alt={previewTitle}
+                className="providerBroadcastImage"
               />
             </div>
 
-            <div>
-              <label>Listing Type</label>
-              <div className="providerBroadcastStaticField">
-                {selectedListingType === "vehicle"
-                  ? "Vehicle Service"
-                  : "Travel Planner"}
+            <div className="providerBroadcastSummary">
+              <div className="providerBroadcastType">
+                {selectedListingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+              </div>
+
+              <h2>{previewTitle}</h2>
+              <p>{previewSubtitle}</p>
+
+              <div className="providerBroadcastMeta">
+                <span>Business: {selectedProvider?.businessName || "-"}</span>
+                <span>City: {selectedProvider?.city || "-"}</span>
+                <span>State: {selectedProvider?.state || "-"}</span>
               </div>
             </div>
+          </div>
 
-            <div>
-              <label>
-                {selectedListingType === "vehicle"
-                  ? "Select Vehicle"
-                  : "Select Trip"}
-              </label>
-              <CustomSelect
-                value={form.itemIndex}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, itemIndex: e.target.value }))
-                }
-                options={
-                  selectedListingType === "vehicle"
-                    ? vehicleOptions
-                    : tripOptions
-                }
-              />
-            </div>
+          <div className="providerBroadcastFormBlock">
+            <div className="providerBroadcastGrid">
+              <div className="fullSpan">
+                <label>Select Listing</label>
+                <CustomSelect
+                  value={form.providerId}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      providerId: e.target.value,
+                      itemIndex: "0",
+                    }))
+                  }
+                  options={makeListingOptions(providers)}
+                />
+              </div>
 
-            <div className="fullSpan">
-              <label>Subject</label>
-              <input
-                value={form.subject}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, subject: e.target.value }))
-                }
-                placeholder="Example: New Goa group trip now open"
-                required
-              />
-            </div>
+              <div>
+                <label>Listing Type</label>
+                <div className="providerBroadcastStaticField">
+                  {selectedListingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
+                </div>
+              </div>
 
-            <div className="fullSpan">
-              <label>Extra Message</label>
-              <textarea
-                rows={5}
-                value={form.customMessage}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    customMessage: e.target.value,
-                  }))
-                }
-                placeholder="Add your custom update, note, offer, seasonal message, or special details..."
-              />
+              <div>
+                <label>
+                  {selectedListingType === "vehicle" ? "Select Vehicle" : "Select Trip"}
+                </label>
+                <CustomSelect
+                  value={form.itemIndex}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, itemIndex: e.target.value }))
+                  }
+                  options={
+                    selectedListingType === "vehicle" ? vehicleOptions : tripOptions
+                  }
+                />
+              </div>
+
+              <div className="fullSpan">
+                <label>Subject</label>
+                <input
+                  value={form.subject}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, subject: e.target.value }))
+                  }
+                  placeholder="Example: New Goa group trip now open"
+                  required
+                />
+              </div>
+
+              <div className="fullSpan">
+                <label>Extra Message</label>
+                <textarea
+                  rows={5}
+                  value={form.customMessage}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      customMessage: e.target.value,
+                    }))
+                  }
+                  placeholder="Add your custom update, seasonal offer, note, or special message..."
+                />
+              </div>
             </div>
           </div>
 
           {selectedListingType === "vehicle" && selectedVehicle ? (
-            <div className="providerBroadcastPreviewBlock">
-              <div className="providerBroadcastBlockHead">
+            <div className="providerBroadcastPreviewCard">
+              <div className="providerBroadcastPreviewHead">
                 <h3>Vehicle Preview</h3>
               </div>
 
@@ -424,7 +475,9 @@ export default function ProviderBroadcast() {
                 </div>
                 <div className="providerBroadcastInfoWide">
                   <strong>Driver Option</strong>
-                  <span>{selectedVehicle.withDriver ? "With Driver" : "Self Drive / No Driver"}</span>
+                  <span>
+                    {selectedVehicle.withDriver ? "With Driver" : "Self Drive / No Driver"}
+                  </span>
                 </div>
                 <div className="providerBroadcastInfoWide">
                   <strong>Description</strong>
@@ -435,8 +488,8 @@ export default function ProviderBroadcast() {
           ) : null}
 
           {selectedListingType === "travel_planner" && selectedTrip ? (
-            <div className="providerBroadcastPreviewBlock">
-              <div className="providerBroadcastBlockHead">
+            <div className="providerBroadcastPreviewCard">
+              <div className="providerBroadcastPreviewHead">
                 <h3>Trip Preview</h3>
               </div>
 
@@ -507,7 +560,7 @@ export default function ProviderBroadcast() {
 
           <div className="providerBroadcastActions">
             <button
-              className="providerBroadcastBtn providerBroadcastBtnPrimary"
+              className="providerBroadcastPrimaryBtn"
               type="submit"
               disabled={sendLoading}
             >
@@ -515,7 +568,7 @@ export default function ProviderBroadcast() {
             </button>
 
             <button
-              className="providerBroadcastBtn"
+              className="providerBroadcastGhostBtn"
               type="button"
               onClick={() =>
                 setForm((prev) => ({
@@ -530,52 +583,6 @@ export default function ProviderBroadcast() {
           </div>
         </form>
       )}
-
-      <div className="providerBroadcastHistoryBlock">
-        <div className="providerBroadcastBlockHead">
-          <h3>Broadcast History</h3>
-        </div>
-
-        {history.length === 0 ? (
-          <div className="providerBroadcastEmpty">
-            No old broadcasts found yet.
-          </div>
-        ) : (
-          <div className="providerBroadcastHistoryList">
-            {history.map((item) => (
-              <article className="providerBroadcastHistoryCard" key={item._id}>
-                <div className="providerBroadcastHistoryTop">
-                  <div>
-                    <h4>{item.subject}</h4>
-                    <p>
-                      Sent on{" "}
-                      {item.createdAt
-                        ? new Date(item.createdAt).toLocaleString()
-                        : "-"}
-                    </p>
-                  </div>
-
-                  <div
-                    className={`providerBroadcastHistoryStatus ${
-                      item.status || ""
-                    }`}
-                  >
-                    {formatLabel(item.status || "-")}
-                  </div>
-                </div>
-
-                <div className="providerBroadcastHistoryBody">
-                  {item.message || "-"}
-                </div>
-
-                <div className="providerBroadcastHistoryMeta">
-                  <span>Recipients: {item.recipientsCount || 0}</span>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
