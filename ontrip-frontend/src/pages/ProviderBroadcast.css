@@ -245,6 +245,9 @@
   grid-template-rows: auto minmax(0, 1fr);
   min-height: 430px;
   max-height: 430px;
+  width: calc(100% - 44px);
+  min-width: calc(100% - 44px);
+  max-width: calc(100% - 44px);
   overflow: hidden;
 }
 
@@ -285,6 +288,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  width: 100%;
+  min-width: 0;
 }
 
 .providerBroadcastInfoGrid > div {
@@ -425,6 +430,9 @@
     border-radius: 16px;
     min-height: 400px;
     max-height: 400px;
+    width: calc(100% - 32px);
+    min-width: calc(100% - 32px);
+    max-width: calc(100% - 32px);
   }
 
   .providerBroadcastPreviewHead {
