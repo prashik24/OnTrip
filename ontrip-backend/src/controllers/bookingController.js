@@ -10,47 +10,6 @@ function money(value) {
   return `₹${Number(value || 0).toFixed(2)}`;
 }
 
-function escapeHtml(value) {
-  return String(value || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function getDisplayCustomerName(booking) {
-  return (
-    booking?.user?.name?.trim() ||
-    booking?.contactName?.trim() ||
-    "Customer"
-  );
-}
-
-function getDisplayServiceTitle(booking) {
-  return (
-    booking?.selectedVehicleTitle?.trim() ||
-    booking?.selectedPackageTitle?.trim() ||
-    booking?.serviceTitle?.trim() ||
-    "Booked Service"
-  );
-}
-
-function getUserAvatarUrl(booking) {
-  return booking?.user?.avatar?.url || booking?.user?.avatar || "";
-}
-
-function getInitials(name) {
-  const parts = String(name || "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  if (!parts.length) return "U";
-  if (parts.length === 1) return parts[0][0]?.toUpperCase() || "U";
-  return `${parts[0][0] || ""}${parts[1][0] || ""}`.toUpperCase();
-}
-
 function getProviderTravelPlans(provider) {
   if (!provider) return [];
 
@@ -74,6 +33,26 @@ function getProviderTravelPlans(provider) {
 
 function getProviderCardImage(provider, booking = null) {
   if (!provider) return "";
+
+  if (provider.listingType === "travel_planner") {
+    const travelPlans = getProviderTravelPlans(provider);
+
+    if (booking?.selectedPackageTitle) {
+      const matchedPlan = travelPlans.find(
+        (plan) =>
+          String(plan.packageTitle || "").trim() ===
+          String(booking.selectedPackageTitle || "").trim()
+      );
+
+      if (matchedPlan?.images?.[0]?.url) {
+        return matchedPlan.images[0].url;
+      }
+    }
+
+    if (travelPlans[0]?.images?.[0]?.url) {
+      return travelPlans[0].images[0].url;
+    }
+  }
 
   if (provider.listingType === "vehicle") {
     if (booking?.selectedVehicleId) {
@@ -107,31 +86,26 @@ function getProviderCardImage(provider, booking = null) {
     }
   }
 
-  if (provider.listingType === "travel_planner") {
-    const travelPlans = getProviderTravelPlans(provider);
+  return provider.serviceImage?.url || "";
+}
 
-    if (booking?.selectedPackageTitle) {
-      const matchedPlan = travelPlans.find(
-        (plan) =>
-          String(plan.packageTitle || "").trim().toLowerCase() ===
-          String(booking.selectedPackageTitle || "").trim().toLowerCase()
-      );
+function getBookingDisplayTitle(booking, provider) {
+  if (!booking) return "Booking";
 
-      if (matchedPlan?.images?.[0]?.url) {
-        return matchedPlan.images[0].url;
-      }
-    }
-
-    if (travelPlans[0]?.images?.[0]?.url) {
-      return travelPlans[0].images[0].url;
-    }
+  if (booking.serviceType === "vehicle") {
+    return booking.selectedVehicleTitle || booking.serviceTitle || provider?.businessName || "Vehicle Booking";
   }
 
-  if (provider.serviceImage?.url) {
-    return provider.serviceImage.url;
-  }
+  return booking.selectedPackageTitle || booking.serviceTitle || provider?.businessName || "Travel Booking";
+}
 
-  return "";
+function getStatusPillLabel(booking) {
+  if (booking.bookingStatus === "cancelled") return "CANCELLED";
+  if (booking.bookingStatus === "completed") return "COMPLETED";
+  if (booking.paymentStatus === "paid" && booking.bookingStatus === "confirmed") {
+    return "CONFIRMED";
+  }
+  return "PROCESSING";
 }
 
 function bookingEmailHtml({
@@ -141,221 +115,164 @@ function bookingEmailHtml({
   provider,
   imageUrl = "",
 }) {
-  const customerName = escapeHtml(getDisplayCustomerName(booking));
-  const serviceTitle = escapeHtml(getDisplayServiceTitle(booking));
-  const bookingRef = escapeHtml(booking.bookingRef || "-");
-  const providerName = escapeHtml(provider?.businessName || "Provider");
-  const customerPhone = escapeHtml(booking.contactPhone || "-");
-  const customerEmail = escapeHtml(booking.contactEmail || booking.user?.email || "-");
-  const destination = escapeHtml(booking.destination || "-");
-  const place = escapeHtml(booking.place || "-");
-  const pricingLabel = escapeHtml(booking.pricingLabel || "-");
-  const notes = escapeHtml(booking.notes || "");
-  const selectedVehicleTitle = escapeHtml(booking.selectedVehicleTitle || "-");
-  const selectedPackageTitle = escapeHtml(booking.selectedPackageTitle || "-");
-  const bookingDate = booking.bookingDate
-    ? new Date(booking.bookingDate).toLocaleDateString()
-    : "-";
-  const userAvatar = getUserAvatarUrl(booking);
-  const initials = escapeHtml(getInitials(getDisplayCustomerName(booking)));
-
-  const userAvatarHtml = userAvatar
-    ? `<img src="${escapeHtml(
-        userAvatar
-      )}" alt="Customer" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.5);display:block;" />`
-    : `<div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.18);border:3px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#ffffff;">
-         ${initials}
-       </div>`;
-
-  const statusBlock =
-    booking.bookingStatus === "cancelled"
-      ? `<div style="margin-top:18px;padding:14px 16px;border-radius:12px;background:#fff7f7;border:1px solid rgba(239,68,68,0.14);">
-           <div style="font-weight:800;color:#b42318;margin-bottom:6px;">Booking Cancelled</div>
-           <div style="color:#5b6570;line-height:1.65;">
-             Your provider cancelled this booking. They will refund your money soon.
-           </div>
-           ${
-             booking.cancellationReason
-               ? `<div style="margin-top:10px;color:#5b6570;line-height:1.65;">
-                    <strong>Cancellation Reason:</strong> ${escapeHtml(
-                      booking.cancellationReason
-                    )}
-                  </div>`
-               : ""
-           }
-         </div>`
-      : booking.bookingStatus === "completed"
-      ? `<div style="margin-top:18px;padding:14px 16px;border-radius:12px;background:#f4fff7;border:1px solid rgba(34,197,94,0.18);">
-           <div style="font-weight:800;color:#15803d;margin-bottom:6px;">Booking Completed</div>
-           <div style="color:#5b6570;line-height:1.65;">
-             Your booked service has been marked as completed. Thank you for choosing OnTrip.
-           </div>
-         </div>`
-      : `<div style="margin-top:18px;padding:14px 16px;border-radius:12px;background:#f4fbff;border:1px solid rgba(0,184,241,0.14);">
-           <div style="font-weight:800;color:#0369a1;margin-bottom:6px;">Booking Confirmed</div>
-           <div style="color:#5b6570;line-height:1.65;">
-             Your payment was received successfully and your booking is confirmed.
-           </div>
-         </div>`;
+  const displayTitle = getBookingDisplayTitle(booking, provider);
+  const statusPill = getStatusPillLabel(booking);
 
   return `
-    <div style="margin:0;padding:24px;background:#f4fbff;font-family:Arial,Helvetica,sans-serif;color:#0b1b2a;">
-      <div style="max-width:760px;margin:0 auto;background:#ffffff;border:1px solid rgba(0,184,241,0.16);border-radius:20px;overflow:hidden;box-shadow:0 12px 28px rgba(10,22,35,0.08);">
-        <div style="background:${
-          booking.bookingStatus === "cancelled"
-            ? "linear-gradient(135deg,#ef4444,#dc2626)"
-            : booking.bookingStatus === "completed"
-            ? "linear-gradient(135deg,#22c55e,#16a34a)"
-            : "linear-gradient(135deg,#4ec9f5,#00b8f1)"
-        };padding:24px 26px;color:#ffffff;">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">
-            <div>
-              <div style="font-size:30px;font-weight:800;letter-spacing:0.2px;">OnTrip</div>
-              <div style="font-size:22px;font-weight:800;margin-top:8px;">${escapeHtml(
-                heading
-              )}</div>
-              <div style="font-size:14px;opacity:0.96;margin-top:6px;line-height:1.6;">${escapeHtml(
-                subtext
-              )}</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:12px;">
-              ${userAvatarHtml}
-            </div>
-          </div>
+    <div style="margin:0;padding:20px;background:#f4fbff;font-family:Arial,Helvetica,sans-serif;color:#0b1b2a;">
+      <div style="max-width:700px;margin:0 auto;background:#ffffff;border:1px solid rgba(0,184,241,0.14);border-radius:18px;overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#4ec9f5,#00b8f1);padding:22px 22px 18px;color:#ffffff;">
+          <div style="font-size:26px;font-weight:800;line-height:1.1;">OnTrip</div>
+          <div style="font-size:18px;font-weight:800;line-height:1.35;margin-top:14px;">${heading}</div>
+          <div style="font-size:14px;line-height:1.55;opacity:0.96;margin-top:6px;">${subtext}</div>
         </div>
 
         ${
           imageUrl
-            ? `<img src="${escapeHtml(
-                imageUrl
-              )}" alt="Service" style="display:block;width:100%;height:230px;object-fit:cover;background:#eef8fc;" />`
+            ? `<img src="${imageUrl}" alt="Service" style="display:block;width:100%;height:240px;object-fit:cover;margin:0;padding:0;border:0;" />`
             : ""
         }
 
-        <div style="padding:26px;">
-          <div style="font-size:16px;color:#0b1b2a;line-height:1.7;margin-bottom:16px;">
-            Dear <strong>${customerName}</strong>,
+        <div style="padding:20px 22px 22px;">
+          <div style="font-size:15px;line-height:1.7;color:#4b5563;">
+            Hi ${booking.contactName || "Customer"}, your booking <strong style="color:#0b1b2a;">${booking.bookingRef}</strong> is currently <strong style="color:#0b1b2a;">${statusPill}</strong>.
           </div>
 
-          <div style="font-size:14px;color:#5b6570;line-height:1.8;margin-bottom:18px;">
-            Thank you for choosing <strong>OnTrip</strong>. ${
+          <div style="font-size:15px;line-height:1.7;color:#4b5563;margin-top:10px;">
+            ${
               booking.bookingStatus === "cancelled"
-                ? "We are sorry to inform you that your booking status has changed."
+                ? "Your provider has cancelled this booking. They will refund your money soon."
                 : booking.bookingStatus === "completed"
-                ? "We are happy to let you know that your service has been completed successfully."
-                : "Your booking has been successfully placed and confirmed."
+                ? "Your booked service has been completed successfully."
+                : "Your payment was received and your booking is confirmed."
             }
           </div>
 
-          <div style="border:1px solid rgba(0,184,241,0.14);background:#f8fbff;border-radius:16px;padding:18px;margin-bottom:18px;">
-            <div style="font-size:20px;font-weight:800;margin-bottom:8px;color:#0b1b2a;">${serviceTitle}</div>
-            <div style="font-size:14px;color:#5b6570;line-height:1.7;">Booking Ref: <strong style="color:#0b1b2a;">${bookingRef}</strong></div>
-            <div style="font-size:14px;color:#5b6570;line-height:1.7;">Provider: ${providerName}</div>
-            <div style="font-size:14px;color:#5b6570;line-height:1.7;">Service Type: ${escapeHtml(
-              booking.serviceType === "vehicle" ? "Vehicle Service" : "Travel Planner"
-            )}</div>
+          <div style="margin-top:16px;">
+            <span style="display:inline-block;padding:10px 18px;border-radius:999px;border:1px solid rgba(11,27,42,0.18);font-size:14px;font-weight:800;letter-spacing:0.02em;color:#0b1b2a;background:#ffffff;">
+              ${statusPill}
+            </span>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
-            <div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Customer</div>
-              <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${customerName}</div>
+          <div style="margin-top:18px;padding:18px;border:1px solid rgba(0,184,241,0.12);background:#f8fbff;border-radius:16px;">
+            <div style="font-size:16px;font-weight:800;line-height:1.35;color:#0b1b2a;">${displayTitle}</div>
+            <div style="font-size:14px;line-height:1.6;color:#5b6570;margin-top:8px;">
+              Booking ID: <strong style="color:#0b1b2a;">${booking.bookingRef}</strong>
             </div>
-            <div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Travel Date</div>
-              <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${escapeHtml(
-                bookingDate
-              )}</div>
+            <div style="font-size:14px;line-height:1.6;color:#5b6570;margin-top:2px;">
+              Provider: ${provider.businessName}
             </div>
-            <div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Phone</div>
-              <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${customerPhone}</div>
-            </div>
-            <div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Email</div>
-              <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${customerEmail}</div>
-            </div>
-            <div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">People</div>
-              <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${escapeHtml(
-                booking.peopleCount || "-"
-              )}</div>
-            </div>
-            <div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Days</div>
-              <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${escapeHtml(
-                booking.days || "-"
-              )}</div>
-            </div>
-            <div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Destination</div>
-              <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${destination}</div>
-            </div>
-            <div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Place</div>
-              <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${place}</div>
-            </div>
-            ${
-              booking.serviceType === "vehicle"
-                ? `<div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-                     <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Selected Vehicle</div>
-                     <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${selectedVehicleTitle}</div>
-                   </div>`
-                : ""
-            }
-            ${
-              booking.serviceType === "travel_planner"
-                ? `<div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-                     <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Selected Package</div>
-                     <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${selectedPackageTitle}</div>
-                   </div>`
-                : ""
-            }
-            <div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Unit Price</div>
-              <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${money(
-                booking.unitPrice
-              )}</div>
-            </div>
-            <div style="background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px;">
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Total Amount</div>
-              <div style="font-size:15px;font-weight:700;color:#0b1b2a;">${money(
-                booking.amount
-              )}</div>
-            </div>
+          </div>
+
+          <div style="margin-top:18px;">
+            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+              <tr>
+                <td style="padding:12px 0;color:#5b6570;">Customer</td>
+                <td style="padding:12px 0;font-weight:800;text-align:right;color:#0b1b2a;">${booking.contactName}</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 0;color:#5b6570;">Phone</td>
+                <td style="padding:12px 0;font-weight:800;text-align:right;color:#0b1b2a;">${booking.contactPhone}</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 0;color:#5b6570;">Travel Date</td>
+                <td style="padding:12px 0;font-weight:800;text-align:right;color:#0b1b2a;">${new Date(
+                  booking.bookingDate
+                ).toLocaleDateString()}</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 0;color:#5b6570;">Total</td>
+                <td style="padding:12px 0;font-weight:800;text-align:right;color:#0b1b2a;">${money(
+                  booking.amount
+                )}</td>
+              </tr>
+            </table>
           </div>
 
           ${
-            booking.pricingLabel
-              ? `<div style="margin-bottom:14px;padding:14px 16px;border-radius:12px;background:#f8fbff;border:1px solid rgba(0,184,241,0.12);">
-                   <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Pricing Label</div>
-                   <div style="font-size:14px;font-weight:700;color:#0b1b2a;">${pricingLabel}</div>
-                 </div>`
+            booking.serviceType === "vehicle" && booking.selectedVehicleTitle
+              ? `
+                <div style="margin-top:16px;font-size:14px;line-height:1.6;color:#5b6570;">
+                  <strong style="color:#0b1b2a;">Selected Vehicle:</strong> ${booking.selectedVehicleTitle}
+                </div>
+              `
               : ""
           }
 
           ${
-            notes
-              ? `<div style="margin-bottom:14px;padding:14px 16px;border-radius:12px;background:#f8fbff;border:1px solid rgba(0,184,241,0.12);">
-                   <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:rgba(15,23,42,0.46);margin-bottom:6px;">Customer Note</div>
-                   <div style="font-size:14px;line-height:1.75;color:#0b1b2a;">${notes}</div>
-                 </div>`
+            booking.serviceType === "travel_planner" && booking.selectedPackageTitle
+              ? `
+                <div style="margin-top:16px;font-size:14px;line-height:1.6;color:#5b6570;">
+                  <strong style="color:#0b1b2a;">Selected Package:</strong> ${booking.selectedPackageTitle}
+                </div>
+              `
               : ""
           }
 
-          ${statusBlock}
+          ${
+            booking.destination
+              ? `
+                <div style="margin-top:10px;font-size:14px;line-height:1.6;color:#5b6570;">
+                  <strong style="color:#0b1b2a;">Destination:</strong> ${booking.destination}
+                </div>
+              `
+              : ""
+          }
 
-          <div style="margin-top:20px;font-size:14px;color:#5b6570;line-height:1.8;">
-            Please find your invoice PDF attached with this email for your records.
+          ${
+            booking.place
+              ? `
+                <div style="margin-top:10px;font-size:14px;line-height:1.6;color:#5b6570;">
+                  <strong style="color:#0b1b2a;">Place:</strong> ${booking.place}
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            booking.notes
+              ? `
+                <div style="margin-top:16px;padding:16px;border-radius:14px;background:#ffffff;border:1px solid rgba(0,184,241,0.12);">
+                  <div style="font-size:14px;font-weight:800;color:#0b1b2a;margin-bottom:6px;">Customer Note</div>
+                  <div style="font-size:14px;line-height:1.7;color:#5b6570;">${booking.notes}</div>
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            booking.bookingStatus === "cancelled"
+              ? `
+                <div style="margin-top:16px;padding:16px;border-radius:14px;background:#fff7f7;border:1px solid rgba(239,68,68,0.14);">
+                  <div style="font-size:14px;font-weight:800;color:#b42318;margin-bottom:6px;">Booking Cancelled</div>
+                  <div style="font-size:14px;line-height:1.7;color:#5b6570;">
+                    Your provider cancelled this booking. They will refund your money soon.
+                  </div>
+                  ${
+                    booking.cancellationReason
+                      ? `
+                        <div style="margin-top:8px;font-size:14px;line-height:1.7;color:#5b6570;">
+                          <strong style="color:#0b1b2a;">Reason:</strong> ${booking.cancellationReason}
+                        </div>
+                      `
+                      : ""
+                  }
+                </div>
+              `
+              : ""
+          }
+
+          <div style="margin-top:18px;padding:18px;border-radius:16px;background:#f9f6ef;border:1px solid rgba(11,27,42,0.06);">
+            <div style="font-size:15px;font-weight:800;line-height:1.4;color:#0b1b2a;">
+              Thank you for booking with OnTrip!
+            </div>
+            <div style="font-size:14px;line-height:1.75;color:#5b6570;margin-top:6px;">
+              We’re here if you need help. Keep this email for your booking details and invoice.
+            </div>
           </div>
 
-          <div style="margin-top:18px;font-size:14px;color:#5b6570;line-height:1.8;">
-            Thank you for booking with <strong>OnTrip</strong>. We appreciate your trust and look forward to helping you with your travel plans again.
-          </div>
-
-          <div style="margin-top:20px;padding-top:18px;border-top:1px solid rgba(11,27,42,0.08);font-size:14px;color:#5b6570;line-height:1.8;">
-            Regards,<br />
-            <strong style="color:#0b1b2a;">Team OnTrip</strong>
+          <div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(11,27,42,0.08);text-align:center;font-size:13px;line-height:1.7;color:#8a94a6;">
+            © 2025 <strong style="color:#0b1b2a;">OnTrip</strong>. All rights reserved.
           </div>
         </div>
       </div>
