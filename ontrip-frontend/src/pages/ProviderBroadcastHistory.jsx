@@ -49,131 +49,185 @@ function cleanBroadcastMessage(message = "") {
     "Provider Update from OnTrip",
     "Vehicle Details",
     "Trip Details",
+    "Listing Type: Vehicle Service",
+    "Listing Type: Travel Planner",
     "Description",
     "Extra Message",
   ]);
 
-  const output = [];
+  const lines = [];
 
   rawLines.forEach((line) => {
     if (skipLines.has(line)) return;
+    if (line === "-") return;
 
     if (line.startsWith("Business Name:")) {
-      output.push(`Business Name: ${line.replace("Business Name:", "").trim()}`);
+      lines.push({
+        label: "Business Name",
+        value: line.replace("Business Name:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("City:")) {
-      output.push(`City: ${line.replace("City:", "").trim()}`);
+      lines.push({
+        label: "City",
+        value: line.replace("City:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("State:")) {
-      output.push(`State: ${line.replace("State:", "").trim()}`);
-      return;
-    }
-
-    if (line.startsWith("Listing Type:")) {
+      lines.push({
+        label: "State",
+        value: line.replace("State:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Vehicle Type:")) {
-      output.push(`Vehicle Type: ${line.replace("Vehicle Type:", "").trim()}`);
+      lines.push({
+        label: "Vehicle Type",
+        value: line.replace("Vehicle Type:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Title:")) {
-      output.push(`Title: ${line.replace("Title:", "").trim()}`);
+      lines.push({
+        label: "Title",
+        value: line.replace("Title:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Price:")) {
-      output.push(`Price: ${line.replace("Price:", "").trim()}`);
+      lines.push({
+        label: "Price",
+        value: line.replace("Price:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Price Unit:")) {
-      output.push(`Price Unit: ${line.replace("Price Unit:", "").trim()}`);
+      lines.push({
+        label: "Price Unit",
+        value: line.replace("Price Unit:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Capacity:")) {
-      output.push(`Capacity: ${line.replace("Capacity:", "").trim()}`);
+      lines.push({
+        label: "Capacity",
+        value: line.replace("Capacity:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Fuel Type:")) {
-      output.push(`Fuel Type: ${line.replace("Fuel Type:", "").trim()}`);
+      lines.push({
+        label: "Fuel Type",
+        value: line.replace("Fuel Type:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("With Driver:")) {
-      output.push(`With Driver: ${line.replace("With Driver:", "").trim()}`);
+      lines.push({
+        label: "With Driver",
+        value: line.replace("With Driver:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Planner Type:")) {
-      output.push(`Planner Type: ${line.replace("Planner Type:", "").trim()}`);
+      lines.push({
+        label: "Planner Type",
+        value: line.replace("Planner Type:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Package Title:")) {
-      output.push(`Package Title: ${line.replace("Package Title:", "").trim()}`);
+      lines.push({
+        label: "Package Title",
+        value: line.replace("Package Title:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Duration:")) {
-      output.push(`Duration: ${line.replace("Duration:", "").trim()}`);
+      lines.push({
+        label: "Duration",
+        value: line.replace("Duration:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Days:")) {
-      output.push(`Days: ${line.replace("Days:", "").trim()}`);
+      lines.push({
+        label: "Days",
+        value: line.replace("Days:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Price From:")) {
-      output.push(`Price From: ${line.replace("Price From:", "").trim()}`);
+      lines.push({
+        label: "Price From",
+        value: line.replace("Price From:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Price Per Person:")) {
-      output.push(`Price Per Person: ${line.replace("Price Per Person:", "").trim()}`);
+      lines.push({
+        label: "Price Per Person",
+        value: line.replace("Price Per Person:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Places Covered:")) {
-      output.push(`Places Covered: ${line.replace("Places Covered:", "").trim()}`);
+      lines.push({
+        label: "Places Covered",
+        value: line.replace("Places Covered:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Inclusions:")) {
-      output.push(`Inclusions: ${line.replace("Inclusions:", "").trim()}`);
+      lines.push({
+        label: "Inclusions",
+        value: line.replace("Inclusions:", "").trim(),
+      });
       return;
     }
 
     if (line.startsWith("Exclusions:")) {
-      output.push(`Exclusions: ${line.replace("Exclusions:", "").trim()}`);
+      lines.push({
+        label: "Exclusions",
+        value: line.replace("Exclusions:", "").trim(),
+      });
       return;
     }
 
-    if (line.toLowerCase().startsWith("how ")) {
-      output.push(`Message: ${line}`);
+    if (line.startsWith("Message:")) {
+      lines.push({
+        label: "Message",
+        value: line.replace("Message:", "").trim(),
+      });
       return;
     }
 
-    if (line.toLowerCase().includes("extra message")) {
-      return;
-    }
-
-    if (line.toLowerCase().includes("description")) {
-      return;
-    }
-
-    output.push(line);
+    lines.push({
+      label: "Detail",
+      value: line,
+    });
   });
 
-  return output;
+  return lines;
 }
 
 export default function ProviderBroadcastHistory() {
@@ -291,11 +345,21 @@ export default function ProviderBroadcastHistory() {
 
                     <div className="providerBroadcastHistoryInfoWide">
                       <strong>Broadcast Message</strong>
-                      <span className="providerBroadcastHistoryMessageLines">
-                        {cleanedLines.map((line, index) => (
-                          <span key={index}>{line}</span>
+                      <div className="providerBroadcastHistoryMessageCard">
+                        {cleanedLines.map((itemLine, index) => (
+                          <p
+                            className="providerBroadcastHistoryMessageText"
+                            key={`${item._id}-${index}`}
+                          >
+                            <span className="providerBroadcastHistoryMessageTextLabel">
+                              {itemLine.label}:
+                            </span>{" "}
+                            <span className="providerBroadcastHistoryMessageTextValue">
+                              {itemLine.value}
+                            </span>
+                          </p>
                         ))}
-                      </span>
+                      </div>
                     </div>
                   </div>
 
