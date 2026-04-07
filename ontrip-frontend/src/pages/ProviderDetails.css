@@ -369,7 +369,7 @@
 }
 
 .providerDetailsInfoGrid > div {
-  background: #ffffff;
+  background:  rgba(244, 251, 255, 0.94);
   border-radius: 14px;
   padding: 14px 15px;
   border: 1px solid rgba(0, 184, 241, 0.12);
