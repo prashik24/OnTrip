@@ -185,10 +185,6 @@ export default function ProviderDetails() {
               View provider information, package or vehicle details, reviews, and similar services.
             </p>
           </div>
-
-          <div className="providerDetailsBannerBadge">
-            {provider.listingType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
-          </div>
         </div>
 
         <div className="providerDetailsTop">
@@ -201,17 +197,10 @@ export default function ProviderDetails() {
           </div>
 
           <div className="providerDetailsTopContent">
-            <div className="providerDetailsType providerDetailsTypeTop">
-              {provider.listingType === "vehicle"
-                ? "Vehicle Service"
-                : "Travel Planner"}
-            </div>
-
             <h1>{provider.businessName}</h1>
 
             <div className="providerDetailsMeta">
-              {provider.city} • {provider.phone} • ⭐ {provider.ratingAverage || 0} (
-              {provider.ratingCount || 0})
+              ⭐ {provider.ratingAverage || 0} ({provider.ratingCount || 0})
             </div>
 
             <p className="providerDetailsDesc">
@@ -530,7 +519,7 @@ export default function ProviderDetails() {
           </div>
         </div>
 
-        <div className="providerDetailsSection">
+        <div className="providerDetailsSection providerDetailsSectionLast">
           <div className="providerDetailsSectionCard">
             <div className="providerDetailsSectionHead">
               <h2>Similar Services</h2>
