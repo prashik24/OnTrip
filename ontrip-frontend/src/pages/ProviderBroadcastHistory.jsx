@@ -15,45 +15,27 @@ function formatDateTime(value) {
   return new Date(value).toLocaleString();
 }
 
-function getTravelPlans(provider) {
-  if (!provider) return [];
-
-  if (Array.isArray(provider.travelPlans) && provider.travelPlans.length > 0) {
-    return provider.travelPlans;
-  }
-
-  if (
-    provider.travelPlanner &&
-    (
-      provider.travelPlanner.packageTitle ||
-      provider.travelPlanner.durationText ||
-      (provider.travelPlanner.images || []).length > 0
-    )
-  ) {
-    return [provider.travelPlanner];
-  }
-
-  return [];
-}
-
 function getProviderImage(provider) {
   if (!provider) return "/images/places/manali-hero.jpg";
 
   if (provider.listingType === "travel_planner") {
-    const travelPlans = getTravelPlans(provider);
+    if (Array.isArray(provider.travelPlans) && provider.travelPlans.length > 0) {
+      if (provider.travelPlans[0]?.images?.[0]?.url) {
+        return provider.travelPlans[0].images[0].url;
+      }
+    }
 
-    if (travelPlans[0]?.images?.[0]?.url) {
-      return travelPlans[0].images[0].url;
+    if (provider.travelPlanner?.images?.[0]?.url) {
+      return provider.travelPlanner.images[0].url;
     }
   }
 
   if (provider.listingType === "vehicle") {
-    const firstVehicleWithImage = (provider.vehicles || []).find(
-      (vehicle) => vehicle?.images?.[0]?.url
-    );
-
-    if (firstVehicleWithImage?.images?.[0]?.url) {
-      return firstVehicleWithImage.images[0].url;
+    if (Array.isArray(provider.vehicles) && provider.vehicles.length > 0) {
+      const firstVehicleWithImage = provider.vehicles.find((vehicle) => vehicle?.images?.[0]?.url);
+      if (firstVehicleWithImage?.images?.[0]?.url) {
+        return firstVehicleWithImage.images[0].url;
+      }
     }
   }
 
@@ -66,21 +48,15 @@ function parseBroadcastMessage(message = "") {
     .map((line) => line.trim())
     .filter(Boolean);
 
-  const skipLines = new Set([
-    "Provider Update from OnTrip",
-    "Vehicle Details",
-    "Trip Details",
-    "Description",
-    "Extra Message",
-  ]);
-
   const details = {};
   const extraLines = [];
   const descriptionLines = [];
-
   let mode = "";
 
   rawLines.forEach((line) => {
+    if (line === "Provider Update from OnTrip") return;
+    if (line === "Vehicle Details" || line === "Trip Details") return;
+
     if (line === "Description") {
       mode = "description";
       return;
@@ -91,9 +67,10 @@ function parseBroadcastMessage(message = "") {
       return;
     }
 
-    if (skipLines.has(line) || line === "-") return;
+    if (line === "-" || !line) return;
 
     const colonIndex = line.indexOf(":");
+
     if (colonIndex > -1) {
       const key = line.slice(0, colonIndex).trim();
       const value = line.slice(colonIndex + 1).trim();
@@ -148,6 +125,26 @@ function parseBroadcastMessage(message = "") {
   };
 }
 
+function buildCardTitle(item, details) {
+  if (item.provider?.listingType === "travel_planner") {
+    return details.packageTitle || item.subject || item.provider?.businessName || "Travel Planner";
+  }
+
+  if (item.provider?.listingType === "vehicle") {
+    return details.title || item.subject || item.provider?.businessName || "Vehicle Service";
+  }
+
+  return item.subject || item.provider?.businessName || "Broadcast";
+}
+
+function buildCardType(item, details) {
+  if (item.provider?.listingType === "travel_planner" || details.packageTitle || details.plannerType) {
+    return "Travel Planner";
+  }
+
+  return "Vehicle Service";
+}
+
 export default function ProviderBroadcastHistory() {
   const navigate = useNavigate();
   const [history, setHistory] = useState([]);
@@ -178,57 +175,21 @@ export default function ProviderBroadcastHistory() {
 
   const normalizedHistory = useMemo(() => {
     return history.map((item) => {
-      const provider = item.provider || null;
-      const image = getProviderImage(provider);
       const parsed = parseBroadcastMessage(item.message);
-
-      const topClass =
-        item.status === "failed"
-          ? "failed"
-          : item.status === "pending"
-          ? "pending"
-          : "sent";
-
-      const isTravel =
-        provider?.listingType === "travel_planner" ||
-        parsed.details.listingType === "Travel Planner";
-
-      const infoItems = isTravel
-        ? [
-            { label: "Business Name", value: parsed.details.businessName || provider?.businessName || "-" },
-            { label: "City", value: parsed.details.city || provider?.city || "-" },
-            { label: "State", value: parsed.details.state || provider?.state || "-" },
-            { label: "Planner Type", value: parsed.details.plannerType || "-" },
-            { label: "Package Title", value: parsed.details.packageTitle || "-" },
-            { label: "Duration", value: parsed.details.duration || "-" },
-            { label: "Days", value: parsed.details.days || "-" },
-            { label: "Price From", value: parsed.details.priceFrom || "-" },
-            { label: "Price Per Person", value: parsed.details.pricePerPerson || "-" },
-            { label: "Places Covered", value: parsed.details.placesCovered || "-" },
-            { label: "Inclusions", value: parsed.details.inclusions || "-" },
-            { label: "Exclusions", value: parsed.details.exclusions || "-" },
-          ]
-        : [
-            { label: "Business Name", value: parsed.details.businessName || provider?.businessName || "-" },
-            { label: "City", value: parsed.details.city || provider?.city || "-" },
-            { label: "State", value: parsed.details.state || provider?.state || "-" },
-            { label: "Vehicle Type", value: parsed.details.vehicleType || "-" },
-            { label: "Title", value: parsed.details.title || "-" },
-            { label: "Price", value: parsed.details.price || "-" },
-            { label: "Price Unit", value: parsed.details.priceUnit || "-" },
-            { label: "Capacity", value: parsed.details.capacity || "-" },
-            { label: "Fuel Type", value: parsed.details.fuelType || "-" },
-            { label: "With Driver", value: parsed.details.withDriver || "-" },
-          ];
+      const details = parsed.details || {};
 
       return {
         ...item,
-        provider,
-        image,
+        image: getProviderImage(item.provider),
         parsed,
-        topClass,
-        isTravel,
-        infoItems,
+        cardTitle: buildCardTitle(item, details),
+        cardType: buildCardType(item, details),
+        topClass:
+          item.status === "failed"
+            ? "failed"
+            : item.status === "pending"
+            ? "pending"
+            : "sent",
       };
     });
   }, [history]);
@@ -260,102 +221,129 @@ export default function ProviderBroadcastHistory() {
         <div className="providerBroadcastHistoryEmpty">No broadcast history found yet.</div>
       ) : (
         <div className="providerBroadcastHistoryGrid">
-          {normalizedHistory.map((item) => (
-            <div className="providerBroadcastHistoryCard" key={item._id}>
-              <div className={`providerBroadcastHistoryCardTop ${item.topClass}`}>
-                <div className="providerBroadcastHistoryCardTopLeft">
-                  <h3>{item.subject || "Broadcast"}</h3>
-                  <p>
-                    {item.isTravel ? "Travel Planner" : "Vehicle Service"}
-                  </p>
+          {normalizedHistory.map((item) => {
+            const details = item.parsed.details || {};
+            const description = item.parsed.description || "";
+            const extraMessage = item.parsed.extraMessage || "";
+
+            const detailItems =
+              item.provider?.listingType === "travel_planner"
+                ? [
+                    { label: "Business Name", value: details.businessName || item.provider?.businessName || "-" },
+                    { label: "City", value: details.city || item.provider?.city || "-" },
+                    { label: "State", value: details.state || item.provider?.state || "-" },
+                    { label: "Planner Type", value: details.plannerType || "-" },
+                    { label: "Package Title", value: details.packageTitle || "-" },
+                    { label: "Duration", value: details.duration || "-" },
+                    { label: "Days", value: details.days || "-" },
+                    { label: "Price From", value: details.priceFrom || "-" },
+                    { label: "Price Per Person", value: details.pricePerPerson || "-" },
+                    { label: "Places Covered", value: details.placesCovered || "-" },
+                    { label: "Inclusions", value: details.inclusions || "-" },
+                    { label: "Exclusions", value: details.exclusions || "-" },
+                  ]
+                : [
+                    { label: "Business Name", value: details.businessName || item.provider?.businessName || "-" },
+                    { label: "City", value: details.city || item.provider?.city || "-" },
+                    { label: "State", value: details.state || item.provider?.state || "-" },
+                    { label: "Vehicle Type", value: details.vehicleType || "-" },
+                    { label: "Title", value: details.title || "-" },
+                    { label: "Price", value: details.price || "-" },
+                    { label: "Price Unit", value: details.priceUnit || "-" },
+                    { label: "Capacity", value: details.capacity || "-" },
+                    { label: "Fuel Type", value: details.fuelType || "-" },
+                    { label: "With Driver", value: details.withDriver || "-" },
+                  ];
+
+            return (
+              <div className="providerBroadcastHistoryCard" key={item._id}>
+                <div className={`providerBroadcastHistoryCardTop ${item.topClass}`}>
+                  <div className="providerBroadcastHistoryBannerLeft">
+                    <h3>{item.cardTitle}</h3>
+                    <p>{item.provider?.businessName || details.businessName || "OnTrip Provider"}</p>
+                  </div>
+
+                  <div className="providerBroadcastHistoryBannerRight">
+                    <span className="providerBroadcastHistoryHeaderChip">
+                      Subject: {item.subject || "-"}
+                    </span>
+                    <span className="providerBroadcastHistoryHeaderChip">
+                      Recipients: {item.recipientsCount || 0}
+                    </span>
+                    <span className="providerBroadcastHistoryHeaderChip">
+                      Updated: {formatDateTime(item.updatedAt)}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="providerBroadcastHistoryTopMeta">
-                  <div className="providerBroadcastHistoryTopMetaBox">
-                    Subject: {item.subject || "-"}
+                <div className="providerBroadcastHistoryCardBody">
+                  <div className="providerBroadcastHistoryTopSection">
+                    <div className="providerBroadcastHistoryImageCard">
+                      <img
+                        src={item.image}
+                        alt={item.cardTitle}
+                        className="providerBroadcastHistoryImage"
+                      />
+                    </div>
+
+                    <div className="providerBroadcastHistorySummaryCard">
+                      <div className="providerBroadcastHistorySummaryTop">
+                        <h4>{item.provider?.businessName || details.businessName || item.cardTitle}</h4>
+                        <span className="providerBroadcastHistoryServiceBadge">
+                          {item.cardType}
+                        </span>
+                      </div>
+
+                      <p className="providerBroadcastHistorySummaryText">
+                        {description || item.provider?.description || "Provider update shared with subscribers."}
+                      </p>
+
+                      <div className="providerBroadcastHistoryQuickMeta">
+                        <div>
+                          <strong>Status</strong>
+                          <span>{formatLabel(item.status || "-")}</span>
+                        </div>
+                        <div>
+                          <strong>Created</strong>
+                          <span>{formatDateTime(item.createdAt)}</span>
+                        </div>
+                        <div>
+                          <strong>Updated</strong>
+                          <span>{formatDateTime(item.updatedAt)}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="providerBroadcastHistoryTopMetaBox">
-                    Recipients: {item.recipientsCount || 0}
+
+                  <div className="providerBroadcastHistoryInfoGrid">
+                    {detailItems.map((info, index) => (
+                      <div key={`${item._id}-${index}`}>
+                        <strong>{info.label}</strong>
+                        <span>{info.value || "-"}</span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="providerBroadcastHistoryTopMetaBox">
-                    Updated: {formatDateTime(item.updatedAt)}
+
+                  {extraMessage ? (
+                    <div className="providerBroadcastHistoryContentBox">
+                      <strong>Extra Message</strong>
+                      <p>{extraMessage}</p>
+                    </div>
+                  ) : null}
+
+                  <div className="providerBroadcastHistoryActions">
+                    <button
+                      className="providerBroadcastHistoryBtn primary"
+                      type="button"
+                      onClick={() => navigate("/provider-broadcast")}
+                    >
+                      Send New Broadcast
+                    </button>
                   </div>
                 </div>
               </div>
-
-              <div className="providerBroadcastHistoryCardBody">
-                <div className="providerBroadcastHistoryHero">
-                  <div className="providerBroadcastHistoryImageWrap">
-                    <img
-                      src={item.image}
-                      alt={item.subject || "Broadcast"}
-                      className="providerBroadcastHistoryImage"
-                    />
-                  </div>
-
-                  <div className="providerBroadcastHistorySummary">
-                    <div className="providerBroadcastHistorySummaryTop">
-                      <h4>
-                        {item.parsed.details.title ||
-                          item.parsed.details.packageTitle ||
-                          item.provider?.businessName ||
-                          "Service"}
-                      </h4>
-
-                      <span className="providerBroadcastHistoryServiceTag">
-                        {item.isTravel ? "Travel Planner" : "Vehicle Service"}
-                      </span>
-                    </div>
-
-                    <p>{item.provider?.description || item.parsed.description || "Provider update from OnTrip."}</p>
-
-                    <div className="providerBroadcastHistoryStatusRow">
-                      <div className="providerBroadcastHistoryStatusCard">
-                        <strong>Status</strong>
-                        <span>{formatLabel(item.status || "-")}</span>
-                      </div>
-
-                      <div className="providerBroadcastHistoryStatusCard">
-                        <strong>Created</strong>
-                        <span>{formatDateTime(item.createdAt)}</span>
-                      </div>
-
-                      <div className="providerBroadcastHistoryStatusCard">
-                        <strong>Updated</strong>
-                        <span>{formatDateTime(item.updatedAt)}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="providerBroadcastHistoryInfo">
-                  {item.infoItems.map((info, index) => (
-                    <div key={`${item._id}-${index}`}>
-                      <strong>{info.label}</strong>
-                      <span>{info.value || "-"}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {item.parsed.extraMessage ? (
-                  <div className="providerBroadcastHistoryNoteCard">
-                    <strong>Extra Message</strong>
-                    <p>{item.parsed.extraMessage}</p>
-                  </div>
-                ) : null}
-
-                <div className="providerBroadcastHistoryActions">
-                  <button
-                    className="providerBroadcastHistoryBtn primary"
-                    type="button"
-                    onClick={() => navigate("/provider-broadcast")}
-                  >
-                    Send New Broadcast
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
