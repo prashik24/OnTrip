@@ -291,15 +291,6 @@ export default function ProviderBroadcast() {
       ? selectedVehicle?.title || selectedProvider?.businessName || "Vehicle Service"
       : selectedTrip?.packageTitle || selectedProvider?.businessName || "Travel Planner";
 
-  const previewSubtitle =
-    form.serviceType === "vehicle"
-      ? `${formatLabel(selectedVehicle?.vehicleType || "vehicle")} • ${
-          selectedProvider?.city || "-"
-        }`
-      : `${selectedTrip?.durationText || `${selectedTrip?.days || 1} day(s)`} • ${
-          selectedProvider?.city || "-"
-        }`;
-
   async function sendBroadcast(e) {
     e.preventDefault();
 
@@ -423,7 +414,6 @@ export default function ProviderBroadcast() {
               </div>
 
               <h2>{previewTitle}</h2>
-              <p>{previewSubtitle}</p>
 
               <div className="providerBroadcastMeta">
                 <span>Business: {selectedProvider?.businessName || "-"}</span>
