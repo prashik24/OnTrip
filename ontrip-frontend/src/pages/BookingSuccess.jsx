@@ -174,8 +174,7 @@ export default function BookingSuccess() {
 
       <div className="bookingSuccessCard">
         <div className={`bookingSuccessBanner ${isCancelled ? "cancelled" : ""}`}>
-          <div>
-            <div className="bookingSuccessKicker">ONTRIP BOOKING DETAILS</div>
+          <div className="bookingSuccessBannerLeft">
             <h1>{isCancelled ? "Booking Cancelled" : "Booking Placed Successfully"}</h1>
             <p>
               {isCancelled
@@ -183,11 +182,11 @@ export default function BookingSuccess() {
                 : "Your payment was completed and your booking is confirmed."}
             </p>
           </div>
-        </div>
 
-        <div className="bookingSuccessRefRow">
-          <div className="bookingSuccessRef">{booking.bookingRef}</div>
-          <div className="bookingSuccessPaidTop">Paid: ₹{booking.amount}</div>
+          <div className="bookingSuccessBannerRight">
+            <div className="bookingSuccessRef">{booking.bookingRef}</div>
+            <div className="bookingSuccessPaidTop">Paid: ₹{booking.amount}</div>
+          </div>
         </div>
 
         <div className="bookingSuccessTop">
@@ -200,53 +199,20 @@ export default function BookingSuccess() {
           </div>
 
           <div className="bookingSuccessSummary">
-            <div className="bookingSuccessTitleRow">
-              <h2>{displayTitle}</h2>
-              <div className="bookingSuccessMeta bookingSuccessMetaTop">
-                {booking.paymentStatus === "paid" ? "Paid" : booking.paymentStatus} •{" "}
-                {booking.bookingStatus}
-              </div>
+            <div className="bookingSuccessType">
+              {booking.serviceType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
             </div>
 
-            <p className="bookingSuccessProviderName">
-              {booking.provider?.businessName || "Provider"}
-            </p>
+            <h2>{displayTitle}</h2>
+            <p>{booking.provider?.businessName || "Provider"}</p>
 
-            <p className="bookingSuccessDesc">
-              {booking.notes ||
-                "View your confirmed booking details, contact information, and service summary below."}
-            </p>
-
-            <div className="bookingSuccessInfoRow bookingSuccessInfoPills">
-              <span>
-                Service:{" "}
-                {booking.serviceType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
-              </span>
-              <span>
-                Travel Date: {new Date(booking.bookingDate).toLocaleDateString()}
-              </span>
-              <span>People: {booking.peopleCount}</span>
-              <span>Days: {booking.days}</span>
+            <div className="bookingSuccessMeta">
+              <span>Travel Date: {new Date(booking.bookingDate).toLocaleDateString()}</span>
               <span>Payment: {booking.paymentStatus}</span>
               <span>Status: {booking.bookingStatus}</span>
             </div>
 
-            <div className="bookingSuccessActionRow">
-              <button
-                className="bookingSuccessPrimaryBtn"
-                onClick={downloadInvoice}
-                disabled={downloading}
-              >
-                {downloading ? "Downloading..." : "Download Invoice PDF"}
-              </button>
-
-              <button
-                className="bookingSuccessGhostBtn"
-                onClick={() => navigate("/profile/bookings")}
-              >
-                Go to Booking History
-              </button>
-            </div>
+            <div className="bookingSuccessAmount">Paid: ₹{booking.amount}</div>
 
             {isCancelled && booking.cancellationReason ? (
               <div className="bookingSuccessCancelReason">
@@ -256,101 +222,89 @@ export default function BookingSuccess() {
           </div>
         </div>
 
-        <div className="bookingSuccessSection">
-          <div className="bookingSuccessSectionCard">
-            <div className="bookingSuccessSectionHead">
-              <h2>Booking Information</h2>
-            </div>
-
-            <div className="bookingSuccessInfoGrid">
-              <div className="bookingSuccessInfoItem">
-                <strong>Customer</strong>
-                <span>{booking.contactName}</span>
-              </div>
-
-              <div className="bookingSuccessInfoItem">
-                <strong>Phone</strong>
-                <span>{booking.contactPhone}</span>
-              </div>
-
-              <div className="bookingSuccessInfoItem">
-                <strong>Email</strong>
-                <span>{booking.contactEmail || "-"}</span>
-              </div>
-
-              <div className="bookingSuccessInfoItem">
-                <strong>People</strong>
-                <span>{booking.peopleCount}</span>
-              </div>
-
-              <div className="bookingSuccessInfoItem">
-                <strong>Days</strong>
-                <span>{booking.days}</span>
-              </div>
-
-              <div className="bookingSuccessInfoItem">
-                <strong>Unit Price</strong>
-                <span>₹{booking.unitPrice}</span>
-              </div>
-
-              <div className="bookingSuccessInfoItem">
-                <strong>Total Paid</strong>
-                <span>₹{booking.amount}</span>
-              </div>
-
-              <div className="bookingSuccessInfoItem">
-                <strong>Payment Status</strong>
-                <span>{booking.paymentStatus}</span>
-              </div>
-
-              <div className="bookingSuccessInfoItem">
-                <strong>Booking Status</strong>
-                <span>{booking.bookingStatus}</span>
-              </div>
-
-              {booking.destination ? (
-                <div className="bookingSuccessInfoItem">
-                  <strong>Destination</strong>
-                  <span>{booking.destination}</span>
-                </div>
-              ) : null}
-
-              {booking.place ? (
-                <div className="bookingSuccessInfoItem">
-                  <strong>Place</strong>
-                  <span>{booking.place}</span>
-                </div>
-              ) : null}
-
-              {booking.selectedVehicleTitle ? (
-                <div className="bookingSuccessInfoItem">
-                  <strong>Vehicle</strong>
-                  <span>{booking.selectedVehicleTitle}</span>
-                </div>
-              ) : null}
-
-              {booking.selectedPackageTitle ? (
-                <div className="bookingSuccessInfoItem">
-                  <strong>Package</strong>
-                  <span>{booking.selectedPackageTitle}</span>
-                </div>
-              ) : null}
-            </div>
+        <div className="bookingSuccessInfoGrid">
+          <div className="bookingSuccessInfoItem">
+            <strong>Customer</strong>
+            <span>{booking.contactName}</span>
           </div>
+
+          <div className="bookingSuccessInfoItem">
+            <strong>Phone</strong>
+            <span>{booking.contactPhone}</span>
+          </div>
+
+          <div className="bookingSuccessInfoItem">
+            <strong>Email</strong>
+            <span>{booking.contactEmail || "-"}</span>
+          </div>
+
+          <div className="bookingSuccessInfoItem">
+            <strong>People</strong>
+            <span>{booking.peopleCount}</span>
+          </div>
+
+          <div className="bookingSuccessInfoItem">
+            <strong>Days</strong>
+            <span>{booking.days}</span>
+          </div>
+
+          <div className="bookingSuccessInfoItem">
+            <strong>Unit Price</strong>
+            <span>₹{booking.unitPrice}</span>
+          </div>
+
+          {booking.destination ? (
+            <div className="bookingSuccessInfoItem">
+              <strong>Destination</strong>
+              <span>{booking.destination}</span>
+            </div>
+          ) : null}
+
+          {booking.place ? (
+            <div className="bookingSuccessInfoItem">
+              <strong>Place</strong>
+              <span>{booking.place}</span>
+            </div>
+          ) : null}
+
+          {booking.selectedVehicleTitle ? (
+            <div className="bookingSuccessInfoItem">
+              <strong>Vehicle</strong>
+              <span>{booking.selectedVehicleTitle}</span>
+            </div>
+          ) : null}
+
+          {booking.selectedPackageTitle ? (
+            <div className="bookingSuccessInfoItem">
+              <strong>Package</strong>
+              <span>{booking.selectedPackageTitle}</span>
+            </div>
+          ) : null}
         </div>
 
         {booking.notes ? (
-          <div className="bookingSuccessSection bookingSuccessSectionLast">
-            <div className="bookingSuccessSectionCard">
-              <div className="bookingSuccessSectionHead">
-                <h2>Notes</h2>
-              </div>
-              <div className="bookingSuccessNotes">
-                <p>{booking.notes}</p>
-              </div>
-            </div>
+          <div className="bookingSuccessNotes">
+            <strong>Notes</strong>
+            <p>{booking.notes}</p>
           </div>
         ) : null}
+
+        <div className="bookingSuccessActions">
+          <button
+            className="bookingSuccessPrimaryBtn"
+            onClick={downloadInvoice}
+            disabled={downloading}
+          >
+            {downloading ? "Downloading..." : "Download Invoice PDF"}
+          </button>
+
+          <button
+            className="bookingSuccessGhostBtn"
+            onClick={() => navigate("/profile/bookings")}
+          >
+            Go to Booking History
+          </button>
+        </div>
       </div>
     </div>
   );
