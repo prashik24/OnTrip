@@ -13,6 +13,13 @@
 }
 
 .providerBroadcastHistoryHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.providerBroadcastHistoryHeadLeft {
   display: grid;
   gap: 8px;
 }
@@ -33,23 +40,19 @@
   word-break: break-word;
 }
 
-.providerBroadcastHistoryTopBar {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .providerBroadcastHistoryTopBtn {
   min-height: 42px;
   padding: 0 16px;
-  border: 1px solid rgba(0, 184, 241, 0.28);
+  border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 12px;
   font: inherit;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #ffffff;
+  background: #ffffff;
+  color: var(--text);
   transition: 0.18s ease;
+  white-space: nowrap;
 }
 
 .providerBroadcastHistoryTopBtn:hover {
@@ -135,47 +138,6 @@
   font-weight: 600;
   line-height: 1.55;
   word-break: break-word;
-}
-
-.providerBroadcastHistoryCardTopRight {
-  flex-shrink: 0;
-  display: grid;
-  gap: 6px;
-  justify-items: end;
-}
-
-.providerBroadcastHistoryCount {
-  color: #ffffff;
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-.providerBroadcastHistoryTopStatuses {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.providerBroadcastHistoryStatusBadge {
-  padding: 7px 12px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
-  text-align: center;
-  text-transform: capitalize;
-}
-
-.providerBroadcastHistoryStatusBadge.top {
-  padding: 0;
-  font-size: 13px;
-  background: transparent;
-  color: #ffffff;
-  border: none;
-  box-shadow: none;
-  border-radius: 0;
 }
 
 .providerBroadcastHistoryCardBody {
@@ -265,6 +227,11 @@
   grid-column: 1 / -1;
 }
 
+.providerBroadcastHistoryMessageLines {
+  display: grid;
+  gap: 4px;
+}
+
 .providerBroadcastHistoryActions {
   margin-top: auto;
   display: grid;
@@ -324,12 +291,9 @@
     align-items: flex-start;
   }
 
-  .providerBroadcastHistoryCardTopRight {
-    justify-items: start;
-  }
-
-  .providerBroadcastHistoryTopStatuses {
-    justify-content: flex-start;
+  .providerBroadcastHistoryHead {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -358,10 +322,6 @@
     font-size: 18px;
   }
 
-  .providerBroadcastHistoryCount {
-    font-size: 18px;
-  }
-
   .providerBroadcastHistoryCardBody {
     padding: 16px;
   }
@@ -374,10 +334,6 @@
   .providerBroadcastHistoryTopBtn {
     min-height: 44px;
     font-size: 14px;
-  }
-
-  .providerBroadcastHistoryTopBar {
-    justify-content: stretch;
   }
 
   .providerBroadcastHistoryTopBtn {
