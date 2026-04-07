@@ -37,6 +37,7 @@
   overflow: hidden;
   display: grid;
   gap: 20px;
+  padding-bottom: 22px;
 }
 
 .providerDetailsBanner {
@@ -74,19 +75,6 @@
   color: #ffffff;
   opacity: 0.96;
   word-break: break-word;
-}
-
-.providerDetailsBannerBadge {
-  min-height: 42px;
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
-  font: inherit;
-  font-weight: 700;
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .providerDetailsTop {
@@ -141,39 +129,18 @@
 .providerDetailsTopContent {
   width: 100%;
   min-width: 0;
-  position: relative;
   display: grid;
   gap: 12px;
   padding: 18px;
   border-radius: 18px;
-  background: rgba(244, 251, 255, 0.94);
+  background: #ffffff;
   border: 1px solid rgba(0, 184, 241, 0.1);
   min-height: 260px;
   box-sizing: border-box;
 }
 
-.providerDetailsType {
-  width: fit-content;
-  max-width: 100%;
-  padding: 6px 10px;
-  border-radius: 10px;
-  background: rgba(0, 184, 241, 0.1);
-  border: 1px solid rgba(0, 184, 241, 0.16);
-  font-size: 12px;
-  font-weight: 700;
-  color: #0369a1;
-  word-break: break-word;
-}
-
-.providerDetailsTypeTop {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-}
-
 .providerDetailsTopContent h1 {
   margin: 0;
-  padding-right: 130px;
   font-size: 28px;
   line-height: 1.2;
   color: var(--text);
@@ -182,7 +149,7 @@
 
 .providerDetailsMeta {
   color: var(--muted);
-  font-weight: 550;
+  font-weight: 650;
   word-break: break-word;
 }
 
@@ -261,6 +228,10 @@
   box-sizing: border-box;
 }
 
+.providerDetailsSectionLast {
+  padding-bottom: 8px;
+}
+
 .providerDetailsSectionCard {
   background: rgba(255, 255, 255, 0.98);
   border: 1px solid rgba(0, 184, 241, 0.12);
@@ -299,7 +270,7 @@
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  background: rgba(244, 251, 255, 0.72);
+  background: #ffffff;
   border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 16px;
   padding: 16px;
@@ -385,10 +356,10 @@
 }
 
 .providerDetailsInfoGrid > div {
-  background: rgba(244, 251, 255, 0.94);
+  background: #ffffff;
   border-radius: 14px;
   padding: 14px 15px;
-  border: 1px solid rgba(0, 184, 241, 0.1);
+  border: 1px solid rgba(0, 184, 241, 0.12);
   min-width: 0;
   display: grid;
   gap: 4px;
@@ -425,7 +396,7 @@
 
 .providerDetailsReviewItem,
 .providerDetailsSimilarCard {
-  background: rgba(255, 255, 255, 0.94);
+  background: #ffffff;
   border: 1px solid rgba(11, 27, 42, 0.08);
   border-radius: 12px;
   padding: 14px;
@@ -499,13 +470,14 @@
   box-shadow: none;
   color: #12212f;
   font: inherit;
-  font-weight: 700;
+  font-weight: 500;
+  font-size: 13px;
   cursor: pointer;
   transition: 0.18s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .providerDetailsVoteBtnAlt {
@@ -531,10 +503,10 @@
 }
 
 .providerDetailsVoteIcon {
-  width: 16px;
-  height: 16px;
-  min-width: 16px;
-  min-height: 16px;
+  width: 13px;
+  height: 13px;
+  min-width: 13px;
+  min-height: 13px;
   object-fit: contain;
   display: block;
   flex-shrink: 0;
@@ -554,7 +526,7 @@
 .providerDetailsNote {
   padding: 12px 14px;
   border-radius: 12px;
-  background: rgba(177, 227, 250, 0.14);
+  background: rgba(244, 251, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.12);
   color: rgba(11, 27, 42, 0.76);
   font-weight: 600;
@@ -568,11 +540,6 @@
 }
 
 @media (max-width: 980px) {
-  .providerDetailsBanner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .providerDetailsTop,
   .providerDetailsInfoGrid {
     grid-template-columns: 1fr;
@@ -593,24 +560,11 @@
     margin: 0 auto;
   }
 
-  .providerDetailsTopContent h1 {
-    padding-right: 0;
-  }
-
-  .providerDetailsTypeTop {
-    position: static;
-    justify-self: start;
-  }
-
   .providerDetailsSimilarCard,
   .providerDetailsReviewTop,
   .providerDetailsItemHeader {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .providerDetailsInfoWide {
-    grid-column: auto;
   }
 }
 
@@ -674,10 +628,5 @@
   .providerDetailsVoteRow,
   .providerDetailsActionRow {
     flex-direction: column;
-  }
-
-  .providerDetailsBannerBadge {
-    width: 100%;
-    text-align: center;
   }
 }
