@@ -32,7 +32,10 @@ function getProviderImage(provider) {
 
   if (provider.listingType === "vehicle") {
     if (Array.isArray(provider.vehicles) && provider.vehicles.length > 0) {
-      const firstVehicleWithImage = provider.vehicles.find((vehicle) => vehicle?.images?.[0]?.url);
+      const firstVehicleWithImage = provider.vehicles.find(
+        (vehicle) => vehicle?.images?.[0]?.url
+      );
+
       if (firstVehicleWithImage?.images?.[0]?.url) {
         return firstVehicleWithImage.images[0].url;
       }
@@ -258,18 +261,6 @@ export default function ProviderBroadcastHistory() {
                     subscribers.
                   </p>
                 </div>
-
-                <div className="providerBroadcastHistoryHeroRight">
-                  <div className="providerBroadcastHistoryHeroStatBox">
-                    Subject: {item.subject || "-"}
-                  </div>
-                  <div className="providerBroadcastHistoryHeroStatBox">
-                    Recipients: {item.recipientsCount || 0}
-                  </div>
-                  <div className="providerBroadcastHistoryHeroStatBox">
-                    Updated: {formatDateTime(item.updatedAt)}
-                  </div>
-                </div>
               </div>
 
               <div className="providerBroadcastHistoryCardBody">
@@ -302,6 +293,14 @@ export default function ProviderBroadcastHistory() {
                       <div>
                         <strong>Created</strong>
                         <span>{formatDateTime(item.createdAt)}</span>
+                      </div>
+                      <div>
+                        <strong>Recipients</strong>
+                        <span>{item.recipientsCount || 0}</span>
+                      </div>
+                      <div>
+                        <strong>Updated</strong>
+                        <span>{formatDateTime(item.updatedAt)}</span>
                       </div>
                     </div>
                   </div>
