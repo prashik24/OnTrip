@@ -197,10 +197,11 @@ export default function ProviderDetails() {
           </div>
 
           <div className="providerDetailsTopContent">
-            <h1>{provider.businessName}</h1>
-
-            <div className="providerDetailsMeta">
-              ⭐ {provider.ratingAverage || 0} ({provider.ratingCount || 0})
+            <div className="providerDetailsTitleRow">
+              <h1>{provider.businessName}</h1>
+              <div className="providerDetailsMeta providerDetailsMetaTop">
+                ⭐ {provider.ratingAverage || 0} ({provider.ratingCount || 0})
+              </div>
             </div>
 
             <p className="providerDetailsDesc">
