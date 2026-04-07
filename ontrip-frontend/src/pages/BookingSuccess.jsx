@@ -202,7 +202,6 @@ export default function BookingSuccess() {
             <div className="bookingSuccessType">
               {booking.serviceType === "vehicle" ? "Vehicle Service" : "Travel Planner"}
             </div>
-
             <h2>{displayTitle}</h2>
             <p>{booking.provider?.businessName || "Provider"}</p>
 
@@ -211,8 +210,6 @@ export default function BookingSuccess() {
               <span>Payment: {booking.paymentStatus}</span>
               <span>Status: {booking.bookingStatus}</span>
             </div>
-
-            <div className="bookingSuccessAmount">Paid: ₹{booking.amount}</div>
 
             {isCancelled && booking.cancellationReason ? (
               <div className="bookingSuccessCancelReason">
