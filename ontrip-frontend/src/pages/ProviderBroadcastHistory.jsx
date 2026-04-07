@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -15,12 +15,31 @@ function formatDateTime(value) {
   return new Date(value).toLocaleString();
 }
 
+function getBroadcastImage(message = "", status = "") {
+  const text = String(message || "").toLowerCase();
+  const statusValue = String(status || "").toLowerCase();
+
+  if (text.includes("goa")) return "/images/places/north-goa-hero.jpg";
+  if (text.includes("mumbai")) return "/images/places/mumbai-hero.jpg";
+  if (text.includes("pune")) return "/images/places/lonavala-hero.jpg";
+  if (text.includes("nagpur")) return "/images/places/nashik-hero.jpg";
+  if (text.includes("kerala")) return "/images/places/munnar-hero.jpg";
+  if (text.includes("varanasi")) return "/images/places/varanasi-hero.jpg";
+  if (text.includes("jaipur")) return "/images/places/jaipur-hero.jpg";
+  if (text.includes("lucknow")) return "/images/places/lucknow-hero.jpg";
+  if (text.includes("car")) return "/images/places/mumbai-hero.jpg";
+  if (text.includes("bike")) return "/images/places/manali-hero.jpg";
+  if (text.includes("bus")) return "/images/places/agra-hero.jpg";
+  if (statusValue === "failed") return "/images/places/old-goa-hero.jpg";
+  if (statusValue === "pending") return "/images/places/shimla-hero.jpg";
+  return "/images/places/manali-hero.jpg";
+}
+
 export default function ProviderBroadcastHistory() {
   const navigate = useNavigate();
-
-  const [loading, setLoading] = useState(true);
-  const [msg, setMsg] = useState("");
   const [history, setHistory] = useState([]);
+  const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadHistory() {
@@ -29,11 +48,11 @@ export default function ProviderBroadcastHistory() {
         setMsg("");
 
         const historyData = await apiFetch("/api/provider-broadcasts/my");
-        const nextHistory = Array.isArray(historyData)
+        const list = Array.isArray(historyData)
           ? historyData
           : historyData.broadcasts || [];
 
-        setHistory(nextHistory);
+        setHistory(list);
       } catch (err) {
         setMsg(err.message || "Failed to load broadcast history.");
       } finally {
@@ -44,118 +63,121 @@ export default function ProviderBroadcastHistory() {
     loadHistory();
   }, []);
 
-  const stats = useMemo(() => {
-    const total = history.length;
-    const sent = history.filter((item) => item.status === "sent").length;
-    const failed = history.filter((item) => item.status === "failed").length;
-    const pending = history.filter((item) => item.status === "pending").length;
-    const recipients = history.reduce(
-      (sum, item) => sum + Number(item.recipientsCount || 0),
-      0
-    );
-
-    return { total, sent, failed, pending, recipients };
-  }, [history]);
-
   if (loading) {
     return <LoadingSpinner text="Loading broadcast history..." />;
   }
 
   return (
     <div className="providerBroadcastHistoryPage container">
-      {msg ? (
-        <div className="providerBroadcastHistoryMessage error">{msg}</div>
-      ) : null}
-
-      <div className="providerBroadcastHistoryCard">
-        <div className="providerBroadcastHistoryBanner">
-          <div>
-            <div className="providerBroadcastHistoryKicker">
-              ONTRIP PROVIDER TOOLS
-            </div>
-            <h1>Broadcast History</h1>
-            <p>
-              Review all old provider broadcasts, status, recipients, and sent messages.
-            </p>
-          </div>
-
-          <button
-            className="providerBroadcastHistoryRefBtn"
-            type="button"
-            onClick={() => navigate("/provider-broadcast")}
-          >
-            Back to Provider Broadcast
-          </button>
-        </div>
-
-        <div className="providerBroadcastHistoryStatsWrap">
-          <div className="providerBroadcastHistoryStatsGrid">
-            <div className="providerBroadcastHistoryStatCard">
-              <strong>Total Broadcasts</strong>
-              <span>{stats.total}</span>
-            </div>
-
-            <div className="providerBroadcastHistoryStatCard">
-              <strong>Sent</strong>
-              <span>{stats.sent}</span>
-            </div>
-
-            <div className="providerBroadcastHistoryStatCard">
-              <strong>Pending</strong>
-              <span>{stats.pending}</span>
-            </div>
-
-            <div className="providerBroadcastHistoryStatCard">
-              <strong>Failed</strong>
-              <span>{stats.failed}</span>
-            </div>
-
-            <div className="providerBroadcastHistoryStatCard">
-              <strong>Total Recipients</strong>
-              <span>{stats.recipients}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="providerBroadcastHistoryContent">
-          {history.length === 0 ? (
-            <div className="providerBroadcastHistoryEmpty">
-              No old broadcasts found yet.
-            </div>
-          ) : (
-            <div className="providerBroadcastHistoryList">
-              {history.map((item) => (
-                <article className="providerBroadcastHistoryItemCard" key={item._id}>
-                  <div className="providerBroadcastHistoryItemTop">
-                    <div className="providerBroadcastHistoryItemMain">
-                      <div className="providerBroadcastHistoryType">
-                        Provider Broadcast
-                      </div>
-                      <h3>{item.subject || "-"}</h3>
-                      <p>Sent on {formatDateTime(item.createdAt)}</p>
-                    </div>
-
-                    <div
-                      className={`providerBroadcastHistoryStatus ${item.status || ""}`}
-                    >
-                      {formatLabel(item.status || "-")}
-                    </div>
-                  </div>
-
-                  <div className="providerBroadcastHistoryBody">
-                    {item.message || "-"}
-                  </div>
-
-                  <div className="providerBroadcastHistoryFooter">
-                    <span>Recipients: {item.recipientsCount || 0}</span>
-                    <span>Updated: {formatDateTime(item.updatedAt)}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
+      <div className="providerBroadcastHistoryHead">
+        <h1>Provider Broadcast History</h1>
+        <p>View all sent, pending, and failed broadcasts in one place.</p>
       </div>
+
+      {msg ? <div className="providerBroadcastHistoryMessage">{msg}</div> : null}
+
+      <div className="providerBroadcastHistoryTopBar">
+        <button
+          className="providerBroadcastHistoryTopBtn"
+          type="button"
+          onClick={() => navigate("/provider-broadcast")}
+        >
+          Back to Provider Broadcast
+        </button>
+      </div>
+
+      {history.length === 0 ? (
+        <div className="providerBroadcastHistoryEmpty">No broadcast history found yet.</div>
+      ) : (
+        <div className="providerBroadcastHistoryGrid">
+          {history.map((item) => {
+            const image = getBroadcastImage(item.message, item.status);
+            const topClass =
+              item.status === "failed"
+                ? "failed"
+                : item.status === "pending"
+                ? "pending"
+                : "sent";
+
+            return (
+              <div className="providerBroadcastHistoryCard" key={item._id}>
+                <div className={`providerBroadcastHistoryCardTop ${topClass}`}>
+                  <div className="providerBroadcastHistoryCardTopLeft">
+                    <h3>{item.subject || "Broadcast"}</h3>
+                    <p>Created: {formatDateTime(item.createdAt)}</p>
+                  </div>
+
+                  <div className="providerBroadcastHistoryCardTopRight">
+                    <div className="providerBroadcastHistoryCount">
+                      {item.recipientsCount || 0}
+                    </div>
+                    <div className="providerBroadcastHistoryTopStatuses">
+                      <span className={`providerBroadcastHistoryStatusBadge top ${item.status || ""}`}>
+                        {formatLabel(item.status || "-")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="providerBroadcastHistoryCardBody">
+                  <div className="providerBroadcastHistoryPreview">
+                    <div className="providerBroadcastHistoryImageWrap">
+                      <img
+                        src={image}
+                        alt={item.subject || "Broadcast"}
+                        className="providerBroadcastHistoryImage"
+                      />
+                    </div>
+
+                    <div className="providerBroadcastHistoryPreviewMeta">
+                      <span>Status: {formatLabel(item.status || "-")}</span>
+                      <span>Recipients: {item.recipientsCount || 0}</span>
+                      <span>Updated: {formatDateTime(item.updatedAt)}</span>
+                    </div>
+                  </div>
+
+                  <div className="providerBroadcastHistoryInfo">
+                    <div>
+                      <strong>Subject</strong>
+                      <span>{item.subject || "-"}</span>
+                    </div>
+
+                    <div>
+                      <strong>Status</strong>
+                      <span>{formatLabel(item.status || "-")}</span>
+                    </div>
+
+                    <div>
+                      <strong>Recipients</strong>
+                      <span>{item.recipientsCount || 0}</span>
+                    </div>
+
+                    <div>
+                      <strong>Created At</strong>
+                      <span>{formatDateTime(item.createdAt)}</span>
+                    </div>
+
+                    <div className="providerBroadcastHistoryInfoWide">
+                      <strong>Broadcast Message</strong>
+                      <span>{item.message || "-"}</span>
+                    </div>
+                  </div>
+
+                  <div className="providerBroadcastHistoryActions">
+                    <button
+                      className="providerBroadcastHistoryBtn primary"
+                      type="button"
+                      onClick={() => navigate("/provider-broadcast")}
+                    >
+                      Send New Broadcast
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
