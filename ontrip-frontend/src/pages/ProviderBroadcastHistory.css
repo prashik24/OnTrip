@@ -6,7 +6,7 @@
 
 .providerBroadcastHistoryPage.container {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 0 16px;
   box-sizing: border-box;
@@ -81,15 +81,15 @@
 
 .providerBroadcastHistoryGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: 1fr;
+  gap: 22px;
   align-items: stretch;
 }
 
 .providerBroadcastHistoryCard {
-  background: rgba(255, 255, 255, 0.97);
+  background: rgba(255, 255, 255, 0.98);
   border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 18px;
+  border-radius: 20px;
   box-shadow: 0 8px 22px rgba(10, 22, 35, 0.05);
   overflow: hidden;
   display: flex;
@@ -98,12 +98,12 @@
 }
 
 .providerBroadcastHistoryCardTop {
-  padding: 18px 18px 16px;
+  padding: 22px 26px;
   color: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 16px;
+  gap: 18px;
   min-width: 0;
 }
 
@@ -119,179 +119,177 @@
   background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
-.providerBroadcastHistoryBannerLeft {
+.providerBroadcastHistoryHeroLeft {
   min-width: 0;
-  flex: 1;
-}
-
-.providerBroadcastHistoryBannerLeft h3 {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1.2;
-  color: #ffffff;
-  word-break: break-word;
-}
-
-.providerBroadcastHistoryBannerLeft p {
-  margin: 8px 0 0;
-  color: rgba(255, 255, 255, 0.94);
-  font-weight: 600;
-  line-height: 1.55;
-  word-break: break-word;
-}
-
-.providerBroadcastHistoryBannerRight {
   display: grid;
   gap: 8px;
-  min-width: 230px;
 }
 
-.providerBroadcastHistoryHeaderChip {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 9px 12px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+.providerBroadcastHistoryHeroLeft h3 {
+  margin: 0;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.1;
   color: #ffffff;
-  font-size: 13px;
-  font-weight: 750;
-  line-height: 1.45;
+  word-break: break-word;
+}
+
+.providerBroadcastHistoryHeroLeft p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 16px;
+  line-height: 1.6;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.providerBroadcastHistoryHeroRight {
+  display: grid;
+  gap: 10px;
+  min-width: 280px;
+}
+
+.providerBroadcastHistoryHeroStatBox {
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: right;
   word-break: break-word;
 }
 
 .providerBroadcastHistoryCardBody {
-  padding: 18px;
+  padding: 26px 24px 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
   height: 100%;
 }
 
 .providerBroadcastHistoryTopSection {
   display: grid;
-  grid-template-columns: 230px minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: 400px minmax(0, 1fr);
+  gap: 22px;
   align-items: stretch;
 }
 
-.providerBroadcastHistoryImageCard {
-  border-radius: 16px;
+.providerBroadcastHistoryImageWrap {
+  border-radius: 20px;
   overflow: hidden;
   background: rgba(177, 227, 250, 0.14);
-  min-height: 210px;
-  height: 210px;
-  border: 1px solid rgba(0, 184, 241, 0.1);
+  min-height: 270px;
+  height: 270px;
+  border: 1px solid rgba(0, 184, 241, 0.12);
 }
 
 .providerBroadcastHistoryImage {
   width: 100%;
   height: 100%;
-  min-height: 210px;
+  min-height: 270px;
   object-fit: cover;
   display: block;
 }
 
 .providerBroadcastHistorySummaryCard {
-  border-radius: 16px;
-  background: rgba(248, 252, 255, 0.98);
-  border: 1px solid rgba(0, 184, 241, 0.1);
-  padding: 18px;
-  display: grid;
-  gap: 16px;
   min-width: 0;
+  border-radius: 22px;
+  padding: 22px;
+  background: rgba(246, 251, 255, 0.96);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  display: grid;
+  gap: 18px;
 }
 
 .providerBroadcastHistorySummaryTop {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
+  gap: 14px;
 }
 
 .providerBroadcastHistorySummaryTop h4 {
   margin: 0;
-  font-size: 20px;
+  font-size: 34px;
+  line-height: 1.15;
+  color: #071a2f;
   font-weight: 800;
-  line-height: 1.25;
-  color: #0b1b2a;
   word-break: break-word;
 }
 
 .providerBroadcastHistoryServiceBadge {
   flex-shrink: 0;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(0, 184, 241, 0.08);
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: rgba(0, 184, 241, 0.1);
   border: 1px solid rgba(0, 184, 241, 0.18);
-  color: #0369a1;
-  font-size: 13px;
+  color: #0b5f91;
+  font-size: 15px;
   font-weight: 800;
   line-height: 1;
   white-space: nowrap;
 }
 
-.providerBroadcastHistorySummaryText {
-  margin: 0;
-  color: rgba(15, 23, 42, 0.72);
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.7;
+.providerBroadcastHistorySummarySub {
+  font-size: 18px;
+  line-height: 1.6;
+  color: rgba(11, 27, 42, 0.72);
+  font-weight: 650;
   word-break: break-word;
 }
 
-.providerBroadcastHistoryQuickMeta {
+.providerBroadcastHistorySummaryMeta {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
-.providerBroadcastHistoryQuickMeta > div {
+.providerBroadcastHistorySummaryMeta > div {
   background: #ffffff;
-  border-radius: 14px;
-  padding: 14px 15px;
   border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 16px;
+  padding: 16px;
   display: grid;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
 }
 
-.providerBroadcastHistoryQuickMeta > div strong {
-  display: block;
+.providerBroadcastHistorySummaryMeta > div strong {
   font-size: 12px;
   text-transform: uppercase;
-  color: rgba(15, 23, 42, 0.46);
-  font-weight: 700;
+  color: rgba(15, 23, 42, 0.5);
+  font-weight: 800;
   letter-spacing: 0.03em;
 }
 
-.providerBroadcastHistoryQuickMeta > div span {
-  font-size: 14px;
-  font-weight: 700;
-  color: rgba(15, 23, 42, 0.88);
+.providerBroadcastHistorySummaryMeta > div span {
+  font-size: 16px;
+  color: #0b1b2a;
+  font-weight: 750;
   line-height: 1.55;
   word-break: break-word;
 }
 
-.providerBroadcastHistoryInfoGrid {
+.providerBroadcastHistoryInfo {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
 }
 
-.providerBroadcastHistoryInfoGrid > div {
-  background: rgba(248, 252, 255, 0.98);
-  border-radius: 14px;
-  padding: 16px 16px;
+.providerBroadcastHistoryInfo > div {
+  background: rgba(247, 251, 255, 0.98);
+  border-radius: 16px;
+  padding: 16px 18px;
   border: 1px solid rgba(0, 184, 241, 0.1);
   min-width: 0;
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
 
-.providerBroadcastHistoryInfoGrid > div strong {
+.providerBroadcastHistoryInfo > div strong {
   display: block;
   font-size: 12px;
   text-transform: uppercase;
@@ -300,20 +298,20 @@
   letter-spacing: 0.03em;
 }
 
-.providerBroadcastHistoryInfoGrid > div span {
+.providerBroadcastHistoryInfo > div span {
   font-size: 15px;
   font-weight: 750;
   color: rgba(15, 23, 42, 0.9);
-  line-height: 1.55;
+  line-height: 1.6;
   word-break: break-word;
 }
 
 .providerBroadcastHistoryContentBox {
   display: grid;
   gap: 8px;
-  padding: 16px;
-  border-radius: 16px;
-  background: #ffffff;
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(248, 252, 255, 0.96), rgba(241, 249, 255, 0.96));
   border: 1px solid rgba(0, 184, 241, 0.1);
 }
 
@@ -321,17 +319,21 @@
   color: #0369a1;
   font-size: 13px;
   font-weight: 800;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
 }
 
 .providerBroadcastHistoryContentBox p {
   margin: 0;
   color: rgba(15, 23, 42, 0.86);
-  font-size: 14px;
-  line-height: 1.75;
+  font-size: 15px;
+  line-height: 1.8;
   font-weight: 650;
   word-break: break-word;
+}
+
+.providerBroadcastHistoryContentBoxMessage {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 252, 255, 0.98));
 }
 
 .providerBroadcastHistoryActions {
@@ -343,13 +345,13 @@
 
 .providerBroadcastHistoryBtn {
   width: 100%;
-  min-height: 42px;
-  padding: 0 14px;
+  min-height: 46px;
+  padding: 0 16px;
   border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 12px;
+  border-radius: 14px;
   font: inherit;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   cursor: pointer;
   background: #ffffff;
   color: var(--text);
@@ -372,46 +374,67 @@
   color: #ffffff;
 }
 
-@media (max-width: 1080px) {
-  .providerBroadcastHistoryGrid {
-    grid-template-columns: 1fr;
+@media (max-width: 1180px) {
+  .providerBroadcastHistoryInfo {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .providerBroadcastHistoryTopSection {
+    grid-template-columns: 320px minmax(0, 1fr);
   }
 }
 
 @media (max-width: 920px) {
-  .providerBroadcastHistoryTopSection {
-    grid-template-columns: 1fr;
-  }
-
-  .providerBroadcastHistoryImageCard,
-  .providerBroadcastHistoryImage {
-    min-height: 240px;
-    height: 240px;
-  }
-
-  .providerBroadcastHistoryInfoGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .providerBroadcastHistoryQuickMeta {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 760px) {
   .providerBroadcastHistoryCardTop {
     flex-direction: column;
     align-items: flex-start;
   }
 
+  .providerBroadcastHistoryHeroRight {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .providerBroadcastHistoryHeroStatBox {
+    text-align: left;
+  }
+
+  .providerBroadcastHistoryTopSection {
+    grid-template-columns: 1fr;
+  }
+
+  .providerBroadcastHistoryImageWrap,
+  .providerBroadcastHistoryImage {
+    min-height: 240px;
+    height: 240px;
+  }
+
+  .providerBroadcastHistoryInfo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
   .providerBroadcastHistoryHead {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .providerBroadcastHistoryBannerRight {
-    min-width: 100%;
-    width: 100%;
+  .providerBroadcastHistoryHeroLeft h3 {
+    font-size: 28px;
+  }
+
+  .providerBroadcastHistorySummaryTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .providerBroadcastHistorySummaryTop h4 {
+    font-size: 26px;
+  }
+
+  .providerBroadcastHistorySummaryMeta {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -433,18 +456,28 @@
   }
 
   .providerBroadcastHistoryCardTop {
-    padding: 16px;
-  }
-
-  .providerBroadcastHistoryBannerLeft h3 {
-    font-size: 18px;
+    padding: 18px 16px;
   }
 
   .providerBroadcastHistoryCardBody {
     padding: 16px;
   }
 
-  .providerBroadcastHistoryInfoGrid {
+  .providerBroadcastHistoryHeroLeft h3 {
+    font-size: 24px;
+  }
+
+  .providerBroadcastHistoryHeroStatBox {
+    font-size: 14px;
+  }
+
+  .providerBroadcastHistoryImageWrap,
+  .providerBroadcastHistoryImage {
+    min-height: 210px;
+    height: 210px;
+  }
+
+  .providerBroadcastHistoryInfo {
     grid-template-columns: 1fr;
   }
 
