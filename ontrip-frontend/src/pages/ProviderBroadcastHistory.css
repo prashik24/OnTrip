@@ -4,9 +4,10 @@
   gap: 18px;
 }
 
+/* ✅ SAME WIDTH LIKE PROVIDER DASHBOARD */
 .providerBroadcastHistoryPage.container {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1180px; /* same as dashboard */
   margin: 0 auto;
   padding: 0 16px;
   box-sizing: border-box;
@@ -29,82 +30,50 @@
   font-size: 32px;
   color: var(--text);
   line-height: 1.2;
-  word-break: break-word;
 }
 
 .providerBroadcastHistoryHead p {
   margin: 0;
   color: var(--muted);
-  line-height: 1.6;
   font-weight: 600;
-  word-break: break-word;
 }
 
 .providerBroadcastHistoryTopBtn {
   min-height: 42px;
   padding: 0 16px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 12px;
-  font: inherit;
-  font-size: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
   font-weight: 700;
+  background: #fff;
   cursor: pointer;
-  background: #ffffff;
-  color: var(--text);
-  transition: 0.18s ease;
-  white-space: nowrap;
 }
 
-.providerBroadcastHistoryTopBtn:hover {
-  box-shadow: 0 6px 14px rgba(10, 22, 35, 0.08);
-}
+/* ================= GRID ================= */
 
-.providerBroadcastHistoryMessage {
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(255, 98, 98, 0.08);
-  border: 1px solid rgba(255, 98, 98, 0.16);
-  color: #b42318;
-  font-weight: 650;
-  word-break: break-word;
-}
-
-.providerBroadcastHistoryEmpty {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 16px;
-  padding: 22px;
-  color: rgba(11, 27, 42, 0.72);
-  font-weight: 650;
-  box-shadow: 0 8px 20px rgba(10, 22, 35, 0.05);
-}
-
+/* ✅ SAME AS DASHBOARD GRID */
 .providerBroadcastHistoryGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
-  align-items: stretch;
 }
 
+/* ================= CARD ================= */
+
 .providerBroadcastHistoryCard {
-  background: rgba(255, 255, 255, 0.98);
+  background: #fff;
   border: 1px solid rgba(0, 184, 241, 0.12);
-  border-radius: 20px;
+  border-radius: 18px;
   box-shadow: 0 8px 22px rgba(10, 22, 35, 0.05);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-width: 0;
 }
+
+/* ================= TOP ================= */
 
 .providerBroadcastHistoryCardTop {
   padding: 18px;
-  color: #ffffff;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 18px;
-  min-width: 0;
+  color: #fff;
 }
 
 .providerBroadcastHistoryCardTop.sent {
@@ -119,45 +88,38 @@
   background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
-.providerBroadcastHistoryHeroLeft {
-  min-width: 0;
-  display: grid;
-  gap: 8px;
-}
-
 .providerBroadcastHistoryHeroLeft h3 {
   margin: 0;
   font-size: 22px;
   font-weight: 800;
-  line-height: 1.2;
-  color: #ffffff;
-  word-break: break-word;
 }
 
 .providerBroadcastHistoryHeroLeft p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.95);
+  margin: 6px 0 0;
   font-size: 14px;
-  line-height: 1.6;
-  font-weight: 600;
-  word-break: break-word;
+  opacity: 0.95;
 }
+
+/* ================= BODY ================= */
 
 .providerBroadcastHistoryCardBody {
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: 100%;
 }
 
+/* ================= IMAGE SECTION ================= */
+
+/* ✅ SAME STRUCTURE LIKE DASHBOARD */
 .providerBroadcastHistoryTopSection {
   display: grid;
   grid-template-columns: 180px minmax(0, 1fr);
   gap: 14px;
-  align-items: stretch;
+  align-items: center;
 }
 
+/* ✅ RECTANGULAR IMAGE (NOT SQUARE) */
 .providerBroadcastHistoryImageWrap {
   border-radius: 14px;
   overflow: hidden;
@@ -170,89 +132,60 @@
 .providerBroadcastHistoryImage {
   width: 100%;
   height: 100%;
-  min-height: 130px;
   object-fit: cover;
-  display: block;
 }
 
+/* ================= SUMMARY ================= */
+
 .providerBroadcastHistorySummaryCard {
-  min-width: 0;
-  border-radius: 14px;
-  padding: 14px;
-  background: rgba(244, 251, 255, 0.94);
-  border: 1px solid rgba(0, 184, 241, 0.1);
-  display: grid;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .providerBroadcastHistorySummaryTop {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
 }
 
 .providerBroadcastHistorySummaryTop h4 {
   margin: 0;
   font-size: 20px;
-  line-height: 1.2;
-  color: #071a2f;
   font-weight: 800;
-  word-break: break-word;
 }
 
 .providerBroadcastHistoryServiceBadge {
-  flex-shrink: 0;
-  padding: 7px 12px;
+  padding: 6px 12px;
   border-radius: 10px;
   background: rgba(0, 184, 241, 0.1);
-  border: 1px solid rgba(0, 184, 241, 0.18);
-  color: #0b5f91;
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 1;
-  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .providerBroadcastHistorySummarySub {
   font-size: 14px;
-  line-height: 1.6;
-  color: rgba(11, 27, 42, 0.72);
-  font-weight: 650;
-  word-break: break-word;
+  color: rgba(11, 27, 42, 0.7);
 }
+
+/* ================= META ================= */
 
 .providerBroadcastHistorySummaryMeta {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.providerBroadcastHistorySummaryMeta > div {
-  background: #ffffff;
+.providerBroadcastHistorySummaryMeta div {
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: rgba(244, 251, 255, 0.94);
   border: 1px solid rgba(0, 184, 241, 0.1);
-  border-radius: 14px;
-  padding: 14px;
-  display: grid;
-  gap: 6px;
-  min-width: 0;
+  font-size: 13px;
+  font-weight: 650;
 }
 
-.providerBroadcastHistorySummaryMeta > div strong {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: rgba(15, 23, 42, 0.5);
-  font-weight: 800;
-  letter-spacing: 0.03em;
-}
-
-.providerBroadcastHistorySummaryMeta > div span {
-  font-size: 14px;
-  color: #0b1b2a;
-  font-weight: 750;
-  line-height: 1.55;
-  word-break: break-word;
-}
+/* ================= INFO GRID ================= */
 
 .providerBroadcastHistoryInfo {
   display: grid;
@@ -265,95 +198,54 @@
   border-radius: 14px;
   padding: 14px 15px;
   border: 1px solid rgba(0, 184, 241, 0.1);
-  min-width: 0;
-  display: grid;
-  gap: 4px;
 }
 
-.providerBroadcastHistoryInfo > div strong {
-  display: block;
+.providerBroadcastHistoryInfo strong {
   font-size: 12px;
   text-transform: uppercase;
   color: rgba(15, 23, 42, 0.46);
-  font-weight: 700;
-  letter-spacing: 0.03em;
 }
 
-.providerBroadcastHistoryInfo > div span {
+.providerBroadcastHistoryInfo span {
   font-size: 14px;
   font-weight: 650;
-  color: rgba(15, 23, 42, 0.88);
-  line-height: 1.55;
-  word-break: break-word;
 }
 
+/* ================= MESSAGE ================= */
+
 .providerBroadcastHistoryContentBox {
-  display: grid;
-  gap: 8px;
-  padding: 16px;
+  padding: 14px;
   border-radius: 14px;
-  background: linear-gradient(180deg, rgba(248, 252, 255, 0.96), rgba(241, 249, 255, 0.96));
+  background: #fff;
   border: 1px solid rgba(0, 184, 241, 0.1);
 }
 
 .providerBroadcastHistoryContentBox strong {
   color: #0369a1;
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
 }
 
 .providerBroadcastHistoryContentBox p {
   margin: 0;
-  color: rgba(15, 23, 42, 0.86);
   font-size: 14px;
-  line-height: 1.75;
-  font-weight: 650;
-  word-break: break-word;
 }
 
-.providerBroadcastHistoryContentBoxMessage {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 252, 255, 0.98));
-}
-
-.providerBroadcastHistoryActions {
-  margin-top: auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
+/* ================= BUTTON ================= */
 
 .providerBroadcastHistoryBtn {
   width: 100%;
   min-height: 42px;
-  padding: 0 14px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 12px;
-  font: inherit;
-  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  background: #ffffff;
-  color: var(--text);
-  transition: 0.18s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  box-sizing: border-box;
-  box-shadow: none;
-}
-
-.providerBroadcastHistoryBtn:hover {
-  box-shadow: 0 6px 14px rgba(10, 22, 35, 0.08);
 }
 
 .providerBroadcastHistoryBtn.primary {
   background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  border-color: rgba(0, 184, 241, 0.28);
-  color: #ffffff;
+  color: #fff;
 }
+
+/* ================= RESPONSIVE ================= */
 
 @media (max-width: 1080px) {
   .providerBroadcastHistoryGrid {
@@ -362,68 +254,11 @@
 }
 
 @media (max-width: 760px) {
-  .providerBroadcastHistoryHead {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .providerBroadcastHistoryTopSection {
     grid-template-columns: 1fr;
   }
 
-  .providerBroadcastHistoryImageWrap,
-  .providerBroadcastHistoryImage {
-    min-height: 190px;
+  .providerBroadcastHistoryImageWrap {
     height: 190px;
-  }
-
-  .providerBroadcastHistorySummaryTop {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .providerBroadcastHistorySummaryMeta,
-  .providerBroadcastHistoryInfo {
-    grid-template-columns: 1fr;
-  }
-
-  .providerBroadcastHistoryCardTop {
-    padding: 16px;
-  }
-
-  .providerBroadcastHistoryHeroLeft h3 {
-    font-size: 18px;
-  }
-
-  .providerBroadcastHistoryCardBody {
-    padding: 16px;
-  }
-}
-
-@media (max-width: 640px) {
-  .providerBroadcastHistoryPage {
-    gap: 16px;
-  }
-
-  .providerBroadcastHistoryPage.container {
-    padding: 0 14px;
-  }
-
-  .providerBroadcastHistoryHead h1 {
-    font-size: 24px;
-  }
-
-  .providerBroadcastHistoryHead p {
-    font-size: 14px;
-  }
-
-  .providerBroadcastHistoryBtn,
-  .providerBroadcastHistoryTopBtn {
-    min-height: 44px;
-    font-size: 14px;
-  }
-
-  .providerBroadcastHistoryTopBtn {
-    width: 100%;
   }
 }
