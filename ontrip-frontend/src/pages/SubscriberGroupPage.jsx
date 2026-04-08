@@ -141,7 +141,6 @@ export default function SubscriberGroupPage() {
     <div className="subscriberGroupPage container">
       <div className="subscriberGroupHero">
         <div className="subscriberGroupHeroText">
-          <div className="subscriberGroupKicker">OnTrip Provider Tools</div>
           <h1>Create Subscriber Chat Group</h1>
           <p>
             View all subscribed users, select the ones with chat accounts, and create a
