@@ -197,16 +197,20 @@
   border: 1px solid rgba(0, 184, 241, 0.1);
   display: flex;
   align-items: center;
+  min-width: 0;
 }
 
 .providerDashboardPreviewMeta {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
   width: 100%;
+  min-width: 0;
 }
 
 .providerDashboardPreviewMeta span {
+  min-width: 0;
+  min-height: 78px;
   padding: 12px 14px;
   border-radius: 12px;
   background: #ffffff;
@@ -214,8 +218,15 @@
   font-size: 14px;
   font-weight: 700;
   color: rgba(11, 27, 42, 0.88);
-  line-height: 1.5;
-  word-break: break-word;
+  line-height: 1.45;
+  word-break: normal;
+  overflow-wrap: break-word;
+  white-space: normal;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  box-sizing: border-box;
 }
 
 .providerDashboardInfo {
@@ -368,6 +379,12 @@
   }
 }
 
+@media (max-width: 860px) {
+  .providerDashboardPreviewMeta {
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+  }
+}
+
 @media (max-width: 760px) {
   .providerDashboardPreview {
     grid-template-columns: 1fr;
@@ -390,6 +407,10 @@
 
   .providerDashboardPreviewMeta {
     grid-template-columns: 1fr;
+  }
+
+  .providerDashboardPreviewMeta span {
+    min-height: auto;
   }
 }
 
