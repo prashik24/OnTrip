@@ -30,6 +30,12 @@ const providerBroadcastSchema = new mongoose.Schema(
       enum: ["pending", "sent", "failed"],
       default: "pending",
     },
+
+    previewImage: {
+      type: String,
+      default: "",
+      trim: true,
+    },
   },
   { timestamps: true }
 );
