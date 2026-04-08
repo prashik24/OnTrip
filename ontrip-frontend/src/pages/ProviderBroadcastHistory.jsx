@@ -293,26 +293,24 @@ export default function ProviderBroadcastHistory() {
 
                     <div className="providerBroadcastHistorySummaryCard">
                       <div className="providerBroadcastHistorySummaryStats">
-                        <div className="providerBroadcastHistorySummaryStat">
-                          <strong>Subject</strong>
-                          <div className="providerBroadcastHistorySummaryStatValue">
-                            <span>{item.subject || "-"}</span>
-                          </div>
+                        <div className="providerBroadcastHistorySummaryRow">
+                          <strong>Subject :</strong>
+                          <span>{item.subject || "-"}</span>
                         </div>
 
-                        <div className="providerBroadcastHistorySummaryStat">
-                          <strong>Service Type</strong>
-                          <div className="providerBroadcastHistorySummaryStatValue">
-                            <span>{item.meta.type}</span>
-                          </div>
+                        <div className="providerBroadcastHistorySummaryRow">
+                          <strong>Service Type :</strong>
+                          <span>{item.meta.type}</span>
                         </div>
 
-                        <div className="providerBroadcastHistorySummaryStat">
-                          <strong>Recipients</strong>
-                          <div className="providerBroadcastHistorySummaryStatValue">
-                            <span>{item.recipientsCount || 0}</span>
-                            <small>Updated: {formatDateTime(item.updatedAt)}</small>
-                          </div>
+                        <div className="providerBroadcastHistorySummaryRow">
+                          <strong>Recipients :</strong>
+                          <span>{item.recipientsCount || 0}</span>
+                        </div>
+
+                        <div className="providerBroadcastHistorySummaryRow">
+                          <strong>Updated :</strong>
+                          <span>{formatDateTime(item.updatedAt)}</span>
                         </div>
                       </div>
                     </div>
