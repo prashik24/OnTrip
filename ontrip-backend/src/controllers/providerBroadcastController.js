@@ -42,7 +42,6 @@ function getProviderCardImage(provider) {
 
   if (provider.listingType === "travel_planner") {
     const travelPlans = getTravelPlans(provider);
-
     if (travelPlans[0]?.images?.[0]?.url) {
       return travelPlans[0].images[0].url;
     }
@@ -71,11 +70,13 @@ function parseBroadcastMessage(message = "") {
     "Provider Update from OnTrip",
     "Vehicle Details",
     "Trip Details",
+    "Listing Type: Vehicle Service",
+    "Listing Type: Travel Planner",
     "Description",
     "Extra Message",
   ]);
 
-  const details = [];
+  const details = {};
   const extraLines = [];
   const descriptionLines = [];
 
@@ -95,54 +96,37 @@ function parseBroadcastMessage(message = "") {
     if (skipLines.has(line) || line === "-") return;
 
     const colonIndex = line.indexOf(":");
+    const hasLabel = colonIndex > -1;
 
-    if (colonIndex > -1) {
-      const label = line.slice(0, colonIndex).trim();
+    if (hasLabel) {
+      const key = line.slice(0, colonIndex).trim();
       const value = line.slice(colonIndex + 1).trim();
 
-      if (label === "Listing Type") {
-        details.push({
-          label,
-          value,
-          fullWidth: true,
-        });
-        return;
-      }
+      const fieldMap = {
+        "Business Name": "businessName",
+        City: "city",
+        State: "state",
+        "Vehicle Type": "vehicleType",
+        Title: "title",
+        Price: "price",
+        "Price Unit": "priceUnit",
+        Capacity: "capacity",
+        "Fuel Type": "fuelType",
+        "With Driver": "withDriver",
+        "Planner Type": "plannerType",
+        "Package Title": "packageTitle",
+        Duration: "duration",
+        Days: "days",
+        "Price From": "priceFrom",
+        "Price Per Person": "pricePerPerson",
+        "Places Covered": "placesCovered",
+        Inclusions: "inclusions",
+        Exclusions: "exclusions",
+        Message: "message",
+      };
 
-      const knownLabels = new Set([
-        "Business Name",
-        "City",
-        "State",
-        "Vehicle Type",
-        "Title",
-        "Price",
-        "Price Unit",
-        "Capacity",
-        "Fuel Type",
-        "With Driver",
-        "Planner Type",
-        "Package Title",
-        "Duration",
-        "Days",
-        "Price From",
-        "Price Per Person",
-        "Places Covered",
-        "Inclusions",
-        "Exclusions",
-        "Message",
-      ]);
-
-      if (knownLabels.has(label)) {
-        details.push({
-          label,
-          value: value || "-",
-          fullWidth: [
-            "Places Covered",
-            "Inclusions",
-            "Exclusions",
-            "Message",
-          ].includes(label),
-        });
+      if (fieldMap[key]) {
+        details[fieldMap[key]] = value || "-";
         return;
       }
     }
@@ -167,43 +151,98 @@ function parseBroadcastMessage(message = "") {
   };
 }
 
-function buildDetailsGrid(details = []) {
-  if (!details.length) return "";
+function buildInfoItems(provider, details) {
+  if (provider?.listingType === "travel_planner") {
+    return [
+      ["Business Name", details.businessName || provider?.businessName || "-"],
+      ["City", details.city || provider?.city || "-"],
+      ["State", details.state || provider?.state || "-"],
+      ["Planner Type", details.plannerType || "-"],
+      ["Package Title", details.packageTitle || "-"],
+      ["Duration", details.duration || "-"],
+      ["Days", details.days || "-"],
+      ["Price From", details.priceFrom || "-"],
+      ["Price Per Person", details.pricePerPerson || "-"],
+      ["Places Covered", details.placesCovered || "-"],
+      ["Inclusions", details.inclusions || "-"],
+      ["Exclusions", details.exclusions || "-"],
+    ];
+  }
 
+  return [
+    ["Business Name", details.businessName || provider?.businessName || "-"],
+    ["City", details.city || provider?.city || "-"],
+    ["State", details.state || provider?.state || "-"],
+    ["Vehicle Type", details.vehicleType || "-"],
+    ["Title", details.title || "-"],
+    ["Price", details.price || "-"],
+    ["Price Unit", details.priceUnit || "-"],
+    ["Capacity", details.capacity || "-"],
+    ["Fuel Type", details.fuelType || "-"],
+    ["With Driver", details.withDriver || "-"],
+  ];
+}
+
+function renderSummaryRow(label, value) {
   return `
-    <div style="margin-top:18px;">
-      <div style="font-size:15px;font-weight:800;line-height:1.4;color:#0b1b2a;margin-bottom:12px;">
-        Broadcast Details
-      </div>
-      <table style="width:100%;border-collapse:separate;border-spacing:10px 10px;">
-        <tbody>
-          ${details
-            .map((item) => {
-              const cellContent = `
-                <div style="padding:14px 15px;border-radius:14px;background:#f8fbff;border:1px solid rgba(0,184,241,0.12);">
-                  <div style="font-size:12px;font-weight:800;letter-spacing:0.03em;text-transform:uppercase;color:#7b8794;margin-bottom:6px;">
-                    ${escapeHtml(item.label)}
-                  </div>
-                  <div style="font-size:14px;font-weight:700;line-height:1.65;color:#0b1b2a;">
-                    ${escapeHtml(item.value || "-")}
-                  </div>
-                </div>
-              `;
+    <div style="display:grid;grid-template-columns:98px minmax(0,1fr);gap:6px;align-items:start;background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:12px 14px;">
+      <div style="color:#334155;font-size:13px;font-weight:800;line-height:1.35;white-space:nowrap;">${escapeHtml(
+        label
+      )}:</div>
+      <div style="color:#334155;font-size:13px;font-weight:700;line-height:1.45;word-break:break-word;">${escapeHtml(
+        value
+      )}</div>
+    </div>
+  `;
+}
 
-              if (item.fullWidth) {
-                return `
-                  <tr>
-                    <td colspan="2" style="padding:0;">
-                      ${cellContent}
-                    </td>
-                  </tr>
-                `;
-              }
+function renderInfoGrid(items = []) {
+  return `
+    <div style="margin-top:16px;">
+      <table role="presentation" style="width:100%;border-collapse:separate;border-spacing:12px 12px;">
+        <tbody>
+          ${Array.from({ length: Math.ceil(items.length / 2) })
+            .map((_, rowIndex) => {
+              const left = items[rowIndex * 2];
+              const right = items[rowIndex * 2 + 1];
 
               return `
                 <tr>
-                  <td colspan="2" style="padding:0;">
-                    ${cellContent}
+                  <td style="width:50%;vertical-align:top;${
+                    !left ? "display:none;" : ""
+                  }">
+                    ${
+                      left
+                        ? `
+                      <div style="background:rgba(244,251,255,0.94);border-radius:14px;padding:14px 15px;border:1px solid rgba(0,184,241,0.1);">
+                        <div style="font-size:12px;text-transform:uppercase;color:rgba(15,23,42,0.46);font-weight:700;letter-spacing:0.03em;margin-bottom:4px;">
+                          ${escapeHtml(left[0])}
+                        </div>
+                        <div style="font-size:14px;font-weight:650;color:rgba(15,23,42,0.88);line-height:1.55;word-break:break-word;">
+                          ${escapeHtml(left[1])}
+                        </div>
+                      </div>
+                    `
+                        : ""
+                    }
+                  </td>
+                  <td style="width:50%;vertical-align:top;${
+                    !right ? "display:none;" : ""
+                  }">
+                    ${
+                      right
+                        ? `
+                      <div style="background:rgba(244,251,255,0.94);border-radius:14px;padding:14px 15px;border:1px solid rgba(0,184,241,0.1);">
+                        <div style="font-size:12px;text-transform:uppercase;color:rgba(15,23,42,0.46);font-weight:700;letter-spacing:0.03em;margin-bottom:4px;">
+                          ${escapeHtml(right[0])}
+                        </div>
+                        <div style="font-size:14px;font-weight:650;color:rgba(15,23,42,0.88);line-height:1.55;word-break:break-word;">
+                          ${escapeHtml(right[1])}
+                        </div>
+                      </div>
+                    `
+                        : ""
+                    }
                   </td>
                 </tr>
               `;
@@ -215,16 +254,31 @@ function buildDetailsGrid(details = []) {
   `;
 }
 
-function buildContentCard(title, content, background = "#ffffff", border = "rgba(0,184,241,0.12)") {
-  if (!content) return "";
+function renderMetaCard(title, value) {
+  if (!value) return "";
 
   return `
-    <div style="margin-top:16px;padding:16px;border-radius:14px;background:${background};border:1px solid ${border};">
-      <div style="font-size:14px;font-weight:800;color:#0b1b2a;margin-bottom:6px;">
+    <div style="margin-top:12px;background:linear-gradient(180deg,rgba(248,252,255,0.96),rgba(241,249,255,0.96));border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px 15px;">
+      <div style="color:#0369a1;font-size:13px;font-weight:800;letter-spacing:0.02em;text-transform:uppercase;margin-bottom:6px;">
         ${escapeHtml(title)}
       </div>
-      <div style="font-size:14px;line-height:1.75;color:#5b6570;">
-        ${escapeHtml(content)}
+      <div style="color:rgba(15,23,42,0.86);font-size:14px;line-height:1.7;font-weight:600;word-break:break-word;">
+        ${escapeHtml(value)}
+      </div>
+    </div>
+  `;
+}
+
+function renderExtraMessageCard(value) {
+  if (!value) return "";
+
+  return `
+    <div style="margin-top:12px;background:linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,252,255,0.98));border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px 15px;">
+      <div style="color:#0369a1;font-size:13px;font-weight:800;letter-spacing:0.02em;text-transform:uppercase;margin-bottom:6px;">
+        Extra Message
+      </div>
+      <div style="color:rgba(15,23,42,0.86);font-size:14px;line-height:1.7;font-weight:600;word-break:break-word;">
+        ${escapeHtml(value)}
       </div>
     </div>
   `;
@@ -236,83 +290,72 @@ function providerBroadcastEmailHtml({
   provider,
   imageUrl = "",
   recipientsCount = 0,
+  updatedAt = null,
+  status = "sent",
 }) {
   const parsed = parseBroadcastMessage(message);
-  const displayName = provider?.businessName || "OnTrip Provider";
-  const serviceType = formatLabel(provider?.listingType || "broadcast");
+  const details = parsed.details || {};
+  const infoItems = buildInfoItems(provider, details);
+  const displayName = details.businessName || provider?.businessName || "OnTrip Provider";
+  const serviceType = provider?.listingType
+    ? formatLabel(provider.listingType)
+    : details.vehicleType || details.title
+    ? "Vehicle Service"
+    : details.packageTitle || details.plannerType
+    ? "Travel Planner"
+    : "Broadcast";
+
+  const updatedLabel = updatedAt ? new Date(updatedAt).toLocaleString() : new Date().toLocaleString();
 
   return `
     <div style="margin:0;padding:20px;background:#f4fbff;font-family:Arial,Helvetica,sans-serif;color:#0b1b2a;">
-      <div style="max-width:700px;margin:0 auto;background:#ffffff;border:1px solid rgba(0,184,241,0.14);border-radius:18px;overflow:hidden;">
-        <div style="background:linear-gradient(135deg,#4ec9f5,#00b8f1);padding:22px 22px 18px;color:#ffffff;">
-          <div style="font-size:26px;font-weight:800;line-height:1.1;">OnTrip</div>
-          <div style="font-size:18px;font-weight:800;line-height:1.35;margin-top:14px;">
-            ${escapeHtml(subject)}
+      <div style="max-width:760px;margin:0 auto;background:rgba(255,255,255,0.97);border:1px solid rgba(0,184,241,0.12);border-radius:18px;box-shadow:0 8px 22px rgba(10,22,35,0.05);overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#4ec9f5,#00b8f1);padding:18px;display:flex;justify-content:space-between;align-items:center;gap:14px;">
+          <div style="min-width:0;">
+            <div style="margin:0;font-size:21px;font-weight:760;line-height:1.25;color:#ffffff;word-break:break-word;">
+              ${escapeHtml(displayName)}
+            </div>
           </div>
-          <div style="font-size:14px;line-height:1.55;opacity:0.96;margin-top:6px;">
-            New update from ${escapeHtml(displayName)} for OnTrip subscribers.
+          <div style="padding:8px 14px;border-radius:999px;background:rgba(255,255,255,0.16);color:#ffffff;font-size:12px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">
+            ${escapeHtml(formatLabel(status))}
           </div>
         </div>
 
-        ${
-          imageUrl
-            ? `<img src="${escapeHtml(imageUrl)}" alt="Provider Service" style="display:block;width:100%;height:240px;object-fit:cover;margin:0;padding:0;border:0;" />`
-            : ""
-        }
+        <div style="padding:18px;">
+          <table role="presentation" style="width:100%;border-collapse:separate;border-spacing:0;">
+            <tr>
+              <td style="width:235px;vertical-align:top;padding:0 16px 0 0;">
+                <div style="border-radius:14px;overflow:hidden;background:rgba(177,227,250,0.14);height:150px;min-height:150px;border:1px solid rgba(0,184,241,0.1);">
+                  ${
+                    imageUrl
+                      ? `<img src="${escapeHtml(
+                          imageUrl
+                        )}" alt="${escapeHtml(
+                          displayName
+                        )}" style="width:100%;height:150px;display:block;object-fit:cover;" />`
+                      : ""
+                  }
+                </div>
+              </td>
+              <td style="vertical-align:top;padding:0;">
+                <div style="background:rgba(244,251,255,0.94);border-radius:18px;padding:14px;border:1px solid rgba(0,184,241,0.1);">
+                  <div style="display:grid;grid-template-columns:1fr;gap:8px;">
+                    ${renderSummaryRow("Service Type", serviceType)}
+                    ${renderSummaryRow("Recipients", String(recipientsCount || 0))}
+                    ${renderSummaryRow("Updated", updatedLabel)}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
 
-        <div style="padding:20px 22px 22px;">
-          <div style="font-size:15px;line-height:1.7;color:#4b5563;">
-            Hello, ${escapeHtml(displayName)} has shared a new update with you on
-            <strong style="color:#0b1b2a;">OnTrip</strong>.
-          </div>
+          ${renderInfoGrid(infoItems)}
 
-          <div style="margin-top:16px;">
-            <span style="display:inline-block;padding:10px 18px;border-radius:999px;border:1px solid rgba(11,27,42,0.18);font-size:14px;font-weight:800;letter-spacing:0.02em;color:#0b1b2a;background:#ffffff;">
-              ${escapeHtml(serviceType)}
-            </span>
-          </div>
+          ${renderMetaCard("Subject", subject)}
+          ${parsed.description ? renderMetaCard("Description", parsed.description) : ""}
+          ${renderExtraMessageCard(parsed.extraMessage)}
 
-          <div style="margin-top:18px;padding:18px;border:1px solid rgba(0,184,241,0.12);background:#f8fbff;border-radius:16px;">
-            <div style="font-size:16px;font-weight:800;line-height:1.35;color:#0b1b2a;">
-              ${escapeHtml(subject)}
-            </div>
-            <div style="font-size:14px;line-height:1.6;color:#5b6570;margin-top:8px;">
-              Sent by: <strong style="color:#0b1b2a;">${escapeHtml(displayName)}</strong>
-            </div>
-            <div style="font-size:14px;line-height:1.6;color:#5b6570;margin-top:2px;">
-              Category: ${escapeHtml(serviceType)}
-            </div>
-            <div style="font-size:14px;line-height:1.6;color:#5b6570;margin-top:2px;">
-              Recipients: <strong style="color:#0b1b2a;">${Number(recipientsCount || 0)}</strong>
-            </div>
-          </div>
-
-          ${buildDetailsGrid(parsed.details)}
-
-          ${buildContentCard(
-            "Provider Description",
-            parsed.description,
-            "#ffffff",
-            "rgba(0,184,241,0.12)"
-          )}
-
-          ${buildContentCard(
-            "Extra Message",
-            parsed.extraMessage,
-            "#f8fbff",
-            "rgba(0,184,241,0.12)"
-          )}
-
-          <div style="margin-top:18px;padding:18px;border-radius:16px;background:#f9f6ef;border:1px solid rgba(11,27,42,0.06);">
-            <div style="font-size:15px;font-weight:800;line-height:1.4;color:#0b1b2a;">
-              Thank you for being part of OnTrip!
-            </div>
-            <div style="font-size:14px;line-height:1.75;color:#5b6570;margin-top:6px;">
-              You are receiving this email because you subscribed for provider updates.
-            </div>
-          </div>
-
-          <div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(11,27,42,0.08);text-align:center;font-size:13px;line-height:1.7;color:#8a94a6;">
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(11,27,42,0.08);text-align:center;font-size:13px;line-height:1.7;color:#8a94a6;">
             © 2025 <strong style="color:#0b1b2a;">OnTrip</strong>. All rights reserved.
           </div>
         </div>
@@ -371,6 +414,8 @@ export async function sendProviderBroadcast(req, res) {
         provider,
         imageUrl,
         recipientsCount: emails.length,
+        updatedAt: broadcast.updatedAt || new Date(),
+        status: "sent",
       }),
     });
 
