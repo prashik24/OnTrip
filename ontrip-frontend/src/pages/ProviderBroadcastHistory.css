@@ -6,7 +6,7 @@
 
 .providerBroadcastHistoryPage.container {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 0 16px;
   box-sizing: border-box;
@@ -164,8 +164,8 @@
 
 .providerBroadcastHistoryTopSection {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: 275px minmax(0, 1fr);
+  gap: 18px;
   align-items: stretch;
 }
 
@@ -173,15 +173,15 @@
   border-radius: 14px;
   overflow: hidden;
   background: rgba(177, 227, 250, 0.14);
-  min-height: 150px;
-  height: 150px;
+  min-height: 182px;
+  height: 182px;
   border: 1px solid rgba(0, 184, 241, 0.1);
 }
 
 .providerBroadcastHistoryImage {
   width: 100%;
   height: 100%;
-  min-height: 150px;
+  min-height: 182px;
   object-fit: cover;
   display: block;
 }
@@ -189,12 +189,12 @@
 .providerBroadcastHistorySummaryCard {
   background: rgba(244, 251, 255, 0.94);
   border-radius: 18px;
-  padding: 18px;
+  padding: 20px;
   border: 1px solid rgba(0, 184, 241, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 16px;
+  gap: 18px;
   min-width: 0;
 }
 
@@ -217,8 +217,8 @@
 .providerBroadcastHistorySummaryTop p {
   margin: 10px 0 0;
   color: #5b6570;
-  font-size: 14px;
-  line-height: 1.65;
+  font-size: 15px;
+  line-height: 1.7;
   font-weight: 650;
   word-break: break-word;
 }
@@ -240,26 +240,32 @@
 
 .providerBroadcastHistorySummaryStats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(145px, 1fr));
+  gap: 12px;
+  align-items: stretch;
 }
 
 .providerBroadcastHistorySummaryStat {
   background: #ffffff;
   border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 14px;
-  padding: 14px 12px;
+  padding: 14px 14px;
   color: #334155;
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 1.65;
   font-weight: 700;
   min-width: 0;
   word-break: break-word;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 4px;
 }
 
 .providerBroadcastHistorySummaryStat strong {
   color: #334155;
   font-weight: 800;
+  display: block;
 }
 
 .providerBroadcastHistoryInfoGrid {
@@ -363,13 +369,23 @@
   color: #ffffff;
 }
 
+@media (max-width: 1180px) {
+  .providerBroadcastHistoryTopSection {
+    grid-template-columns: 250px minmax(0, 1fr);
+  }
+
+  .providerBroadcastHistorySummaryStats {
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+  }
+}
+
 @media (max-width: 1080px) {
   .providerBroadcastHistoryGrid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 820px) {
+@media (max-width: 860px) {
   .providerBroadcastHistoryTopSection {
     grid-template-columns: 1fr;
   }
@@ -435,7 +451,6 @@
     padding: 16px;
   }
 
-  .providerBroadcastHistoryCardTop h4,
   .providerBroadcastHistorySummaryTop h4 {
     font-size: 18px;
   }
