@@ -337,7 +337,9 @@ export default function ProviderBroadcastHistory() {
       const parsed = parseBroadcastMessage(item.message);
       const serviceType = getServiceType(provider, parsed.details);
       const infoItems = buildInfoItems(provider, parsed.details);
-      const image = getProviderImage(provider, parsed);
+      const image =
+        item.previewImage ||
+        getProviderImage(provider, parsed);
 
       const topClass =
         item.status === "failed"
