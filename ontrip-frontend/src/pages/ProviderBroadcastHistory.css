@@ -418,3 +418,234 @@
     width: 100%;
   }
 }
+
+.providerBroadcastHistoryPage {
+  padding-bottom: 32px;
+  display: grid;
+  gap: 18px;
+}
+
+.providerBroadcastHistoryPage.container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+/* HEADER */
+.providerBroadcastHistoryHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.providerBroadcastHistoryHeadLeft {
+  display: grid;
+  gap: 8px;
+}
+
+.providerBroadcastHistoryHead h1 {
+  margin: 0;
+  font-size: 32px;
+  color: var(--text);
+}
+
+.providerBroadcastHistoryHead p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.providerBroadcastHistoryTopBtn {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  cursor: pointer;
+}
+
+.providerBroadcastHistoryTopBtn:hover {
+  box-shadow: 0 6px 14px rgba(10, 22, 35, 0.08);
+}
+
+/* GRID */
+.providerBroadcastHistoryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+/* CARD */
+.providerBroadcastHistoryCard {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  box-shadow: 0 8px 22px rgba(10, 22, 35, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* BLUE HEADER */
+.providerBroadcastHistoryCardTop.sent {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+}
+
+.providerBroadcastHistoryCardTop.pending {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.providerBroadcastHistoryCardTop.failed {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.providerBroadcastHistoryBlueHeader {
+  display: flex;
+  justify-content: space-between;
+  padding: 18px;
+  color: #fff;
+}
+
+.providerBroadcastHistoryBlueHeader h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.providerBroadcastHistoryStatusBadge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.2);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* BODY */
+.providerBroadcastHistoryCardBody {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* TOP SECTION */
+.providerBroadcastHistoryTopSection {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 16px;
+}
+
+.providerBroadcastHistoryImageWrap {
+  height: 150px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(0,184,241,0.1);
+}
+
+.providerBroadcastHistoryImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* SUMMARY BOX */
+.providerBroadcastHistorySummaryCard {
+  background: rgba(244,251,255,0.94);
+  border-radius: 16px;
+  padding: 14px;
+  border: 1px solid rgba(0,184,241,0.1);
+}
+
+/* ROW STYLE (IMPORTANT FIX) */
+.providerBroadcastHistorySummaryStats {
+  display: grid;
+  gap: 8px;
+}
+
+.providerBroadcastHistorySummaryRow {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px;
+  align-items: center;
+
+  background: #fff;
+  border: 1px solid rgba(0,184,241,0.1);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.providerBroadcastHistorySummaryRow strong {
+  font-size: 13px;
+  font-weight: 800;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.providerBroadcastHistorySummaryRow span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  word-break: break-word;
+}
+
+/* INFO GRID */
+.providerBroadcastHistoryInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 12px;
+}
+
+.providerBroadcastHistoryInfoCard {
+  background: rgba(244,251,255,0.94);
+  border-radius: 14px;
+  padding: 12px;
+  border: 1px solid rgba(0,184,241,0.1);
+}
+
+.providerBroadcastHistoryInfoCard strong {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: rgba(15,23,42,0.5);
+}
+
+.providerBroadcastHistoryInfoCard span {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* BUTTON */
+.providerBroadcastHistoryBtn {
+  min-height: 42px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.providerBroadcastHistoryBtn.primary {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+}
+
+/* RESPONSIVE */
+@media (max-width:1080px){
+  .providerBroadcastHistoryGrid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media (max-width:860px){
+  .providerBroadcastHistoryTopSection{
+    grid-template-columns:1fr;
+  }
+}
+
+@media (max-width:760px){
+  .providerBroadcastHistorySummaryRow{
+    grid-template-columns:1fr;
+    gap:4px;
+  }
+}
