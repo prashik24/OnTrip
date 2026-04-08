@@ -79,7 +79,6 @@
   align-items: flex-start;
   gap: 14px;
   min-width: 0;
-  flex-wrap: wrap;
 }
 
 .providerDashboardTop.active {
@@ -129,40 +128,6 @@
   line-height: 1.2;
 }
 
-.providerDashboardTopMetaButtons {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.providerDashboardTopMetaBtn {
-  background: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 12px;
-  padding: 10px 12px;
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-
-.providerDashboardTopMetaBtn strong {
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1.25;
-  color: rgba(15, 23, 42, 0.72);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.providerDashboardTopMetaBtn span {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.45;
-  color: #0f172a;
-  word-break: break-word;
-}
-
 .providerDashboardStatusBadge {
   padding: 7px 12px;
   border-radius: 10px;
@@ -194,7 +159,7 @@
   display: grid;
   grid-template-columns: 180px minmax(0, 1fr);
   gap: 14px;
-  align-items: center;
+  align-items: stretch;
   min-width: 0;
 }
 
@@ -225,21 +190,31 @@
   padding: 12px;
 }
 
-.providerDashboardPreviewMeta {
+.providerDashboardPreviewCard {
+  background: rgba(244, 251, 255, 0.94);
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid rgba(0, 184, 241, 0.1);
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px 12px;
-  align-content: flex-start;
+  align-items: center;
+}
+
+.providerDashboardPreviewMeta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
 }
 
 .providerDashboardPreviewMeta span {
-  padding: 7px 10px;
-  border-radius: 10px;
-  background: rgba(244, 251, 255, 0.94);
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ffffff;
   border: 1px solid rgba(0, 184, 241, 0.1);
-  font-size: 13px;
-  font-weight: 650;
-  color: rgba(11, 27, 42, 0.78);
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(11, 27, 42, 0.88);
+  line-height: 1.5;
   word-break: break-word;
 }
 
@@ -413,7 +388,7 @@
     justify-items: start;
   }
 
-  .providerDashboardTopMetaButtons {
+  .providerDashboardPreviewMeta {
     grid-template-columns: 1fr;
   }
 }
