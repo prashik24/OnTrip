@@ -197,10 +197,11 @@
 }
 
 .providerBroadcastHistorySummaryTop {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: start;
+  display: block;
+}
+
+.providerBroadcastHistorySummaryHeading {
+  min-width: 0;
 }
 
 .providerBroadcastHistorySummaryTop h4 {
@@ -221,22 +222,6 @@
   white-space: normal;
   word-break: break-word;
   overflow-wrap: anywhere;
-}
-
-.providerBroadcastHistoryServiceBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 38px;
-  padding: 0 16px;
-  border-radius: 12px;
-  background: rgba(206, 240, 252, 0.95);
-  border: 1px solid rgba(0, 184, 241, 0.16);
-  color: #0c6aa6;
-  font-size: 13px;
-  font-weight: 800;
-  white-space: nowrap;
-  align-self: start;
 }
 
 .providerBroadcastHistorySummaryStats {
@@ -270,10 +255,17 @@
   word-break: break-word;
 }
 
-.providerBroadcastHistorySummaryStat span,
-.providerBroadcastHistorySummaryStat div {
+.providerBroadcastHistorySummaryStat span {
   word-break: break-word;
   overflow-wrap: anywhere;
+}
+
+.providerBroadcastHistorySummaryStat small {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #64748b;
+  font-weight: 700;
+  word-break: break-word;
 }
 
 .providerBroadcastHistoryInfoGrid {
@@ -416,10 +408,6 @@
   .providerBroadcastHistoryBlueHeader {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .providerBroadcastHistorySummaryTop {
-    grid-template-columns: 1fr;
   }
 
   .providerBroadcastHistoryInfoGrid {
