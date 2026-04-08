@@ -18,6 +18,10 @@ function formatLabel(value) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function normalizeText(value = "") {
+  return String(value || "").trim().toLowerCase();
+}
+
 function getTravelPlans(provider) {
   if (!provider) return [];
 
@@ -123,7 +127,7 @@ function parseBroadcastMessage(message = "") {
 }
 
 function getServiceType(provider, details = {}) {
-  const listingType = String(details.listingType || "").trim().toLowerCase();
+  const listingType = normalizeText(details.listingType);
 
   if (listingType.includes("travel")) return "Travel Planner";
   if (listingType.includes("vehicle")) return "Vehicle Service";
@@ -163,17 +167,49 @@ function getProviderCardImage(provider, parsed = null) {
 
   if (serviceType === "Travel Planner") {
     const travelPlans = getTravelPlans(provider);
-    const packageTitle = String(details.packageTitle || "").trim().toLowerCase();
+    const targetPackageTitle = normalizeText(details.packageTitle);
+    const targetPlannerType = normalizeText(details.plannerType);
+    const targetDuration = normalizeText(details.duration);
 
-    if (packageTitle) {
-      const matchedPlan = travelPlans.find(
-        (plan) =>
-          String(plan.packageTitle || "").trim().toLowerCase() === packageTitle
+    let matchedPlan = null;
+
+    if (targetPackageTitle) {
+      matchedPlan = travelPlans.find(
+        (plan) => normalizeText(plan.packageTitle) === targetPackageTitle
       );
+    }
 
-      if (matchedPlan?.images?.[0]?.url) {
-        return matchedPlan.images[0].url;
-      }
+    if (!matchedPlan && targetPlannerType) {
+      matchedPlan = travelPlans.find(
+        (plan) => normalizeText(plan.plannerMode) === targetPlannerType
+      );
+    }
+
+    if (!matchedPlan && targetDuration) {
+      matchedPlan = travelPlans.find(
+        (plan) => normalizeText(plan.durationText) === targetDuration
+      );
+    }
+
+    if (
+      !matchedPlan &&
+      (targetPackageTitle || targetPlannerType || targetDuration)
+    ) {
+      matchedPlan = travelPlans.find((plan) => {
+        const packageTitle = normalizeText(plan.packageTitle);
+        const plannerMode = normalizeText(plan.plannerMode);
+        const durationText = normalizeText(plan.durationText);
+
+        return (
+          (targetPackageTitle && packageTitle.includes(targetPackageTitle)) ||
+          (targetPlannerType && plannerMode.includes(targetPlannerType)) ||
+          (targetDuration && durationText.includes(targetDuration))
+        );
+      });
+    }
+
+    if (matchedPlan?.images?.[0]?.url) {
+      return matchedPlan.images[0].url;
     }
 
     if (travelPlans[0]?.images?.[0]?.url) {
@@ -186,20 +222,37 @@ function getProviderCardImage(provider, parsed = null) {
   }
 
   if (serviceType === "Vehicle Service") {
-    const vehicleTitle = String(details.title || "").trim().toLowerCase();
-    const vehicleType = String(details.vehicleType || "").trim().toLowerCase();
+    const vehicleTitle = normalizeText(details.title);
+    const vehicleType = normalizeText(details.vehicleType);
+
+    let matchedVehicle = null;
 
     if (vehicleTitle || vehicleType) {
-      const matchedVehicle = (provider.vehicles || []).find((vehicle) => {
-        const vTitle = String(vehicle.title || "").trim().toLowerCase();
-        const vType = String(vehicle.vehicleType || "").trim().toLowerCase();
+      matchedVehicle = (provider.vehicles || []).find((vehicle) => {
+        const vTitle = normalizeText(vehicle.title);
+        const vType = normalizeText(vehicle.vehicleType);
 
-        return (vehicleTitle && vTitle === vehicleTitle) || (vehicleType && vType === vehicleType);
+        return (
+          (vehicleTitle && vTitle === vehicleTitle) ||
+          (vehicleType && vType === vehicleType)
+        );
       });
+    }
 
-      if (matchedVehicle?.images?.[0]?.url) {
-        return matchedVehicle.images[0].url;
-      }
+    if (!matchedVehicle && (vehicleTitle || vehicleType)) {
+      matchedVehicle = (provider.vehicles || []).find((vehicle) => {
+        const vTitle = normalizeText(vehicle.title);
+        const vType = normalizeText(vehicle.vehicleType);
+
+        return (
+          (vehicleTitle && vTitle.includes(vehicleTitle)) ||
+          (vehicleType && vType.includes(vehicleType))
+        );
+      });
+    }
+
+    if (matchedVehicle?.images?.[0]?.url) {
+      return matchedVehicle.images[0].url;
     }
 
     const firstVehicleWithImage = (provider.vehicles || []).find(
