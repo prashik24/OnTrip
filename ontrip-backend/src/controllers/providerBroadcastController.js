@@ -22,6 +22,10 @@ function normalizeText(value = "") {
   return String(value || "").trim().toLowerCase();
 }
 
+function normalizeEmail(value = "") {
+  return String(value || "").trim().toLowerCase();
+}
+
 function getTravelPlans(provider) {
   if (!provider) return [];
 
@@ -261,32 +265,32 @@ function buildInfoItems(provider, details = {}) {
 
   if (serviceType === "Travel Planner") {
     return [
-      { label: "Business Name", value: details.businessName || provider?.businessName || "-" },
-      { label: "City", value: details.city || provider?.city || "-" },
-      { label: "State", value: details.state || provider?.state || "-" },
-      { label: "Planner Type", value: details.plannerType || "-" },
-      { label: "Package Title", value: details.packageTitle || "-" },
-      { label: "Duration", value: details.duration || "-" },
-      { label: "Days", value: details.days || "-" },
-      { label: "Price From", value: details.priceFrom || "-" },
-      { label: "Price Per Person", value: details.pricePerPerson || "-" },
-      { label: "Places Covered", value: details.placesCovered || "-" },
-      { label: "Inclusions", value: details.inclusions || "-" },
-      { label: "Exclusions", value: details.exclusions || "-" },
+      ["Business Name", details.businessName || provider?.businessName || "-"],
+      ["City", details.city || provider?.city || "-"],
+      ["State", details.state || provider?.state || "-"],
+      ["Planner Type", details.plannerType || "-"],
+      ["Package Title", details.packageTitle || "-"],
+      ["Duration", details.duration || "-"],
+      ["Days", details.days || "-"],
+      ["Price From", details.priceFrom || "-"],
+      ["Price Per Person", details.pricePerPerson || "-"],
+      ["Places Covered", details.placesCovered || "-"],
+      ["Inclusions", details.inclusions || "-"],
+      ["Exclusions", details.exclusions || "-"],
     ];
   }
 
   return [
-    { label: "Business Name", value: details.businessName || provider?.businessName || "-" },
-    { label: "City", value: details.city || provider?.city || "-" },
-    { label: "State", value: details.state || provider?.state || "-" },
-    { label: "Vehicle Type", value: details.vehicleType || "-" },
-    { label: "Title", value: details.title || "-" },
-    { label: "Price", value: details.price || "-" },
-    { label: "Price Unit", value: details.priceUnit || "-" },
-    { label: "Capacity", value: details.capacity || "-" },
-    { label: "Fuel Type", value: details.fuelType || "-" },
-    { label: "With Driver", value: details.withDriver || "-" },
+    ["Business Name", details.businessName || provider?.businessName || "-"],
+    ["City", details.city || provider?.city || "-"],
+    ["State", details.state || provider?.state || "-"],
+    ["Vehicle Type", details.vehicleType || "-"],
+    ["Title", details.title || "-"],
+    ["Price", details.price || "-"],
+    ["Price Unit", details.priceUnit || "-"],
+    ["Capacity", details.capacity || "-"],
+    ["Fuel Type", details.fuelType || "-"],
+    ["With Driver", details.withDriver || "-"],
   ];
 }
 
@@ -313,10 +317,10 @@ function renderInfoGrid(items = []) {
     rows.push(`
       <tr>
         <td style="width:50%;padding:0 8px 16px 0;vertical-align:top;">
-          ${left ? renderInfoCard(left.label, left.value) : ""}
+          ${left ? renderInfoCard(left[0], left[1]) : ""}
         </td>
         <td style="width:50%;padding:0 0 16px 8px;vertical-align:top;">
-          ${right ? renderInfoCard(right.label, right.value) : ""}
+          ${right ? renderInfoCard(right[0], right[1]) : ""}
         </td>
       </tr>
     `);
@@ -543,6 +547,26 @@ export async function getProviderBroadcasts(req, res) {
 
 export async function getAllProviderBroadcasts(req, res) {
   try {
+    const userId = String(req.user?._id || "");
+    const userEmail = normalizeEmail(req.user?.email);
+
+    if (!userId || !userEmail) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const subscriber = await Subscriber.findOne({
+      email: userEmail,
+      isSubscribed: true,
+    });
+
+    if (!subscriber) {
+      return res.status(403).json({
+        message: "Only subscribed users can view provider broadcasts.",
+      });
+    }
+
     const broadcasts = await ProviderBroadcast.find({
       status: "sent",
     })
@@ -555,8 +579,17 @@ export async function getAllProviderBroadcasts(req, res) {
       })
       .sort({ createdAt: -1 });
 
+    const filteredBroadcasts = broadcasts.filter((item) => {
+      const ownerId =
+        item?.provider?.owner?._id ||
+        item?.provider?.owner?.id ||
+        item?.provider?.owner;
+
+      return String(ownerId || "") !== userId;
+    });
+
     return res.json({
-      broadcasts,
+      broadcasts: filteredBroadcasts,
     });
   } catch (error) {
     console.error("getAllProviderBroadcasts error:", error);
