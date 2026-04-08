@@ -271,39 +271,52 @@ export default function ProviderBroadcastHistory() {
             return (
               <div className="providerBroadcastHistoryCard" key={item._id}>
                 <div className={`providerBroadcastHistoryCardTop ${item.topClass}`}>
-                  <div className="providerBroadcastHistoryCardTopMain">
-                    <div className="providerBroadcastHistoryCardTopLeft">
-                      <h3>{item.subject || item.meta.title || "Broadcast"}</h3>
+                  <div className="providerBroadcastHistoryBlueHeader">
+                    <div className="providerBroadcastHistoryBlueHeaderLeft">
+                      <h3>{details.businessName || item.provider?.businessName || "Provider Broadcast"}</h3>
                     </div>
 
-                    <div className="providerBroadcastHistoryCardTopRight">
+                    <div className="providerBroadcastHistoryBlueHeaderRight">
                       <div className="providerBroadcastHistoryStatusBadge">
                         {formatLabel(item.status || "-")}
                       </div>
                     </div>
                   </div>
-
-                  <div className="providerBroadcastHistoryHeaderStats">
-                    <div className="providerBroadcastHistoryHeaderStat">
-                      <strong>Subject:</strong> {item.subject || "-"}
-                    </div>
-                    <div className="providerBroadcastHistoryHeaderStat">
-                      <strong>Recipients:</strong> {item.recipientsCount || 0}
-                    </div>
-                    <div className="providerBroadcastHistoryHeaderStat">
-                      <strong>Updated:</strong> {formatDateTime(item.updatedAt)}
-                    </div>
-                  </div>
                 </div>
 
                 <div className="providerBroadcastHistoryCardBody">
-                  <div className="providerBroadcastHistoryPreview">
+                  <div className="providerBroadcastHistoryTopSection">
                     <div className="providerBroadcastHistoryImageWrap">
                       <img
                         src={item.image}
                         alt={item.meta.title}
                         className="providerBroadcastHistoryImage"
                       />
+                    </div>
+
+                    <div className="providerBroadcastHistorySummaryCard">
+                      <div className="providerBroadcastHistorySummaryTop">
+                        <div>
+                          <h4>{item.meta.title}</h4>
+                          <p>{details.message || description || item.provider?.description || "-"}</p>
+                        </div>
+
+                        <div className="providerBroadcastHistoryServiceBadge">
+                          {item.meta.type}
+                        </div>
+                      </div>
+
+                      <div className="providerBroadcastHistorySummaryStats">
+                        <div className="providerBroadcastHistorySummaryStat">
+                          <strong>Subject:</strong> {item.subject || "-"}
+                        </div>
+                        <div className="providerBroadcastHistorySummaryStat">
+                          <strong>Recipients:</strong> {item.recipientsCount || 0}
+                        </div>
+                        <div className="providerBroadcastHistorySummaryStat">
+                          <strong>Updated:</strong> {formatDateTime(item.updatedAt)}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
