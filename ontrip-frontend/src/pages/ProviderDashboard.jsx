@@ -163,27 +163,6 @@ export default function ProviderDashboard() {
                   <div className="providerDashboardTopRight">
                     <div className="providerDashboardPrice">₹{booking.amount}</div>
                   </div>
-
-                  <div className="providerDashboardTopMetaButtons">
-                    <div className="providerDashboardTopMetaBtn">
-                      <strong>Date</strong>
-                      <span>
-                        {booking.bookingDate
-                          ? new Date(booking.bookingDate).toLocaleDateString()
-                          : "-"}
-                      </span>
-                    </div>
-
-                    <div className="providerDashboardTopMetaBtn">
-                      <strong>Payment</strong>
-                      <span>{formatStatusLabel(booking.paymentStatus)}</span>
-                    </div>
-
-                    <div className="providerDashboardTopMetaBtn">
-                      <strong>Status</strong>
-                      <span>{formatStatusLabel(booking.bookingStatus)}</span>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="providerDashboardBody">
@@ -198,6 +177,19 @@ export default function ProviderDashboard() {
                       ) : (
                         <div className="providerDashboardImageEmpty">No Image</div>
                       )}
+                    </div>
+
+                    <div className="providerDashboardPreviewCard">
+                      <div className="providerDashboardPreviewMeta">
+                        <span>
+                          Date:{" "}
+                          {booking.bookingDate
+                            ? new Date(booking.bookingDate).toLocaleDateString()
+                            : "-"}
+                        </span>
+                        <span>Payment: {formatStatusLabel(booking.paymentStatus)}</span>
+                        <span>Status: {formatStatusLabel(booking.bookingStatus)}</span>
+                      </div>
                     </div>
                   </div>
 
