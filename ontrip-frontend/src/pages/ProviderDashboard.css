@@ -208,8 +208,8 @@
 .providerDashboardPreviewMeta span {
   padding: 7px 10px;
   border-radius: 10px;
-  background: rgba(244, 251, 255, 0.94);
-  border: 1px solid rgba(0, 184, 241, 0.1);
+  background: #ffffff;
+  border: 1px solid rgba(0, 184, 241, 0.18);
   font-size: 13px;
   font-weight: 650;
   color: rgba(11, 27, 42, 0.78);
@@ -437,4 +437,4 @@
     min-height: 44px;
     font-size: 14px;
   }
-}
+} 
