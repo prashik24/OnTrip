@@ -290,9 +290,7 @@ export default function Profile() {
 
                   <div className="profileQuickCard">
                     <h3>Provider Broadcast</h3>
-                    <p>
-                      Send trip and vehicle updates to all subscribed users.
-                    </p>
+                    <p>Send trip and vehicle updates to all subscribed users.</p>
                     <button
                       className="profileGhostBtn"
                       onClick={() => navigate("/provider-broadcast")}
@@ -328,6 +326,19 @@ export default function Profile() {
                   </div>
                 </>
               )}
+
+              <div className="profileQuickCard">
+                <h3>Provider Broadcasts</h3>
+                <p>
+                  View all provider broadcast messages, offers, updates, and announcements.
+                </p>
+                <button
+                  className="profileGhostBtn"
+                  onClick={() => navigate("/provider-broadcasts")}
+                >
+                  Open Provider Broadcasts
+                </button>
+              </div>
             </div>
           </div>
         ) : (
