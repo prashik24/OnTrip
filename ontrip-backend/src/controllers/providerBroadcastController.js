@@ -37,17 +37,50 @@ function getTravelPlans(provider) {
   return [];
 }
 
-function getProviderCardImage(provider) {
+function getProviderCardImage(provider, parsed = null) {
   if (!provider) return "";
 
   if (provider.listingType === "travel_planner") {
     const travelPlans = getTravelPlans(provider);
+    const packageTitle = String(parsed?.details?.packageTitle || "").trim().toLowerCase();
+
+    if (packageTitle) {
+      const matchedPlan = travelPlans.find(
+        (plan) =>
+          String(plan.packageTitle || "").trim().toLowerCase() === packageTitle
+      );
+
+      if (matchedPlan?.images?.[0]?.url) {
+        return matchedPlan.images[0].url;
+      }
+    }
+
     if (travelPlans[0]?.images?.[0]?.url) {
       return travelPlans[0].images[0].url;
+    }
+
+    if (provider.travelPlanner?.images?.[0]?.url) {
+      return provider.travelPlanner.images[0].url;
     }
   }
 
   if (provider.listingType === "vehicle") {
+    const vehicleTitle = String(parsed?.details?.title || "").trim().toLowerCase();
+    const vehicleType = String(parsed?.details?.vehicleType || "").trim().toLowerCase();
+
+    if (vehicleTitle || vehicleType) {
+      const matchedVehicle = (provider.vehicles || []).find((vehicle) => {
+        const vTitle = String(vehicle.title || "").trim().toLowerCase();
+        const vType = String(vehicle.vehicleType || "").trim().toLowerCase();
+
+        return (vehicleTitle && vTitle === vehicleTitle) || (vehicleType && vType === vehicleType);
+      });
+
+      if (matchedVehicle?.images?.[0]?.url) {
+        return matchedVehicle.images[0].url;
+      }
+    }
+
     const firstVehicleWithImage = (provider.vehicles || []).find(
       (vehicle) => vehicle?.images?.[0]?.url
     );
@@ -151,8 +184,25 @@ function parseBroadcastMessage(message = "") {
   };
 }
 
+function getServiceType(provider, details = {}) {
+  if (provider?.listingType === "travel_planner") return "Travel Planner";
+  if (provider?.listingType === "vehicle") return "Vehicle Service";
+
+  if (details.packageTitle || details.plannerType || details.duration || details.priceFrom) {
+    return "Travel Planner";
+  }
+
+  if (details.vehicleType || details.title || details.priceUnit || details.fuelType) {
+    return "Vehicle Service";
+  }
+
+  return "Broadcast";
+}
+
 function buildInfoItems(provider, details) {
-  if (provider?.listingType === "travel_planner") {
+  const serviceType = getServiceType(provider, details);
+
+  if (serviceType === "Travel Planner") {
     return [
       ["Business Name", details.businessName || provider?.businessName || "-"],
       ["City", details.city || provider?.city || "-"],
@@ -208,9 +258,7 @@ function renderInfoGrid(items = []) {
 
               return `
                 <tr>
-                  <td style="width:50%;vertical-align:top;${
-                    !left ? "display:none;" : ""
-                  }">
+                  <td style="width:50%;vertical-align:top;${!left ? "display:none;" : ""}">
                     ${
                       left
                         ? `
@@ -226,9 +274,7 @@ function renderInfoGrid(items = []) {
                         : ""
                     }
                   </td>
-                  <td style="width:50%;vertical-align:top;${
-                    !right ? "display:none;" : ""
-                  }">
+                  <td style="width:50%;vertical-align:top;${!right ? "display:none;" : ""}">
                     ${
                       right
                         ? `
@@ -295,17 +341,12 @@ function providerBroadcastEmailHtml({
 }) {
   const parsed = parseBroadcastMessage(message);
   const details = parsed.details || {};
+  const serviceType = getServiceType(provider, details);
   const infoItems = buildInfoItems(provider, details);
   const displayName = details.businessName || provider?.businessName || "OnTrip Provider";
-  const serviceType = provider?.listingType
-    ? formatLabel(provider.listingType)
-    : details.vehicleType || details.title
-    ? "Vehicle Service"
-    : details.packageTitle || details.plannerType
-    ? "Travel Planner"
-    : "Broadcast";
-
-  const updatedLabel = updatedAt ? new Date(updatedAt).toLocaleString() : new Date().toLocaleString();
+  const updatedLabel = updatedAt
+    ? new Date(updatedAt).toLocaleString()
+    : new Date().toLocaleString();
 
   return `
     <div style="margin:0;padding:20px;background:#f4fbff;font-family:Arial,Helvetica,sans-serif;color:#0b1b2a;">
@@ -350,7 +391,6 @@ function providerBroadcastEmailHtml({
           </table>
 
           ${renderInfoGrid(infoItems)}
-
           ${renderMetaCard("Subject", subject)}
           ${parsed.description ? renderMetaCard("Description", parsed.description) : ""}
           ${renderExtraMessageCard(parsed.extraMessage)}
@@ -403,7 +443,8 @@ export async function sendProviderBroadcast(req, res) {
       status: "pending",
     });
 
-    const imageUrl = getProviderCardImage(provider);
+    const parsed = parseBroadcastMessage(String(message).trim());
+    const imageUrl = getProviderCardImage(provider, parsed);
 
     await sendTransactionalEmail({
       to: emails.map((email) => ({ email })),
