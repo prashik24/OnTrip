@@ -70,7 +70,9 @@ function parseBroadcastMessage(message = "") {
     if (line === "-") return;
 
     const colonIndex = line.indexOf(":");
-    if (colonIndex > -1) {
+    const hasLabel = colonIndex > -1;
+
+    if (hasLabel) {
       const key = line.slice(0, colonIndex).trim();
       const value = line.slice(colonIndex + 1).trim();
 
@@ -492,7 +494,7 @@ export async function sendProviderBroadcast(req, res) {
     });
 
     const parsed = parseBroadcastMessage(cleanMessage);
-    const imageUrl = getProviderCardImage(provider, parsed);
+    const imageUrl = getExactBroadcastImage(provider, parsed);
 
     await sendTransactionalEmail({
       to: emails.map((email) => ({ email })),
