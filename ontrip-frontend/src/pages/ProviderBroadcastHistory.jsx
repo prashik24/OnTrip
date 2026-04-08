@@ -191,10 +191,7 @@ function getProviderImage(provider, parsed = null) {
       );
     }
 
-    if (
-      !matchedPlan &&
-      (targetPackageTitle || targetPlannerType || targetDuration)
-    ) {
+    if (!matchedPlan && (targetPackageTitle || targetPlannerType || targetDuration)) {
       matchedPlan = travelPlans.find((plan) => {
         const packageTitle = normalizeText(plan.packageTitle);
         const plannerMode = normalizeText(plan.plannerMode);
