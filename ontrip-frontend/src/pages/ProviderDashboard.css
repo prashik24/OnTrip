@@ -79,6 +79,7 @@
   align-items: flex-start;
   gap: 14px;
   min-width: 0;
+  flex-wrap: wrap;
 }
 
 .providerDashboardTop.active {
@@ -128,12 +129,38 @@
   line-height: 1.2;
 }
 
-.providerDashboardTopStatuses {
-  display: flex;
-  align-items: center;
+.providerDashboardTopMetaButtons {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+}
+
+.providerDashboardTopMetaBtn {
+  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.providerDashboardTopMetaBtn strong {
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: rgba(15, 23, 42, 0.72);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.providerDashboardTopMetaBtn span {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #0f172a;
+  word-break: break-word;
 }
 
 .providerDashboardStatusBadge {
@@ -386,8 +413,8 @@
     justify-items: start;
   }
 
-  .providerDashboardTopStatuses {
-    justify-content: flex-start;
+  .providerDashboardTopMetaButtons {
+    grid-template-columns: 1fr;
   }
 }
 
