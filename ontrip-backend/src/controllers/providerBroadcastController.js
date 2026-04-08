@@ -70,9 +70,7 @@ function parseBroadcastMessage(message = "") {
     if (line === "-") return;
 
     const colonIndex = line.indexOf(":");
-    const hasLabel = colonIndex > -1;
-
-    if (hasLabel) {
+    if (colonIndex > -1) {
       const key = line.slice(0, colonIndex).trim();
       const value = line.slice(colonIndex + 1).trim();
 
@@ -159,7 +157,7 @@ function getServiceType(provider, details = {}) {
   return "Broadcast";
 }
 
-function getProviderCardImage(provider, parsed = null) {
+function getExactBroadcastImage(provider, parsed = null) {
   const details = parsed?.details || {};
   const serviceType = getServiceType(provider, details);
 
@@ -167,45 +165,34 @@ function getProviderCardImage(provider, parsed = null) {
 
   if (serviceType === "Travel Planner") {
     const travelPlans = getTravelPlans(provider);
-    const targetPackageTitle = normalizeText(details.packageTitle);
-    const targetPlannerType = normalizeText(details.plannerType);
-    const targetDuration = normalizeText(details.duration);
+    const packageTitle = normalizeText(details.packageTitle);
+    const plannerType = normalizeText(details.plannerType);
+    const duration = normalizeText(details.duration);
 
     let matchedPlan = null;
 
-    if (targetPackageTitle) {
+    if (packageTitle) {
       matchedPlan = travelPlans.find(
-        (plan) => normalizeText(plan.packageTitle) === targetPackageTitle
+        (plan) => normalizeText(plan.packageTitle) === packageTitle
       );
     }
 
-    if (!matchedPlan && targetPlannerType) {
+    if (!matchedPlan && plannerType) {
       matchedPlan = travelPlans.find(
-        (plan) => normalizeText(plan.plannerMode) === targetPlannerType
+        (plan) => normalizeText(plan.plannerMode) === plannerType
       );
     }
 
-    if (!matchedPlan && targetDuration) {
+    if (!matchedPlan && duration) {
       matchedPlan = travelPlans.find(
-        (plan) => normalizeText(plan.durationText) === targetDuration
+        (plan) => normalizeText(plan.durationText) === duration
       );
     }
 
-    if (
-      !matchedPlan &&
-      (targetPackageTitle || targetPlannerType || targetDuration)
-    ) {
-      matchedPlan = travelPlans.find((plan) => {
-        const packageTitle = normalizeText(plan.packageTitle);
-        const plannerMode = normalizeText(plan.plannerMode);
-        const durationText = normalizeText(plan.durationText);
-
-        return (
-          (targetPackageTitle && packageTitle.includes(targetPackageTitle)) ||
-          (targetPlannerType && plannerMode.includes(targetPlannerType)) ||
-          (targetDuration && durationText.includes(targetDuration))
-        );
-      });
+    if (!matchedPlan && packageTitle) {
+      matchedPlan = travelPlans.find((plan) =>
+        normalizeText(plan.packageTitle).includes(packageTitle)
+      );
     }
 
     if (matchedPlan?.images?.[0]?.url) {
@@ -304,12 +291,8 @@ function buildInfoItems(provider, details = {}) {
 function renderSummaryRow(label, value) {
   return `
     <div style="display:grid;grid-template-columns:98px minmax(0,1fr);gap:6px;align-items:start;background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:12px 14px;">
-      <div style="color:#334155;font-size:13px;font-weight:800;line-height:1.35;white-space:nowrap;">${escapeHtml(
-        label
-      )}:</div>
-      <div style="color:#334155;font-size:13px;font-weight:700;line-height:1.45;word-break:break-word;">${escapeHtml(
-        value
-      )}</div>
+      <div style="color:#334155;font-size:13px;font-weight:800;line-height:1.35;white-space:nowrap;">${escapeHtml(label)}:</div>
+      <div style="color:#334155;font-size:13px;font-weight:700;line-height:1.45;word-break:break-word;">${escapeHtml(value)}</div>
     </div>
   `;
 }
@@ -412,9 +395,7 @@ function providerBroadcastEmailHtml({
   const serviceType = getServiceType(provider, details);
   const infoItems = buildInfoItems(provider, details);
   const displayName = details.businessName || provider?.businessName || "OnTrip Provider";
-  const updatedLabel = updatedAt
-    ? new Date(updatedAt).toLocaleString()
-    : new Date().toLocaleString();
+  const updatedLabel = updatedAt ? new Date(updatedAt).toLocaleString() : new Date().toLocaleString();
 
   return `
     <div style="margin:0;padding:20px;background:#f4fbff;font-family:Arial,Helvetica,sans-serif;color:#0b1b2a;">
@@ -437,11 +418,7 @@ function providerBroadcastEmailHtml({
                 <div style="border-radius:14px;overflow:hidden;background:rgba(177,227,250,0.14);height:150px;min-height:150px;border:1px solid rgba(0,184,241,0.1);">
                   ${
                     imageUrl
-                      ? `<img src="${escapeHtml(
-                          imageUrl
-                        )}" alt="${escapeHtml(
-                          displayName
-                        )}" style="width:100%;height:150px;display:block;object-fit:cover;" />`
+                      ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(displayName)}" style="width:100%;height:150px;display:block;object-fit:cover;" />`
                       : ""
                   }
                 </div>
