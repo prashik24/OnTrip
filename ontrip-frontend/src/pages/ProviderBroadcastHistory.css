@@ -189,7 +189,7 @@
 .providerBroadcastHistorySummaryCard {
   background: rgba(244, 251, 255, 0.94);
   border-radius: 18px;
-  padding: 16px;
+  padding: 14px;
   border: 1px solid rgba(0, 184, 241, 0.1);
   min-width: 0;
   align-self: stretch;
@@ -203,8 +203,8 @@
 
 .providerBroadcastHistorySummaryRow {
   display: grid;
-  grid-template-columns: 128px minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: 98px minmax(0, 1fr);
+  gap: 6px;
   align-items: start;
   background: #ffffff;
   border: 1px solid rgba(0, 184, 241, 0.1);
@@ -216,7 +216,7 @@
   color: #334155;
   font-size: 13px;
   font-weight: 800;
-  line-height: 1.4;
+  line-height: 1.35;
   white-space: nowrap;
 }
 
@@ -224,7 +224,7 @@
   color: #334155;
   font-size: 13px;
   font-weight: 700;
-  line-height: 1.5;
+  line-height: 1.45;
   word-break: break-word;
   overflow-wrap: anywhere;
   text-align: left;
@@ -260,6 +260,36 @@
   font-weight: 650;
   color: rgba(15, 23, 42, 0.88);
   line-height: 1.55;
+  word-break: break-word;
+}
+
+.providerBroadcastHistoryMetaSection {
+  display: grid;
+  gap: 12px;
+}
+
+.providerBroadcastHistoryMetaCard {
+  background: linear-gradient(180deg, rgba(248, 252, 255, 0.96), rgba(241, 249, 255, 0.96));
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 14px;
+  padding: 14px 15px;
+  display: grid;
+  gap: 6px;
+}
+
+.providerBroadcastHistoryMetaCard strong {
+  color: #0369a1;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.providerBroadcastHistoryMetaCard span {
+  color: rgba(15, 23, 42, 0.86);
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 600;
   word-break: break-word;
 }
 
@@ -334,10 +364,6 @@
 @media (max-width: 1180px) {
   .providerBroadcastHistoryTopSection {
     grid-template-columns: 220px minmax(0, 1fr);
-  }
-
-  .providerBroadcastHistorySummaryRow {
-    grid-template-columns: 118px minmax(0, 1fr);
   }
 }
 
