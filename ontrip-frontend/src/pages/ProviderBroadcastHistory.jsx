@@ -32,7 +32,9 @@ function getProviderImage(provider) {
 
   if (provider.listingType === "vehicle") {
     if (Array.isArray(provider.vehicles) && provider.vehicles.length > 0) {
-      const firstVehicleWithImage = provider.vehicles.find((vehicle) => vehicle?.images?.[0]?.url);
+      const firstVehicleWithImage = provider.vehicles.find(
+        (vehicle) => vehicle?.images?.[0]?.url
+      );
       if (firstVehicleWithImage?.images?.[0]?.url) {
         return firstVehicleWithImage.images[0].url;
       }
@@ -273,7 +275,9 @@ export default function ProviderBroadcastHistory() {
                 <div className={`providerBroadcastHistoryCardTop ${item.topClass}`}>
                   <div className="providerBroadcastHistoryBlueHeader">
                     <div className="providerBroadcastHistoryBlueHeaderLeft">
-                      <h3>{details.businessName || item.provider?.businessName || "Provider Broadcast"}</h3>
+                      <h3>
+                        {details.businessName || item.provider?.businessName || "Provider Broadcast"}
+                      </h3>
                     </div>
 
                     <div className="providerBroadcastHistoryBlueHeaderRight">
@@ -322,7 +326,10 @@ export default function ProviderBroadcastHistory() {
 
                   <div className="providerBroadcastHistoryInfoGrid">
                     {infoItems.map((info, index) => (
-                      <div key={`${item._id}-info-${index}`} className="providerBroadcastHistoryInfoCard">
+                      <div
+                        key={`${item._id}-info-${index}`}
+                        className="providerBroadcastHistoryInfoCard"
+                      >
                         <strong>{info.label}</strong>
                         <span>{info.value || "-"}</span>
                       </div>
