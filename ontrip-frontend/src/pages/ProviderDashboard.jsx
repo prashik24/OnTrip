@@ -162,6 +162,18 @@ export default function ProviderDashboard() {
 
                   <div className="providerDashboardTopRight">
                     <div className="providerDashboardPrice">₹{booking.amount}</div>
+                    <div className="providerDashboardTopStatuses">
+                      <span
+                        className={`providerDashboardStatusBadge top ${booking.paymentStatus || ""}`}
+                      >
+                        {formatStatusLabel(booking.paymentStatus)}
+                      </span>
+                      <span
+                        className={`providerDashboardStatusBadge top ${booking.bookingStatus || ""}`}
+                      >
+                        {formatStatusLabel(booking.bookingStatus)}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -179,17 +191,15 @@ export default function ProviderDashboard() {
                       )}
                     </div>
 
-                    <div className="providerDashboardPreviewCard">
-                      <div className="providerDashboardPreviewMeta">
-                        <span>
-                          Date:{" "}
-                          {booking.bookingDate
-                            ? new Date(booking.bookingDate).toLocaleDateString()
-                            : "-"}
-                        </span>
-                        <span>Payment: {formatStatusLabel(booking.paymentStatus)}</span>
-                        <span>Status: {formatStatusLabel(booking.bookingStatus)}</span>
-                      </div>
+                    <div className="providerDashboardPreviewMeta">
+                      <span>
+                        Date:{" "}
+                        {booking.bookingDate
+                          ? new Date(booking.bookingDate).toLocaleDateString()
+                          : "-"}
+                      </span>
+                      <span>Payment: {formatStatusLabel(booking.paymentStatus)}</span>
+                      <span>Status: {formatStatusLabel(booking.bookingStatus)}</span>
                     </div>
                   </div>
 
