@@ -144,8 +144,8 @@ export default function SubscriberGroupPage() {
           <div className="subscriberGroupKicker">OnTrip Provider Tools</div>
           <h1>Create Subscriber Chat Group</h1>
           <p>
-            View all subscribed users, select the ones with chat accounts, and create a
-            group that will appear directly inside your chat page.
+            View all subscribed users, select the ones with chat accounts, and
+            create a group that will appear directly inside your chat page.
           </p>
         </div>
 
@@ -193,9 +193,7 @@ export default function SubscriberGroupPage() {
                 return (
                   <div
                     key={item.id}
-                    className={`subscriberCard ${isSelected ? "selected" : ""} ${
-                      !item.hasAccount ? "disabled" : ""
-                    }`}
+                    className={`subscriberCard ${!item.hasAccount ? "disabled" : ""}`}
                   >
                     <div className="subscriberCardTop">
                       <div className="subscriberCardIdentity">
@@ -215,20 +213,19 @@ export default function SubscriberGroupPage() {
                         </div>
                       </div>
 
-                      <button
-                        type="button"
-                        className={`subscriberSelectBtn ${
-                          isSelected ? "selected" : ""
+                      <label
+                        className={`subscriberCheckboxWrap ${
+                          !item.hasAccount ? "disabled" : ""
                         }`}
-                        onClick={() => toggleSelect(item)}
-                        disabled={!item.hasAccount}
                       >
-                        {!item.hasAccount
-                          ? "No Account"
-                          : isSelected
-                          ? "Selected"
-                          : "Select"}
-                      </button>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelect(item)}
+                          disabled={!item.hasAccount}
+                        />
+                        <span className="subscriberCheckboxBox" />
+                      </label>
                     </div>
 
                     <div className="subscriberMetaGrid">
