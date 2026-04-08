@@ -338,7 +338,7 @@ export default function Profile() {
                 </>
               )}
 
-              {isSubscribedUser && (
+              {isSubscribedUser && !hasProviderListings && (
                 <div className="profileQuickCard">
                   <h3>Provider Broadcasts</h3>
                   <p>
