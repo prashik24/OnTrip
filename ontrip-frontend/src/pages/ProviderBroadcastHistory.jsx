@@ -143,16 +143,9 @@ function buildPrimaryMeta(item, provider) {
   const isTrip =
     provider?.listingType === "travel_planner" || details.packageTitle || details.plannerType;
 
-  const title = isVehicle
-    ? details.title || item.subject || "Vehicle Service"
-    : isTrip
-    ? details.packageTitle || item.subject || "Travel Planner"
-    : item.subject || "Broadcast";
-
   const type = isVehicle ? "Vehicle Service" : isTrip ? "Travel Planner" : "Broadcast";
 
   return {
-    title,
     type,
     parsed,
   };
@@ -293,19 +286,12 @@ export default function ProviderBroadcastHistory() {
                     <div className="providerBroadcastHistoryImageWrap">
                       <img
                         src={item.image}
-                        alt={item.meta.title}
+                        alt={details.businessName || "Provider Broadcast"}
                         className="providerBroadcastHistoryImage"
                       />
                     </div>
 
                     <div className="providerBroadcastHistorySummaryCard">
-                      <div className="providerBroadcastHistorySummaryTop">
-                        <div className="providerBroadcastHistorySummaryHeading">
-                          <h4>{item.meta.title}</h4>
-                          <p>{details.message || description || item.provider?.description || "-"}</p>
-                        </div>
-                      </div>
-
                       <div className="providerBroadcastHistorySummaryStats">
                         <div className="providerBroadcastHistorySummaryStat">
                           <strong>Subject</strong>
