@@ -336,6 +336,7 @@ export default function ProviderBroadcast() {
       const response = await apiFetch("/api/provider-broadcasts/send", {
         method: "POST",
         body: JSON.stringify({
+          providerId: form.providerId,
           subject: form.subject.trim(),
           message,
         }),
