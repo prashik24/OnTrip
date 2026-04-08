@@ -261,32 +261,32 @@ function buildInfoItems(provider, details = {}) {
 
   if (serviceType === "Travel Planner") {
     return [
-      ["Business Name", details.businessName || provider?.businessName || "-"],
-      ["City", details.city || provider?.city || "-"],
-      ["State", details.state || provider?.state || "-"],
-      ["Planner Type", details.plannerType || "-"],
-      ["Package Title", details.packageTitle || "-"],
-      ["Duration", details.duration || "-"],
-      ["Days", details.days || "-"],
-      ["Price From", details.priceFrom || "-"],
-      ["Price Per Person", details.pricePerPerson || "-"],
-      ["Places Covered", details.placesCovered || "-"],
-      ["Inclusions", details.inclusions || "-"],
-      ["Exclusions", details.exclusions || "-"],
+      { label: "Business Name", value: details.businessName || provider?.businessName || "-" },
+      { label: "City", value: details.city || provider?.city || "-" },
+      { label: "State", value: details.state || provider?.state || "-" },
+      { label: "Planner Type", value: details.plannerType || "-" },
+      { label: "Package Title", value: details.packageTitle || "-" },
+      { label: "Duration", value: details.duration || "-" },
+      { label: "Days", value: details.days || "-" },
+      { label: "Price From", value: details.priceFrom || "-" },
+      { label: "Price Per Person", value: details.pricePerPerson || "-" },
+      { label: "Places Covered", value: details.placesCovered || "-" },
+      { label: "Inclusions", value: details.inclusions || "-" },
+      { label: "Exclusions", value: details.exclusions || "-" },
     ];
   }
 
   return [
-    ["Business Name", details.businessName || provider?.businessName || "-"],
-    ["City", details.city || provider?.city || "-"],
-    ["State", details.state || provider?.state || "-"],
-    ["Vehicle Type", details.vehicleType || "-"],
-    ["Title", details.title || "-"],
-    ["Price", details.price || "-"],
-    ["Price Unit", details.priceUnit || "-"],
-    ["Capacity", details.capacity || "-"],
-    ["Fuel Type", details.fuelType || "-"],
-    ["With Driver", details.withDriver || "-"],
+    { label: "Business Name", value: details.businessName || provider?.businessName || "-" },
+    { label: "City", value: details.city || provider?.city || "-" },
+    { label: "State", value: details.state || provider?.state || "-" },
+    { label: "Vehicle Type", value: details.vehicleType || "-" },
+    { label: "Title", value: details.title || "-" },
+    { label: "Price", value: details.price || "-" },
+    { label: "Price Unit", value: details.priceUnit || "-" },
+    { label: "Capacity", value: details.capacity || "-" },
+    { label: "Fuel Type", value: details.fuelType || "-" },
+    { label: "With Driver", value: details.withDriver || "-" },
   ];
 }
 
@@ -313,10 +313,10 @@ function renderInfoGrid(items = []) {
     rows.push(`
       <tr>
         <td style="width:50%;padding:0 8px 16px 0;vertical-align:top;">
-          ${left ? renderInfoCard(left[0], left[1]) : ""}
+          ${left ? renderInfoCard(left.label, left.value) : ""}
         </td>
         <td style="width:50%;padding:0 0 16px 8px;vertical-align:top;">
-          ${right ? renderInfoCard(right[0], right[1]) : ""}
+          ${right ? renderInfoCard(right.label, right.value) : ""}
         </td>
       </tr>
     `);
@@ -381,7 +381,6 @@ function providerBroadcastEmailHtml({
   return `
     <div style="margin:0;padding:24px 12px;background:#eef7f1;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">
       <div style="max-width:700px;margin:0 auto;background:#ffffff;border:1px solid rgba(0,184,241,0.12);border-radius:24px;overflow:hidden;box-shadow:0 10px 28px rgba(15,23,42,0.08);">
-
         <div style="background:linear-gradient(135deg,#4ec9f5,#00b8f1);padding:20px 22px;">
           <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;">
             <tr>
@@ -538,6 +537,31 @@ export async function getProviderBroadcasts(req, res) {
     console.error("get broadcasts error:", error);
     return res.status(500).json({
       message: "Failed to fetch broadcasts",
+    });
+  }
+}
+
+export async function getAllProviderBroadcasts(req, res) {
+  try {
+    const broadcasts = await ProviderBroadcast.find({
+      status: "sent",
+    })
+      .populate({
+        path: "provider",
+        populate: {
+          path: "owner",
+          select: "name email avatar city role",
+        },
+      })
+      .sort({ createdAt: -1 });
+
+    return res.json({
+      broadcasts,
+    });
+  } catch (error) {
+    console.error("getAllProviderBroadcasts error:", error);
+    return res.status(500).json({
+      message: "Failed to fetch provider broadcasts",
     });
   }
 }
