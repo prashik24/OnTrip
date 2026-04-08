@@ -1,0 +1,436 @@
+.subscriberGroupPage {
+  width: 100%;
+  padding-bottom: 32px;
+  display: grid;
+  gap: 18px;
+}
+
+.subscriberGroupHero,
+.subscriberGroupMainCard,
+.subscriberGroupSideCard {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 12px 28px rgba(10, 22, 35, 0.06);
+}
+
+.subscriberGroupHero {
+  padding: 22px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  background:
+    linear-gradient(135deg, rgba(78, 201, 245, 0.12), rgba(0, 184, 241, 0.08)),
+    rgba(255, 255, 255, 0.96);
+}
+
+.subscriberGroupHeroText {
+  min-width: 0;
+}
+
+.subscriberGroupKicker {
+  color: #0369a1;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.subscriberGroupHero h1 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.15;
+  color: var(--text);
+}
+
+.subscriberGroupHero p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-weight: 550;
+  line-height: 1.7;
+  max-width: 760px;
+}
+
+.subscriberGroupTopBtn,
+.subscriberGroupPrimaryBtn,
+.subscriberGroupGhostBtn,
+.subscriberSelectBtn {
+  min-height: 44px;
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.subscriberGroupTopBtn,
+.subscriberGroupPrimaryBtn {
+  border: none;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  padding: 0 18px;
+}
+
+.subscriberGroupGhostBtn {
+  border: 1px solid rgba(11, 27, 42, 0.1);
+  background: #fff;
+  color: var(--text);
+  padding: 0 18px;
+}
+
+.subscriberGroupMessage {
+  padding: 13px 16px;
+  border-radius: 16px;
+  font-weight: 700;
+}
+
+.subscriberGroupMessage.success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.18);
+  color: #15803d;
+}
+
+.subscriberGroupMessage.error {
+  background: rgba(255, 98, 98, 0.08);
+  border: 1px solid rgba(255, 98, 98, 0.16);
+  color: #b42318;
+}
+
+.subscriberGroupLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.subscriberGroupMainCard,
+.subscriberGroupSideCard {
+  padding: 20px;
+}
+
+.subscriberGroupSectionHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.subscriberGroupSectionHead.side {
+  margin-bottom: 18px;
+}
+
+.subscriberGroupSectionHead h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.subscriberGroupSectionHead p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-weight: 550;
+  line-height: 1.55;
+}
+
+.subscriberGroupSearch,
+.subscriberGroupField input,
+.subscriberGroupField textarea {
+  width: 100%;
+  border: 1px solid rgba(11, 27, 42, 0.12);
+  background: #fff;
+  border-radius: 16px;
+  font: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.subscriberGroupSearch {
+  width: min(320px, 100%);
+  min-height: 48px;
+  padding: 0 14px;
+}
+
+.subscriberGroupField input {
+  min-height: 48px;
+  padding: 0 14px;
+}
+
+.subscriberGroupField textarea {
+  min-height: 120px;
+  padding: 14px;
+  resize: vertical;
+}
+
+.subscriberGroupSearch:focus,
+.subscriberGroupField input:focus,
+.subscriberGroupField textarea:focus {
+  border-color: rgba(0, 184, 241, 0.35);
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.08);
+}
+
+.subscriberGroupGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.subscriberCard {
+  background: rgba(248, 252, 255, 0.96);
+  border: 1px solid rgba(11, 27, 42, 0.08);
+  border-radius: 20px;
+  padding: 16px;
+  display: grid;
+  gap: 16px;
+  transition: 0.18s ease;
+}
+
+.subscriberCard.selected,
+.subscriberCard:hover {
+  border-color: rgba(0, 184, 241, 0.22);
+  box-shadow: 0 10px 22px rgba(10, 22, 35, 0.06);
+  background: rgba(235, 249, 255, 0.96);
+}
+
+.subscriberCard.disabled {
+  opacity: 0.82;
+}
+
+.subscriberCardTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.subscriberCardIdentity {
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+}
+
+.subscriberAvatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.subscriberAvatar.fallback {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.subscriberCardInfo {
+  min-width: 0;
+}
+
+.subscriberCardInfo h3 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.subscriberCardInfo p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-weight: 550;
+  word-break: break-word;
+}
+
+.subscriberSelectBtn {
+  flex-shrink: 0;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 184, 241, 0.14);
+  background: rgba(0, 184, 241, 0.08);
+  color: #0369a1;
+}
+
+.subscriberSelectBtn.selected {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  border-color: transparent;
+}
+
+.subscriberSelectBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.subscriberMetaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.subscriberMetaItem {
+  background: #fff;
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 16px;
+  padding: 13px 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.subscriberMetaItem strong {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(11, 27, 42, 0.46);
+}
+
+.subscriberMetaItem span {
+  color: var(--text);
+  font-weight: 650;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.subscriberGroupForm {
+  display: grid;
+  gap: 16px;
+}
+
+.subscriberGroupField {
+  display: grid;
+  gap: 8px;
+}
+
+.subscriberGroupField label {
+  color: #0369a1;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.subscriberSelectedBox {
+  background: rgba(248, 252, 255, 0.96);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  border-radius: 18px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.subscriberSelectedHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.subscriberSelectedHead strong {
+  color: var(--text);
+  font-size: 16px;
+}
+
+.subscriberSelectedHead span {
+  min-width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.subscriberSelectedEmpty {
+  padding: 14px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px dashed rgba(11, 27, 42, 0.14);
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.subscriberSelectedList {
+  display: grid;
+  gap: 10px;
+}
+
+.subscriberSelectedItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid rgba(0, 184, 241, 0.1);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.subscriberSelectedItem span {
+  color: var(--text);
+  font-weight: 650;
+  word-break: break-word;
+}
+
+.subscriberSelectedItem button {
+  border: none;
+  background: transparent;
+  color: #b42318;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.subscriberGroupActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.subscriberGroupEmpty {
+  padding: 22px;
+  border-radius: 18px;
+  background: rgba(177, 227, 250, 0.14);
+  border: 1px solid rgba(0, 184, 241, 0.12);
+  color: rgba(11, 27, 42, 0.76);
+  font-weight: 650;
+}
+
+@media (max-width: 1080px) {
+  .subscriberGroupLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .subscriberGroupSideCard {
+    order: -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .subscriberGroupHero,
+  .subscriberGroupSectionHead,
+  .subscriberCardTop,
+  .subscriberGroupActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .subscriberGroupSearch {
+    width: 100%;
+  }
+
+  .subscriberMetaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .subscriberSelectBtn,
+  .subscriberGroupTopBtn,
+  .subscriberGroupPrimaryBtn,
+  .subscriberGroupGhostBtn {
+    width: 100%;
+  }
+}
