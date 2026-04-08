@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch, isLoggedIn } from "../lib/api";
 import LoadingSpinner from "../components/LoadingSpinner";
-import "./SubscriberBroadcasts.css";
+import "./ProviderBroadcastHistory.css";
 
 function formatLabel(value) {
   return String(value || "")
@@ -193,10 +193,7 @@ function getProviderImage(provider, parsed = null, previewImage = "") {
       );
     }
 
-    if (
-      !matchedPlan &&
-      (targetPackageTitle || targetPlannerType || targetDuration)
-    ) {
+    if (!matchedPlan && (targetPackageTitle || targetPlannerType || targetDuration)) {
       matchedPlan = travelPlans.find((plan) => {
         const packageTitle = normalizeText(plan.packageTitle);
         const plannerMode = normalizeText(plan.plannerMode);
@@ -343,7 +340,10 @@ export default function SubscriberBroadcasts() {
       const parsed = parseBroadcastMessage(item.message);
       const serviceType = getServiceType(provider, parsed.details);
       const infoItems = buildInfoItems(provider, parsed.details);
-      const image = getProviderImage(provider, parsed, item.previewImage || "");
+      const image =
+        item.previewImage ||
+        getProviderImage(provider, parsed, item.previewImage || "");
+
       const topClass =
         item.status === "failed"
           ? "failed"
@@ -368,15 +368,15 @@ export default function SubscriberBroadcasts() {
   }
 
   return (
-    <div className="subscriberBroadcastsPage container">
-      <div className="subscriberBroadcastsHead">
-        <div className="subscriberBroadcastsHeadLeft">
+    <div className="providerBroadcastHistoryPage container">
+      <div className="providerBroadcastHistoryHead">
+        <div className="providerBroadcastHistoryHeadLeft">
           <h1>Provider Broadcasts</h1>
           <p>View all latest updates, offers, trips, and vehicle broadcasts sent by providers.</p>
         </div>
 
         <button
-          className="subscriberBroadcastsTopBtn"
+          className="providerBroadcastHistoryTopBtn"
           type="button"
           onClick={() => navigate("/providers")}
         >
@@ -384,60 +384,58 @@ export default function SubscriberBroadcasts() {
         </button>
       </div>
 
-      {msg ? <div className="subscriberBroadcastsMessage">{msg}</div> : null}
+      {msg ? <div className="providerBroadcastHistoryMessage">{msg}</div> : null}
 
       {normalizedBroadcasts.length === 0 ? (
-        <div className="subscriberBroadcastsEmpty">No provider broadcasts found yet.</div>
+        <div className="providerBroadcastHistoryEmpty">No provider broadcasts found yet.</div>
       ) : (
-        <div className="subscriberBroadcastsGrid">
+        <div className="providerBroadcastHistoryGrid">
           {normalizedBroadcasts.map((item) => {
             const details = item.parsed.details || {};
             const description = item.parsed.description || "";
             const extraMessage = item.parsed.extraMessage || "";
 
             return (
-              <div className="subscriberBroadcastsCard" key={item._id}>
-                <div className={`subscriberBroadcastsCardTop ${item.topClass}`}>
-                  <div className="subscriberBroadcastsBlueHeader">
-                    <div className="subscriberBroadcastsBlueHeaderLeft">
+              <div className="providerBroadcastHistoryCard" key={item._id}>
+                <div className={`providerBroadcastHistoryCardTop ${item.topClass}`}>
+                  <div className="providerBroadcastHistoryBlueHeader">
+                    <div className="providerBroadcastHistoryBlueHeaderLeft">
                       <h3>
-                        {details.businessName ||
-                          item.provider?.businessName ||
-                          "Provider Broadcast"}
+                        {details.businessName || item.provider?.businessName || "Provider Broadcast"}
                       </h3>
                     </div>
 
-                    <div className="subscriberBroadcastsBlueHeaderRight">
-                      <div className="subscriberBroadcastsStatusBadge">
+                    <div className="providerBroadcastHistoryBlueHeaderRight">
+                      <div className="providerBroadcastHistoryStatusBadge">
                         {formatLabel(item.status || "-")}
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="subscriberBroadcastsCardBody">
-                  <div className="subscriberBroadcastsTopSection">
-                    <div className="subscriberBroadcastsImageWrap">
+                <div className="providerBroadcastHistoryCardBody">
+                  <div className="providerBroadcastHistoryTopSection">
+                    <div className="providerBroadcastHistoryImageWrap">
                       <img
                         src={item.image}
                         alt={details.businessName || "Provider Broadcast"}
-                        className="subscriberBroadcastsImage"
+                        className="providerBroadcastHistoryImage"
                       />
                     </div>
 
-                    <div className="subscriberBroadcastsSummaryCard">
-                      <div className="subscriberBroadcastsSummaryStats">
-                        <div className="subscriberBroadcastsSummaryRow">
+                    <div className="providerBroadcastHistorySummaryCard">
+                      <div className="providerBroadcastHistorySummaryStats">
+                        <div className="providerBroadcastHistorySummaryRow">
                           <strong>Service Type:</strong>
                           <span>{item.serviceType}</span>
                         </div>
 
-                        <div className="subscriberBroadcastsSummaryRow">
+                        <div className="providerBroadcastHistorySummaryRow">
                           <strong>Recipients:</strong>
                           <span>{item.recipientsCount || 0}</span>
                         </div>
 
-                        <div className="subscriberBroadcastsSummaryRow">
+                        <div className="providerBroadcastHistorySummaryRow">
                           <strong>Updated:</strong>
                           <span>{formatDateTime(item.updatedAt)}</span>
                         </div>
@@ -445,11 +443,11 @@ export default function SubscriberBroadcasts() {
                     </div>
                   </div>
 
-                  <div className="subscriberBroadcastsInfoGrid">
+                  <div className="providerBroadcastHistoryInfoGrid">
                     {item.infoItems.map((info, index) => (
                       <div
                         key={`${item._id}-info-${index}`}
-                        className="subscriberBroadcastsInfoCard"
+                        className="providerBroadcastHistoryInfoCard"
                       >
                         <strong>{info.label}</strong>
                         <span>{info.value || "-"}</span>
@@ -457,14 +455,14 @@ export default function SubscriberBroadcasts() {
                     ))}
                   </div>
 
-                  <div className="subscriberBroadcastsMetaSection">
-                    <div className="subscriberBroadcastsMetaCard">
+                  <div className="providerBroadcastHistoryMetaSection">
+                    <div className="providerBroadcastHistoryMetaCard">
                       <strong>Subject</strong>
                       <span>{item.subject || "-"}</span>
                     </div>
 
                     {description ? (
-                      <div className="subscriberBroadcastsMetaCard">
+                      <div className="providerBroadcastHistoryMetaCard">
                         <strong>Description</strong>
                         <span>{description}</span>
                       </div>
@@ -472,15 +470,15 @@ export default function SubscriberBroadcasts() {
                   </div>
 
                   {extraMessage ? (
-                    <div className="subscriberBroadcastsContentBox subscriberBroadcastsContentBoxMessage">
+                    <div className="providerBroadcastHistoryContentBox providerBroadcastHistoryContentBoxMessage">
                       <strong>Extra Message</strong>
                       <p>{extraMessage}</p>
                     </div>
                   ) : null}
 
-                  <div className="subscriberBroadcastsActions">
+                  <div className="providerBroadcastHistoryActions">
                     <button
-                      className="subscriberBroadcastsBtn primary"
+                      className="providerBroadcastHistoryBtn primary"
                       type="button"
                       onClick={() => {
                         if (item.provider?._id) {
