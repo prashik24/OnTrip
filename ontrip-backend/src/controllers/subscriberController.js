@@ -1,8 +1,38 @@
 import Subscriber from "../models/Subscriber.js";
+import User from "../models/User.js";
+
+function normalizeEmail(value = "") {
+  return String(value || "").trim().toLowerCase();
+}
+
+function toSubscriberResponse(subscriber, matchedUser = null) {
+  return {
+    id: subscriber._id,
+    user: subscriber.user || matchedUser?._id || null,
+    name: subscriber.name || matchedUser?.name || "",
+    email: subscriber.email || "",
+    isSubscribed: !!subscriber.isSubscribed,
+    subscribedAt: subscriber.subscribedAt || null,
+    unsubscribedAt: subscriber.unsubscribedAt || null,
+    hasAccount: !!matchedUser,
+    chatUser: matchedUser
+      ? {
+          id: matchedUser._id,
+          name: matchedUser.name || "",
+          email: matchedUser.email || "",
+          avatar: matchedUser.avatar || "",
+          city: matchedUser.city || "",
+          role: matchedUser.role || "user",
+          isOnline: !!matchedUser.isOnline,
+          lastSeenAt: matchedUser.lastSeenAt || null,
+        }
+      : null,
+  };
+}
 
 export async function getSubscriberStatus(req, res) {
   try {
-    const email = String(req.user?.email || "").trim().toLowerCase();
+    const email = normalizeEmail(req.user?.email);
 
     if (!email) {
       return res.status(400).json({
@@ -36,14 +66,10 @@ export async function getSubscriberStatus(req, res) {
 export async function subscribeUser(req, res) {
   try {
     const fallbackName = String(req.user?.name || "").trim();
-    const fallbackEmail = String(req.user?.email || "")
-      .trim()
-      .toLowerCase();
+    const fallbackEmail = normalizeEmail(req.user?.email);
 
     const name = String(req.body?.name || fallbackName).trim();
-    const email = String(req.body?.email || fallbackEmail)
-      .trim()
-      .toLowerCase();
+    const email = normalizeEmail(req.body?.email || fallbackEmail);
 
     if (!email) {
       return res.status(400).json({
@@ -100,13 +126,8 @@ export async function subscribeUser(req, res) {
 
 export async function unsubscribeUser(req, res) {
   try {
-    const fallbackEmail = String(req.user?.email || "")
-      .trim()
-      .toLowerCase();
-
-    const email = String(req.body?.email || fallbackEmail)
-      .trim()
-      .toLowerCase();
+    const fallbackEmail = normalizeEmail(req.user?.email);
+    const email = normalizeEmail(req.body?.email || fallbackEmail);
 
     if (!email) {
       return res.status(400).json({
@@ -141,6 +162,54 @@ export async function unsubscribeUser(req, res) {
     console.error("unsubscribeUser error", error);
     return res.status(500).json({
       message: "Failed to unsubscribe.",
+    });
+  }
+}
+
+export async function getAllSubscribersForProvider(req, res) {
+  try {
+    if (req.user?.role !== "provider") {
+      return res.status(403).json({
+        message: "Only providers can view subscribers.",
+      });
+    }
+
+    const subscribers = await Subscriber.find({
+      isSubscribed: true,
+    }).sort({ subscribedAt: -1, createdAt: -1 });
+
+    const emails = subscribers.map((item) => normalizeEmail(item.email)).filter(Boolean);
+
+    const users = await User.find({
+      $or: [
+        { _id: { $in: subscribers.map((item) => item.user).filter(Boolean) } },
+        { email: { $in: emails } },
+      ],
+    }).select("name email avatar city role isOnline lastSeenAt");
+
+    const userById = new Map(users.map((user) => [String(user._id), user]));
+    const userByEmail = new Map(
+      users.map((user) => [normalizeEmail(user.email), user])
+    );
+
+    const result = subscribers.map((subscriber) => {
+      const matchedUser =
+        userById.get(String(subscriber.user || "")) ||
+        userByEmail.get(normalizeEmail(subscriber.email)) ||
+        null;
+
+      return toSubscriberResponse(subscriber, matchedUser);
+    });
+
+    return res.json({
+      subscribers: result,
+      total: result.length,
+      selectableCount: result.filter((item) => item.hasAccount && item.chatUser?.id).length,
+    });
+  } catch (error) {
+    console.error("getAllSubscribersForProvider error", error);
+    return res.status(500).json({
+      message: "Failed to load subscribers.",
     });
   }
 }
