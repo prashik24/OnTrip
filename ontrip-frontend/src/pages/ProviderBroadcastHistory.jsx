@@ -15,33 +15,23 @@ function formatDateTime(value) {
   return new Date(value).toLocaleString();
 }
 
-function getProviderImage(provider) {
-  if (!provider) return "/images/places/manali-hero.jpg";
+function getTravelPlans(provider) {
+  if (!provider) return [];
 
-  if (provider.listingType === "travel_planner") {
-    if (Array.isArray(provider.travelPlans) && provider.travelPlans.length > 0) {
-      if (provider.travelPlans[0]?.images?.[0]?.url) {
-        return provider.travelPlans[0].images[0].url;
-      }
-    }
-
-    if (provider.travelPlanner?.images?.[0]?.url) {
-      return provider.travelPlanner.images[0].url;
-    }
+  if (Array.isArray(provider.travelPlans) && provider.travelPlans.length > 0) {
+    return provider.travelPlans;
   }
 
-  if (provider.listingType === "vehicle") {
-    if (Array.isArray(provider.vehicles) && provider.vehicles.length > 0) {
-      const firstVehicleWithImage = provider.vehicles.find(
-        (vehicle) => vehicle?.images?.[0]?.url
-      );
-      if (firstVehicleWithImage?.images?.[0]?.url) {
-        return firstVehicleWithImage.images[0].url;
-      }
-    }
+  if (
+    provider.travelPlanner &&
+    (provider.travelPlanner.packageTitle ||
+      provider.travelPlanner.durationText ||
+      (provider.travelPlanner.images || []).length > 0)
+  ) {
+    return [provider.travelPlanner];
   }
 
-  return provider.serviceImage?.url || "/images/places/manali-hero.jpg";
+  return [];
 }
 
 function parseBroadcastMessage(message = "") {
@@ -135,20 +125,111 @@ function parseBroadcastMessage(message = "") {
   };
 }
 
-function buildPrimaryMeta(item, provider) {
-  const parsed = parseBroadcastMessage(item.message);
-  const details = parsed.details || {};
+function getServiceType(provider, details = {}) {
+  if (provider?.listingType === "travel_planner") return "Travel Planner";
+  if (provider?.listingType === "vehicle") return "Vehicle Service";
 
-  const isVehicle = provider?.listingType === "vehicle" || details.vehicleType || details.title;
-  const isTrip =
-    provider?.listingType === "travel_planner" || details.packageTitle || details.plannerType;
+  if (details.packageTitle || details.plannerType || details.duration || details.priceFrom) {
+    return "Travel Planner";
+  }
 
-  const type = isVehicle ? "Vehicle Service" : isTrip ? "Travel Planner" : "Broadcast";
+  if (details.vehicleType || details.title || details.priceUnit || details.fuelType) {
+    return "Vehicle Service";
+  }
 
-  return {
-    type,
-    parsed,
-  };
+  return "Broadcast";
+}
+
+function getProviderImage(provider, parsed = null) {
+  if (!provider) return "/images/places/manali-hero.jpg";
+
+  const details = parsed?.details || {};
+
+  if (getServiceType(provider, details) === "Travel Planner") {
+    const travelPlans = getTravelPlans(provider);
+    const packageTitle = String(details.packageTitle || "").trim().toLowerCase();
+
+    if (packageTitle) {
+      const matchedPlan = travelPlans.find(
+        (plan) =>
+          String(plan.packageTitle || "").trim().toLowerCase() === packageTitle
+      );
+
+      if (matchedPlan?.images?.[0]?.url) {
+        return matchedPlan.images[0].url;
+      }
+    }
+
+    if (travelPlans[0]?.images?.[0]?.url) {
+      return travelPlans[0].images[0].url;
+    }
+
+    if (provider.travelPlanner?.images?.[0]?.url) {
+      return provider.travelPlanner.images[0].url;
+    }
+  }
+
+  if (getServiceType(provider, details) === "Vehicle Service") {
+    const vehicleTitle = String(details.title || "").trim().toLowerCase();
+    const vehicleType = String(details.vehicleType || "").trim().toLowerCase();
+
+    if (vehicleTitle || vehicleType) {
+      const matchedVehicle = (provider.vehicles || []).find((vehicle) => {
+        const vTitle = String(vehicle.title || "").trim().toLowerCase();
+        const vType = String(vehicle.vehicleType || "").trim().toLowerCase();
+
+        return (vehicleTitle && vTitle === vehicleTitle) || (vehicleType && vType === vehicleType);
+      });
+
+      if (matchedVehicle?.images?.[0]?.url) {
+        return matchedVehicle.images[0].url;
+      }
+    }
+
+    const firstVehicleWithImage = (provider.vehicles || []).find(
+      (vehicle) => vehicle?.images?.[0]?.url
+    );
+
+    if (firstVehicleWithImage?.images?.[0]?.url) {
+      return firstVehicleWithImage.images[0].url;
+    }
+  }
+
+  return provider.serviceImage?.url || "/images/places/manali-hero.jpg";
+}
+
+function buildInfoItems(provider, details = {}) {
+  const serviceType = getServiceType(provider, details);
+
+  if (serviceType === "Travel Planner") {
+    return [
+      { label: "Business Name", value: details.businessName || provider?.businessName || "-" },
+      { label: "City", value: details.city || provider?.city || "-" },
+      { label: "State", value: details.state || provider?.state || "-" },
+      { label: "Planner Type", value: details.plannerType || "-" },
+      { label: "Package Title", value: details.packageTitle || "-" },
+      { label: "Duration", value: details.duration || "-" },
+      { label: "Days", value: details.days || "-" },
+      { label: "Price From", value: details.priceFrom || "-" },
+      { label: "Price Per Person", value: details.pricePerPerson || "-" },
+      { label: "Places Covered", value: details.placesCovered || "-" },
+      { label: "Inclusions", value: details.inclusions || "-" },
+      { label: "Exclusions", value: details.exclusions || "-" },
+    ];
+  }
+
+  return [
+    { label: "Business Name", value: details.businessName || provider?.businessName || "-" },
+    { label: "City", value: details.city || provider?.city || "-" },
+    { label: "State", value: details.state || provider?.state || "-" },
+    { label: "Vehicle Type", value: details.vehicleType || "-" },
+    { label: "Title", value: details.title || "-" },
+    { label: "Price", value: details.price || "-" },
+    { label: "Price Unit", value: details.priceUnit || "-" },
+    { label: "Capacity", value: details.capacity || "-" },
+    { label: "Fuel Type", value: details.fuelType || "-" },
+    { label: "With Driver", value: details.withDriver || "-" },
+  ];
 }
 
 export default function ProviderBroadcastHistory() {
@@ -182,7 +263,11 @@ export default function ProviderBroadcastHistory() {
   const normalizedHistory = useMemo(() => {
     return history.map((item) => {
       const provider = item.provider || null;
-      const image = getProviderImage(provider);
+      const parsed = parseBroadcastMessage(item.message);
+      const image = getProviderImage(provider, parsed);
+      const serviceType = getServiceType(provider, parsed.details);
+      const infoItems = buildInfoItems(provider, parsed.details);
+
       const topClass =
         item.status === "failed"
           ? "failed"
@@ -190,14 +275,14 @@ export default function ProviderBroadcastHistory() {
           ? "pending"
           : "sent";
 
-      const meta = buildPrimaryMeta(item, provider);
-
       return {
         ...item,
         provider,
+        parsed,
         image,
+        serviceType,
+        infoItems,
         topClass,
-        meta,
       };
     });
   }, [history]);
@@ -230,38 +315,9 @@ export default function ProviderBroadcastHistory() {
       ) : (
         <div className="providerBroadcastHistoryGrid">
           {normalizedHistory.map((item) => {
-            const details = item.meta.parsed.details || {};
-            const description = item.meta.parsed.description || "";
-            const extraMessage = item.meta.parsed.extraMessage || "";
-
-            const infoItems =
-              item.provider?.listingType === "travel_planner"
-                ? [
-                    { label: "Business Name", value: details.businessName || item.provider?.businessName || "-" },
-                    { label: "City", value: details.city || item.provider?.city || "-" },
-                    { label: "State", value: details.state || item.provider?.state || "-" },
-                    { label: "Planner Type", value: details.plannerType || "-" },
-                    { label: "Package Title", value: details.packageTitle || "-" },
-                    { label: "Duration", value: details.duration || "-" },
-                    { label: "Days", value: details.days || "-" },
-                    { label: "Price From", value: details.priceFrom || "-" },
-                    { label: "Price Per Person", value: details.pricePerPerson || "-" },
-                    { label: "Places Covered", value: details.placesCovered || "-" },
-                    { label: "Inclusions", value: details.inclusions || "-" },
-                    { label: "Exclusions", value: details.exclusions || "-" },
-                  ]
-                : [
-                    { label: "Business Name", value: details.businessName || item.provider?.businessName || "-" },
-                    { label: "City", value: details.city || item.provider?.city || "-" },
-                    { label: "State", value: details.state || item.provider?.state || "-" },
-                    { label: "Vehicle Type", value: details.vehicleType || "-" },
-                    { label: "Title", value: details.title || "-" },
-                    { label: "Price", value: details.price || "-" },
-                    { label: "Price Unit", value: details.priceUnit || "-" },
-                    { label: "Capacity", value: details.capacity || "-" },
-                    { label: "Fuel Type", value: details.fuelType || "-" },
-                    { label: "With Driver", value: details.withDriver || "-" },
-                  ];
+            const details = item.parsed.details || {};
+            const description = item.parsed.description || "";
+            const extraMessage = item.parsed.extraMessage || "";
 
             return (
               <div className="providerBroadcastHistoryCard" key={item._id}>
@@ -295,7 +351,7 @@ export default function ProviderBroadcastHistory() {
                       <div className="providerBroadcastHistorySummaryStats">
                         <div className="providerBroadcastHistorySummaryRow">
                           <strong>Service Type:</strong>
-                          <span>{item.meta.type}</span>
+                          <span>{item.serviceType}</span>
                         </div>
 
                         <div className="providerBroadcastHistorySummaryRow">
@@ -312,7 +368,7 @@ export default function ProviderBroadcastHistory() {
                   </div>
 
                   <div className="providerBroadcastHistoryInfoGrid">
-                    {infoItems.map((info, index) => (
+                    {item.infoItems.map((info, index) => (
                       <div
                         key={`${item._id}-info-${index}`}
                         className="providerBroadcastHistoryInfoCard"
