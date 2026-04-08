@@ -37,77 +37,11 @@ function getTravelPlans(provider) {
   return [];
 }
 
-function getProviderCardImage(provider, parsed = null) {
-  if (!provider) return "";
-
-  if (provider.listingType === "travel_planner") {
-    const travelPlans = getTravelPlans(provider);
-    const packageTitle = String(parsed?.details?.packageTitle || "").trim().toLowerCase();
-
-    if (packageTitle) {
-      const matchedPlan = travelPlans.find(
-        (plan) =>
-          String(plan.packageTitle || "").trim().toLowerCase() === packageTitle
-      );
-
-      if (matchedPlan?.images?.[0]?.url) {
-        return matchedPlan.images[0].url;
-      }
-    }
-
-    if (travelPlans[0]?.images?.[0]?.url) {
-      return travelPlans[0].images[0].url;
-    }
-
-    if (provider.travelPlanner?.images?.[0]?.url) {
-      return provider.travelPlanner.images[0].url;
-    }
-  }
-
-  if (provider.listingType === "vehicle") {
-    const vehicleTitle = String(parsed?.details?.title || "").trim().toLowerCase();
-    const vehicleType = String(parsed?.details?.vehicleType || "").trim().toLowerCase();
-
-    if (vehicleTitle || vehicleType) {
-      const matchedVehicle = (provider.vehicles || []).find((vehicle) => {
-        const vTitle = String(vehicle.title || "").trim().toLowerCase();
-        const vType = String(vehicle.vehicleType || "").trim().toLowerCase();
-
-        return (vehicleTitle && vTitle === vehicleTitle) || (vehicleType && vType === vehicleType);
-      });
-
-      if (matchedVehicle?.images?.[0]?.url) {
-        return matchedVehicle.images[0].url;
-      }
-    }
-
-    const firstVehicleWithImage = (provider.vehicles || []).find(
-      (vehicle) => vehicle?.images?.[0]?.url
-    );
-
-    if (firstVehicleWithImage?.images?.[0]?.url) {
-      return firstVehicleWithImage.images[0].url;
-    }
-  }
-
-  return provider.serviceImage?.url || "";
-}
-
 function parseBroadcastMessage(message = "") {
   const rawLines = String(message || "")
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
-
-  const skipLines = new Set([
-    "Provider Update from OnTrip",
-    "Vehicle Details",
-    "Trip Details",
-    "Listing Type: Vehicle Service",
-    "Listing Type: Travel Planner",
-    "Description",
-    "Extra Message",
-  ]);
 
   const details = {};
   const extraLines = [];
@@ -116,6 +50,9 @@ function parseBroadcastMessage(message = "") {
   let mode = "";
 
   rawLines.forEach((line) => {
+    if (line === "Provider Update from OnTrip") return;
+    if (line === "Vehicle Details" || line === "Trip Details") return;
+
     if (line === "Description") {
       mode = "description";
       return;
@@ -126,7 +63,7 @@ function parseBroadcastMessage(message = "") {
       return;
     }
 
-    if (skipLines.has(line) || line === "-") return;
+    if (line === "-") return;
 
     const colonIndex = line.indexOf(":");
     const hasLabel = colonIndex > -1;
@@ -139,6 +76,7 @@ function parseBroadcastMessage(message = "") {
         "Business Name": "businessName",
         City: "city",
         State: "state",
+        "Listing Type": "listingType",
         "Vehicle Type": "vehicleType",
         Title: "title",
         Price: "price",
@@ -185,21 +123,98 @@ function parseBroadcastMessage(message = "") {
 }
 
 function getServiceType(provider, details = {}) {
+  const listingType = String(details.listingType || "").trim().toLowerCase();
+
+  if (listingType.includes("travel")) return "Travel Planner";
+  if (listingType.includes("vehicle")) return "Vehicle Service";
+
   if (provider?.listingType === "travel_planner") return "Travel Planner";
   if (provider?.listingType === "vehicle") return "Vehicle Service";
 
-  if (details.packageTitle || details.plannerType || details.duration || details.priceFrom) {
+  if (
+    details.packageTitle ||
+    details.plannerType ||
+    details.duration ||
+    details.priceFrom ||
+    details.pricePerPerson ||
+    details.placesCovered
+  ) {
     return "Travel Planner";
   }
 
-  if (details.vehicleType || details.title || details.priceUnit || details.fuelType) {
+  if (
+    details.vehicleType ||
+    details.title ||
+    details.priceUnit ||
+    details.fuelType ||
+    details.capacity
+  ) {
     return "Vehicle Service";
   }
 
   return "Broadcast";
 }
 
-function buildInfoItems(provider, details) {
+function getProviderCardImage(provider, parsed = null) {
+  const details = parsed?.details || {};
+  const serviceType = getServiceType(provider, details);
+
+  if (!provider) return "";
+
+  if (serviceType === "Travel Planner") {
+    const travelPlans = getTravelPlans(provider);
+    const packageTitle = String(details.packageTitle || "").trim().toLowerCase();
+
+    if (packageTitle) {
+      const matchedPlan = travelPlans.find(
+        (plan) =>
+          String(plan.packageTitle || "").trim().toLowerCase() === packageTitle
+      );
+
+      if (matchedPlan?.images?.[0]?.url) {
+        return matchedPlan.images[0].url;
+      }
+    }
+
+    if (travelPlans[0]?.images?.[0]?.url) {
+      return travelPlans[0].images[0].url;
+    }
+
+    if (provider.travelPlanner?.images?.[0]?.url) {
+      return provider.travelPlanner.images[0].url;
+    }
+  }
+
+  if (serviceType === "Vehicle Service") {
+    const vehicleTitle = String(details.title || "").trim().toLowerCase();
+    const vehicleType = String(details.vehicleType || "").trim().toLowerCase();
+
+    if (vehicleTitle || vehicleType) {
+      const matchedVehicle = (provider.vehicles || []).find((vehicle) => {
+        const vTitle = String(vehicle.title || "").trim().toLowerCase();
+        const vType = String(vehicle.vehicleType || "").trim().toLowerCase();
+
+        return (vehicleTitle && vTitle === vehicleTitle) || (vehicleType && vType === vehicleType);
+      });
+
+      if (matchedVehicle?.images?.[0]?.url) {
+        return matchedVehicle.images[0].url;
+      }
+    }
+
+    const firstVehicleWithImage = (provider.vehicles || []).find(
+      (vehicle) => vehicle?.images?.[0]?.url
+    );
+
+    if (firstVehicleWithImage?.images?.[0]?.url) {
+      return firstVehicleWithImage.images[0].url;
+    }
+  }
+
+  return provider.serviceImage?.url || "";
+}
+
+function buildInfoItems(provider, details = {}) {
   const serviceType = getServiceType(provider, details);
 
   if (serviceType === "Travel Planner") {
@@ -435,23 +450,26 @@ export async function sendProviderBroadcast(req, res) {
       });
     }
 
+    const cleanSubject = String(subject).trim();
+    const cleanMessage = String(message).trim();
+
     const broadcast = await ProviderBroadcast.create({
       provider: provider._id,
-      subject: String(subject).trim(),
-      message: String(message).trim(),
+      subject: cleanSubject,
+      message: cleanMessage,
       recipientsCount: emails.length,
       status: "pending",
     });
 
-    const parsed = parseBroadcastMessage(String(message).trim());
+    const parsed = parseBroadcastMessage(cleanMessage);
     const imageUrl = getProviderCardImage(provider, parsed);
 
     await sendTransactionalEmail({
       to: emails.map((email) => ({ email })),
-      subject: String(subject).trim(),
+      subject: cleanSubject,
       htmlContent: providerBroadcastEmailHtml({
-        subject: String(subject).trim(),
-        message: String(message).trim(),
+        subject: cleanSubject,
+        message: cleanMessage,
         provider,
         imageUrl,
         recipientsCount: emails.length,
