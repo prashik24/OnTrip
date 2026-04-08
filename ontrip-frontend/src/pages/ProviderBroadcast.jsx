@@ -338,6 +338,7 @@ export default function ProviderBroadcast() {
         body: JSON.stringify({
           subject: form.subject.trim(),
           message,
+          previewImage,
         }),
       });
 
