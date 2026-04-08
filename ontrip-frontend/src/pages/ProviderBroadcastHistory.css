@@ -191,8 +191,6 @@
   border-radius: 18px;
   padding: 18px;
   border: 1px solid rgba(0, 184, 241, 0.1);
-  display: grid;
-  gap: 16px;
   min-width: 0;
   align-self: stretch;
 }
@@ -201,52 +199,34 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
-  align-items: stretch;
-  height: 100%;
 }
 
-.providerBroadcastHistorySummaryStat {
+.providerBroadcastHistorySummaryRow {
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
   background: #ffffff;
   border: 1px solid rgba(0, 184, 241, 0.1);
   border-radius: 14px;
   padding: 14px 16px;
-  color: #334155;
-  min-width: 0;
-  display: grid;
-  grid-template-columns: 130px minmax(0, 1fr);
-  align-items: start;
-  gap: 12px;
 }
 
-.providerBroadcastHistorySummaryStat strong {
+.providerBroadcastHistorySummaryRow strong {
   color: #334155;
   font-size: 14px;
   font-weight: 800;
-  line-height: 1.35;
+  line-height: 1.45;
   word-break: break-word;
 }
 
-.providerBroadcastHistorySummaryStatValue {
-  min-width: 0;
-  display: grid;
-  gap: 4px;
-}
-
-.providerBroadcastHistorySummaryStatValue span {
-  font-size: 14px;
-  line-height: 1.6;
-  font-weight: 700;
+.providerBroadcastHistorySummaryRow span {
   color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.6;
   word-break: break-word;
   overflow-wrap: anywhere;
-}
-
-.providerBroadcastHistorySummaryStatValue small {
-  font-size: 12px;
-  line-height: 1.5;
-  color: #64748b;
-  font-weight: 700;
-  word-break: break-word;
 }
 
 .providerBroadcastHistoryInfoGrid {
@@ -355,8 +335,8 @@
     grid-template-columns: 220px minmax(0, 1fr);
   }
 
-  .providerBroadcastHistorySummaryStat {
-    grid-template-columns: 115px minmax(0, 1fr);
+  .providerBroadcastHistorySummaryRow {
+    grid-template-columns: 130px minmax(0, 1fr);
   }
 }
 
@@ -393,7 +373,7 @@
     grid-template-columns: 1fr;
   }
 
-  .providerBroadcastHistorySummaryStat {
+  .providerBroadcastHistorySummaryRow {
     grid-template-columns: 1fr;
     gap: 6px;
   }
