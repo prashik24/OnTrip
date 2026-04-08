@@ -194,34 +194,7 @@
   display: grid;
   gap: 16px;
   min-width: 0;
-}
-
-.providerBroadcastHistorySummaryTop {
-  display: block;
-}
-
-.providerBroadcastHistorySummaryHeading {
-  min-width: 0;
-}
-
-.providerBroadcastHistorySummaryTop h4 {
-  margin: 0;
-  font-size: 21px;
-  font-weight: 760;
-  line-height: 1.25;
-  color: #0b1b2a;
-  word-break: break-word;
-}
-
-.providerBroadcastHistorySummaryTop p {
-  margin: 10px 0 0;
-  color: #5b6570;
-  font-size: 15px;
-  line-height: 1.6;
-  font-weight: 650;
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: anywhere;
+  align-self: stretch;
 }
 
 .providerBroadcastHistorySummaryStats {
@@ -229,6 +202,7 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   align-items: stretch;
+  height: 100%;
 }
 
 .providerBroadcastHistorySummaryStat {
@@ -442,10 +416,6 @@
 
   .providerBroadcastHistoryCardBody {
     padding: 16px;
-  }
-
-  .providerBroadcastHistorySummaryTop h4 {
-    font-size: 18px;
   }
 
   .providerBroadcastHistoryBtn,
