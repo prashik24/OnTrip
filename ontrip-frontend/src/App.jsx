@@ -25,6 +25,7 @@ import ProviderRegister from "./pages/ProviderRegister";
 import ProviderBroadcast from "./pages/ProviderBroadcast";
 import ProviderBroadcastHistory from "./pages/ProviderBroadcastHistory";
 import SubscriberBroadcasts from "./pages/SubscriberBroadcasts";
+import SubscriberGroupPage from "./pages/SubscriberGroupPage";
 import MyListings from "./pages/MyListings";
 import MyListingEdit from "./pages/MyListingEdit";
 import ProviderDashboard from "./pages/ProviderDashboard";
@@ -71,6 +72,7 @@ export default function App() {
             <Route path="/planner/result" element={<PlannerResult />} />
 
             <Route path="/community" element={<Community />} />
+            <Route path="/chat" element={<Chat />} />
 
             <Route path="/provider-broadcast" element={<ProviderBroadcast />} />
             <Route
@@ -81,7 +83,11 @@ export default function App() {
               path="/provider-broadcasts"
               element={<SubscriberBroadcasts />}
             />
-            <Route path="/chat" element={<Chat />} />
+            <Route
+              path="/provider/subscriber-groups"
+              element={<SubscriberGroupPage />}
+            />
+
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/my-listings" element={<MyListings />} />
             <Route
@@ -99,11 +105,13 @@ export default function App() {
               path="/profile/bookings/:id/invoice"
               element={<InvoiceView />}
             />
+
             <Route path="/provider/dashboard" element={<ProviderDashboard />} />
             <Route path="/providers" element={<Providers />} />
             <Route path="/providers/:id" element={<ProviderDetails />} />
             <Route path="/providers/:id/book" element={<BookingCheckout />} />
             <Route path="/provider-register" element={<ProviderRegister />} />
+
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
 
