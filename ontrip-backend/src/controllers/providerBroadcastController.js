@@ -290,66 +290,44 @@ function buildInfoItems(provider, details = {}) {
   ];
 }
 
-function renderSummaryRow(label, value) {
+function renderInfoCard(label, value) {
   return `
-    <div style="display:grid;grid-template-columns:98px minmax(0,1fr);gap:6px;align-items:start;background:#ffffff;border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:12px 14px;">
-      <div style="color:#334155;font-size:13px;font-weight:800;line-height:1.35;white-space:nowrap;">${escapeHtml(label)}:</div>
-      <div style="color:#334155;font-size:13px;font-weight:700;line-height:1.45;word-break:break-word;">${escapeHtml(value)}</div>
+    <div style="background:#f8fcff;border:1px solid rgba(0,184,241,0.12);border-radius:16px;padding:14px 15px;">
+      <div style="font-size:12px;line-height:1.3;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:rgba(15,23,42,0.44);margin-bottom:6px;">
+        ${escapeHtml(label)}
+      </div>
+      <div style="font-size:15px;line-height:1.55;font-weight:700;color:#1e293b;word-break:break-word;">
+        ${escapeHtml(value || "-")}
+      </div>
     </div>
   `;
 }
 
 function renderInfoGrid(items = []) {
-  return `
-    <div style="margin-top:16px;">
-      <table role="presentation" style="width:100%;border-collapse:separate;border-spacing:12px 12px;">
-        <tbody>
-          ${Array.from({ length: Math.ceil(items.length / 2) })
-            .map((_, rowIndex) => {
-              const left = items[rowIndex * 2];
-              const right = items[rowIndex * 2 + 1];
+  const rows = [];
 
-              return `
-                <tr>
-                  <td style="width:50%;vertical-align:top;${!left ? "display:none;" : ""}">
-                    ${
-                      left
-                        ? `
-                      <div style="background:rgba(244,251,255,0.94);border-radius:14px;padding:14px 15px;border:1px solid rgba(0,184,241,0.1);">
-                        <div style="font-size:12px;text-transform:uppercase;color:rgba(15,23,42,0.46);font-weight:700;letter-spacing:0.03em;margin-bottom:4px;">
-                          ${escapeHtml(left[0])}
-                        </div>
-                        <div style="font-size:14px;font-weight:650;color:rgba(15,23,42,0.88);line-height:1.55;word-break:break-word;">
-                          ${escapeHtml(left[1])}
-                        </div>
-                      </div>
-                    `
-                        : ""
-                    }
-                  </td>
-                  <td style="width:50%;vertical-align:top;${!right ? "display:none;" : ""}">
-                    ${
-                      right
-                        ? `
-                      <div style="background:rgba(244,251,255,0.94);border-radius:14px;padding:14px 15px;border:1px solid rgba(0,184,241,0.1);">
-                        <div style="font-size:12px;text-transform:uppercase;color:rgba(15,23,42,0.46);font-weight:700;letter-spacing:0.03em;margin-bottom:4px;">
-                          ${escapeHtml(right[0])}
-                        </div>
-                        <div style="font-size:14px;font-weight:650;color:rgba(15,23,42,0.88);line-height:1.55;word-break:break-word;">
-                          ${escapeHtml(right[1])}
-                        </div>
-                      </div>
-                    `
-                        : ""
-                    }
-                  </td>
-                </tr>
-              `;
-            })
-            .join("")}
-        </tbody>
-      </table>
-    </div>
+  for (let i = 0; i < items.length; i += 2) {
+    const left = items[i];
+    const right = items[i + 1];
+
+    rows.push(`
+      <tr>
+        <td style="width:50%;padding:0 8px 16px 0;vertical-align:top;">
+          ${left ? renderInfoCard(left[0], left[1]) : ""}
+        </td>
+        <td style="width:50%;padding:0 0 16px 8px;vertical-align:top;">
+          ${right ? renderInfoCard(right[0], right[1]) : ""}
+        </td>
+      </tr>
+    `);
+  }
+
+  return `
+    <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;">
+      <tbody>
+        ${rows.join("")}
+      </tbody>
+    </table>
   `;
 }
 
@@ -357,26 +335,24 @@ function renderMetaCard(title, value) {
   if (!value) return "";
 
   return `
-    <div style="margin-top:12px;background:linear-gradient(180deg,rgba(248,252,255,0.96),rgba(241,249,255,0.96));border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px 15px;">
-      <div style="color:#0369a1;font-size:13px;font-weight:800;letter-spacing:0.02em;text-transform:uppercase;margin-bottom:6px;">
+    <div style="margin-top:16px;background:#f8fcff;border:1px solid rgba(0,184,241,0.12);border-radius:16px;padding:16px 18px;">
+      <div style="font-size:12px;line-height:1.3;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:#0284c7;margin-bottom:8px;">
         ${escapeHtml(title)}
       </div>
-      <div style="color:rgba(15,23,42,0.86);font-size:14px;line-height:1.7;font-weight:600;word-break:break-word;">
+      <div style="font-size:15px;line-height:1.75;font-weight:600;color:#334155;word-break:break-word;">
         ${escapeHtml(value)}
       </div>
     </div>
   `;
 }
 
-function renderExtraMessageCard(value) {
-  if (!value) return "";
-
+function renderSummaryBox(label, value) {
   return `
-    <div style="margin-top:12px;background:linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,252,255,0.98));border:1px solid rgba(0,184,241,0.1);border-radius:14px;padding:14px 15px;">
-      <div style="color:#0369a1;font-size:13px;font-weight:800;letter-spacing:0.02em;text-transform:uppercase;margin-bottom:6px;">
-        Extra Message
+    <div style="background:#f8fcff;border:1px solid rgba(0,184,241,0.12);border-radius:16px;padding:14px 16px;margin-bottom:12px;">
+      <div style="font-size:12px;line-height:1.3;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:rgba(15,23,42,0.44);margin-bottom:6px;">
+        ${escapeHtml(label)}
       </div>
-      <div style="color:rgba(15,23,42,0.86);font-size:14px;line-height:1.7;font-weight:600;word-break:break-word;">
+      <div style="font-size:15px;line-height:1.55;font-weight:700;color:#1e293b;word-break:break-word;">
         ${escapeHtml(value)}
       </div>
     </div>
@@ -403,57 +379,57 @@ function providerBroadcastEmailHtml({
     : new Date().toLocaleString();
 
   return `
-    <div style="margin:0;padding:20px;background:#f4fbff;font-family:Arial,Helvetica,sans-serif;color:#0b1b2a;">
-      <div style="max-width:760px;margin:0 auto;background:rgba(255,255,255,0.97);border:1px solid rgba(0,184,241,0.12);border-radius:18px;box-shadow:0 8px 22px rgba(10,22,35,0.05);overflow:hidden;">
-        <div style="background:linear-gradient(135deg,#4ec9f5,#00b8f1);padding:18px;display:flex;justify-content:space-between;align-items:center;gap:14px;">
-          <div style="min-width:0;">
-            <div style="margin:0;font-size:21px;font-weight:760;line-height:1.25;color:#ffffff;word-break:break-word;">
-              ${escapeHtml(displayName)}
-            </div>
-          </div>
-          <div style="padding:8px 14px;border-radius:999px;background:rgba(255,255,255,0.16);color:#ffffff;font-size:12px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;">
-            ${escapeHtml(formatLabel(status))}
-          </div>
-        </div>
+    <div style="margin:0;padding:24px 12px;background:#eef7f1;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">
+      <div style="max-width:700px;margin:0 auto;background:#ffffff;border:1px solid rgba(0,184,241,0.12);border-radius:24px;overflow:hidden;box-shadow:0 10px 28px rgba(15,23,42,0.08);">
 
-        <div style="padding:18px;">
-          <table role="presentation" style="width:100%;border-collapse:separate;border-spacing:0;">
+        <div style="background:linear-gradient(135deg,#4ec9f5,#00b8f1);padding:20px 22px;">
+          <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;">
             <tr>
-              <td style="width:235px;vertical-align:top;padding:0 16px 0 0;">
-                <div style="border-radius:14px;overflow:hidden;background:rgba(177,227,250,0.14);height:150px;min-height:150px;border:1px solid rgba(0,184,241,0.1);">
-                  ${
-                    imageUrl
-                      ? `<img src="${escapeHtml(
-                          imageUrl
-                        )}" alt="${escapeHtml(
-                          displayName
-                        )}" style="width:100%;height:150px;display:block;object-fit:cover;" />`
-                      : ""
-                  }
+              <td style="vertical-align:middle;padding:0;">
+                <div style="font-size:16px;line-height:1.2;font-weight:800;color:#ffffff;word-break:break-word;">
+                  ${escapeHtml(displayName)}
                 </div>
               </td>
-              <td style="vertical-align:top;padding:0;">
-                <div style="background:rgba(244,251,255,0.94);border-radius:18px;padding:14px;border:1px solid rgba(0,184,241,0.1);">
-                  <div style="display:grid;grid-template-columns:1fr;gap:8px;">
-                    ${renderSummaryRow("Service Type", serviceType)}
-                    ${renderSummaryRow(
-                      "Recipients",
-                      String(recipientsCount || 0)
-                    )}
-                    ${renderSummaryRow("Updated", updatedLabel)}
-                  </div>
-                </div>
+              <td style="vertical-align:middle;padding:0;text-align:right;width:120px;">
+                <span style="display:inline-block;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,0.18);font-size:12px;line-height:1;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:#ffffff;">
+                  ${escapeHtml(formatLabel(status))}
+                </span>
               </td>
             </tr>
           </table>
+        </div>
 
-          ${renderInfoGrid(infoItems)}
+        <div style="padding:22px;">
+          <div style="border:1px solid rgba(0,184,241,0.12);border-radius:20px;padding:18px;background:#fcfeff;">
+            <div style="border-radius:18px;overflow:hidden;background:#f3f9fc;border:1px solid rgba(0,184,241,0.1);">
+              ${
+                imageUrl
+                  ? `<img src="${escapeHtml(
+                      imageUrl
+                    )}" alt="${escapeHtml(
+                      displayName
+                    )}" style="width:100%;max-width:100%;height:220px;display:block;object-fit:cover;" />`
+                  : `<div style="height:220px;background:#eaf7fd;"></div>`
+              }
+            </div>
+
+            <div style="margin-top:18px;">
+              ${renderSummaryBox("Service Type", serviceType)}
+              ${renderSummaryBox("Recipients", String(recipientsCount || 0))}
+              ${renderSummaryBox("Updated", updatedLabel)}
+            </div>
+          </div>
+
+          <div style="margin-top:18px;">
+            ${renderInfoGrid(infoItems)}
+          </div>
+
           ${renderMetaCard("Subject", subject)}
           ${parsed.description ? renderMetaCard("Description", parsed.description) : ""}
-          ${renderExtraMessageCard(parsed.extraMessage)}
+          ${parsed.extraMessage ? renderMetaCard("Extra Message", parsed.extraMessage) : ""}
 
-          <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(11,27,42,0.08);text-align:center;font-size:13px;line-height:1.7;color:#8a94a6;">
-            © 2025 <strong style="color:#0b1b2a;">OnTrip</strong>. All rights reserved.
+          <div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(15,23,42,0.08);text-align:center;font-size:13px;line-height:1.7;color:#64748b;">
+            © 2025 <strong style="color:#0f172a;">OnTrip</strong>. All rights reserved.
           </div>
         </div>
       </div>
