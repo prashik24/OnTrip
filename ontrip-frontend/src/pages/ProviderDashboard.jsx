@@ -191,15 +191,17 @@ export default function ProviderDashboard() {
                       )}
                     </div>
 
-                    <div className="providerDashboardPreviewMeta">
-                      <span>
-                        Date:{" "}
-                        {booking.bookingDate
-                          ? new Date(booking.bookingDate).toLocaleDateString()
-                          : "-"}
-                      </span>
-                      <span>Payment: {formatStatusLabel(booking.paymentStatus)}</span>
-                      <span>Status: {formatStatusLabel(booking.bookingStatus)}</span>
+                    <div className="providerDashboardPreviewSummary">
+                      <div className="providerDashboardPreviewMeta">
+                        <span>
+                          Date:{" "}
+                          {booking.bookingDate
+                            ? new Date(booking.bookingDate).toLocaleDateString()
+                            : "-"}
+                        </span>
+                        <span>Payment: {formatStatusLabel(booking.paymentStatus)}</span>
+                        <span>Status: {formatStatusLabel(booking.bookingStatus)}</span>
+                      </div>
                     </div>
                   </div>
 
