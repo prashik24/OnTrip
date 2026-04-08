@@ -396,8 +396,11 @@ function providerBroadcastEmailHtml({
   const details = parsed.details || {};
   const serviceType = getServiceType(provider, details);
   const infoItems = buildInfoItems(provider, details);
-  const displayName = details.businessName || provider?.businessName || "OnTrip Provider";
-  const updatedLabel = updatedAt ? new Date(updatedAt).toLocaleString() : new Date().toLocaleString();
+  const displayName =
+    details.businessName || provider?.businessName || "OnTrip Provider";
+  const updatedLabel = updatedAt
+    ? new Date(updatedAt).toLocaleString()
+    : new Date().toLocaleString();
 
   return `
     <div style="margin:0;padding:20px;background:#f4fbff;font-family:Arial,Helvetica,sans-serif;color:#0b1b2a;">
@@ -420,7 +423,11 @@ function providerBroadcastEmailHtml({
                 <div style="border-radius:14px;overflow:hidden;background:rgba(177,227,250,0.14);height:150px;min-height:150px;border:1px solid rgba(0,184,241,0.1);">
                   ${
                     imageUrl
-                      ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(displayName)}" style="width:100%;height:150px;display:block;object-fit:cover;" />`
+                      ? `<img src="${escapeHtml(
+                          imageUrl
+                        )}" alt="${escapeHtml(
+                          displayName
+                        )}" style="width:100%;height:150px;display:block;object-fit:cover;" />`
                       : ""
                   }
                 </div>
@@ -429,7 +436,10 @@ function providerBroadcastEmailHtml({
                 <div style="background:rgba(244,251,255,0.94);border-radius:18px;padding:14px;border:1px solid rgba(0,184,241,0.1);">
                   <div style="display:grid;grid-template-columns:1fr;gap:8px;">
                     ${renderSummaryRow("Service Type", serviceType)}
-                    ${renderSummaryRow("Recipients", String(recipientsCount || 0))}
+                    ${renderSummaryRow(
+                      "Recipients",
+                      String(recipientsCount || 0)
+                    )}
                     ${renderSummaryRow("Updated", updatedLabel)}
                   </div>
                 </div>
@@ -454,7 +464,7 @@ function providerBroadcastEmailHtml({
 export async function sendProviderBroadcast(req, res) {
   try {
     const userId = req.user?._id;
-    const { subject, message } = req.body;
+    const { subject, message, previewImage } = req.body;
 
     if (!subject || !message) {
       return res.status(400).json({
@@ -484,6 +494,11 @@ export async function sendProviderBroadcast(req, res) {
 
     const cleanSubject = String(subject).trim();
     const cleanMessage = String(message).trim();
+    const cleanPreviewImage = String(previewImage || "").trim();
+
+    const parsed = parseBroadcastMessage(cleanMessage);
+    const exactImageUrl =
+      cleanPreviewImage || getExactBroadcastImage(provider, parsed);
 
     const broadcast = await ProviderBroadcast.create({
       provider: provider._id,
@@ -491,10 +506,8 @@ export async function sendProviderBroadcast(req, res) {
       message: cleanMessage,
       recipientsCount: emails.length,
       status: "pending",
+      previewImage: exactImageUrl,
     });
-
-    const parsed = parseBroadcastMessage(cleanMessage);
-    const imageUrl = getExactBroadcastImage(provider, parsed);
 
     await sendTransactionalEmail({
       to: emails.map((email) => ({ email })),
@@ -503,7 +516,7 @@ export async function sendProviderBroadcast(req, res) {
         subject: cleanSubject,
         message: cleanMessage,
         provider,
-        imageUrl,
+        imageUrl: exactImageUrl,
         recipientsCount: emails.length,
         updatedAt: broadcast.updatedAt || new Date(),
         status: "sent",
