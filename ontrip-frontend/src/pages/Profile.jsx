@@ -12,6 +12,7 @@ export default function Profile() {
   const [hasProviderListings, setHasProviderListings] = useState(false);
   const [hasBookings, setHasBookings] = useState(false);
   const [hasSavedTrips, setHasSavedTrips] = useState(false);
+  const [isSubscribedUser, setIsSubscribedUser] = useState(false);
   const [msg, setMsg] = useState({ text: "", type: "" });
 
   const [form, setForm] = useState({
@@ -66,10 +67,20 @@ export default function Profile() {
       }
     }
 
+    async function loadSubscriberStatus() {
+      try {
+        const data = await apiFetch("/api/subscribers/status");
+        setIsSubscribedUser(!!data.isSubscribed);
+      } catch {
+        setIsSubscribedUser(false);
+      }
+    }
+
     loadMe();
     loadProviderStatus();
     loadBookingStatus();
     loadSavedTripsStatus();
+    loadSubscriberStatus();
   }, []);
 
   function update(key, value) {
@@ -327,18 +338,20 @@ export default function Profile() {
                 </>
               )}
 
-              <div className="profileQuickCard">
-                <h3>Provider Broadcasts</h3>
-                <p>
-                  View all provider broadcast messages, offers, updates, and announcements.
-                </p>
-                <button
-                  className="profileGhostBtn"
-                  onClick={() => navigate("/provider-broadcasts")}
-                >
-                  Open Provider Broadcasts
-                </button>
-              </div>
+              {isSubscribedUser && (
+                <div className="profileQuickCard">
+                  <h3>Provider Broadcasts</h3>
+                  <p>
+                    View all provider broadcast messages, offers, updates, and announcements.
+                  </p>
+                  <button
+                    className="profileGhostBtn"
+                    onClick={() => navigate("/provider-broadcasts")}
+                  >
+                    Open Provider Broadcasts
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ) : (
