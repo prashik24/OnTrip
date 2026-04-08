@@ -475,19 +475,22 @@ function providerBroadcastEmailHtml({
 export async function sendProviderBroadcast(req, res) {
   try {
     const userId = req.user?._id;
-    const { subject, message } = req.body;
+    const { providerId, subject, message } = req.body;
 
-    if (!subject || !message) {
+    if (!providerId || !subject || !message) {
       return res.status(400).json({
-        message: "Subject and message are required",
+        message: "Provider, subject and message are required",
       });
     }
 
-    const provider = await Provider.findOne({ owner: userId });
+    const provider = await Provider.findOne({
+      _id: providerId,
+      owner: userId,
+    });
 
     if (!provider) {
       return res.status(403).json({
-        message: "Only providers can send broadcasts",
+        message: "Selected provider not found",
       });
     }
 
