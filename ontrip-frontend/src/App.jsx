@@ -24,6 +24,7 @@ import ProviderDetails from "./pages/ProviderDetails";
 import ProviderRegister from "./pages/ProviderRegister";
 import ProviderBroadcast from "./pages/ProviderBroadcast";
 import ProviderBroadcastHistory from "./pages/ProviderBroadcastHistory";
+import SubscriberGroupPage from "./pages/SubscriberGroupPage";
 import MyListings from "./pages/MyListings";
 import MyListingEdit from "./pages/MyListingEdit";
 import ProviderDashboard from "./pages/ProviderDashboard";
@@ -33,7 +34,6 @@ import BookingCheckout from "./pages/BookingCheckout";
 import BookingSuccess from "./pages/BookingSuccess";
 import InvoiceView from "./pages/InvoiceView";
 import SavedTrips from "./pages/SavedTrips";
-
 
 import "./App.css";
 
@@ -73,7 +73,14 @@ export default function App() {
             <Route path="/community" element={<Community />} />
 
             <Route path="/provider-broadcast" element={<ProviderBroadcast />} />
-            <Route path="/provider-broadcast-history" element={<ProviderBroadcastHistory />}/>
+            <Route
+              path="/provider-broadcast-history"
+              element={<ProviderBroadcastHistory />}
+            />
+            <Route
+              path="/provider/subscriber-groups"
+              element={<SubscriberGroupPage />}
+            />
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/my-listings" element={<MyListings />} />
