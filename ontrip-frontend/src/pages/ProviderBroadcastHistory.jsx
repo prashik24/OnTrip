@@ -300,25 +300,27 @@ export default function ProviderBroadcastHistory() {
 
                     <div className="providerBroadcastHistorySummaryCard">
                       <div className="providerBroadcastHistorySummaryTop">
-                        <div>
+                        <div className="providerBroadcastHistorySummaryHeading">
                           <h4>{item.meta.title}</h4>
                           <p>{details.message || description || item.provider?.description || "-"}</p>
-                        </div>
-
-                        <div className="providerBroadcastHistoryServiceBadge">
-                          {item.meta.type}
                         </div>
                       </div>
 
                       <div className="providerBroadcastHistorySummaryStats">
                         <div className="providerBroadcastHistorySummaryStat">
-                          <strong>Subject:</strong> {item.subject || "-"}
+                          <strong>Subject</strong>
+                          <span>{item.subject || "-"}</span>
                         </div>
+
                         <div className="providerBroadcastHistorySummaryStat">
-                          <strong>Recipients:</strong> {item.recipientsCount || 0}
+                          <strong>Service Type</strong>
+                          <span>{item.meta.type}</span>
                         </div>
+
                         <div className="providerBroadcastHistorySummaryStat">
-                          <strong>Updated:</strong> {formatDateTime(item.updatedAt)}
+                          <strong>Recipients</strong>
+                          <span>{item.recipientsCount || 0}</span>
+                          <small>Updated: {formatDateTime(item.updatedAt)}</small>
                         </div>
                       </div>
                     </div>
