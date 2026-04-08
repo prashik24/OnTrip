@@ -24,7 +24,7 @@ import ProviderDetails from "./pages/ProviderDetails";
 import ProviderRegister from "./pages/ProviderRegister";
 import ProviderBroadcast from "./pages/ProviderBroadcast";
 import ProviderBroadcastHistory from "./pages/ProviderBroadcastHistory";
-import SubscriberGroupPage from "./pages/SubscriberGroupPage";
+import SubscriberBroadcasts from "./pages/SubscriberBroadcasts";
 import MyListings from "./pages/MyListings";
 import MyListingEdit from "./pages/MyListingEdit";
 import ProviderDashboard from "./pages/ProviderDashboard";
@@ -78,8 +78,8 @@ export default function App() {
               element={<ProviderBroadcastHistory />}
             />
             <Route
-              path="/provider/subscriber-groups"
-              element={<SubscriberGroupPage />}
+              path="/provider-broadcasts"
+              element={<SubscriberBroadcasts />}
             />
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
