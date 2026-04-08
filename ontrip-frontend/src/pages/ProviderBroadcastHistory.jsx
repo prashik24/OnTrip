@@ -294,22 +294,17 @@ export default function ProviderBroadcastHistory() {
                     <div className="providerBroadcastHistorySummaryCard">
                       <div className="providerBroadcastHistorySummaryStats">
                         <div className="providerBroadcastHistorySummaryRow">
-                          <strong>Subject :</strong>
-                          <span>{item.subject || "-"}</span>
-                        </div>
-
-                        <div className="providerBroadcastHistorySummaryRow">
-                          <strong>Service Type :</strong>
+                          <strong>Service Type:</strong>
                           <span>{item.meta.type}</span>
                         </div>
 
                         <div className="providerBroadcastHistorySummaryRow">
-                          <strong>Recipients :</strong>
+                          <strong>Recipients:</strong>
                           <span>{item.recipientsCount || 0}</span>
                         </div>
 
                         <div className="providerBroadcastHistorySummaryRow">
-                          <strong>Updated :</strong>
+                          <strong>Updated:</strong>
                           <span>{formatDateTime(item.updatedAt)}</span>
                         </div>
                       </div>
@@ -328,12 +323,19 @@ export default function ProviderBroadcastHistory() {
                     ))}
                   </div>
 
-                  {description ? (
-                    <div className="providerBroadcastHistoryContentBox">
-                      <strong>Description</strong>
-                      <p>{description}</p>
+                  <div className="providerBroadcastHistoryMetaSection">
+                    <div className="providerBroadcastHistoryMetaCard">
+                      <strong>Subject</strong>
+                      <span>{item.subject || "-"}</span>
                     </div>
-                  ) : null}
+
+                    {description ? (
+                      <div className="providerBroadcastHistoryMetaCard">
+                        <strong>Description</strong>
+                        <span>{description}</span>
+                      </div>
+                    ) : null}
+                  </div>
 
                   {extraMessage ? (
                     <div className="providerBroadcastHistoryContentBox providerBroadcastHistoryContentBoxMessage">
