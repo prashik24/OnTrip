@@ -145,17 +145,18 @@
 }
 
 .navUserName {
+  display: block;
   font-size: 15px;
   font-weight: 600;
   color: rgba(11, 27, 42, 0.7);
-  line-height: 1;
+  line-height: 1.25;
+  padding-bottom: 1px;
   max-width: 120px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   transition: color 0.2s ease;
 }
-
 @media (max-width: 900px) {
   .navbarCenter {
     display: none;
