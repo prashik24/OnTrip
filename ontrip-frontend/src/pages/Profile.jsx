@@ -313,6 +313,19 @@ export default function Profile() {
                       Open Broadcast History
                     </button>
                   </div>
+
+                  <div className="profileQuickCard">
+                    <h3>Subscriber Group</h3>
+                    <p>
+                      View all subscribers, select them, and create a chat group instantly.
+                    </p>
+                    <button
+                      className="profileGhostBtn"
+                      onClick={() => navigate("/provider/subscriber-groups")}
+                    >
+                      Open Subscriber Group
+                    </button>
+                  </div>
                 </>
               )}
             </div>
