@@ -1,22 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { parseISO, format } from "date-fns";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
+import ModernDatePicker from "../components/ModernDatePicker";
 import LoadingSpinner from "../components/LoadingSpinner";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import "./BookingCheckout.css";
 
 function onlyPhone(value) {
   return value.replace(/\D/g, "").slice(0, 10);
 }
 
-function formatDateForInput(date) {
-  if (!date) return "";
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+function formatDateForApi(date) {
+  return format(date, "yyyy-MM-dd");
 }
 
 export default function BookingCheckout() {
@@ -28,7 +24,6 @@ export default function BookingCheckout() {
   const [loading, setLoading] = useState(true);
   const [payLoading, setPayLoading] = useState(false);
   const [msg, setMsg] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null);
 
   const [form, setForm] = useState({
     contactName: user?.name || "",
@@ -81,6 +76,15 @@ export default function BookingCheckout() {
 
     loadProvider();
   }, [id, navigate]);
+
+  const selectedBookingDate = useMemo(() => {
+    if (!form.bookingDate) return null;
+    try {
+      return parseISO(form.bookingDate);
+    } catch {
+      return null;
+    }
+  }, [form.bookingDate]);
 
   const travelPlans = useMemo(() => {
     if (!provider) return [];
@@ -386,23 +390,16 @@ export default function BookingCheckout() {
 
           <div>
             <label>Travel Date</label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => {
-                setSelectedDate(date);
+            <ModernDatePicker
+              value={selectedBookingDate}
+              onChange={(date) =>
                 setForm((s) => ({
                   ...s,
-                  bookingDate: formatDateForInput(date),
-                }));
-              }}
+                  bookingDate: formatDateForApi(date),
+                }))
+              }
               minDate={new Date()}
-              dateFormat="dd MMM yyyy"
-              placeholderText="Select your travel date"
-              className="bookingCheckoutDatePicker"
-              calendarClassName="bookingCheckoutCalendar"
-              dayClassName={() => "bookingCheckoutCalendarDay"}
-              showPopperArrow={false}
-              required
+              placeholder="Select your travel date"
             />
           </div>
 
