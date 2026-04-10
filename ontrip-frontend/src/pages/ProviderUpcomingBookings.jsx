@@ -32,6 +32,69 @@ function getDaysLeftLabel(bookingDate) {
   return `${diffDays} days left`;
 }
 
+function getBookingTitle(booking) {
+  if (!booking) return "Booking";
+
+  return (
+    booking.serviceTitle ||
+    booking.selectedPackageTitle ||
+    booking.selectedVehicleTitle ||
+    booking.provider?.businessName ||
+    "Booking"
+  );
+}
+
+function getBookingImage(booking) {
+  if (!booking) return "";
+
+  if (booking?.selectedVehicleImage?.url) {
+    return booking.selectedVehicleImage.url;
+  }
+
+  if (booking?.selectedVehicleImage) {
+    return booking.selectedVehicleImage;
+  }
+
+  if (booking?.selectedPackageImage?.url) {
+    return booking.selectedPackageImage.url;
+  }
+
+  if (booking?.selectedPackageImage) {
+    return booking.selectedPackageImage;
+  }
+
+  if (booking?.serviceImage?.url) {
+    return booking.serviceImage.url;
+  }
+
+  if (booking?.serviceImage) {
+    return booking.serviceImage;
+  }
+
+  if (booking?.provider?.serviceImage?.url) {
+    return booking.provider.serviceImage.url;
+  }
+
+  if (booking?.provider?.serviceImage) {
+    return booking.provider.serviceImage;
+  }
+
+  if (booking?.provider?.vehicles?.[0]?.images?.[0]?.url) {
+    return booking.provider.vehicles[0].images[0].url;
+  }
+
+  if (booking?.provider?.travelPlans?.[0]?.images?.[0]?.url) {
+    return booking.provider.travelPlans[0].images[0].url;
+  }
+
+  return "";
+}
+
+function formatAmount(value) {
+  const amount = Number(value || 0);
+  return `₹${amount.toFixed(2)}`;
+}
+
 export default function ProviderUpcomingBookings() {
   const navigate = useNavigate();
   const user = getUser();
@@ -69,9 +132,11 @@ export default function ProviderUpcomingBookings() {
   }, [navigate, user?.role]);
 
   const normalized = useMemo(() => {
-    return bookings.map((b) => ({
-      ...b,
-      daysLeft: getDaysLeftLabel(b.bookingDate),
+    return bookings.map((booking) => ({
+      ...booking,
+      displayTitle: getBookingTitle(booking),
+      imageUrl: getBookingImage(booking),
+      daysLeft: getDaysLeftLabel(booking.bookingDate),
     }));
   }, [bookings]);
 
@@ -82,13 +147,17 @@ export default function ProviderUpcomingBookings() {
   return (
     <div className="providerUpcomingPage container">
       <div className="providerUpcomingHead">
-        <div>
+        <div className="providerUpcomingHeadLeft">
           <h1>Upcoming Customer Bookings</h1>
-          <p>Only future bookings are shown here.</p>
+          <p>
+            See all future customer bookings here. Past bookings are not shown
+            on this page.
+          </p>
         </div>
 
         <button
           className="providerUpcomingTopBtn"
+          type="button"
           onClick={() => navigate("/provider/dashboard")}
         >
           Back to Dashboard
@@ -98,61 +167,122 @@ export default function ProviderUpcomingBookings() {
       {msg ? <div className="providerUpcomingMessage">{msg}</div> : null}
 
       {normalized.length === 0 ? (
-        <div className="providerUpcomingEmpty">
-          No upcoming bookings.
-        </div>
+        <div className="providerUpcomingEmpty">No upcoming bookings.</div>
       ) : (
         <div className="providerUpcomingGrid">
-          {normalized.map((b) => (
-            <div className="providerUpcomingCard" key={b._id}>
-              <div className="providerUpcomingTop">
-                <h3>{b.serviceTitle || "Booking"}</h3>
-                <span>{b.daysLeft}</span>
-              </div>
+          {normalized.map((booking) => (
+            <div className="providerUpcomingCard" key={booking._id}>
+              <div className="providerUpcomingCardTop">
+                <div className="providerUpcomingBlueHeader">
+                  <div className="providerUpcomingBlueHeaderLeft">
+                    <h3>{booking.displayTitle}</h3>
+                  </div>
 
-              <div className="providerUpcomingInfo">
-                <div>
-                  <strong>Booking ID</strong>
-                  <span>{b.bookingRef}</span>
-                </div>
-
-                <div>
-                  <strong>Date</strong>
-                  <span>{formatDateTime(b.bookingDate)}</span>
-                </div>
-
-                <div>
-                  <strong>Customer</strong>
-                  <span>{b.contactName}</span>
-                </div>
-
-                <div>
-                  <strong>Phone</strong>
-                  <span>{b.contactPhone}</span>
-                </div>
-
-                <div>
-                  <strong>People</strong>
-                  <span>{b.peopleCount}</span>
-                </div>
-
-                <div>
-                  <strong>Days</strong>
-                  <span>{b.days}</span>
-                </div>
-
-                <div>
-                  <strong>Amount</strong>
-                  <span>₹{b.amount}</span>
+                  <div className="providerUpcomingBlueHeaderRight">
+                    <div className="providerUpcomingStatusBadge">
+                      {booking.daysLeft}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="providerUpcomingActions">
-                <button
-                  onClick={() => navigate(`/profile/bookings/${b._id}`)}
-                >
-                  View
-                </button>
+              <div className="providerUpcomingCardBody">
+                <div className="providerUpcomingTopSection">
+                  <div className="providerUpcomingImageWrap">
+                    {booking.imageUrl ? (
+                      <img
+                        src={booking.imageUrl}
+                        alt={booking.displayTitle}
+                        className="providerUpcomingImage"
+                      />
+                    ) : (
+                      <div className="providerUpcomingImageEmpty">No Image</div>
+                    )}
+                  </div>
+
+                  <div className="providerUpcomingSummaryCard">
+                    <div className="providerUpcomingSummaryStats">
+                      <div className="providerUpcomingSummaryRow">
+                        <strong>Booking ID:</strong>
+                        <span>{booking.bookingRef || "-"}</span>
+                      </div>
+
+                      <div className="providerUpcomingSummaryRow">
+                        <strong>Date:</strong>
+                        <span>{formatDateTime(booking.bookingDate)}</span>
+                      </div>
+
+                      <div className="providerUpcomingSummaryRow">
+                        <strong>Amount:</strong>
+                        <span>{formatAmount(booking.amount)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="providerUpcomingHeroNote">
+                  Please be ready before the customer booking date and keep your
+                  service available on time.
+                </div>
+
+                <div className="providerUpcomingInfoGrid">
+                  <div className="providerUpcomingInfoCard">
+                    <strong>Customer</strong>
+                    <span>{booking.contactName || "-"}</span>
+                  </div>
+
+                  <div className="providerUpcomingInfoCard">
+                    <strong>Phone</strong>
+                    <span>{booking.contactPhone || "-"}</span>
+                  </div>
+
+                  <div className="providerUpcomingInfoCard">
+                    <strong>People</strong>
+                    <span>{booking.peopleCount || 1}</span>
+                  </div>
+
+                  <div className="providerUpcomingInfoCard">
+                    <strong>Days</strong>
+                    <span>{booking.days || 1}</span>
+                  </div>
+
+                  <div className="providerUpcomingInfoCard">
+                    <strong>Status</strong>
+                    <span>{booking.bookingStatus || "Upcoming"}</span>
+                  </div>
+
+                  <div className="providerUpcomingInfoCard">
+                    <strong>Service</strong>
+                    <span>{booking.serviceTitle || booking.displayTitle || "-"}</span>
+                  </div>
+                </div>
+
+                {booking.notes ? (
+                  <div className="providerUpcomingContentBox">
+                    <strong>Customer Note</strong>
+                    <p>{booking.notes}</p>
+                  </div>
+                ) : null}
+
+                <div className="providerUpcomingActions">
+                  <button
+                    className="providerUpcomingBtn"
+                    type="button"
+                    onClick={() => navigate(`/profile/bookings/${booking._id}`)}
+                  >
+                    View Booking
+                  </button>
+
+                  <button
+                    className="providerUpcomingBtn primary"
+                    type="button"
+                    onClick={() =>
+                      navigate(`/profile/bookings/${booking._id}/invoice`)
+                    }
+                  >
+                    Open Invoice
+                  </button>
+                </div>
               </div>
             </div>
           ))}
