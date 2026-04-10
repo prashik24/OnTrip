@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
-import "react-day-picker/style.css";
+import "react-day-picker/dist/style.css";
 import "./ModernDatePicker.css";
 
 export default function ModernDatePicker({
@@ -20,18 +20,18 @@ export default function ModernDatePicker({
       }
     }
 
-    function handleEsc(event) {
+    function handleEscape(event) {
       if (event.key === "Escape") {
         setOpen(false);
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEsc);
+    document.addEventListener("keydown", handleEscape);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEsc);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
@@ -49,12 +49,7 @@ export default function ModernDatePicker({
         </span>
 
         <span className="modernDatePickerIcon" aria-hidden="true">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="3" y="4" width="18" height="18" rx="4" />
             <path d="M16 2v4M8 2v4M3 10h18" />
           </svg>
@@ -72,8 +67,9 @@ export default function ModernDatePicker({
               setOpen(false);
             }}
             disabled={{ before: minDate }}
-            showOutsideDays
             defaultMonth={value || minDate}
+            showOutsideDays
+            fixedWeeks
             className="ontripDayPicker"
           />
         </div>
