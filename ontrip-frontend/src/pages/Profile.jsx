@@ -12,6 +12,9 @@ export default function Profile() {
   const [hasProviderListings, setHasProviderListings] = useState(false);
   const [hasBookings, setHasBookings] = useState(false);
   const [hasSavedTrips, setHasSavedTrips] = useState(false);
+  const [hasUpcomingBookings, setHasUpcomingBookings] = useState(false);
+  const [hasProviderUpcomingBookings, setHasProviderUpcomingBookings] =
+    useState(false);
   const [isSubscribedUser, setIsSubscribedUser] = useState(false);
   const [msg, setMsg] = useState({ text: "", type: "" });
 
@@ -76,11 +79,31 @@ export default function Profile() {
       }
     }
 
+    async function loadUpcomingBookingStatus() {
+      try {
+        const data = await apiFetch("/api/upcoming-bookings/user");
+        setHasUpcomingBookings((data.bookings || []).length > 0);
+      } catch {
+        setHasUpcomingBookings(false);
+      }
+    }
+
+    async function loadProviderUpcomingBookingStatus() {
+      try {
+        const data = await apiFetch("/api/upcoming-bookings/provider");
+        setHasProviderUpcomingBookings((data.bookings || []).length > 0);
+      } catch {
+        setHasProviderUpcomingBookings(false);
+      }
+    }
+
     loadMe();
     loadProviderStatus();
     loadBookingStatus();
     loadSavedTripsStatus();
     loadSubscriberStatus();
+    loadUpcomingBookingStatus();
+    loadProviderUpcomingBookingStatus();
   }, []);
 
   function update(key, value) {
@@ -259,6 +282,22 @@ export default function Profile() {
                 </div>
               )}
 
+              {hasUpcomingBookings && (
+                <div className="profileQuickCard">
+                  <h3>Your Trip Is Coming</h3>
+                  <p>
+                    View only your upcoming trips and vehicle bookings before
+                    the booking date.
+                  </p>
+                  <button
+                    className="profileGhostBtn"
+                    onClick={() => navigate("/upcoming-bookings")}
+                  >
+                    Open Upcoming Bookings
+                  </button>
+                </div>
+              )}
+
               {hasSavedTrips && (
                 <div className="profileQuickCard">
                   <h3>Saved Trips</h3>
@@ -279,7 +318,10 @@ export default function Profile() {
                 <>
                   <div className="profileQuickCard">
                     <h3>My Listings</h3>
-                    <p>View, update, and remove your registered provider services.</p>
+                    <p>
+                      View, update, and remove your registered provider
+                      services.
+                    </p>
                     <button
                       className="profileGhostBtn"
                       onClick={() => navigate("/profile/my-listings")}
@@ -299,6 +341,21 @@ export default function Profile() {
                     </button>
                   </div>
 
+                  {hasProviderUpcomingBookings && (
+                    <div className="profileQuickCard">
+                      <h3>Upcoming Customer Bookings</h3>
+                      <p>
+                        View only upcoming customer trips and vehicle bookings.
+                      </p>
+                      <button
+                        className="profileGhostBtn"
+                        onClick={() => navigate("/provider/upcoming-bookings")}
+                      >
+                        Open Upcoming Customer Bookings
+                      </button>
+                    </div>
+                  )}
+
                   <div className="profileQuickCard">
                     <h3>Provider Broadcast</h3>
                     <p>Send trip and vehicle updates to all subscribed users.</p>
@@ -313,7 +370,8 @@ export default function Profile() {
                   <div className="profileQuickCard">
                     <h3>Provider Broadcast History</h3>
                     <p>
-                      View all old provider broadcasts, delivery status, and recipients.
+                      View all old provider broadcasts, delivery status, and
+                      recipients.
                     </p>
                     <button
                       className="profileGhostBtn"
@@ -326,7 +384,8 @@ export default function Profile() {
                   <div className="profileQuickCard">
                     <h3>Subscriber Group</h3>
                     <p>
-                      View all subscribers, select them, and create a chat group instantly.
+                      View all subscribers, select them, and create a chat
+                      group instantly.
                     </p>
                     <button
                       className="profileGhostBtn"
@@ -342,7 +401,8 @@ export default function Profile() {
                 <div className="profileQuickCard">
                   <h3>Provider Broadcasts</h3>
                   <p>
-                    View all provider broadcast messages, offers, updates, and announcements.
+                    View all provider broadcast messages, offers, updates, and
+                    announcements.
                   </p>
                   <button
                     className="profileGhostBtn"
