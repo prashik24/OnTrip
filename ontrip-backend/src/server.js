@@ -4,11 +4,13 @@ dotenv.config();
 import http from "http";
 import jwt from "jsonwebtoken";
 import { Server } from "socket.io";
+import cron from "node-cron";
 
 import app from "./app.js";
 import { connectDB } from "./config/db.js";
 import User from "./models/User.js";
 import { registerSocketHandlers } from "./socket/chatSocket.js";
+import { runBookingReminderJob } from "./jobs/bookingReminderJob.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -37,7 +39,9 @@ async function start() {
       }
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findById(decoded.userId).select("_id name email avatar");
+      const user = await User.findById(decoded.userId).select(
+        "_id name email avatar"
+      );
 
       if (!user) {
         return next(new Error("User not found"));
@@ -57,6 +61,15 @@ async function start() {
   });
 
   registerSocketHandlers(io);
+
+  cron.schedule("0 * * * *", async () => {
+    try {
+      console.log("⏰ Running booking reminder job...");
+      await runBookingReminderJob();
+    } catch (error) {
+      console.error("Booking reminder cron error:", error);
+    }
+  });
 
   httpServer.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
