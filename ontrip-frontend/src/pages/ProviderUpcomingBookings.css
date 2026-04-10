@@ -1,0 +1,74 @@
+.providerUpcomingPage {
+  padding-bottom: 32px;
+  display: grid;
+  gap: 18px;
+}
+
+.providerUpcomingHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.providerUpcomingHead h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.providerUpcomingHead p {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.providerUpcomingTopBtn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: white;
+  cursor: pointer;
+}
+
+.providerUpcomingGrid {
+  display: grid;
+  gap: 16px;
+}
+
+.providerUpcomingCard {
+  border: 1px solid rgba(0,184,241,0.2);
+  border-radius: 14px;
+  padding: 16px;
+  background: white;
+  display: grid;
+  gap: 12px;
+}
+
+.providerUpcomingTop {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.providerUpcomingInfo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.providerUpcomingInfo div {
+  background: #f7fbff;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.providerUpcomingActions {
+  text-align: right;
+}
+
+.providerUpcomingActions button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #00b8f1;
+  color: white;
+  cursor: pointer;
+}
