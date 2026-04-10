@@ -1,18 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { parseISO, format } from "date-fns";
 import { apiFetch, getUser, isLoggedIn } from "../lib/api";
 import CustomSelect from "../components/CustomSelect";
-import ModernDatePicker from "../components/ModernDatePicker";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./BookingCheckout.css";
 
 function onlyPhone(value) {
   return value.replace(/\D/g, "").slice(0, 10);
-}
-
-function formatDateForApi(date) {
-  return format(date, "yyyy-MM-dd");
 }
 
 export default function BookingCheckout() {
@@ -76,15 +70,6 @@ export default function BookingCheckout() {
 
     loadProvider();
   }, [id, navigate]);
-
-  const selectedBookingDate = useMemo(() => {
-    if (!form.bookingDate) return null;
-    try {
-      return parseISO(form.bookingDate);
-    } catch {
-      return null;
-    }
-  }, [form.bookingDate]);
 
   const travelPlans = useMemo(() => {
     if (!provider) return [];
@@ -200,18 +185,12 @@ export default function BookingCheckout() {
       return;
     }
 
-    if (
-      provider.listingType === "travel_planner" &&
-      !form.destination.trim()
-    ) {
+    if (provider.listingType === "travel_planner" && !form.destination.trim()) {
       setMsg("Please enter destination.");
       return;
     }
 
-    if (
-      provider.listingType === "travel_planner" &&
-      !form.selectedPackageTitle.trim()
-    ) {
+    if (provider.listingType === "travel_planner" && !form.selectedPackageTitle.trim()) {
       setMsg("Please select a package.");
       return;
     }
@@ -390,16 +369,14 @@ export default function BookingCheckout() {
 
           <div>
             <label>Travel Date</label>
-            <ModernDatePicker
-              value={selectedBookingDate}
-              onChange={(date) =>
-                setForm((s) => ({
-                  ...s,
-                  bookingDate: formatDateForApi(date),
-                }))
+            <input
+              type="date"
+              value={form.bookingDate}
+              onChange={(e) =>
+                setForm((s) => ({ ...s, bookingDate: e.target.value }))
               }
-              minDate={new Date()}
-              placeholder="Select your travel date"
+              required
+              className="bookingCheckoutDate"
             />
           </div>
 
