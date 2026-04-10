@@ -35,6 +35,8 @@ import BookingCheckout from "./pages/BookingCheckout";
 import BookingSuccess from "./pages/BookingSuccess";
 import InvoiceView from "./pages/InvoiceView";
 import SavedTrips from "./pages/SavedTrips";
+import ProviderUpcomingBookings from "./pages/ProviderUpcomingBookings";
+
 
 import "./App.css";
 
@@ -118,6 +120,10 @@ export default function App() {
             <Route path="/home" element={<Navigate to="/" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <Route
+            path="/provider/upcoming-bookings"
+            element={<ProviderUpcomingBookings />}
+          />
 
           <Footer />
         </main>
