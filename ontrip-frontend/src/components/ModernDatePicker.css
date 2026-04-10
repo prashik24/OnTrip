@@ -5,23 +5,23 @@
 
 .modernDatePickerTrigger {
   width: 100%;
-  min-height: 54px;
-  border: 1px solid rgba(0, 184, 241, 0.18);
-  border-radius: 16px;
+  min-height: 56px;
+  padding: 0 18px;
+  border: 2px solid #1db5f0;
+  border-radius: 20px;
   background: #ffffff;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 16px;
   cursor: pointer;
-  transition: all 0.22s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 24px rgba(0, 184, 241, 0.08);
 }
 
 .modernDatePickerTrigger:hover {
-  border-color: rgba(0, 184, 241, 0.45);
-  transform: translateY(-1px);
+  border-color: #00b8f1;
+  box-shadow: 0 12px 28px rgba(0, 184, 241, 0.14);
 }
 
 .modernDatePickerTrigger.isOpen {
@@ -30,10 +30,11 @@
 }
 
 .modernDatePickerText {
-  color: #94a3b8;
   font-size: 15px;
   font-weight: 500;
+  color: #94a3b8;
   text-align: left;
+  line-height: 1;
 }
 
 .modernDatePickerText.hasValue {
@@ -41,8 +42,9 @@
 }
 
 .modernDatePickerIcon {
-  width: 20px;
-  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: #00b8f1;
   flex-shrink: 0;
 }
@@ -56,92 +58,185 @@
   position: absolute;
   top: calc(100% + 10px);
   left: 0;
-  z-index: 50;
-  width: min(360px, 100%);
+  z-index: 9999;
+  width: 320px;
+  max-width: calc(100vw - 32px);
   background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 22px;
+  border-radius: 24px;
   box-shadow: 0 24px 70px rgba(15, 23, 42, 0.18);
-  padding: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* DayPicker root reset */
+.ontripDayPicker,
+.ontripDayPicker * {
+  box-sizing: border-box;
 }
 
 .ontripDayPicker {
   width: 100%;
 }
 
-.ontripDayPicker .rdp-root {
-  --rdp-accent-color: #00b8f1;
-  --rdp-accent-background-color: rgba(0, 184, 241, 0.14);
-  --rdp-day_button-border-radius: 999px;
-  --rdp-day-height: 42px;
-  --rdp-day-width: 42px;
-  --rdp-nav_button-height: 34px;
-  --rdp-nav_button-width: 34px;
-  --rdp-disabled-opacity: 0.35;
+.ontripDayPicker .rdp {
   margin: 0;
+  width: 100%;
 }
 
-.ontripDayPicker .rdp-month_caption {
+.ontripDayPicker .rdp-months {
   justify-content: center;
-  font-weight: 800;
+}
+
+.ontripDayPicker .rdp-month {
+  width: 100%;
+}
+
+.ontripDayPicker .rdp-table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.ontripDayPicker .rdp-head_row,
+.ontripDayPicker .rdp-row {
+  width: 100%;
+}
+
+.ontripDayPicker .rdp-head_cell,
+.ontripDayPicker .rdp-cell {
+  width: 14.2857%;
+  text-align: center;
+  padding: 0;
+}
+
+.ontripDayPicker .rdp-caption {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  margin-bottom: 14px;
+  padding: 0 42px;
+}
+
+.ontripDayPicker .rdp-caption_label {
   font-size: 16px;
-  color: #0f172a;
-  margin-bottom: 8px;
-}
-
-.ontripDayPicker .rdp-weekday {
-  font-size: 12px;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
-}
-
-.ontripDayPicker .rdp-day_button {
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 999px;
-  border: none;
-  transition: all 0.2s ease;
-}
-
-.ontripDayPicker .rdp-day_button:hover {
-  background: rgba(0, 184, 241, 0.12);
-  color: #009ecf;
-}
-
-.ontripDayPicker .rdp-selected .rdp-day_button {
-  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
-  color: #ffffff;
-  box-shadow: 0 10px 20px rgba(0, 184, 241, 0.28);
-}
-
-.ontripDayPicker .rdp-today .rdp-day_button {
-  border: 1px solid #00b8f1;
-  color: #009ecf;
   font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.ontripDayPicker .rdp-nav {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 .ontripDayPicker .rdp-nav_button {
-  border-radius: 12px;
+  pointer-events: auto;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
   border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
   background: #f8fafc;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .ontripDayPicker .rdp-nav_button:hover {
   background: rgba(0, 184, 241, 0.1);
-  border-color: rgba(0, 184, 241, 0.25);
+  border-color: rgba(0, 184, 241, 0.3);
+  color: #009fd0;
+}
+
+.ontripDayPicker .rdp-nav_button_previous {
+  left: 0;
+}
+
+.ontripDayPicker .rdp-nav_button_next {
+  right: 0;
+}
+
+.ontripDayPicker .rdp-head_cell {
+  height: 34px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.ontripDayPicker .rdp-day {
+  height: 42px;
+  width: 42px;
+  margin: 0 auto;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ontripDayPicker .rdp-day:hover {
+  background: rgba(0, 184, 241, 0.12);
+  color: #009fd0;
+}
+
+.ontripDayPicker .rdp-day_today {
+  border: 1.5px solid #00b8f1;
+  color: #009fd0;
+  font-weight: 800;
+  background: #ffffff;
+}
+
+.ontripDayPicker .rdp-day_selected,
+.ontripDayPicker .rdp-day_selected:hover {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 12px 20px rgba(0, 184, 241, 0.25);
+}
+
+.ontripDayPicker .rdp-day_outside {
+  color: #cbd5e1;
+}
+
+.ontripDayPicker .rdp-day_disabled {
+  color: #cbd5e1;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ontripDayPicker .rdp-day_disabled:hover {
+  background: transparent;
+  color: #cbd5e1;
 }
 
 @media (max-width: 640px) {
   .modernDatePickerPopover {
-    width: 100%;
+    width: min(320px, calc(100vw - 24px));
     left: 0;
-    right: 0;
   }
 
-  .ontripDayPicker .rdp-root {
-    --rdp-day-height: 40px;
-    --rdp-day-width: 40px;
+  .ontripDayPicker .rdp-day {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+
+  .ontripDayPicker .rdp-head_cell {
+    font-size: 11px;
   }
 }
