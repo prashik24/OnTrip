@@ -170,3 +170,9 @@
     width: 100%;
   }
 }
+
+.bookingCheckoutCard,
+.bookingCheckoutGrid,
+.bookingCheckoutPage {
+  overflow: visible !important;
+}
