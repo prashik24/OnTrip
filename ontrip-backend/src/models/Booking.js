@@ -174,8 +174,20 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    reminderSent: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
+    reminderSentAt: {
+      type: Date,
+      default: null,
+    },
+
   },
   { timestamps: true }
 );
+
 
 export default mongoose.model("Booking", bookingSchema);
