@@ -171,8 +171,3 @@
   }
 }
 
-.bookingCheckoutCard,
-.bookingCheckoutGrid,
-.bookingCheckoutPage {
-  overflow: visible !important;
-}
