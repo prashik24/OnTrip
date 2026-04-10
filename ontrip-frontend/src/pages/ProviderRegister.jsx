@@ -284,6 +284,7 @@ export default function ProviderRegister() {
             <label>Phone</label>
             <input
               inputMode="numeric"
+              maxLength={10}
               value={form.phone}
               onChange={(e) => setForm((s) => ({ ...s, phone: onlyPhone(e.target.value) }))}
               required
@@ -294,6 +295,7 @@ export default function ProviderRegister() {
             <label>WhatsApp</label>
             <input
               inputMode="numeric"
+              maxLength={10}
               value={form.whatsapp}
               onChange={(e) => setForm((s) => ({ ...s, whatsapp: onlyPhone(e.target.value) }))}
             />
