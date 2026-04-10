@@ -1,0 +1,147 @@
+.modernDatePicker {
+  position: relative;
+  width: 100%;
+}
+
+.modernDatePickerTrigger {
+  width: 100%;
+  min-height: 54px;
+  border: 1px solid rgba(0, 184, 241, 0.18);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.modernDatePickerTrigger:hover {
+  border-color: rgba(0, 184, 241, 0.45);
+  transform: translateY(-1px);
+}
+
+.modernDatePickerTrigger.isOpen {
+  border-color: #00b8f1;
+  box-shadow: 0 0 0 4px rgba(0, 184, 241, 0.12);
+}
+
+.modernDatePickerText {
+  color: #94a3b8;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.modernDatePickerText.hasValue {
+  color: #0f172a;
+}
+
+.modernDatePickerIcon {
+  width: 20px;
+  height: 20px;
+  color: #00b8f1;
+  flex-shrink: 0;
+}
+
+.modernDatePickerIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.modernDatePickerPopover {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 50;
+  width: min(360px, 100%);
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 22px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.18);
+  padding: 14px;
+}
+
+.ontripDayPicker {
+  width: 100%;
+}
+
+.ontripDayPicker .rdp-root {
+  --rdp-accent-color: #00b8f1;
+  --rdp-accent-background-color: rgba(0, 184, 241, 0.14);
+  --rdp-day_button-border-radius: 999px;
+  --rdp-day-height: 42px;
+  --rdp-day-width: 42px;
+  --rdp-nav_button-height: 34px;
+  --rdp-nav_button-width: 34px;
+  --rdp-disabled-opacity: 0.35;
+  margin: 0;
+}
+
+.ontripDayPicker .rdp-month_caption {
+  justify-content: center;
+  font-weight: 800;
+  font-size: 16px;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.ontripDayPicker .rdp-weekday {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.ontripDayPicker .rdp-day_button {
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.ontripDayPicker .rdp-day_button:hover {
+  background: rgba(0, 184, 241, 0.12);
+  color: #009ecf;
+}
+
+.ontripDayPicker .rdp-selected .rdp-day_button {
+  background: linear-gradient(135deg, #4ec9f5, #00b8f1);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(0, 184, 241, 0.28);
+}
+
+.ontripDayPicker .rdp-today .rdp-day_button {
+  border: 1px solid #00b8f1;
+  color: #009ecf;
+  font-weight: 800;
+}
+
+.ontripDayPicker .rdp-nav_button {
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.ontripDayPicker .rdp-nav_button:hover {
+  background: rgba(0, 184, 241, 0.1);
+  border-color: rgba(0, 184, 241, 0.25);
+}
+
+@media (max-width: 640px) {
+  .modernDatePickerPopover {
+    width: 100%;
+    left: 0;
+    right: 0;
+  }
+
+  .ontripDayPicker .rdp-root {
+    --rdp-day-height: 40px;
+    --rdp-day-width: 40px;
+  }
+}
