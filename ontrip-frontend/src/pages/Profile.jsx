@@ -32,7 +32,7 @@ export default function Profile() {
         setUser(data.user);
         setForm({
           name: data.user?.name || "",
-          phone: data.user?.phone || "",
+          phone: String(data.user?.phone || "").replace(/\D/g, "").slice(0, 10),
           city: data.user?.city || "",
           bio: data.user?.bio || "",
         });
@@ -113,13 +113,26 @@ export default function Profile() {
   async function saveProfile(e) {
     e.preventDefault();
 
+    const cleanPhone = String(form.phone || "").replace(/\D/g, "");
+
+    if (cleanPhone && cleanPhone.length !== 10) {
+      setMsg({
+        text: "Phone number must be exactly 10 digits",
+        type: "error",
+      });
+      return;
+    }
+
     try {
       setLoading(true);
       setMsg({ text: "", type: "" });
 
       const data = await apiFetch("/api/auth/me", {
         method: "PUT",
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          phone: cleanPhone,
+        }),
       });
 
       setUser(data.user);
@@ -430,8 +443,17 @@ export default function Profile() {
               <div>
                 <label>Phone</label>
                 <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={10}
                   value={form.phone}
-                  onChange={(e) => update("phone", e.target.value)}
+                  onChange={(e) => {
+                    const onlyNumbers = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 10);
+                    update("phone", onlyNumbers);
+                  }}
+                  placeholder="Enter 10 digit phone number"
                 />
               </div>
 
