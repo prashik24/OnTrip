@@ -26,6 +26,8 @@ import ProviderBroadcast from "./pages/ProviderBroadcast";
 import ProviderBroadcastHistory from "./pages/ProviderBroadcastHistory";
 import SubscriberBroadcasts from "./pages/SubscriberBroadcasts";
 import SubscriberGroupPage from "./pages/SubscriberGroupPage";
+import ProviderUpcomingBookings from "./pages/ProviderUpcomingBookings";
+import UpcomingBookings from "./pages/UpcomingBookings";
 import MyListings from "./pages/MyListings";
 import MyListingEdit from "./pages/MyListingEdit";
 import ProviderDashboard from "./pages/ProviderDashboard";
@@ -35,7 +37,6 @@ import BookingCheckout from "./pages/BookingCheckout";
 import BookingSuccess from "./pages/BookingSuccess";
 import InvoiceView from "./pages/InvoiceView";
 import SavedTrips from "./pages/SavedTrips";
-import ProviderUpcomingBookings from "./pages/ProviderUpcomingBookings";
 
 import "./App.css";
 
@@ -88,6 +89,14 @@ export default function App() {
               path="/provider/subscriber-groups"
               element={<SubscriberGroupPage />}
             />
+            <Route
+              path="/provider/upcoming-bookings"
+              element={<ProviderUpcomingBookings />}
+            />
+            <Route
+              path="/upcoming-bookings"
+              element={<UpcomingBookings />}
+            />
 
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/my-listings" element={<MyListings />} />
@@ -108,10 +117,6 @@ export default function App() {
             />
 
             <Route path="/provider/dashboard" element={<ProviderDashboard />} />
-            <Route
-              path="/provider/upcoming-bookings"
-              element={<ProviderUpcomingBookings />}
-            />
             <Route path="/providers" element={<Providers />} />
             <Route path="/providers/:id" element={<ProviderDetails />} />
             <Route path="/providers/:id/book" element={<BookingCheckout />} />
