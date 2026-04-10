@@ -32,59 +32,120 @@ function getDaysLeftLabel(bookingDate) {
   return `${diffDays} days left`;
 }
 
+function normalizeText(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
 function getBookingTitle(booking) {
   if (!booking) return "Booking";
 
+  if (booking.serviceType === "vehicle") {
+    return (
+      booking.selectedVehicleTitle ||
+      booking.serviceTitle ||
+      booking.provider?.businessName ||
+      "Vehicle Booking"
+    );
+  }
+
   return (
-    booking.serviceTitle ||
     booking.selectedPackageTitle ||
-    booking.selectedVehicleTitle ||
+    booking.serviceTitle ||
     booking.provider?.businessName ||
-    "Booking"
+    "Trip Booking"
   );
 }
 
+function getImageFromImageArray(images) {
+  if (!Array.isArray(images) || images.length === 0) return "";
+  return images[0]?.url || images[0] || "";
+}
+
 function getBookingImage(booking) {
-  if (!booking) return "";
+  const provider = booking?.provider;
+  if (!provider) return "";
 
-  if (booking?.selectedVehicleImage?.url) {
-    return booking.selectedVehicleImage.url;
+  if (booking?.serviceType === "travel_planner") {
+    const travelPlans =
+      provider?.travelPlans?.length > 0
+        ? provider.travelPlans
+        : provider?.travelPlanner
+        ? [provider.travelPlanner]
+        : [];
+
+    if (booking?.selectedPackageTitle) {
+      const matchedPlan = travelPlans.find(
+        (plan) =>
+          normalizeText(plan?.packageTitle) ===
+          normalizeText(booking.selectedPackageTitle)
+      );
+
+      const matchedPlanImage = getImageFromImageArray(matchedPlan?.images);
+      if (matchedPlanImage) return matchedPlanImage;
+    }
+
+    if (booking?.serviceTitle) {
+      const matchedPlan = travelPlans.find(
+        (plan) =>
+          normalizeText(plan?.packageTitle) === normalizeText(booking.serviceTitle)
+      );
+
+      const matchedPlanImage = getImageFromImageArray(matchedPlan?.images);
+      if (matchedPlanImage) return matchedPlanImage;
+    }
+
+    const firstTravelPlanImage = getImageFromImageArray(travelPlans?.[0]?.images);
+    if (firstTravelPlanImage) return firstTravelPlanImage;
   }
 
-  if (booking?.selectedVehicleImage) {
-    return booking.selectedVehicleImage;
+  if (booking?.serviceType === "vehicle") {
+    const vehicles = provider?.vehicles || [];
+
+    if (booking?.selectedVehicleId) {
+      const matchedVehicle = vehicles.find(
+        (vehicle) => String(vehicle?._id) === String(booking.selectedVehicleId)
+      );
+
+      const matchedVehicleImage = getImageFromImageArray(matchedVehicle?.images);
+      if (matchedVehicleImage) return matchedVehicleImage;
+    }
+
+    if (booking?.selectedVehicleTitle) {
+      const selectedTitle = normalizeText(booking.selectedVehicleTitle);
+
+      const matchedVehicle = vehicles.find((vehicle) => {
+        const vehicleTitle = normalizeText(vehicle?.title);
+        const vehicleType = normalizeText(vehicle?.vehicleType);
+        return vehicleTitle === selectedTitle || vehicleType === selectedTitle;
+      });
+
+      const matchedVehicleImage = getImageFromImageArray(matchedVehicle?.images);
+      if (matchedVehicleImage) return matchedVehicleImage;
+    }
+
+    if (booking?.serviceTitle) {
+      const serviceTitle = normalizeText(booking.serviceTitle);
+
+      const matchedVehicle = vehicles.find((vehicle) => {
+        const vehicleTitle = normalizeText(vehicle?.title);
+        const vehicleType = normalizeText(vehicle?.vehicleType);
+        return vehicleTitle === serviceTitle || vehicleType === serviceTitle;
+      });
+
+      const matchedVehicleImage = getImageFromImageArray(matchedVehicle?.images);
+      if (matchedVehicleImage) return matchedVehicleImage;
+    }
+
+    const firstVehicleImage = getImageFromImageArray(vehicles?.[0]?.images);
+    if (firstVehicleImage) return firstVehicleImage;
   }
 
-  if (booking?.selectedPackageImage?.url) {
-    return booking.selectedPackageImage.url;
+  if (provider?.serviceImage?.url) {
+    return provider.serviceImage.url;
   }
 
-  if (booking?.selectedPackageImage) {
-    return booking.selectedPackageImage;
-  }
-
-  if (booking?.serviceImage?.url) {
-    return booking.serviceImage.url;
-  }
-
-  if (booking?.serviceImage) {
-    return booking.serviceImage;
-  }
-
-  if (booking?.provider?.serviceImage?.url) {
-    return booking.provider.serviceImage.url;
-  }
-
-  if (booking?.provider?.serviceImage) {
-    return booking.provider.serviceImage;
-  }
-
-  if (booking?.provider?.vehicles?.[0]?.images?.[0]?.url) {
-    return booking.provider.vehicles[0].images[0].url;
-  }
-
-  if (booking?.provider?.travelPlans?.[0]?.images?.[0]?.url) {
-    return booking.provider.travelPlans[0].images[0].url;
+  if (provider?.serviceImage) {
+    return provider.serviceImage;
   }
 
   return "";
@@ -228,12 +289,16 @@ export default function ProviderUpcomingBookings() {
                 <div className="providerUpcomingInfoGrid">
                   <div className="providerUpcomingInfoCard">
                     <strong>Customer</strong>
-                    <span>{booking.contactName || "-"}</span>
+                    <span>
+                      {booking.contactName || booking.user?.name || "-"}
+                    </span>
                   </div>
 
                   <div className="providerUpcomingInfoCard">
                     <strong>Phone</strong>
-                    <span>{booking.contactPhone || "-"}</span>
+                    <span>
+                      {booking.contactPhone || booking.user?.phone || "-"}
+                    </span>
                   </div>
 
                   <div className="providerUpcomingInfoCard">
@@ -252,8 +317,22 @@ export default function ProviderUpcomingBookings() {
                   </div>
 
                   <div className="providerUpcomingInfoCard">
+                    <strong>Service Type</strong>
+                    <span>
+                      {booking.serviceType === "vehicle"
+                        ? "Vehicle Service"
+                        : "Travel Planner"}
+                    </span>
+                  </div>
+
+                  <div className="providerUpcomingInfoCard">
                     <strong>Service</strong>
-                    <span>{booking.serviceTitle || booking.displayTitle || "-"}</span>
+                    <span>{booking.displayTitle || "-"}</span>
+                  </div>
+
+                  <div className="providerUpcomingInfoCard">
+                    <strong>Email</strong>
+                    <span>{booking.user?.email || "-"}</span>
                   </div>
                 </div>
 
