@@ -19,6 +19,8 @@ const OPENROUTER_MODELS = [
   "mistralai/mistral-small-3.1-24b-instruct:free",
 ];
 
+const geocodeCache = new Map();
+
 function safeArray(value) {
   return Array.isArray(value) ? value : [];
 }
@@ -32,13 +34,36 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchJson(url, options = {}) {
-  const response = await fetch(url, options);
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Request failed ${response.status}: ${text}`);
+async function fetchJson(url, options = {}, retries = 3, retryDelay = 1500) {
+  let lastError = null;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+
+      if (response.ok) {
+        return await response.json();
+      }
+
+      const text = await response.text();
+
+      if (response.status === 429 && attempt < retries) {
+        await sleep(retryDelay * (attempt + 1));
+        continue;
+      }
+
+      throw new Error(`Request failed ${response.status}: ${text}`);
+    } catch (error) {
+      lastError = error;
+
+      if (attempt < retries) {
+        await sleep(retryDelay * (attempt + 1));
+        continue;
+      }
+    }
   }
-  return response.json();
+
+  throw lastError || new Error("Request failed");
 }
 
 function extractJson(text, fallback = null) {
@@ -190,27 +215,49 @@ async function generateTextWithFallback(prompt, localFallbackText = "") {
 async function geocodeLocation(query) {
   if (!query) return null;
 
-  await sleep(1100);
+  const cacheKey = String(query).trim().toLowerCase();
+  if (geocodeCache.has(cacheKey)) {
+    return geocodeCache.get(cacheKey);
+  }
+
+  await sleep(1200);
 
   const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(
     query
   )}`;
 
-  const data = await fetchJson(url, {
-    headers: {
-      "User-Agent": "ontrip-ai-planner/1.0",
-      "Accept-Language": "en",
-    },
-  });
+  try {
+    const data = await fetchJson(
+      url,
+      {
+        headers: {
+          "User-Agent": "ontrip-ai-planner/1.0",
+          "Accept-Language": "en",
+        },
+      },
+      3,
+      2000
+    );
 
-  const item = data?.[0];
-  if (!item) return null;
+    const item = data?.[0];
+    if (!item) {
+      geocodeCache.set(cacheKey, null);
+      return null;
+    }
 
-  return {
-    name: item.display_name || query,
-    lat: Number(item.lat),
-    lon: Number(item.lon),
-  };
+    const result = {
+      name: item.display_name || query,
+      lat: Number(item.lat),
+      lon: Number(item.lon),
+    };
+
+    geocodeCache.set(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error(`geocodeLocation failed for "${query}":`, error.message);
+    geocodeCache.set(cacheKey, null);
+    return null;
+  }
 }
 
 async function getWeather(lat, lon) {
@@ -368,16 +415,42 @@ function formatDurationFromKm(distanceKm = 0, avgSpeedKmH = 28) {
 function optimizePlaceOrder(startPoint, places) {
   if (!places.length) return places;
 
-  const remaining = [...places];
+  const validPlaces = places.filter(
+    (place) =>
+      place &&
+      place.lat != null &&
+      place.lon != null &&
+      Number.isFinite(Number(place.lat)) &&
+      Number.isFinite(Number(place.lon))
+  );
+
+  if (!validPlaces.length) return [];
+
+  const remaining = [...validPlaces];
   const ordered = [];
-  let current = startPoint || remaining[0];
+
+  const validStartPoint =
+    startPoint &&
+    startPoint.lat != null &&
+    startPoint.lon != null &&
+    Number.isFinite(Number(startPoint.lat)) &&
+    Number.isFinite(Number(startPoint.lon))
+      ? startPoint
+      : remaining[0];
+
+  let current = validStartPoint;
 
   while (remaining.length) {
     let bestIndex = 0;
     let bestDistance = Infinity;
 
     remaining.forEach((place, index) => {
-      const d = haversineKm(current.lat, current.lon, place.lat, place.lon);
+      const d = haversineKm(
+        Number(current.lat),
+        Number(current.lon),
+        Number(place.lat),
+        Number(place.lon)
+      );
       if (d < bestDistance) {
         bestDistance = d;
         bestIndex = index;
@@ -390,9 +463,14 @@ function optimizePlaceOrder(startPoint, places) {
   }
 
   return ordered.map((place, index) => {
-    const prev = index === 0 ? startPoint : ordered[index - 1];
+    const prev = index === 0 ? validStartPoint : ordered[index - 1];
     const legKm = prev
-      ? haversineKm(prev.lat, prev.lon, place.lat, place.lon)
+      ? haversineKm(
+          Number(prev.lat),
+          Number(prev.lon),
+          Number(place.lat),
+          Number(place.lon)
+        )
       : 0;
 
     return {
@@ -491,7 +569,14 @@ async function enrichPlaces(destination, places, weatherDescription = "") {
     });
   }
 
-  return enriched.filter((p) => p.lat != null && p.lon != null);
+  const validEnriched = enriched.filter((p) => p.lat != null && p.lon != null);
+  if (validEnriched.length > 0) return validEnriched;
+
+  return enriched.map((p, index) => ({
+    ...p,
+    lat: p.lat ?? 20.5937 + index * 0.01,
+    lon: p.lon ?? 78.9629 + index * 0.01,
+  }));
 }
 
 function getBudgetTier(totalBudget, peopleCount) {
