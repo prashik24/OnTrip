@@ -44,6 +44,24 @@ export default function PlaceDetails() {
             <div className="placeContentBlock">
               <h3>Why {place.name} is famous</h3>
               <p>{place.whyFamous}</p>
+
+              <div className="placeInnerSection">
+                <h4>Top attractions</h4>
+                <div className="placeChipWrap">
+                  {place.topAttractions.map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="placeInnerSection">
+                <h4>Food to try</h4>
+                <div className="placeChipWrap">
+                  {place.food.map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="placeQuickBlock">
@@ -75,24 +93,6 @@ export default function PlaceDetails() {
                   <strong>{place.stayArea}</strong>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div className="placeSectionBlock">
-            <h3>Top attractions</h3>
-            <div className="placeChipWrap">
-              {place.topAttractions.map((item) => (
-                <span key={item}>{item}</span>
-              ))}
-            </div>
-          </div>
-
-          <div className="placeSectionBlock">
-            <h3>Food to try</h3>
-            <div className="placeChipWrap">
-              {place.food.map((item) => (
-                <span key={item}>{item}</span>
-              ))}
             </div>
           </div>
 
