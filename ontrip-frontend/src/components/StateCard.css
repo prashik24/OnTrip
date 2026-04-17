@@ -25,6 +25,7 @@
   aspect-ratio: 16 / 9;
   overflow: hidden;
   background: #eef6fb;
+  
 }
 
 .stateCardImage {
@@ -58,6 +59,7 @@
   z-index: 2;
   max-width: calc(100% - 24px);
   word-break: break-word;
+
 }
 
 .stateCardBody {
