@@ -158,6 +158,7 @@ export default function Footer() {
             <div className="otCol">
               <div className="otColTitle">Product</div>
               <a href="/planner">AI Trip Planner</a>
+              <a href="/ai-travel-chat">AI Travel Chat</a>
               <a href="/explore">Explore Places</a>
               <a href="/community">Community</a>
               <a href="/chat">Travel Buddy Chat</a>
