@@ -6,25 +6,34 @@ export default function AiTravelChat() {
   const [message, setMessage] = useState("");
   const [msg, setMsg] = useState("");
   const [sending, setSending] = useState(false);
+
   const [messages, setMessages] = useState([
     {
       id: "welcome",
       role: "assistant",
-      text: "Hi, I’m your OnTrip AI assistant. Ask me about providers, vehicles, travel planners, prices, packages, budget, places, or trip help.",
+      text: "Hi, I’m your OnTrip AI assistant. Ask me about trips, providers, vehicles, prices, packages, budget, or places.",
     },
   ]);
 
-  const bottomRef = useRef(null);
+  const messagesRef = useRef(null);
+
+  function scrollToBottom() {
+    requestAnimationFrame(() => {
+      if (messagesRef.current) {
+        messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+      }
+    });
+  }
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    scrollToBottom();
   }, [messages, sending]);
 
   async function handleAsk(e) {
     e.preventDefault();
 
     const cleanMessage = message.trim();
-    if (!cleanMessage) return;
+    if (!cleanMessage || sending) return;
 
     if (!isLoggedIn()) {
       setMsg("Please login first to use AI chat.");
@@ -52,7 +61,7 @@ export default function AiTravelChat() {
           plan: {
             page: "OnTrip AI Chat",
             instruction:
-              "Help user with OnTrip travel providers, vehicles, travel planners, prices, packages, budget, destination, routes, and general travel guidance.",
+              "Help user with OnTrip travel providers, vehicles, travel planners, prices, packages, budget, destinations, routes, and general travel guidance.",
           },
           history: nextMessages.slice(-8).map((item) => ({
             role: item.role,
@@ -77,19 +86,20 @@ export default function AiTravelChat() {
   }
 
   return (
-    <div className="aiTravelChatPage container">
+    <div className="aiTravelChatPage">
       <div className="aiTravelChatShell">
         <div className="aiTravelChatHeader">
           <div>
             <h1>OnTrip AI Chat</h1>
-            <p>Ask anything about trips, providers, vehicles, prices, and packages.</p>
+            <p>Ask about trips, providers, vehicles, prices, and packages.</p>
           </div>
-          <span>AI</span>
+
+          <div className="aiTravelChatAvatar">AI</div>
         </div>
 
         {msg ? <div className="aiTravelChatError">{msg}</div> : null}
 
-        <div className="aiTravelChatMessages">
+        <div className="aiTravelChatMessages" ref={messagesRef}>
           {messages.map((item) => (
             <div
               key={item.id}
@@ -106,8 +116,6 @@ export default function AiTravelChat() {
               <div className="aiTravelChatBubble">Typing...</div>
             </div>
           ) : null}
-
-          <div ref={bottomRef} />
         </div>
 
         <form className="aiTravelChatInputBar" onSubmit={handleAsk}>
