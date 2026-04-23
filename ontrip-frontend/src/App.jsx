@@ -14,6 +14,7 @@ import Planner from "./pages/Planner";
 import PlannerResult from "./pages/PlannerResult";
 import Community from "./pages/Community";
 import Chat from "./pages/Chat";
+import AiTravelChat from "./pages/AiTravelChat";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
@@ -75,6 +76,7 @@ export default function App() {
 
             <Route path="/community" element={<Community />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/ai-travel-chat" element={<AiTravelChat />} />
 
             <Route path="/provider-broadcast" element={<ProviderBroadcast />} />
             <Route
