@@ -6,9 +6,14 @@ import "./Sidebar.css";
 export default function Sidebar({ open, onClose }) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
+
   const [hasProviderListings, setHasProviderListings] = useState(false);
   const [hasBookings, setHasBookings] = useState(false);
   const [hasSavedTrips, setHasSavedTrips] = useState(false);
+  const [hasUpcomingBookings, setHasUpcomingBookings] = useState(false);
+  const [hasProviderUpcomingBookings, setHasProviderUpcomingBookings] =
+    useState(false);
+  const [isSubscribedUser, setIsSubscribedUser] = useState(false);
 
   const user = getUser();
   const loggedIn = isLoggedIn();
@@ -17,51 +22,79 @@ export default function Sidebar({ open, onClose }) {
   const avatar = user?.avatar?.trim() || "";
   const initial = userName?.charAt(0)?.toUpperCase() || "U";
 
+  const aiChatIcon =
+    "https://img.icons8.com/?size=100&id=4aUvAATdDLe5&format=png&color=000000";
+
   useEffect(() => {
     async function loadQuickAccessStatus() {
       if (!loggedIn) {
         setHasProviderListings(false);
         setHasBookings(false);
         setHasSavedTrips(false);
+        setHasUpcomingBookings(false);
+        setHasProviderUpcomingBookings(false);
+        setIsSubscribedUser(false);
         return;
       }
 
-      try {
-        const [providerRes, bookingRes, savedTripRes] = await Promise.allSettled([
-          apiFetch("/api/providers/mine"),
-          apiFetch("/api/bookings/mine"),
-          apiFetch("/api/saved-trips"),
-        ]);
+      const [
+        providerRes,
+        bookingRes,
+        savedTripRes,
+        upcomingRes,
+        providerUpcomingRes,
+        subscriberRes,
+      ] = await Promise.allSettled([
+        apiFetch("/api/providers/mine"),
+        apiFetch("/api/bookings/mine"),
+        apiFetch("/api/saved-trips"),
+        apiFetch("/api/upcoming-bookings/user"),
+        apiFetch("/api/upcoming-bookings/provider"),
+        apiFetch("/api/subscribers/status"),
+      ]);
 
-        if (providerRes.status === "fulfilled") {
-          setHasProviderListings((providerRes.value?.providers || []).length > 0);
-        } else {
-          setHasProviderListings(false);
-        }
+      setHasProviderListings(
+        providerRes.status === "fulfilled" &&
+          (providerRes.value?.providers || []).length > 0
+      );
 
-        if (bookingRes.status === "fulfilled") {
-          setHasBookings((bookingRes.value?.bookings || []).length > 0);
-        } else {
-          setHasBookings(false);
-        }
+      setHasBookings(
+        bookingRes.status === "fulfilled" &&
+          (bookingRes.value?.bookings || []).length > 0
+      );
 
-        if (savedTripRes.status === "fulfilled") {
-          setHasSavedTrips((savedTripRes.value?.trips || []).length > 0);
-        } else {
-          setHasSavedTrips(false);
-        }
-      } catch {
-        setHasProviderListings(false);
-        setHasBookings(false);
-        setHasSavedTrips(false);
-      }
+      setHasSavedTrips(
+        savedTripRes.status === "fulfilled" &&
+          (savedTripRes.value?.trips || []).length > 0
+      );
+
+      setHasUpcomingBookings(
+        upcomingRes.status === "fulfilled" &&
+          (upcomingRes.value?.bookings || []).length > 0
+      );
+
+      setHasProviderUpcomingBookings(
+        providerUpcomingRes.status === "fulfilled" &&
+          (providerUpcomingRes.value?.bookings || []).length > 0
+      );
+
+      setIsSubscribedUser(
+        subscriberRes.status === "fulfilled" &&
+          !!subscriberRes.value?.isSubscribed
+      );
     }
 
     loadQuickAccessStatus();
   }, [loggedIn]);
 
   const showQuickAccess =
-    loggedIn && (hasBookings || hasSavedTrips || hasProviderListings);
+    loggedIn &&
+    (hasBookings ||
+      hasSavedTrips ||
+      hasProviderListings ||
+      hasUpcomingBookings ||
+      hasProviderUpcomingBookings ||
+      isSubscribedUser);
 
   const navItems = useMemo(
     () => [
@@ -81,13 +114,18 @@ export default function Sidebar({ open, onClose }) {
         icon: "https://img.icons8.com/?size=100&id=pSv2x64tdztR&format=png&color=000000",
       },
       {
+        to: "/ai-travel-chat",
+        label: "AI Chat",
+        icon: aiChatIcon,
+      },
+      {
         to: "/community",
         label: "Community",
         icon: "https://img.icons8.com/?size=100&id=102261&format=png&color=000000",
       },
       {
         to: "/chat",
-        label: "Chat",
+        label: "Travel Buddy Chat",
         icon: "https://img.icons8.com/?size=100&id=85546&format=png&color=000000",
       },
       {
@@ -106,7 +144,7 @@ export default function Sidebar({ open, onClose }) {
         icon: "https://img.icons8.com/?size=100&id=7819&format=png&color=000000",
       },
     ],
-    []
+    [aiChatIcon]
   );
 
   const filtered = useMemo(() => {
@@ -122,19 +160,23 @@ export default function Sidebar({ open, onClose }) {
 
   function handleProtectedRoute(path) {
     onClose?.();
+
     if (!loggedIn) {
       navigate("/login");
       return;
     }
+
     navigate(path);
   }
 
   function handleProfileClick() {
     onClose?.();
+
     if (!loggedIn) {
       navigate("/login");
       return;
     }
+
     navigate("/profile");
   }
 
@@ -198,6 +240,7 @@ export default function Sidebar({ open, onClose }) {
                   {initial}
                 </div>
               )}
+
               <span className="otProfileStatus online" />
             </div>
 
@@ -207,7 +250,7 @@ export default function Sidebar({ open, onClose }) {
                 type="button"
                 onClick={handleProfileClick}
               >
-                {userName}
+                {userName || "Profile"}
               </button>
             </div>
           </div>
@@ -257,7 +300,22 @@ export default function Sidebar({ open, onClose }) {
                   onClick={() => goWithClose("/profile/bookings")}
                 >
                   <span className="otMiniStatValue">Booking History</span>
-                  <span className="otMiniStatLabel">Trips and reservations</span>
+                  <span className="otMiniStatLabel">
+                    Trips, payments, invoices, and reviews
+                  </span>
+                </button>
+              )}
+
+              {hasUpcomingBookings && (
+                <button
+                  className="otMiniStat"
+                  type="button"
+                  onClick={() => goWithClose("/upcoming-bookings")}
+                >
+                  <span className="otMiniStatValue">Upcoming Bookings</span>
+                  <span className="otMiniStatLabel">
+                    Your trip is coming
+                  </span>
                 </button>
               )}
 
@@ -268,29 +326,96 @@ export default function Sidebar({ open, onClose }) {
                   onClick={() => goWithClose("/profile/saved-trips")}
                 >
                   <span className="otMiniStatValue">Saved Trips</span>
-                  <span className="otMiniStatLabel">Open saved AI trip plans</span>
+                  <span className="otMiniStatLabel">
+                    Open saved AI trip plans
+                  </span>
                 </button>
               )}
 
               {hasProviderListings && (
-                <button
-                  className="otMiniStat"
-                  type="button"
-                  onClick={() => goWithClose("/profile/my-listings")}
-                >
-                  <span className="otMiniStatValue">My Listings</span>
-                  <span className="otMiniStatLabel">View and manage services</span>
-                </button>
+                <>
+                  <button
+                    className="otMiniStat"
+                    type="button"
+                    onClick={() => goWithClose("/profile/my-listings")}
+                  >
+                    <span className="otMiniStatValue">My Listings</span>
+                    <span className="otMiniStatLabel">
+                      View and manage services
+                    </span>
+                  </button>
+
+                  <button
+                    className="otMiniStat"
+                    type="button"
+                    onClick={() => goWithClose("/provider/dashboard")}
+                  >
+                    <span className="otMiniStatValue">Provider Dashboard</span>
+                    <span className="otMiniStatLabel">
+                      Bookings and customer updates
+                    </span>
+                  </button>
+
+                  {hasProviderUpcomingBookings && (
+                    <button
+                      className="otMiniStat"
+                      type="button"
+                      onClick={() => goWithClose("/provider/upcoming-bookings")}
+                    >
+                      <span className="otMiniStatValue">
+                        Customer Upcoming Bookings
+                      </span>
+                      <span className="otMiniStatLabel">
+                        Upcoming customer trips
+                      </span>
+                    </button>
+                  )}
+
+                  <button
+                    className="otMiniStat"
+                    type="button"
+                    onClick={() => goWithClose("/provider-broadcast")}
+                  >
+                    <span className="otMiniStatValue">Provider Broadcast</span>
+                    <span className="otMiniStatLabel">
+                      Send offers and updates
+                    </span>
+                  </button>
+
+                  <button
+                    className="otMiniStat"
+                    type="button"
+                    onClick={() => goWithClose("/provider-broadcast-history")}
+                  >
+                    <span className="otMiniStatValue">Broadcast History</span>
+                    <span className="otMiniStatLabel">
+                      View sent broadcasts
+                    </span>
+                  </button>
+
+                  <button
+                    className="otMiniStat"
+                    type="button"
+                    onClick={() => goWithClose("/provider/subscriber-groups")}
+                  >
+                    <span className="otMiniStatValue">Subscriber Group</span>
+                    <span className="otMiniStatLabel">
+                      Create subscriber chat groups
+                    </span>
+                  </button>
+                </>
               )}
 
-              {hasProviderListings && (
+              {isSubscribedUser && !hasProviderListings && (
                 <button
                   className="otMiniStat"
                   type="button"
-                  onClick={() => goWithClose("/provider/dashboard")}
+                  onClick={() => goWithClose("/provider-broadcasts")}
                 >
-                  <span className="otMiniStatValue">Provider Dashboard</span>
-                  <span className="otMiniStatLabel">Bookings and updates</span>
+                  <span className="otMiniStatValue">Provider Broadcasts</span>
+                  <span className="otMiniStatLabel">
+                    View provider offers and updates
+                  </span>
                 </button>
               )}
             </div>
@@ -315,6 +440,18 @@ export default function Sidebar({ open, onClose }) {
                     handleProfileClick();
                     return;
                   }
+
+                  if (
+                    ["/chat", "/ai-travel-chat", "/provider-register"].includes(
+                      item.to
+                    ) &&
+                    !loggedIn
+                  ) {
+                    e.preventDefault();
+                    handleProtectedRoute(item.to);
+                    return;
+                  }
+
                   onClose?.();
                 }}
               >
@@ -346,6 +483,14 @@ export default function Sidebar({ open, onClose }) {
           <button
             className="otActionBtn otBtnGhost"
             type="button"
+            onClick={() => handleProtectedRoute("/ai-travel-chat")}
+          >
+            Ask OnTrip AI Chat
+          </button>
+
+          <button
+            className="otActionBtn otBtnGhost"
+            type="button"
             onClick={() => handleProtectedRoute("/provider-register")}
           >
             + Add Vehicle / Tour Service
@@ -364,48 +509,18 @@ export default function Sidebar({ open, onClose }) {
           <div className="otSectionTitle">Popular now</div>
 
           <div className="otTags">
-            <button
-              className="otTag"
-              type="button"
-              onClick={() => goWithClose("/explore")}
-            >
-              Goa
-            </button>
-            <button
-              className="otTag"
-              type="button"
-              onClick={() => goWithClose("/explore")}
-            >
-              Manali
-            </button>
-            <button
-              className="otTag"
-              type="button"
-              onClick={() => goWithClose("/explore")}
-            >
-              Jaipur
-            </button>
-            <button
-              className="otTag"
-              type="button"
-              onClick={() => goWithClose("/explore")}
-            >
-              Kedarnath
-            </button>
-            <button
-              className="otTag"
-              type="button"
-              onClick={() => goWithClose("/explore")}
-            >
-              Kerala
-            </button>
-            <button
-              className="otTag"
-              type="button"
-              onClick={() => goWithClose("/explore")}
-            >
-              Mumbai
-            </button>
+            {["Goa", "Manali", "Jaipur", "Kedarnath", "Kerala", "Mumbai"].map(
+              (place) => (
+                <button
+                  key={place}
+                  className="otTag"
+                  type="button"
+                  onClick={() => goWithClose("/explore")}
+                >
+                  {place}
+                </button>
+              )
+            )}
           </div>
         </div>
 
