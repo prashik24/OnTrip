@@ -141,4 +141,4 @@ export function generateInvoicePdfBuffer({ booking, provider }) {
 
     doc.end();
   });
-}
+} 
