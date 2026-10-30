@@ -8,7 +8,7 @@
   border-radius: 26px;
   box-shadow: 0 16px 36px rgba(10, 22, 35, 0.06);
   position: relative;
-  z-index: 50;
+  z-index: 1;
 }
 
 .recsHeader {
