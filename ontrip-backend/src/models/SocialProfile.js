@@ -7,7 +7,6 @@ const socialProfileSchema = new mongoose.Schema(
       ref: "User",
       required: true,
       unique: true,
-      index: true,
     },
 
     username: {
@@ -86,8 +85,5 @@ const socialProfileSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-socialProfileSchema.index({ username: 1 });
-socialProfileSchema.index({ user: 1 });
 
 export default mongoose.model("SocialProfile", socialProfileSchema);
