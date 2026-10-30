@@ -13,6 +13,8 @@ import chatRoutes from "./routes/chatRoutes.js";
 import subscriberRoutes from "./routes/subscriberRoutes.js";
 import providerBroadcastRoutes from "./routes/providerBroadcastRoutes.js";
 import upcomingBookingRoutes from "./routes/upcomingBookingRoutes.js";
+import socialRoutes from "./routes/socialRoutes.js";
+import recommendationRoutes from "./routes/recommendationRoutes.js";
 
 const app = express();
 
@@ -41,5 +43,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/subscribers", subscriberRoutes);
 app.use("/api/provider-broadcasts", providerBroadcastRoutes);
 app.use("/api/upcoming-bookings", upcomingBookingRoutes);
+app.use("/api/social", socialRoutes);
+app.use("/api/recommendations", recommendationRoutes);
 
 export default app;
