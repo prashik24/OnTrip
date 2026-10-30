@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { states } from "../data/states";
 import StateCard from "../components/StateCard";
 import CustomSelect from "../components/CustomSelect";
+import RecommendedPlaces from "../components/RecommendedPlaces";
 import "./Explore.css";
 
 const placeTypeOptions = [
@@ -93,6 +94,8 @@ export default function Explore() {
           </div>
         </div>
       </div>
+
+      <RecommendedPlaces />
 
       <div className="exploreSection">
         <div className="exploreSectionHead">
