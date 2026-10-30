@@ -14,8 +14,7 @@
   border: 1px solid rgba(0, 184, 241, 0.12);
   box-shadow: 0 16px 36px rgba(10, 22, 35, 0.06);
   padding: 28px 30px;
-  position: relative;
-  z-index: 50;
+  z-index: 100;
 }
 
 .exploreHeroContent {
