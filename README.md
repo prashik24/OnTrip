@@ -164,22 +164,7 @@ cd ontrip-backend
 npm install
 ```
 
-Create a `.env` file inside `ontrip-backend/`:
-```env
-PORT=5000
-NODE_ENV=development
-CLIENT_URL=http://localhost:5173
-MONGO_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=your_jwt_secret_key
-RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-GEMINI_API_KEY=your_gemini_api_key
-CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-CLOUDINARY_API_KEY=your_cloudinary_key
-CLOUDINARY_API_SECRET=your_cloudinary_secret
-BREVO_SMTP_USER=your_brevo_smtp_user
-BREVO_SMTP_PASS=your_brevo_smtp_password
-```
+
 
 Start the backend development server:
 ```bash
