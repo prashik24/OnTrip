@@ -888,6 +888,8 @@ function buildDayWiseRoutePlan(days, destination, orderedPlaces) {
         name: place.name,
         reason: place.reason,
         exploreTimeText: place.exploreTimeText,
+        lat: place.lat,
+        lon: place.lon,
         distanceFromPreviousText:
           placeIndex === 0 ? "Start point" : place.fromPreviousDistanceText,
         durationFromPreviousText:

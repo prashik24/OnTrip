@@ -12,57 +12,251 @@ function money(value) {
   return `₹${n.toLocaleString("en-IN")}`;
 }
 
-function PlannerMap({ mapData }) {
+function PlannerMap({ mapData, itinerary = [], destination = "", focusedPlace = null }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const layerGroupRef = useRef(null);
+  const markerRefs = useRef({});
+  const [selectedDay, setSelectedDay] = useState("all");
+
+  const daysList = useMemo(() => {
+    if (!Array.isArray(itinerary) || itinerary.length === 0) return [];
+    return itinerary.map((item, idx) => item.day || idx + 1);
+  }, [itinerary]);
+
+  const activeMarkers = useMemo(() => {
+    if (!mapData) return [];
+
+    if (selectedDay === "all") {
+      return (mapData.markers || []).filter((m) => m && m.lat && m.lon);
+    }
+
+    const currentDayPlan = itinerary.find(
+      (item, idx) => (item.day || idx + 1) === selectedDay
+    );
+
+    if (
+      currentDayPlan &&
+      Array.isArray(currentDayPlan.placeSequence) &&
+      currentDayPlan.placeSequence.length > 0
+    ) {
+      return currentDayPlan.placeSequence
+        .map((p, idx) => {
+          let lat = p.lat;
+          let lon = p.lon;
+          if (!lat || !lon) {
+            const fallback = (mapData.markers || []).find(
+              (m) => m.name && m.name.toLowerCase() === p.name?.toLowerCase()
+            );
+            if (fallback) {
+              lat = fallback.lat;
+              lon = fallback.lon;
+            }
+          }
+          if (!lat || !lon) return null;
+          return {
+            name: p.name,
+            reason: p.reason,
+            order: p.order || idx + 1,
+            exploreTimeText: p.exploreTimeText,
+            lat,
+            lon,
+            day: selectedDay,
+          };
+        })
+        .filter(Boolean);
+    }
+
+    return (mapData.markers || []).filter((m) => m && m.lat && m.lon);
+  }, [mapData, itinerary, selectedDay]);
+
+  const gmapsUrl = useMemo(() => {
+    if (!activeMarkers || activeMarkers.length === 0) return "";
+    const destContext = destination ? ` ${destination}` : "";
+
+    if (activeMarkers.length === 1) {
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        activeMarkers[0].name + destContext
+      )}`;
+    }
+
+    const origin = encodeURIComponent(activeMarkers[0].name + destContext);
+    const dest = encodeURIComponent(
+      activeMarkers[activeMarkers.length - 1].name + destContext
+    );
+    const waypoints = activeMarkers
+      .slice(1, -1)
+      .map((m) => encodeURIComponent(m.name + destContext))
+      .join("|");
+
+    if (waypoints) {
+      return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&waypoints=${waypoints}&travelmode=driving`;
+    }
+    return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=driving`;
+  }, [activeMarkers, destination]);
 
   useEffect(() => {
     if (!mapRef.current || !mapData) return;
 
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.remove();
-      mapInstanceRef.current = null;
-    }
+    if (!mapInstanceRef.current) {
+      const initialCenter = mapData.center || [20.5937, 78.9629];
+      const map = L.map(mapRef.current, {
+        scrollWheelZoom: false,
+      }).setView(initialCenter, 12);
 
-    const map = L.map(mapRef.current).setView(mapData.center, 12);
-    mapInstanceRef.current = map;
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        {
+          maxZoom: 19,
+          subdomains: "abcd",
+          attribution:
+            '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }
+      ).addTo(map);
 
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: "&copy; OpenStreetMap",
-    }).addTo(map);
-
-    mapData.markers.forEach((item) => {
-      L.circleMarker([item.lat, item.lon], {
-        radius: 8,
-      })
-        .addTo(map)
-        .bindPopup(
-          `<b>${item.order}. ${item.name}</b><br/>${item.exploreTimeText}<br/>${item.reason}`
-        );
-    });
-
-    if (mapData.routeCoords.length > 1) {
-      const line = L.polyline(mapData.routeCoords, {
-        weight: 5,
-      }).addTo(map);
-
-      map.fitBounds(line.getBounds(), { padding: [20, 20] });
-    }
-
-    if (mapData.routeCoords.length === 1) {
-      map.setView(mapData.routeCoords[0], 13);
+      const layerGroup = L.layerGroup().addTo(map);
+      layerGroupRef.current = layerGroup;
+      mapInstanceRef.current = map;
     }
 
     return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
+        layerGroupRef.current = null;
       }
     };
   }, [mapData]);
 
-  return <div ref={mapRef} className="plannerLeafletMap" />;
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    const layerGroup = layerGroupRef.current;
+    if (!map || !layerGroup) return;
+
+    layerGroup.clearLayers();
+    markerRefs.current = {};
+
+    if (!activeMarkers || activeMarkers.length === 0) return;
+
+    const routeCoords = [];
+
+    activeMarkers.forEach((item, index) => {
+      const coord = [item.lat, item.lon];
+      routeCoords.push(coord);
+
+      const isStart = index === 0;
+      const customIcon = L.divIcon({
+        className: "plannerCustomMarker",
+        html: `<div class="plannerMapPin ${isStart ? "isStartPin" : ""}"><span class="plannerMapPinNum">${
+          item.order || index + 1
+        }</span></div>`,
+        iconSize: [30, 36],
+        iconAnchor: [15, 36],
+        popupAnchor: [0, -32],
+      });
+
+      const destContext = destination ? ` ${destination}` : "";
+      const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+        item.name + destContext
+      )}&travelmode=driving`;
+
+      const popupHtml = `
+        <div class="plannerMapPopup">
+          <div class="plannerMapPopupBadge">${isStart ? "🚩 Starting Point" : `Stop #${item.order || index + 1}`}</div>
+          <div class="plannerMapPopupTitle">${item.name}</div>
+          ${item.exploreTimeText ? `<div class="plannerMapPopupTime">⏱ ${item.exploreTimeText}</div>` : ""}
+          ${item.reason ? `<div class="plannerMapPopupReason">${item.reason}</div>` : ""}
+          <a href="${navUrl}" target="_blank" rel="noopener noreferrer" class="plannerMapPopupLink">
+            Navigate in Google Maps ↗
+          </a>
+        </div>
+      `;
+
+      const marker = L.marker(coord, { icon: customIcon }).bindPopup(popupHtml);
+      marker.addTo(layerGroup);
+      markerRefs.current[item.name.toLowerCase()] = marker;
+    });
+
+    if (routeCoords.length > 1) {
+      const polyline = L.polyline(routeCoords, {
+        color: "#00b8f1",
+        weight: 4,
+        opacity: 0.85,
+        dashArray: "6, 8",
+        lineJoin: "round",
+      }).addTo(layerGroup);
+
+      map.fitBounds(polyline.getBounds(), { padding: [35, 35] });
+    } else if (routeCoords.length === 1) {
+      map.setView(routeCoords[0], 14);
+    }
+  }, [activeMarkers, destination]);
+
+  useEffect(() => {
+    if (!focusedPlace || !focusedPlace.lat || !focusedPlace.lon) return;
+
+    if (focusedPlace.day && selectedDay !== "all" && selectedDay !== focusedPlace.day) {
+      setSelectedDay(focusedPlace.day);
+    }
+
+    const timer = setTimeout(() => {
+      const map = mapInstanceRef.current;
+      if (!map) return;
+      map.flyTo([focusedPlace.lat, focusedPlace.lon], 15, {
+        duration: 1.2,
+      });
+      const marker = markerRefs.current[focusedPlace.name?.toLowerCase()];
+      if (marker) {
+        marker.openPopup();
+      }
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [focusedPlace, selectedDay]);
+
+  return (
+    <div className="plannerMapWrapper">
+      <div className="plannerMapControls">
+        <div className="plannerMapTabs">
+          <button
+            type="button"
+            className={`plannerMapTab ${selectedDay === "all" ? "active" : ""}`}
+            onClick={() => setSelectedDay("all")}
+          >
+            All Stops ({mapData?.markers?.length || 0})
+          </button>
+          {daysList.map((dayNum) => (
+            <button
+              key={dayNum}
+              type="button"
+              className={`plannerMapTab ${selectedDay === dayNum ? "active" : ""}`}
+              onClick={() => setSelectedDay(dayNum)}
+            >
+              Day {dayNum}
+            </button>
+          ))}
+        </div>
+
+        {gmapsUrl && (
+          <a
+            href={gmapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="plannerMapGmapsBtn"
+            title="Open turn-by-turn driving route in Google Maps"
+          >
+            <span>Open Route in Google Maps ↗</span>
+          </a>
+        )}
+      </div>
+
+      <div ref={mapRef} className="plannerLeafletMap" />
+
+      <div className="plannerMapFootNote">
+        💡 Click any pin on the map to see details and direct turn-by-turn navigation links.
+      </div>
+    </div>
+  );
 }
 
 function TravelModeCard({ title, data }) {
@@ -123,6 +317,7 @@ export default function PlannerResult() {
   const [result, setResult] = useState(savedTripData || null);
   const [saveLoading, setSaveLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
+  const [focusedPlace, setFocusedPlace] = useState(null);
 
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
@@ -377,9 +572,14 @@ export default function PlannerResult() {
             ) : null}
 
             {result?.mapData ? (
-              <div className="plannerResultBlock">
-                <div className="plannerResultBlockTitle">Route Map</div>
-                <PlannerMap mapData={result.mapData} />
+              <div className="plannerResultBlock" id="planner-route-map">
+                <div className="plannerResultBlockTitle">Interactive Route Map</div>
+                <PlannerMap
+                mapData={result.mapData}
+                itinerary={result.plan?.itinerary}
+                destination={form?.destination || result.plan?.title || ""}
+                focusedPlace={focusedPlace}
+              />
               </div>
             ) : null}
 
@@ -427,7 +627,24 @@ export default function PlannerResult() {
                                 {place.order || idx + 1}
                               </div>
                               <div className="plannerResultSequenceContent">
-                                <div className="plannerResultSequenceTitle">{place.name}</div>
+                                <div className="plannerResultSequenceTitle">
+                                {place.name}
+                                {place.lat && place.lon && (
+                                  <button
+                                    type="button"
+                                    className="plannerViewOnMapBtn"
+                                    onClick={() => {
+                                      setFocusedPlace({ ...place, day: dayItem.day });
+                                      const mapEl = document.getElementById("planner-route-map");
+                                      if (mapEl) {
+                                        mapEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                                      }
+                                    }}
+                                  >
+                                    📍 View on Map
+                                  </button>
+                                )}
+                              </div>
                                 <div className="plannerResultSequenceMeta">
                                   Explore: {place.exploreTimeText}
                                 </div>
@@ -472,7 +689,24 @@ export default function PlannerResult() {
                           <div className="plannerResultPlaceIndex">{place.order || index + 1}</div>
 
                           <div>
-                            <div className="plannerResultProviderTitle">{place.name}</div>
+                            <div className="plannerResultProviderTitle">
+                            {place.name}
+                            {place.lat && place.lon && (
+                              <button
+                                type="button"
+                                className="plannerViewOnMapBtn"
+                                onClick={() => {
+                                  setFocusedPlace(place);
+                                  const mapEl = document.getElementById("planner-route-map");
+                                  if (mapEl) {
+                                    mapEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  }
+                                }}
+                              >
+                                📍 View on Map
+                              </button>
+                            )}
+                          </div>
                             <div className="plannerResultMutedBox">{place.reason}</div>
                           </div>
                         </div>

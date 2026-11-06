@@ -1,0 +1,163 @@
+%-------------------------
+% Resume in LaTeX
+% Author : Prashik Humane
+% Based on: Jake's Resume Template
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,10.5pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage[left=0.48in,top=0.42in,right=0.48in,bottom=0.42in]{geometry}
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-5pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-4pt}]
+
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-1.5pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-1.5pt}\item
+    \begin{tabular*}{0.99\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+  \vspace{-1.5pt}\item
+    \begin{tabular*}{0.99\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=0.15in, itemsep=1.5pt, parsep=0pt, topsep=1.5pt]}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-4pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    {\Huge \textbf{Prashik Humane}} \\ \vspace{4pt}
+    \small 
+    \faMapMarker* \hspace{0.5pt} Lucknow, India \hspace{3pt} $|$ \hspace{3pt}
+    \faPhone* \hspace{0.5pt} +91-8262049540 \hspace{3pt} $|$ \hspace{3pt}
+    \faEnvelope \hspace{0.5pt} \href{mailto:prashikhumane744@gmail.com}{prashikhumane744@gmail.com} \\ \vspace{2pt}
+    \faLinkedin \hspace{0.5pt} \href{https://linkedin.com/in/prashik-humane}{linkedin.com/in/prashik-humane} \hspace{3pt} $|$ \hspace{3pt}
+    \faGithub \hspace{0.5pt} \href{https://github.com/prashik24}{github.com/prashik24}
+    \vspace{-4pt}
+\end{center}
+
+%-----------EDUCATION-----------
+\section{EDUCATION}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Indian Institute of Information Technology (IIIT), Lucknow}{2023 -- 2027}
+      {B.Tech in Computer Science and Business -- \textbf{CGPA: 8.0}}{Lucknow, India}
+    \resumeSubheading
+      {St. Peter's School}{2022}
+      {Higher Secondary Certificate (HSC -- Maharashtra State Board) -- \textbf{94.5\%}}{Nagpur, India}
+    \resumeSubheading
+      {Sunny's Spring Dale School}{2020}
+      {Secondary School Examination (CBSE Class X) -- \textbf{90.0\%}}{Bhandara, India}
+  \resumeSubHeadingListEnd
+
+%-----------TECHNICAL SKILLS-----------
+\section{TECHNICAL SKILLS}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Languages}: JavaScript, TypeScript, Python, C++, SQL, HTML/CSS \\
+     \textbf{Developer Tools \& DevOps}: Git, GitHub, Docker, Postman, Linux CLI, Render \\
+     \textbf{Frameworks \& Libraries}: React.js, Next.js, Node.js, Express.js, FastAPI, Scikit-learn, REST APIs, JWT, Vite \\
+     \textbf{Databases}: MongoDB, MySQL, PostgreSQL \\
+     \textbf{Core Concepts}: Data Structures \& Algorithms (DSA), OOP, DBMS, Operating Systems, Machine Learning
+    }}
+ \end{itemize}
+ \vspace{-14pt}
+
+%-----------PROJECTS-----------
+\section{PROJECTS}
+    \resumeSubHeadingListStart
+      \resumeProjectHeading
+          {\textbf{OnTrip -- AI Travel Planning \& Recommendation Platform} $|$ \emph{React.js, Node.js, FastAPI, Scikit-learn, MongoDB, Gemini AI}}
+          {\href{https://ontrip.onrender.com}{\faExternalLinkAlt} \hspace{2pt} \href{https://github.com/prashik24/OnTrip}{\faGithub}}
+          \resumeItemListStart
+            \resumeItem{Engineered a \textbf{hybrid recommendation microservice} using \textbf{Python (FastAPI, Scikit-learn)}, vectorizing multi-attribute destination data via \textbf{TF-IDF (1,500+ features)} and \textbf{Cosine Similarity} for personalized discovery.}
+            \resumeItem{Designed an enterprise \textbf{dual-engine fallback architecture} with native Node.js vector math, guaranteeing 100\% uptime on Render while mining implicit behavioral signals (\textbf{likes, bookmarks, filter tags}).}
+            \resumeItem{Architected an \textbf{AI planner} using Google Gemini to automate multi-day itineraries and enabled real-time host-traveler chat with \textbf{Socket.io}.}
+            \resumeItem{Integrated \textbf{Razorpay SDK} for automated payments and PDF invoices, scheduled Node-Cron alerts, and secured REST APIs with \textbf{OAuth 2.0 and JWTs}.}
+          \resumeItemListEnd
+
+      \resumeProjectHeading
+          {\textbf{ShopKart -- Full-Stack E-Commerce Platform} $|$ \emph{React.js, Node.js, Express.js, MongoDB, Razorpay}}
+          {\href{https://github.com/prashik24}{\faExternalLinkAlt} \hspace{2pt} \href{https://github.com/prashik24}{\faGithub}}
+          \resumeItemListStart
+            \resumeItem{Developed an e-commerce platform supporting multi-criteria filtering, state persistence, and a 5-stage order tracker.}
+            \resumeItem{Implemented secure user authentication with Brevo email OTPs, bcrypt hashing, and role-separated JWT sessions.}
+            \resumeItem{Built an administrative dashboard managing 100\% of product CRUD operations, order tracking, and payment audits.}
+            \resumeItem{Integrated client-side localStorage caching with a 10-minute TTL to eliminate redundant database queries.}
+          \resumeItemListEnd
+    \resumeSubHeadingListEnd
+
+%-----------ACHIEVEMENTS-----------
+\section{ACHIEVEMENTS \& COMPETITIVE PROGRAMMING}
+ \begin{itemize}[leftmargin=0.15in, itemsep=2pt, parsep=0pt, topsep=2pt]
+    \resumeItem{\textbf{CodeChef 4*}: Achieved peak rating of \textbf{1800} \href{https://www.codechef.com/users/prashik_24}{\faExternalLinkAlt}.}
+    \resumeItem{\textbf{Codeforces Specialist}: Achieved max rating of \textbf{1572} \href{https://codeforces.com/profile/prashik24}{\faExternalLinkAlt}.}
+    \resumeItem{\textbf{LeetCode}: Max rating of \textbf{1491} with consistent contest participation.}
+    \resumeItem{\textbf{GitHub Activity}: Maintained \textbf{2000+ contributions} demonstrating active development consistency.}
+    \resumeItem{\textbf{Problem Solving}: Solved over \textbf{575+ algorithmic problems} and competed in \textbf{50+ official contests} across platforms.}
+    \resumeItem{\textbf{Adobe University Hackathon}: Cleared Round 1 (MCQ + Coding OA) organized by Adobe \href{https://github.com/prashik24}{\faExternalLinkAlt}.}
+    \resumeItem{\textbf{AlgoUniversity Certification}: Completed Advanced Graphs Module Certification \href{https://github.com/prashik24}{\faExternalLinkAlt}.}
+ \end{itemize}
+
+%-----------POSITIONS OF RESPONSIBILITY-----------
+\section{POSITIONS OF RESPONSIBILITY}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Senior Member, Crotonia Literary Society}{IIIT Lucknow}
+      {Spearheaded inter-college literary summits and flagship university debates engaging \textbf{200+ participants}.}{}
+    \vspace{-4pt}
+    \resumeSubheading
+      {Core Member, Entrepreneurship Cell (E-Cell)}{IIIT Lucknow}
+      {Coordinated technical entrepreneurship workshops, speaker sessions, and startup pitch events hosting \textbf{150+ attendees}.}{}
+  \resumeSubHeadingListEnd
+
+\end{document}
